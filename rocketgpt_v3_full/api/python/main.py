@@ -170,3 +170,7 @@ async def plan_and_generate(req: PlanAndGenerateRequest = Body(...)):
     )
     res = await groq_generate(prompt, model=model)
     return {"plan": plan, "provider": res["provider"], "model": res["model"], "quality": quality, "output": postprocess(req.mode, res["output"])}
+
+@app.get("/health")
+def health_check():
+    return JSONResponse(content={"status": "ok", "version": "3.0"})
