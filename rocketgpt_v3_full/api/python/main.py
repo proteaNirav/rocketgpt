@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 import os, time, json, httpx
 
 app = FastAPI(title="RocketGPT Orchestration API", version="3.0")
-app.mount("/", StaticFiles(directory="web", html=True), name="static")
+app.mount("/web", StaticFiles(directory="web", html=True), name="static")
 
 ALLOWED_ORIGINS = [o.strip() for o in os.environ.get("RGPT_CORS_ORIGINS","").split(",") if o.strip()] or ["*"]
 app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
