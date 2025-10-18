@@ -84,7 +84,7 @@
       ]
     },
     {
-      "name": "Groq-Llama3-8B",
+      "name": "Groq Llama-3.1 8B Instant",
       "role": "low-latency-llm",
       "type": "llm",
       "pricing": "Free/Paid",
