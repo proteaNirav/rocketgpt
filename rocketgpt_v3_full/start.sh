@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 set -e
-echo "🚀 Starting RocketGPT API…"
+echo "🚀 Starting RocketGPT API..."
 
-# Install deps
-pip install --no-cache-dir -r rocketgpt_v3_full/api/python/requirements.txt
+# (Re)build ToolBase at runtime in case CSVs change
+python /app/tools/generate_toolbase.py || true
 
-# Port default
-[ -z "$PORT" ] && PORT=8080
-echo "Using PORT: $PORT"
-
-cd rocketgpt_v3_full/api/python
-exec uvicorn main:app --host 0.0.0.0 --port $PORT
+# Run API
+cd /app
+UV_PORT="${PORT:-8080}"
+exec uvicorn main:app --host 0.0.0.0 --port "${UV_PORT}"
