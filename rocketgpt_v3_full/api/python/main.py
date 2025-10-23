@@ -8,6 +8,58 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Any
 import os, time, json, httpx
 
+from fastapi import Query
+
+DOMAIN_SYNONYMS = {
+    "architecture": "real estate",
+    "architect": "real estate",
+    "cad": "real estate",
+    "construction": "real estate",
+    "design": "creative",
+    "dev": "developer",
+    "engineering": "developer",
+}
+
+def _canon(s: str) -> str:
+    return (s or "").strip().lower()
+
+@app.get("/find-tools")
+def find_tools(
+    q: str = Query("", alias="q"),
+    domain: str = Query("", alias="domain"),
+    category: str = Query("", alias="category"),
+    pricing: str = Query("", alias="pricing"),
+    limit: int = Query(20, ge=1, le=100)
+):
+    tb = load_toolbase()["tools"]
+    q_  = _canon(q)
+    dom = _canon(domain)
+    cat = _canon(category)
+    pri = _canon(pricing)
+
+    if dom in DOMAIN_SYNONYMS:
+        dom = DOMAIN_SYNONYMS[dom]
+
+    results = []
+    for t in tb:
+        blob = json.dumps(t, ensure_ascii=False).lower()
+        if q_  and q_  not in blob:                       continue
+        if dom and dom not in _canon(t.get("domain")):    continue
+        if cat and cat not in _canon(t.get("category")):  continue
+        if pri and pri not in _canon(t.get("pricing")):   continue
+        results.append(t)
+
+    # Light re-rank: matches in strengths/best_for score higher
+    def rank_key(t):
+        S = "|".join((t.get("strengths") or []) + (t.get("best_for") or []))
+        s_hit = 1 if q_ and q_ in S.lower() else 0
+        lat   = int(t.get("latency_ms_est", 1500))
+        return (-s_hit, lat)
+
+    results.sort(key=rank_key)
+    return {"count": len(results), "items": results[:limit]}
+
+
 app = FastAPI(title="RocketGPT Orchestration API", version="3.0")
 
 # Serve the simple landing at /web (NOT at "/")
