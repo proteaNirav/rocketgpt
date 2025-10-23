@@ -4,6 +4,16 @@ from typing import List, Optional, Dict, Any
 
 app = FastAPI(title="RocketGPT Core API", version="1.0.0")
 
+# --- Health & root ---
+@app.get("/")
+def root():
+    return {"ok": True, "service": "rocketgpt-core-api", "docs": "/docs"}
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
+# --- Schema models (same as before) ---
 class Attachment(BaseModel):
     type: str
     name: Optional[str] = None
@@ -114,7 +124,6 @@ def recommend(req: RecommendRequest):
 
 @app.post("/estimate", response_model=EstimateResponse)
 def estimate(req: EstimateRequest):
-    # naive heuristic for demo
     minutes = 8 if req.path.template else 12
     steps = len(req.path.steps) if req.path.steps else 3
     est = Estimates(costINR=0.0, minutes=minutes, steps=steps, confidence=0.78)
