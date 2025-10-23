@@ -22,7 +22,7 @@ SRC_DIR = os.path.join(ROOT, "sources")
 OUT_PATH = os.path.join(os.path.dirname(ROOT), "tools", "ToolBase.json")
 
 REQUIRED = [
-    "name", "vendor", "role", "domain", "category", "sub_category",
+    "name", "vendor", "role", "domain", "category",
     "pricing", "access_url", "integration_type"
 ]
 
@@ -73,6 +73,36 @@ def canon_pricing(v):
     s = str(v).strip().lower()
     return PRICING_CANON.get(s, PRICING_CANON.get(s.replace(" ", ""), v))
 
+def infer_sub_category(row):
+    # Try to infer from role/category/keywords
+    role = (row.get("role") or "").lower()
+    cat  = (row.get("category") or "").lower()
+    name = (row.get("name") or "").lower()
+    tags = "|".join(row.get("tags") or []).lower()
+    strengths = "|".join(row.get("strengths") or []).lower()
+
+    text = "|".join([role, cat, name, tags, strengths])
+
+    if "bim" in text: return "BIM"
+    if "cad" in text: return "CAD"
+    if "pdf" in text: return "PDF"
+    if "pm" in text or "project" in text: return "PM"
+    if "kanban" in text: return "Boards"
+    if "whiteboard" in text: return "Whiteboard"
+    if "lms" in text or "course" in text: return "LMS"
+    if "ehr" in text: return "EHR"
+    if "siem" in text: return "SIEM"
+    if "wms" in text: return "WMS"
+    if "tms" in text: return "TMS"
+    if "backup" in text: return "Backup"
+    if "vpn" in text: return "VPN"
+    if "firewall" in text or "ngfw" in text: return "Firewall"
+    if "edr" in text: return "EDR"
+    if "password" in text or "vault" in text: return "Passwords"
+    if "shipping" in text: return "Shipping"
+    if "telemed" in text or "telemedicine" in text: return "Telemedicine"
+    return "General"
+
 def load_csv(path):
     rows = []
     with open(path, "r", encoding="utf-8-sig") as f:
@@ -92,6 +122,10 @@ def load_csv(path):
 
             # Pricing
             row["pricing"] = canon_pricing(row.get("pricing"))
+
+            # 👇 NEW: auto-fill missing sub_category
+            if not row.get("sub_category"):
+                row["sub_category"] = infer_sub_category(row)
 
             # Required checks
             missing = [k for k in REQUIRED if not row.get(k)]
