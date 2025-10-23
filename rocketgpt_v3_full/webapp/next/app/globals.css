@@ -2,26 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-- :root { color-scheme: dark; }
-- html, body, #__next { height: 100%; }
-- body { @apply bg-bg text-ink; }
-- .container { @apply max-w-6xl mx-auto px-4; }
-- .card { @apply bg-panel border border-border rounded-xl shadow-card; }
-- .btn { @apply rounded-2xl px-4 py-2 border border-border hover:border-ink transition; }
-- .input { @apply w-full bg-transparent border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-accent; }
-- .tag { @apply inline-flex items-center gap-1 text-sm border border-border rounded-full px-3 py-1; }
-- .badge { @apply inline-flex items-center gap-1 text-xs border border-border rounded-full px-2 py-0.5; }
+:root { color-scheme: dark; }
+html, body, #__next { height: 100%; }
 
-+ :root { color-scheme: dark; }
-+ html, body, #__next { height: 100%; }
-+ @layer base {
-+   body { @apply bg-bg text-ink; }
-+ }
-+ @layer utilities {
-+   .container { @apply max-w-6xl mx-auto px-4; }
-+   .card { @apply bg-panel border border-border rounded-xl shadow-card; }
-+   .btn { @apply rounded-2xl px-4 py-2 border border-border hover:border-ink transition; }
-+   .input { @apply w-full bg-transparent border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-accent; }
-+   .tag { @apply inline-flex items-center gap-1 text-sm border border-border rounded-full px-3 py-1; }
-+   .badge { @apply inline-flex items-center gap-1 text-xs border border-border rounded-full px-2 py-0.5; }
-+ }
+/* base styles that use @apply must live inside a layer */
+@layer base {
+  body { @apply bg-bg text-ink; }
+}
+
+/* your utility classes also need a layer when using @apply */
+@layer utilities {
+  .container { @apply max-w-6xl mx-auto px-4; }
+  .card { @apply bg-panel border border-border rounded-xl shadow-card; }
+  .btn { @apply rounded-2xl px-4 py-2 border border-border hover:border-ink transition; }
+  .input { @apply w-full bg-transparent border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-accent; }
+  .tag { @apply inline-flex items-center gap-1 text-sm border border-border rounded-full px-3 py-1; }
+  .badge { @apply inline-flex items-center gap-1 text-xs border border-border rounded-full px-2 py-0.5; }
+}
