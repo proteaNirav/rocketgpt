@@ -25,7 +25,7 @@ type State = {
 }
 
 export const useChat = create<State>((set) => ({
-  messages: [], plan: [], recs: [], loading: False,
+  messages: [], plan: [], recs: [], loading: false,
   addMsg: (m) => set(s => ({ messages: [...s.messages, m] })),
   setPlan: (p) => set({ plan: p }),
   setDecision: (d) => set({ decision: d }),
