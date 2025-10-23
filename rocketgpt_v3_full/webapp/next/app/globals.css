@@ -10,7 +10,7 @@ html, body, #__next { height: 100%; }
   body { @apply bg-bg text-ink; }
 }
 
-/* your utility classes also need a layer when using @apply */
+/* utility classes using @apply must be in a layer */
 @layer utilities {
   .container { @apply max-w-6xl mx-auto px-4; }
   .card { @apply bg-panel border border-border rounded-xl shadow-card; }
