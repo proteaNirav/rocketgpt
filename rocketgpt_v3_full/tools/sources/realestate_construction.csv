@@ -1,0 +1,20 @@
+name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
+Procore,Procore,construction-pm,Real Estate,construction,PM,projects|rfis|submittals,construction,Paid,1100,https://www.procore.com,saas,"construction|pm",0.97,0.96
+Autodesk Construction Cloud,Autodesk,construction-suite,Real Estate,construction,PM,docs|field|cost,construction,Paid,1100,https://construction.autodesk.com,saas,"acc|construction",0.96,0.95
+PlanGrid,Autodesk,field-mgmt,Real Estate,construction,Field,plans|markup,construction,Paid,1000,https://www.plangrid.com,saas,"field|plans",0.94,0.9
+Bluebeam Revu,Bluebeam,pdf-markup,Real Estate,pdf,Markup,markup|takeoff,construction,Paid,900,https://www.bluebeam.com/revu,desktop,"pdf|construction",0.95,0.9
+RIB CostX,RIB Software,estimation,Real Estate,construction,Estimating,takeoff|cost,construction,Paid,1000,https://www.rib-software.com,desktop,"estimating|takeoff",0.9,0.85
+WinEst,Trimble,estimation,Real Estate,construction,Estimating,estimating|assemblies,construction,Paid,1000,https://mep.trimble.com/en/products/winest,desktop,"estimating|trimble",0.88,0.82
+ProEst,Autodesk,estimation,Real Estate,construction,Estimating,cloud|bids,construction,Paid,1000,https://www.proest.com,saas,"estimating|bids",0.9,0.85
+Aconex,Oracle,collaboration,Real Estate,construction,Docs,rfis|submittals,enterprise,Paid,1000,https://www.oracle.com/construction-engineering/aconex,saas,"rfis|docs",0.92,0.88
+BIM 360,Autodesk,collaboration,Real Estate,construction,BIM,bim|docs,construction,Paid,1000,https://www.autodesk.com/bim-360,saas,"bim|docs",0.92,0.88
+BuildPro,Hyphen Solutions,scheduling,Real Estate,construction,Build,homebuilding|supply,construction,Paid,1000,https://www.hyphensolutions.com,saas,"homebuilding|schedule",0.87,0.8
+CoStar,CoStar Group,property-data,Real Estate,real-estate,Data,market|comps,brokers,Paid,900,https://www.costar.com,saas,"property|data",0.95,0.93
+LoopNet,CoStar Group,property-marketplace,Real Estate,real-estate,Marketplace,search|listings,brokers,Freemium/Paid,900,https://www.loopnet.com,web,"commercial|listings",0.96,0.96
+Zillow,Zillow,property-marketplace,Real Estate,real-estate,Marketplace,search|zestimate,consumers,Free,900,https://www.zillow.com,web,"residential|listings",0.98,0.99
+Redfin,Redfin,brokerage,Real Estate,real-estate,Marketplace,search|valuation,consumers,Free,900,https://www.redfin.com,web,"residential|search",0.96,0.97
+Reonomy,Altus Group,property-data,Real Estate,real-estate,Data,ownership|comps,investors,Paid,900,https://www.reonomy.com,saas,"comps|ownership",0.92,0.88
+Matterport,Matterport,3d-capture,Real Estate,real-estate,Scan,tours|scans,brokers,Paid,1000,https://www.matterport.com,saas,"3d|tours",0.94,0.92
+CoConstruct,Buildertrend,project-mgmt,Real Estate,construction,PM,clients|budgets,builders,Paid,950,https://www.coconstruct.com,saas,"builder|pm",0.88,0.83
+Buildertrend,Buildertrend,project-mgmt,Real Estate,construction,PM,scheduling|estimates,builders,Paid,950,https://www.buildertrend.com,saas,"builder|pm",0.9,0.86
+Smartsheet,Smartsheet,work-os,Real Estate,construction,PM,sheets|gantt,construction,Freemium/Paid,900,https://www.smartsheet.com,saas,"gantt|sheets",0.94,0.93
