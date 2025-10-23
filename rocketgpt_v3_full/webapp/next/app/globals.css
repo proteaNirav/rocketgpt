@@ -1,1 +1,13 @@
-@tailwind base;@tailwind components;@tailwind utilities;body{font-family:system-ui;background:#0b1220;color:#e5e7eb}.card{background:#0f172a88;border:1px solid #334155;border-radius:16px;padding:16px}.btn{background:#2563eb;padding:8px 14px;border-radius:12px}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body, #__next { height: 100%; }
+body { @apply bg-bg text-ink; }
+.container { @apply max-w-6xl mx-auto px-4; }
+.card { @apply bg-panel border border-border rounded-xl shadow-card; }
+.btn { @apply rounded-2xl px-4 py-2 border border-border hover:border-ink transition; }
+.input { @apply w-full bg-transparent border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-accent; }
+.tag { @apply inline-flex items-center gap-1 text-sm border border-border rounded-full px-3 py-1; }
+.badge { @apply inline-flex items-center gap-1 text-xs border border-border rounded-full px-2 py-0.5; }
