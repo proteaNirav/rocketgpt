@@ -1,111 +1,142 @@
 {
   "version": "3.0",
+  "updated": "2025-10-17",
+  "notes": "Curated multi-provider tool list for RocketGPT orchestration. Fields: name, role, strengths, best_for, pricing, access_url, latency_ms_est.",
   "tools": [
+    {
+      "name": "Groq Llama-3.1 8B Instant",
+      "role": "low-latency-llm",
+      "strengths": ["fast", "chat", "summarize", "rewrite"],
+      "best_for": ["/fast", "/organize", "bulletization"],
+      "pricing": "Free/Paid",
+      "access_url": "https://api.groq.com",
+      "latency_ms_est": 400
+    },
+    {
+      "name": "Groq Llama-3.1 70B Versatile",
+      "role": "quality-llm",
+      "strengths": ["reasoning", "analysis", "longer-answers"],
+      "best_for": ["/deep", "reports", "explanations"],
+      "pricing": "Free/Paid",
+      "access_url": "https://api.groq.com",
+      "latency_ms_est": 1100
+    },
     {
       "name": "ChatGPT",
       "role": "reasoning-chat",
-      "type": "llm",
+      "strengths": ["generalist", "examples", "step-by-step"],
+      "best_for": ["/deep", "/creative", "education"],
       "pricing": "Freemium/Paid",
       "access_url": "https://chat.openai.com",
-      "latency_ms_est": 1200,
-      "strengths": [
-        "general reasoning",
-        "code drafting"
-      ],
-      "best_for": [
-        "/fast",
-        "/deep",
-        "/organize"
-      ]
+      "latency_ms_est": 1200
     },
     {
       "name": "Claude",
       "role": "long-context-ideation",
-      "type": "llm",
+      "strengths": ["long-context", "writing", "analysis"],
+      "best_for": ["/deep", "ideation", "editing"],
       "pricing": "Freemium/Paid",
       "access_url": "https://claude.ai",
-      "latency_ms_est": 1500,
-      "strengths": [
-        "long-context",
-        "summarization"
-      ],
-      "best_for": [
-        "/deep",
-        "/creative",
-        "/organize"
-      ]
+      "latency_ms_est": 1500
     },
     {
       "name": "Gemini",
       "role": "fast-web-connected",
-      "type": "llm",
+      "strengths": ["web-search", "factual", "multimodal"],
+      "best_for": ["/live", "research", "news"],
       "pricing": "Freemium/Paid",
-      "access_url": "https://gemini.google.com",
-      "latency_ms_est": 900,
-      "strengths": [
-        "speed",
-        "web"
-      ],
-      "best_for": [
-        "/fast",
-        "/live"
-      ]
+      "access_url": "https://aistudio.google.com",
+      "latency_ms_est": 900
     },
     {
       "name": "Perplexity",
-      "role": "web-research",
-      "type": "search",
+      "role": "answer-engine",
+      "strengths": ["web-citations", "fresh-info"],
+      "best_for": ["/live", "research-synthesis"],
       "pricing": "Freemium/Paid",
       "access_url": "https://www.perplexity.ai",
-      "latency_ms_est": 1400,
-      "strengths": [
-        "live web",
-        "citations"
-      ],
-      "best_for": [
-        "/live",
-        "/research"
-      ]
+      "latency_ms_est": 1200
     },
     {
-      "name": "RunwayML",
-      "role": "video-image-generation",
-      "type": "media",
+      "name": "Runway Gen-3",
+      "role": "video-generation",
+      "strengths": ["text-to-video", "storyboard"],
+      "best_for": ["/creative", "marketing-video"],
       "pricing": "Paid",
       "access_url": "https://runwayml.com",
-      "latency_ms_est": 3000,
-      "strengths": [
-        "video gen",
-        "image gen"
-      ],
-      "best_for": [
-        "/creative",
-        "/live"
-      ]
+      "latency_ms_est": 3000
     },
     {
-      "name": "Groq Llama-3.1 8B Instant",
-      "role": "low-latency-llm",
-      "type": "llm",
+      "name": "Stability SDXL",
+      "role": "image-generation",
+      "strengths": ["illustration", "concept art"],
+      "best_for": ["/creative", "thumbnails"],
       "pricing": "Free/Paid",
-      "access_url": "https://api.groq.com",
-      "latency_ms_est": 400,
-      "strengths": [
-        "fast draft",
-        "summarization",
-        "chat"
-      ],
-      "best_for": [
-        "/fast",
-        "/live",
-        "/organize"
-      ],
-      "auth": {
-        "mode": "api_key",
-        "env": [
-          "GROQ_API_KEY"
-        ]
-      }
+      "access_url": "https://platform.stability.ai",
+      "latency_ms_est": 2200
+    },
+    {
+      "name": "DALL·E",
+      "role": "image-generation",
+      "strengths": ["photoreal", "branding"],
+      "best_for": ["/creative", "ads"],
+      "pricing": "Paid",
+      "access_url": "https://platform.openai.com",
+      "latency_ms_est": 1800
+    },
+    {
+      "name": "Whisper",
+      "role": "speech-to-text",
+      "strengths": ["transcription", "multilingual"],
+      "best_for": ["/organize", "meeting-notes"],
+      "pricing": "Paid",
+      "access_url": "https://platform.openai.com",
+      "latency_ms_est": 1400
+    },
+    {
+      "name": "ElevenLabs",
+      "role": "text-to-speech",
+      "strengths": ["realistic-voice", "voiceover"],
+      "best_for": ["/creative", "podcast", "marketing-video"],
+      "pricing": "Freemium/Paid",
+      "access_url": "https://elevenlabs.io",
+      "latency_ms_est": 1000
+    },
+    {
+      "name": "LangSmith Evaluate",
+      "role": "evals",
+      "strengths": ["prompt-testing", "quality-metrics"],
+      "best_for": ["/organize", "QA", "benchmark"],
+      "pricing": "Paid",
+      "access_url": "https://smith.langchain.com",
+      "latency_ms_est": 1600
+    },
+    {
+      "name": "Pinecone",
+      "role": "vector-db",
+      "strengths": ["RAG", "semantic-search"],
+      "best_for": ["/organize", "knowledge-base"],
+      "pricing": "Freemium/Paid",
+      "access_url": "https://www.pinecone.io",
+      "latency_ms_est": 800
+    },
+    {
+      "name": "GitHub Copilot",
+      "role": "code-assistant",
+      "strengths": ["autocomplete", "refactor"],
+      "best_for": ["/creative", "code", "boilerplate"],
+      "pricing": "Paid",
+      "access_url": "https://github.com/features/copilot",
+      "latency_ms_est": 700
+    },
+    {
+      "name": "Google Sheets",
+      "role": "lightweight-data",
+      "strengths": ["tables", "reporting"],
+      "best_for": ["/organize", "light-analytics"],
+      "pricing": "Free",
+      "access_url": "https://sheets.google.com",
+      "latency_ms_est": 600
     }
   ]
 }
