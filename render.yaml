@@ -1,12 +1,28 @@
 services:
+  # --- Core API (already deployed) ---
   - type: web
     name: rocketgpt-core-api
     runtime: python
     plan: free
-    rootDir: rocketgpt_v3_full/apps/core-api
+    rootDir: apps/core-api
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn server_stub_fastapi:app --host 0.0.0.0 --port $PORT
+    autoDeploy: true
+
+  # --- Phase 2 UI (Next.js) ---
+  - type: web
+    name: rocketgpt-ui
+    runtime: node
+    plan: free
+    rootDir: webapp/next
+    envVars:
+      - key: NEXT_PUBLIC_CORE_API_BASE
+        value: https://rocketgpt-core-api.onrender.com
+      - key: NODE_VERSION
+        value: 18
+    buildCommand: npm install && npm run build
+    startCommand: npm start
     autoDeploy: true
