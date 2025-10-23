@@ -1,8 +1,24 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 
 app = FastAPI(title="RocketGPT Core API", version="1.0.0")
+
+# allow your UI origins (add both prod URLs + localhost for dev)
+ALLOWED_ORIGINS = [
+    "https://rocketgpt-git-main-nirav-shahs-projects-9c841707.vercel.app",
+    "https://rocketgpt-ui.onrender.com",  # if you deploy UI on Render too
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
 
 # --- Health & root ---
 @app.get("/")
