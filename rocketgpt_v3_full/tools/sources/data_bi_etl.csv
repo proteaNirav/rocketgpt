@@ -1,0 +1,26 @@
+name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
+PostgreSQL,PostgreSQL,database,Data,db,SQL,sql|extensions,data,Free,700,https://www.postgresql.org,server,"db|postgres",0.98,0.97
+MySQL,Oracle,database,Data,db,SQL,sql|replication,data,Free,700,https://www.mysql.com,server,"db|mysql",0.97,0.97
+SQL Server,Microsoft,database,Data,db,SQL,sql|ssms,data,Paid,800,https://www.microsoft.com/sql-server,server,"db|mssql",0.97,0.95
+Oracle Database,Oracle,database,Data,db,SQL,sql|enterprise,data,Paid,900,https://www.oracle.com/database,server,"oracle|db",0.98,0.95
+Snowflake,Snowflake,warehouse,Data,db,Cloud,dwh|scale,data,Paid,900,https://www.snowflake.com,saas,"dwh|cloud",0.96,0.95
+BigQuery,Google,warehouse,Data,db,Cloud,bigquery|sql,data,Paid,900,https://cloud.google.com/bigquery,saas,"gcp|dwh",0.96,0.95
+Redshift,AWS,warehouse,Data,db,Cloud,warehouse|sql,data,Paid,900,https://aws.amazon.com/redshift,saas,"aws|dwh",0.95,0.93
+Databricks,Databricks,platform,Data,analytics,Spark,spark|ml,data,Paid,1100,https://www.databricks.com,saas,"spark|lakehouse",0.96,0.94
+Apache Spark,Apache,compute,Data,analytics,Spark,etl|ml,data,Free,1000,https://spark.apache.org,server,"spark|open-source",0.95,0.92
+Apache Kafka,Apache,streaming,Data,analytics,Streaming,events|pubsub,data,Free,900,https://kafka.apache.org,server,"kafka|stream",0.95,0.93
+Airflow,Apache,orchestration,Data,etl,,scheduling|pipelines,/organize,Free,900,https://airflow.apache.org,server,"etl|scheduler",0.95,0.94
+dbt Core,dbt Labs,transform,Data,etl,,sql-models|testing,/organize,Free,800,https://www.getdbt.com,cli,"dbt|transform",0.96,0.95
+Fivetran,Fivetran,ingest,Data,etl,,connectors|sync,data,Paid,900,https://www.fivetran.com,saas,"etl|connectors",0.96,0.94
+Stitch,Talend,ingest,Data,etl,,connectors|sync,data,Paid,900,https://www.stitchdata.com,saas,"etl|sync",0.92,0.86
+Talend Data Fabric,Talend,etl,Data,etl,,etl|data-quality,data,Paid,1100,https://www.talend.com,saas,"etl|dq",0.92,0.85
+Informatica Cloud,Informatica,etl,Data,etl,,enterprise|dq,data,Paid,1200,https://www.informatica.com,saas,"etl|enterprise",0.94,0.88
+Tableau,Salesforce,bi,Data,viz,,dashboards|viz,data,Paid,1500,https://www.tableau.com,desktop,"bi|viz",0.97,0.96
+Power BI,Microsoft,bi,Data,viz,,dashboards|dax,data,Paid,1300,https://powerbi.microsoft.com,desktop,"bi|powerbi",0.97,0.97
+Looker,Google,bi,Data,viz,,explore|semantic,data,Paid,1400,https://looker.com,saas,"bi|looker",0.95,0.9
+Qlik Sense,Qlik,bi,Data,viz,,associative|dashboards,data,Paid,1400,https://www.qlik.com,saas,"bi|qlik",0.94,0.88
+Superset,Apache,bi,Data,viz,,dashboards|sql,data,Free,1200,https://superset.apache.org,server,"bi|open-source",0.9,0.85
+Metabase,Metabase,bi,Data,viz,,self-serve|sql,data,Free/Paid,1100,https://www.metabase.com,server,"bi|metabase",0.9,0.88
+Grafana,Grafana Labs,observability,Data,analytics,Dashboards,metrics|viz,ops,Free/Paid,1000,https://grafana.com,server,"dashboards|metrics",0.96,0.95
+Elasticsearch,Elastic,search,Data,search,,full-text|analytics,data,Freemium/Paid,900,https://www.elastic.co,server,"search|elastic",0.96,0.95
+Splunk,Splunk,observability,Data,analytics,Logs,logs|search,ops,Paid,1200,https://www.splunk.com,server,"logs|siem",0.95,0.93
