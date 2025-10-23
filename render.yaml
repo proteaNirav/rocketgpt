@@ -3,7 +3,7 @@ services:
     name: rocketgpt-core-api
     runtime: python
     plan: free
-    rootDir: apps/core-api
+    rootDir: rocketgpt_v3_full/apps/core-api
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
