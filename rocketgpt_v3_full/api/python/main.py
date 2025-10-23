@@ -13,6 +13,25 @@ app = FastAPI(title="RocketGPT Orchestration API", version="3.0")
 # Serve the simple landing at /web (NOT at "/")
 app.mount("/web", StaticFiles(directory="web", html=True), name="static")
 
+# ---- Friendly root ----
+@app.get("/", response_class=JSONResponse)
+def root():
+    return {
+        "service": "RocketGPT Orchestration API",
+        "status": "ready",
+        "version": "3.0",
+        "docs": {
+            "health": "/health",
+            "metrics": "/metrics",
+            "system_prompt": "/system-prompt",
+            "plan": "/orchestrate",
+            "generate": "/generate",
+            "plan_and_generate": "/plan-and-generate",
+            "static_landing": "/web"
+        }
+    }
+
+
 # ---- CORS ----
 ALLOWED_ORIGINS = [o.strip() for o in os.environ.get("RGPT_CORS_ORIGINS","").split(",") if o.strip()] or ["*"]
 app.add_middleware(
