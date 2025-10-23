@@ -1,0 +1,26 @@
+name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
+AutoCAD,Autodesk,dwg-cad,Architecture,cad,,drafting|dwg,architecture,Paid,1800,https://www.autodesk.com/products/autocad,desktop,"cad|dwg|drafting",0.95,0.98
+AutoCAD LT,Autodesk,dwg-cad,Architecture,cad,,drafting|2d,architecture,Paid,1500,https://www.autodesk.com/products/autocad-lt,desktop,"2d|dwg|drafting",0.94,0.92
+Revit,Autodesk,bim,Architecture,cad,BIM,BIM|parametric,architecture,Paid,2200,https://www.autodesk.com/products/revit,desktop,"bim|architecture",0.95,0.96
+Civil 3D,Autodesk,civil-cad,Architecture,cad,Civil,corridors|surveys,civil-engineering,Paid,2300,https://www.autodesk.com/products/civil-3d,desktop,"civil|roads|surveys",0.93,0.9
+ArchiCAD,Graphisoft,bim,Architecture,cad,BIM,BIM|docs,architecture,Paid,2100,https://graphisoft.com/solutions/archicad,desktop,"bim|arch",0.92,0.86
+Navisworks,Autodesk,coordination,Architecture,cad,Coordination,clash-detect|aggregate,architecture,Paid,2000,https://www.autodesk.com/products/navisworks,desktop,"clash|coordination",0.93,0.88
+Bluebeam Revu,Bluebeam,pdf-markup,Architecture,pdf,Markup,markup|takeoff,construction,Paid,900,https://www.bluebeam.com/revu,desktop,"pdf|construction",0.95,0.9
+SketchUp,Trimble,3d-modeling,Architecture,cad,3D,concept|model,architecture|interiors,Paid,1500,https://www.sketchup.com,desktop,"3d|concept",0.94,0.95
+Rhino,McNeel,3d-nurbs,Architecture,cad,3D,modeling|grasshopper,architecture|industrial,Paid,1600,https://www.rhino3d.com,desktop,"nurbs|parametric",0.93,0.9
+Grasshopper,McNeel,parametric,Architecture,cad,Parametric,parametric|scripting,architecture,Paid,1400,https://www.grasshopper3d.com,plugin,"parametric|rhino",0.92,0.85
+V-Ray,Chaos,renderer,Architecture,cad,Render,raytracing|materials,visualization,Paid,1800,https://www.chaos.com/vray,plugin,"render|vray",0.95,0.93
+Enscape,Enscape,renderer,Architecture,cad,Render,real-time|walkthrough,visualization,Paid,1600,https://enscape3d.com,plugin,"render|realtime",0.94,0.9
+Lumion,Lumion,renderer,Architecture,cad,Render,scenes|fx,visualization,Paid,2200,https://lumion.com,desktop,"render|viz",0.92,0.88
+Twinmotion,Epic Games,renderer,Architecture,cad,Render,real-time|UE,visualization,Free/Paid,1700,https://www.twinmotion.com,desktop,"render|ue",0.9,0.86
+Vectorworks,Vectorworks,cad,Architecture,cad,,2d|3d,architecture,Paid,1700,https://www.vectorworks.net,desktop,"cad|bim",0.9,0.82
+BricsCAD,Bricsys,cad,Architecture,cad,,dwg|2d|3d,architecture,Paid,1500,https://www.bricsys.com,desktop,"dwg|cad",0.9,0.8
+MicroStation,Bentley,cad,Architecture,cad,,infrastructure|dwg,engineering,Paid,1900,https://www.bentley.com,desktop,"infrastructure",0.9,0.82
+Tekla Structures,Trimble,steel-bim,Architecture,cad,Steel,detailing|fabrication,construction,Paid,2300,https://www.tekla.com,desktop,"steel|bim",0.92,0.84
+SolidWorks,Dassault Systèmes,mechanical-cad,Architecture,cad,Mechanical,3d-cad|simulation,mechanical,Paid,2200,https://www.solidworks.com,desktop,"mcad",0.95,0.95
+Solid Edge,Siemens,mechanical-cad,Architecture,cad,Mechanical,3d-cad,mechanical,Paid,2100,https://solidedge.siemens.com,desktop,"mcad|siemens",0.9,0.82
+Inventor,Autodesk,mechanical-cad,Architecture,cad,Mechanical,assembly|sheetmetal,mechanical,Paid,2100,https://www.autodesk.com/products/inventor,desktop,"mcad|autodesk",0.92,0.85
+CATIA,Dassault Systèmes,mechanical-cad,Architecture,cad,Mechanical,complex|aero|auto,mechanical|aerospace,Paid,2600,https://www.3ds.com/products-services/catia,desktop,"mcad|catia",0.95,0.92
+Fusion 360,Autodesk,cad-cam,Architecture,cad,CAM,cad|cam|cloud,mechanical,Freemium/Paid,1700,https://www.autodesk.com/products/fusion-360,desktop,"cad|cam|cloud",0.93,0.9
+QGIS,QGIS Project,gis,Architecture,gis,,mapping|analysis,planning,Free,1200,https://qgis.org,desktop,"gis|open-source",0.9,0.9
+ArcGIS Pro,Esri,gis,Architecture,gis,,mapping|geoprocess,planning,Paid,1600,https://www.esri.com/en-us/arcgis/products/arcgis-pro,desktop,"gis|esri",0.95,0.93
