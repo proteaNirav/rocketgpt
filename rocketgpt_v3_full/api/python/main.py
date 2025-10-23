@@ -96,25 +96,65 @@ def system_prompt():
 def load_toolbase():
     with open(TOOLBASE_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
-
+        
 def score(tool, kws, prefs):
-    strengths = [s.lower() for s in tool.get("strengths", []) + tool.get("best_for", [])]
-    hits = sum(1 for k in kws if k.lower() in strengths)
-    relevance = min(1.0, hits / max(1, len(kws)))
-    accessibility = 1.0 if tool.get("pricing") in ("Free", "Freemium/Paid", "Free/Paid") else 0.6
+    # Normalize
+    strengths = [s.lower() for s in tool.get("strengths", [])]
+    tags = [t.lower() for t in tool.get("tags", [])]
+    all_text = " ".join(strengths + tags + [tool.get("role",""), tool.get("category",""), tool.get("domain","")]).lower()
+
+    # Relevance by keyword hit
+    norm_kws = [k.lower() for k in kws]
+    hits = sum(1 for k in norm_kws if k in all_text)
+    relevance = min(1.0, hits / max(1, len(norm_kws)))
+
+    # Strength match (do any strengths exactly match a kw?)
+    strength_match = 1.0 if any(k in strengths for k in norm_kws) else 0.5
+
+    # Accessibility/cost
+    cost_map = {"free":1.0,"free/paid":0.9,"freemium/paid":0.8,"paid":0.7}
+    pricing = (tool.get("pricing","Freemium/Paid") or "").lower()
+    cost = cost_map.get(pricing, 0.75)
+
+    # Latency (clamped 400..4000ms → 1..~0)
     ms = max(400, min(4000, int(tool.get("latency_ms_est", 1500))))
     latency = 1.0 - (ms - 400) / 3600.0
-    cost_map = {"Free": 1.0, "Free/Paid": 0.8, "Freemium/Paid": 0.7, "Paid": 0.5}
-    cost = cost_map.get(tool.get("pricing"), 0.6)
-    familiarity = 1.0 if tool.get("name") in prefs else 0.6
-    w = {"relevance": 0.45, "accessibility": 0.15, "latency": 0.15, "cost": 0.15, "familiarity": 0.10}
-    return sum([
-        w["relevance"] * relevance,
-        w["accessibility"] * accessibility,
-        w["latency"] * latency,
-        w["cost"] * cost,
-        w["familiarity"] * familiarity,
-    ])
+
+    # Reliability/popularity
+    reliability = float(tool.get("reliability_score", 0.85))
+    popularity = float(tool.get("popularity_score", 0.6))
+
+    w = {"relevance":0.35,"strength_match":0.20,"latency":0.15,"cost":0.10,"reliability":0.10,"popularity":0.10}
+    return (w["relevance"]*relevance + w["strength_match"]*strength_match +
+            w["latency"]*latency + w["cost"]*cost +
+            w["reliability"]*reliability + w["popularity"]*popularity)
+
+from fastapi import Query
+
+@app.get("/find-tools")
+def find_tools(
+    q: str = Query("", description="keywords"),
+    domain: str = Query("", description="domain filter"),
+    category: str = Query("", description="category filter"),
+    limit: int = 30
+):
+    tb = load_toolbase()["tools"]
+    ql = q.lower().split()
+    out = []
+    for t in tb:
+        text = " ".join([
+            t.get("name",""), t.get("vendor",""), t.get("role",""),
+            t.get("domain",""), t.get("category",""),
+            " ".join(t.get("strengths",[])), " ".join(t.get("tags",[]))
+        ]).lower()
+        if q and not all(k in text for k in ql): continue
+        if domain and t.get("domain","").lower() != domain.lower(): continue
+        if category and t.get("category","").lower() != category.lower(): continue
+        out.append(t)
+        if len(out) >= limit: break
+    return {"count": len(out), "items": out}
+
+
 
 # ---- Planner ----
 class OrchestrateRequest(BaseModel):
