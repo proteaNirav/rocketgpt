@@ -268,6 +268,50 @@ async def groq_generate(prompt: str, model: str):
 
 from fastapi import Body
 
+from fastapi import Query
+
+DOMAIN_SYNONYMS = {
+    "architecture": "real estate",
+    "architect": "real estate",
+    "cad": "real estate",
+    "construction": "real estate",
+    "design": "creative",
+    "marketing": "sales",
+}
+
+def canon(s: str) -> str:
+    return (s or "").strip().lower()
+
+@app.get("/find-tools")
+def find_tools(
+    q: str = Query("", alias="q"),
+    domain: str = Query("", alias="domain"),
+    category: str = Query("", alias="category"),
+    limit: int = 20,
+):
+    tb = load_toolbase()["tools"]
+
+    q_ = canon(q)
+    dom_ = canon(domain)
+    cat_ = canon(category)
+
+    if dom_ in DOMAIN_SYNONYMS:
+        dom_ = DOMAIN_SYNONYMS[dom_]
+
+    items = []
+    for t in tb:
+        j = json.dumps(t, ensure_ascii=False).lower()
+        if q_ and q_ not in j:
+            continue
+        if dom_ and dom_ not in canon(t.get("domain")):
+            continue
+        if cat_ and cat_ not in canon(t.get("category")):
+            continue
+        items.append(t)
+
+    return {"count": len(items), "items": items[: max(1, min(limit, 100))]}
+
+
 @app.post("/generate")
 async def generate(req: GenerateRequest = Body(...)):
     if not ENABLE_AUTOPILOT:
