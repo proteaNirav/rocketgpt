@@ -1,0 +1,19 @@
+name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
+Google Classroom,Google,lms,Education,education,LMS,class|assignments,schools,Free,800,https://classroom.google.com,web,"lms|education",0.98,0.98
+Moodle,Moodle HQ,lms,Education,education,LMS,open-source|courses,schools,Free,900,https://moodle.org,server,"lms|open-source",0.95,0.96
+Canvas LMS,Instructure,lms,Education,education,LMS,courses|grades,schools,Paid,900,https://www.instructure.com/canvas,saas,"lms|canvas",0.96,0.96
+Blackboard Learn,Anthology,lms,Education,education,LMS,courses|assessment,universities,Paid,1000,https://www.anthology.com/products/blackboard-learn,saas,"lms|blackboard",0.95,0.94
+Coursera,Coursera,elearning,Education,education,MOOC,video|certificates,students,Freemium/Paid,900,https://www.coursera.org,web,"learning|mooc",0.98,0.98
+edX,2U,elearning,Education,education,MOOC,university|online,students,Free/Paid,900,https://www.edx.org,web,"learning|mooc",0.97,0.97
+Udemy,Udemy,elearning,Education,education,MOOC,video|courses,professionals,Freemium/Paid,900,https://www.udemy.com,web,"learning|skills",0.97,0.98
+Khan Academy,Khan Academy,elearning,Education,education,MOOC,free|students,schools,Free,800,https://www.khanacademy.org,web,"free|learning",0.98,0.98
+LinkedIn Learning,LinkedIn,elearning,Education,education,Professional,career|certs,professionals,Paid,900,https://www.linkedin.com/learning,web,"learning|career",0.96,0.96
+Skillshare,Skillshare,elearning,Education,education,Creative,video|creative,creative,Paid,900,https://www.skillshare.com,web,"learning|creative",0.94,0.94
+MasterClass,MasterClass,elearning,Education,education,Creative,celebrity|video,general,Paid,900,https://www.masterclass.com,web,"learning|masterclass",0.93,0.9
+Teachable,Teachable,course-builder,Education,education,Authoring,courses|sales,trainers,Paid,900,https://teachable.com,saas,"courses|sales",0.93,0.9
+Thinkific,Thinkific,course-builder,Education,education,Authoring,courses|memberships,trainers,Paid,900,https://www.thinkific.com,saas,"courses|lms",0.93,0.9
+TalentLMS,Epignosis,lms,Education,education,LMS,training|corporate,enterprise,Paid,900,https://www.talentlms.com,saas,"corporate|lms",0.94,0.9
+Articulate 360,Articulate,authoring,Education,education,Authoring,elearning|slides,corporate,Paid,900,https://articulate.com,desktop,"authoring|elearning",0.95,0.9
+Captivate,Adobe,authoring,Education,education,Authoring,elearning|simulation,corporate,Paid,900,https://www.adobe.com/products/captivate.html,desktop,"elearning|authoring",0.94,0.9
+Nearpod,Nearpod,interactive,Education,education,Engagement,quiz|slides,schools,Paid,900,https://nearpod.com,web,"quiz|interactive",0.93,0.9
+Kahoot!,Kahoot!,gamification,Education,education,Engagement,quiz|games,schools
