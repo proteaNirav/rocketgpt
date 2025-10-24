@@ -100,43 +100,62 @@ class EstimateResponse(BaseModel):
 
 @app.post("/plan", response_model=PlanResponse)
 def plan(req: PlanRequest):
-    plan = [
-        Step(id="step1", title="Pick a template", detail="Use Canva free A4 brochure"),
-        Step(id="step2", title="Replace content", detail="Logo, tagline, bullets, CTA"),
-        Step(id="step3", title="Export PDF", detail="A4, high quality")
-    ]
-    decision = Decision(
-        summary="Proceed with Canva Free; export A4 PDF.",
-        toolId="canva",
-        estimates=Estimates(costINR=0, minutes=10, steps=3, confidence=0.82, assumptions=["assets ready"])
-    )
+    g = (req.goal or "").lower()
+    if any(k in g for k in ["brochure","flyer","poster"]):
+        plan = [
+            Step(id="step1", title="Pick a brochure template", detail="Use Canva A4"),
+            Step(id="step2", title="Replace content", detail="Logo, tagline, bullets, CTA"),
+            Step(id="step3", title="Export PDF", detail="A4, high quality")
+        ]
+        decision = Decision(summary="Use Canva Free for a quick brochure.", toolId="canva",
+                            estimates=Estimates(costINR=0, minutes=10, steps=3, confidence=0.82))
+    elif any(k in g for k in ["presentation","deck","slides"]):
+        plan = [
+            Step(id="step1", title="Choose a slides template", detail="Google Slides or Canva"),
+            Step(id="step2", title="Outline 5–7 slides", detail="Title, Problem, Solution, CTA"),
+            Step(id="step3", title="Polish visuals", detail="Icons, brand colors"),
+        ]
+        decision = Decision(summary="Start in Google Slides for collaboration.", toolId="google_docs",
+                            estimates=Estimates(costINR=0, minutes=12, steps=3, confidence=0.8))
+    else:
+        plan = [
+            Step(id="step1", title="Clarify outcome", detail="Define deliverable + success metric"),
+            Step(id="step2", title="Pick the best free tool", detail="Based on speed/cost"),
+            Step(id="step3", title="Execute and export", detail="Deliver in preferred format"),
+        ]
+        decision = Decision(summary="Pick a free tool and execute quickly.", toolId=None,
+                            estimates=Estimates(costINR=0, minutes=8, steps=3, confidence=0.7))
     return PlanResponse(plan=plan, decision=decision)
 
 @app.post("/recommend", response_model=RecommendResponse)
 def recommend(req: RecommendRequest):
-    recs = [
-        Recommendation(
-            toolId="canva",
-            title="Use Canva (free)",
-            why="Fastest path with templates",
-            avoidWhen="Complex vector work",
-            estimates=Estimates(costINR=0, minutes=10, steps=3, confidence=0.82),
-            badges={"reliability":0.95,"pricing":"freemium"}
-        ),
-        Recommendation(
-            toolId="google_docs",
-            title="Google Docs (free)",
-            why="If you need text-first flow",
-            avoidWhen="Heavy layout needs",
-            estimates=Estimates(costINR=0, minutes=8, steps=3, confidence=0.75),
-            badges={"reliability":0.98,"pricing":"free"}
-        )
-    ]
+    g = (req.goal or "").lower()
+    recs = []
+    if any(k in g for k in ["brochure","flyer","poster"]):
+        recs = [
+            Recommendation(toolId="canva", title="Use Canva (free)", why="Fast templates for print",
+                           estimates=Estimates(costINR=0, minutes=10, steps=3), badges={"pricing":"freemium","reliability":0.95}),
+            Recommendation(toolId="gimp", title="GIMP (free, offline)", why="If you need local edits",
+                           estimates=Estimates(costINR=0, minutes=15, steps=4), badges={"pricing":"free","reliability":0.85}),
+        ]
+    elif any(k in g for k in ["presentation","deck","slides"]):
+        recs = [
+            Recommendation(toolId="google_docs", title="Google Slides (free)", why="Best for collab",
+                           estimates=Estimates(costINR=0, minutes=12, steps=3), badges={"pricing":"free","reliability":0.98}),
+            Recommendation(toolId="canva", title="Canva (slides)", why="Beautiful slide templates",
+                           estimates=Estimates(costINR=0, minutes=10, steps=3), badges={"pricing":"freemium","reliability":0.95}),
+        ]
+    else:
+        recs = [
+            Recommendation(toolId="notion", title="Notion", why="Flexible workspace",
+                           estimates=Estimates(costINR=0, minutes=8, steps=3), badges={"pricing":"freemium","reliability":0.9})
+        ]
     decision = recs[0]
     return RecommendResponse(
         decision=Decision(summary=f"Go with {decision.title}.", toolId=decision.toolId, estimates=decision.estimates),
         recommendations=recs
     )
+
 
 @app.post("/estimate", response_model=EstimateResponse)
 def estimate(req: EstimateRequest):
