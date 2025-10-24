@@ -1,10 +1,11 @@
 'use client'
 
+export const dynamic = 'force-dynamic';
+
 import { useState } from 'react'
 import { useChat } from '@/lib/store'
 import type { Recommendation } from '@/lib/store'
 import { plan as apiPlan, recommend as apiRecommend } from '@/lib/api'
-import { supabase } from '@/lib/supabase'
 
 import PromptBar from '@/components/PromptBar'
 import MessageBubble from '@/components/MessageBubble'
@@ -32,57 +33,79 @@ export default function Page() {
     setLoading(true)
     setFirstRun(false)
     setLastGoal(text)
-
-    // clear previous data
     setRecs([])
     setDecision(undefined)
-    addMsg({ id: crypto.randomUUID(), role: 'user', text })
 
-    // friendly thinking message
+    const userMsgId = crypto.randomUUID()
+    addMsg({ id: userMsgId, role: 'user', text })
+
     const thinkingId = crypto.randomUUID()
-    addMsg({ id: thinkingId, role: 'assistant', text: 'Okay, give me a few seconds… thinking 🧠' })
+    addMsg({ id: thinkingId, role: 'assistant', text: 'Okay—give me a moment to think this through…' })
 
     const controller = new AbortController()
     setController(controller)
 
     try {
-      // 1️⃣ PLAN
+      // ---------- PLAN STAGE ----------
       const p = await apiPlan(text, { preferences: ['free tools only'] }, { signal: controller.signal })
       setPlan(p.plan || [])
       setDecision(p.decision)
 
       // replace thinking message with summary
       useChat.getState().updateMsg(thinkingId, {
-        text: p.decision?.summary || 'Here’s a quick plan you can follow:'
+        text: p.decision?.summary || 'Here’s a quick plan you can follow:',
       })
 
-      //  save to Supabase (non-blocking)
-      supabase.from('user_prompts').insert({
-        goal: text,
-        decision_summary: p?.decision?.summary ?? null,
-        email: (await supabase.auth.getUser()).data.user?.email ?? null,
-      }).then(({ error }) => {
-        if (error) console.error('Save prompt failed:', error.message)
-      })
+      // ---------- SAVE TO SUPABASE ----------
+      try {
+        const { getSupabase } = await import('@/lib/supabase')
+        const sb = getSupabase()
+        if (sb) {
+          sb.from('user_prompts')
+            .insert({
+              goal: text,
+              decision_summary: p?.decision?.summary ?? null,
+              email: (await sb.auth.getUser()).data.user?.email ?? null,
+            })
+            .then(({ error }) => {
+              if (error) console.error('Save prompt failed:', error.message)
+            })
+        }
+      } catch (saveErr) {
+        console.warn('Supabase save skipped:', saveErr)
+      }
 
-      // 2️⃣ RECOMMEND - progressive
-      const r = await apiRecommend(text, p.plan, { optimize: 'balanced' }, { signal: controller.signal })
-      const list = (r.recommendations || []) as Recommendation[]
-
-      for (const item of list) {
-        setRecs((prev: Recommendation[]) => [...prev, item])
+      // ---------- RECOMMEND STAGE ----------
+      try {
+        const r = await apiRecommend(text, p.plan, { optimize: 'balanced' }, { signal: controller.signal })
+        const list = (r.recommendations || []) as Recommendation[]
+        let chatter = 0
+        for (const item of list) {
+          setRecs(prev => [...prev, item])
+          if (chatter < 2) {
+            addMsg({
+              id: crypto.randomUUID(),
+              role: 'assistant',
+              text: `You could also try **${item.title}** — ${item.why}`
+            })
+            chatter++
+          }
+          await new Promise(res => setTimeout(res, 160))
+        }
+      } catch (recErr) {
         addMsg({
           id: crypto.randomUUID(),
           role: 'assistant',
-          text: `I’d also consider **${item.title}** — ${item.why}`
+          text: 'I drafted the plan, but tool suggestions are temporarily unavailable.',
         })
-        await new Promise(res => setTimeout(res, 200))
+        console.error('recommend error', recErr)
       }
-    } catch (e: any) {
+
+    } catch (planErr) {
       useChat.getState().updateMsg(thinkingId, {
-        text: 'Hmm… something went wrong. Try rephrasing your request and I’ll rethink it.'
+        text: 'Hmm… something went wrong while planning. Try rephrasing and I’ll rethink it.',
       })
-      console.error('onSend error', e)
+      console.error('plan error', planErr)
     } finally {
       setLoading(false)
       setController(undefined)
@@ -154,7 +177,9 @@ export default function Page() {
         {/* 🕓 History list (live updates + re-run) */}
         <HistoryList onRerun={(goal) => onSend(goal)} />
 
-        <button className="btn w-full" onClick={() => reset()}>Reset</button>
+        <button className="btn w-full" onClick={() => reset()}>
+          Reset
+        </button>
 
         <div className="text-xs text-muted">
           API: {process.env.NEXT_PUBLIC_CORE_API_BASE || 'not set'}
