@@ -160,17 +160,30 @@ export default function Page() {
             </div>
           )}
         </div>
-        {/* 🕓 History list */}
-          <HistoryList onRerun={(goal) => onSend(goal)} />
-        
-        <button className="btn w-full" onClick={() => reset()}>
-          Reset
-        </button>
+       <div className="space-y-4">
+  {loading && plan.length === 0 ? <Skeleton className="h-48" /> : <PlanPanel plan={plan} />}
 
-        <div className="text-xs text-muted">
-          API: {process.env.NEXT_PUBLIC_CORE_API_BASE || 'not set'}
-        </div>
+  <div className="card p-4">
+    <div className="font-semibold mb-2">Estimates</div>
+    {decision?.estimates ? (
+      <div className="text-sm">
+        <div>Cost: ₹ {Math.round(decision.estimates.costINR)}</div>
+        <div>ETA: {decision.estimates.minutes} minutes</div>
+        <div>Steps: {decision.estimates.steps}</div>
       </div>
+    ) : (
+      <div className="text-muted text-sm">
+        {firstRun ? 'Run a goal to see estimates.' : 'No estimates yet.'}
+      </div>
+    )}
+  </div>
+
+  {/* Pass onRerun here */}
+  <HistoryList onRerun={(goal) => onSend(goal)} />
+
+  <button className="btn w-full" onClick={() => reset()}>Reset</button>
+  <div className="text-xs text-muted">API: {process.env.NEXT_PUBLIC_CORE_API_BASE || 'not set'}</div>
+</div>
 
       {/* ⚙️ Runner modal */}
       <ToolRunner />
