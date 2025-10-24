@@ -160,7 +160,9 @@ export default function Page() {
             </div>
           )}
         </div>
-
+        {/* 🕓 History list */}
+          <HistoryList onRerun={(goal) => onSend(goal)} />
+        
         <button className="btn w-full" onClick={() => reset()}>
           Reset
         </button>
