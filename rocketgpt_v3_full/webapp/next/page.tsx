@@ -9,6 +9,8 @@ import PlanPanel from '@/components/PlanPanel'
 import Skeleton from '@/components/Skeleton'
 import ToolRunner from '@/components/ToolRunner'
 import { useState } from 'react'
+import { HistoryList } from '@/components/HistoryList'
+
 
 export default function Page() {
   const { messages, addMsg, plan, setPlan, decision, setDecision, recs, setRecs, loading, setLoading, reset, openRunner, setController } = useChat()
@@ -95,6 +97,8 @@ export default function Page() {
             </div>
           ) : <div className="text-muted text-sm">{firstRun ? 'Run a goal to see estimates.' : 'No estimates yet.'}</div>}
         </div>
+        <HistoryList />
+
         <button className="btn w-full" onClick={()=>reset()}>Reset</button>
         <div className="text-xs text-muted">API: {process.env.NEXT_PUBLIC_CORE_API_BASE || 'not set'}</div>
       </div>
