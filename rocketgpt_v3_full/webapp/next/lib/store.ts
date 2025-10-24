@@ -63,6 +63,7 @@ type State = {
 
   // actions
   addMsg: (m: Msg) => void
+  updateMsg: (id: string, patch: Partial<Msg>) => void
   setPlan: (p: Step[]) => void
   setDecision: (d: Decision | undefined) => void
   setRecs: (
@@ -91,6 +92,12 @@ export const useChat = create<State>((set) => ({
   controller: undefined,
 
   addMsg: (m) => set((s) => ({ messages: [...s.messages, m] })),
+
+  updateMsg: (id, patch) =>
+    set((s) => ({
+      messages: s.messages.map((m) => (m.id === id ? { ...m, ...patch } : m)),
+    })),
+
   setPlan: (p) => set({ plan: p }),
   setDecision: (d) => set({ decision: d }),
 
