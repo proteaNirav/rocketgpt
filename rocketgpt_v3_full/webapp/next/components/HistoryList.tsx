@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { getsupabase } from '@/lib/supabase'
 
 type PromptRow = {
   id: string
@@ -19,11 +19,11 @@ export function HistoryList({ onRerun }: { onRerun: (goal: string) => void }) {
     setLoading(true)
 
     // If you want per-user history when signed in, get the email:
-    const { data: u } = await supabase.auth.getUser()
+    const { data: u } = await getsupabase.auth.getUser()
     const email = u?.user?.email ?? null
     setUserEmail(email)
 
-    let q = supabase.from('user_prompts').select('*')
+    let q = getsupabase.from('user_prompts').select('*')
     if (email) q = q.eq('email', email)           // filter by user when logged in
     q = q.order('created_at', { ascending: false }).limit(50)
 
@@ -35,11 +35,11 @@ export function HistoryList({ onRerun }: { onRerun: (goal: string) => void }) {
   useEffect(() => {
     load()
     // realtime refresh on INSERT
-    const channel = supabase
+    const channel = getsupabase
       .channel('user_prompts_changes')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_prompts' }, () => load())
       .subscribe()
-    return () => { supabase.removeChannel(channel) }
+    return () => { getsupabase.removeChannel(channel) }
   }, [])
 
   return (
