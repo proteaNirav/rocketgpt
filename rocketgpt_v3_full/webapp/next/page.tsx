@@ -1,224 +1,97 @@
-'use client';
+'use client'
+import { useChat } from '@/lib/store'
+import { plan as apiPlan, recommend as apiRecommend } from '@/lib/api'
+import PromptBar from '@/components/PromptBar'
+import MessageBubble from '@/components/MessageBubble'
+import Toolcard from '@/components/Toolcard'
+import DecisionBanner from '@/components/DecisionBanner'
+import PlanPanel from '@/components/PlanPanel'
+import Skeleton from '@/components/Skeleton'
+import ToolRunner from '@/components/ToolRunner'
+import { useState } from 'react'
 
-import { useEffect, useMemo, useState } from 'react';
+export default function Page() {
+  const { messages, addMsg, plan, setPlan, decision, setDecision, recs, setRecs, loading, setLoading, reset, openRunner } = useChat()
+  const [firstRun, setFirstRun] = useState(true)
+  const [lastGoal, setLastGoal] = useState('')
 
-type Mode = '/fast' | '/deep' | '/organize' | '/creative' | '/live';
-type Persona = 'beginner' | 'professional' | 'expert';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
-
-function useHealth(base: string) {
-  const [status, setStatus] = useState<'checking' | 'ok' | 'down'>('checking');
-  const [detail, setDetail] = useState<string>('');
-
-  const check = async () => {
+  async function onSend(text: string) {
+    setLoading(true)
     try {
-      const r = await fetch(`${base}/health`, { cache: 'no-store' });
-      if (r.ok) {
-        setStatus('ok');
-        setDetail('');
-      } else {
-        setStatus('down');
-        setDetail(`HTTP ${r.status}`);
-      }
+      setFirstRun(false)
+      setLastGoal(text)
+      addMsg({ id: crypto.randomUUID(), role: 'user', text })
+      const p = await apiPlan(text, { preferences: ['free tools only'] })
+      setPlan(p.plan || [])
+      setDecision(p.decision)
+      const r = await apiRecommend(text, p.plan, { optimize: 'balanced' })
+      setRecs(r.recommendations || [])
+      addMsg({ id: crypto.randomUUID(), role: 'assistant', text: p.decision?.summary || 'Drafted a plan.' })
     } catch (e: any) {
-      setStatus('down');
-      setDetail(e?.message ?? 'Network error');
-    }
-  };
-
-  useEffect(() => {
-    if (!base) { setStatus('down'); setDetail('API base not set'); return; }
-    check();
-    const id = setInterval(check, 15000);
-    return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [base]);
-
-  return { status, detail, refresh: check };
-}
-
-export default function HomePage() {
-  const [task, setTask] = useState<string>('Draft a 3-step GTM plan for a freemium AI tool');
-  const [mode, setMode] = useState<Mode>('/organize');
-  const [persona, setPersona] = useState<Persona>('professional');
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState<string>('');
-
-  const { status, detail, refresh } = useHealth(API_BASE);
-
-  const badge = useMemo(() => {
-    if (status === 'checking') return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    if (status === 'ok') return 'bg-green-100 text-green-800 border-green-200';
-    return 'bg-red-100 text-red-800 border-red-200';
-  }, [status]);
-
-  const callPlanAndGenerate = async () => {
-    setLoading(true);
-    setError('');
-    setResult(null);
-    try {
-      const r = await fetch(`${API_BASE}/plan-and-generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ task, mode, persona, org_prefs: [] }),
-      });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data?.detail || 'Request failed');
-      setResult(data);
-    } catch (e: any) {
-      setError(e?.message || 'Network error');
+      addMsg({ id: crypto.randomUUID(), role: 'assistant', text: 'Error: ' + e.message })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
-  const openInNew = (path: string) => {
-    window.open(`${API_BASE}${path}`, '_blank', 'noopener,noreferrer');
-  };
+  }
 
   return (
-    <main className="min-h-screen bg-gray-50 text-gray-900">
-      <header className="border-b bg-white">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-2xl bg-black text-white grid place-items-center font-bold">R</div>
-            <div>
-              <h1 className="text-xl font-semibold leading-tight">RocketGPT Console</h1>
-              <p className="text-xs text-gray-500">AI Orchestrator · v3.0</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className={`px-3 py-1 text-xs border rounded-full ${badge}`}>
-              {status === 'checking' ? 'Checking…' : status === 'ok' ? 'API: OK' : 'API: Down'}
-            </span>
-            <button
-              onClick={refresh}
-              className="text-xs px-3 py-1 rounded-md border bg-white hover:bg-gray-50"
-            >
-              Recheck
-            </button>
-          </div>
+    <div className="container py-6 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+      {/* Left: Chat Stream */}
+      <div className="space-y-4">
+        <PromptBar onSend={onSend} loading={loading} />
+
+        <div className="space-y-3">
+          {messages.map(m => <MessageBubble key={m.id} role={m.role} text={m.text} />)}
+          {loading && messages.filter(m=>m.role==='assistant').length===0 ? (
+            <MessageBubble role="assistant" typing text="" />
+          ) : null}
         </div>
-      </header>
 
-      <section className="max-w-5xl mx-auto px-4 py-6">
-        <div className="grid md:grid-cols-3 gap-4">
-          <div className="md:col-span-2 space-y-4">
-            <div className="bg-white rounded-2xl p-4 border shadow-sm">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Task</label>
-              <textarea
-                className="w-full border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-black/20"
-                rows={4}
-                value={task}
-                onChange={(e) => setTask(e.target.value)}
-                placeholder="Describe what you want to achieve…"
-              />
-              <div className="mt-4 grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs text-gray-600 mb-1">Mode</label>
-                  <select
-                    className="w-full border rounded-lg p-2 text-sm"
-                    value={mode}
-                    onChange={(e) => setMode(e.target.value as Mode)}
-                  >
-                    <option value="/fast">/fast</option>
-                    <option value="/deep">/deep</option>
-                    <option value="/organize">/organize</option>
-                    <option value="/creative">/creative</option>
-                    <option value="/live">/live</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-600 mb-1">Persona</label>
-                  <select
-                    className="w-full border rounded-lg p-2 text-sm"
-                    value={persona}
-                    onChange={(e) => setPersona(e.target.value as Persona)}
-                  >
-                    <option value="beginner">beginner</option>
-                    <option value="professional">professional</option>
-                    <option value="expert">expert</option>
-                  </select>
-                </div>
-                <div className="flex items-end">
-                  <button
-                    onClick={callPlanAndGenerate}
-                    disabled={loading || status !== 'ok'}
-                    className="w-full py-2 rounded-lg bg-black text-white text-sm hover:bg-black/90 disabled:opacity-50"
-                  >
-                    {loading ? 'Running…' : 'Plan & Generate'}
-                  </button>
-                </div>
-              </div>
-              {error && (
-                <div className="mt-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
-                  {error}
-                </div>
-              )}
-            </div>
+        {loading && !decision ? (
+          <Skeleton className="h-16" />
+        ) : decision ? (
+          <DecisionBanner summary={decision.summary} estimates={decision.estimates} />
+        ) : null}
 
-            <div className="bg-white rounded-2xl p-4 border shadow-sm">
-              <h2 className="text-sm font-semibold mb-2">Result</h2>
-              {!result && <p className="text-sm text-gray-500">Run a task to see the output here.</p>}
-              {result && (
-                <pre className="text-xs whitespace-pre-wrap bg-gray-50 border rounded-lg p-3 overflow-x-auto">
-{JSON.stringify(result, null, 2)}
-                </pre>
-              )}
-            </div>
-          </div>
-
-          <aside className="space-y-4">
-            <div className="bg-white rounded-2xl p-4 border shadow-sm">
-              <h3 className="text-sm font-semibold mb-2">Utilities</h3>
-              <div className="grid grid-cols-1 gap-2">
-                <button
-                  onClick={() => openInNew('/health')}
-                  className="w-full py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm"
-                >
-                  Health
-                </button>
-                <button
-                  onClick={() => openInNew('/metrics')}
-                  className="w-full py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm"
-                >
-                  Metrics
-                </button>
-                <button
-                  onClick={() => openInNew('/system-prompt')}
-                  className="w-full py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm"
-                >
-                  System Prompt
-                </button>
-                <button
-                  onClick={() => window.open('https://rocketgpt.dev', '_blank')}
-                  className="w-full py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm"
-                >
-                  Landing
-                </button>
-              </div>
-              <p className="mt-3 text-[11px] text-gray-500">
-                API Base: <code className="text-gray-700">{API_BASE || 'NOT SET'}</code>
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-4 border shadow-sm">
-              <h3 className="text-sm font-semibold mb-2">About</h3>
-              <p className="text-sm text-gray-600">
-                RocketGPT orchestrates the best AI tools for your goal using modes, persona, and an internal ToolBase.
-              </p>
-            </div>
-          </aside>
+        {/* Recommendations */}
+        <div className="space-y-3">
+          {loading && recs.length===0 ? (
+            <>
+              <Skeleton className="h-28" />
+              <Skeleton className="h-28" />
+            </>
+          ) : recs.map((r:any)=>(
+            <Toolcard
+              key={r.toolId}
+              title={`${r.title}`}
+              why={r.why}
+              pricing={r?.badges?.pricing || 'free'}
+              estimates={r.estimates}
+              onRun={() => openRunner({ toolId: r.toolId, goal: lastGoal, plan })}
+            />
+          ))}
         </div>
-      </section>
+      </div>
 
-      <footer className="py-6 border-t bg-white">
-        <div className="max-w-5xl mx-auto px-4 text-xs text-gray-500">
-          © {new Date().getFullYear()} RocketGPT · v3.0
+      {/* Right: Assist Panel */}
+      <div className="space-y-4">
+        {loading && plan.length===0 ? <Skeleton className="h-48" /> : <PlanPanel plan={plan} />}
+        <div className="card p-4">
+          <div className="font-semibold mb-2">Estimates</div>
+          {decision?.estimates ? (
+            <div className="text-sm">
+              <div>Cost: ₹ {Math.round(decision.estimates.costINR)}</div>
+              <div>ETA: {decision.estimates.minutes} minutes</div>
+              <div>Steps: {decision.estimates.steps}</div>
+            </div>
+          ): <div className="text-muted text-sm">{firstRun ? 'Run a goal to see estimates.' : 'No estimates yet.'}</div>}
         </div>
-      </footer>
-    </main>
-  );
+        <button className="btn w-full" onClick={()=>reset()}>Reset</button>
+        <div className="text-xs text-muted">API: {process.env.NEXT_PUBLIC_CORE_API_BASE || 'not set'}</div>
+      </div>
+
+      {/* Runner modal lives at root so it can be opened from anywhere */}
+      <ToolRunner />
+    </div>
+  )
 }
