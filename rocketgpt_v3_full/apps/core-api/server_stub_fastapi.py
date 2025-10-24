@@ -3,12 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 
+# ---- App + CORS -------------------------------------------------------------
+
 app = FastAPI(title="RocketGPT Core API", version="1.0.0")
 
-# Allow your UI origins (add both prod URLs + localhost for dev)
 ALLOWED_ORIGINS = [
     "https://rocketgpt-git-main-nirav-shahs-projects-9c841707.vercel.app",
-    "https://rocketgpt-ui.onrender.com",  # if you deploy UI on Render too
+    "https://rocketgpt-ui.onrender.com",
     "http://localhost:3000",
 ]
 
@@ -20,7 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- Health & root ---
+# ---- Health -----------------------------------------------------------------
+
 @app.get("/")
 def root():
     return {"ok": True, "service": "rocketgpt-core-api", "docs": "/docs"}
@@ -29,7 +31,8 @@ def root():
 def health():
     return {"status": "healthy"}
 
-# --- Schema models ---
+# ---- Schemas ----------------------------------------------------------------
+
 class Attachment(BaseModel):
     type: str
     name: Optional[str] = None
@@ -98,14 +101,16 @@ class EstimateResponse(BaseModel):
     estimates: Estimates
     breakdown: Optional[List[Dict[str, Any]]] = None
 
-# --- Endpoints ---
+# ---- Endpoints --------------------------------------------------------------
+
 @app.post("/plan", response_model=PlanResponse)
 def plan(req: PlanRequest):
-    g = (req.goal or "").lower()
+    g = (req.goal or "").lower().strip()
 
-    if any(k in g for k in ["brochure", "flyer", "poster"]):
+    # 1) Brochure / Print design
+    if any(k in g for k in ["brochure", "flyer", "poster", "pamphlet"]):
         plan_steps = [
-            Step(id="step1", title="Pick a brochure template", detail="Use Canva A4"),
+            Step(id="step1", title="Pick a brochure template", detail="Use Canva (A4)"),
             Step(id="step2", title="Replace content", detail="Logo, tagline, bullets, CTA"),
             Step(id="step3", title="Export PDF", detail="A4, high quality"),
         ]
@@ -115,7 +120,8 @@ def plan(req: PlanRequest):
             estimates=Estimates(costINR=0, minutes=10, steps=3, confidence=0.82),
         )
 
-    elif any(k in g for k in ["presentation", "deck", "slides"]):
+    # 2) Presentation / Slides
+    elif any(k in g for k in ["presentation", "deck", "slides", "pitch deck"]):
         plan_steps = [
             Step(id="step1", title="Choose a slides template", detail="Google Slides or Canva"),
             Step(id="step2", title="Outline 5–7 slides", detail="Title, Problem, Solution, CTA"),
@@ -127,6 +133,20 @@ def plan(req: PlanRequest):
             estimates=Estimates(costINR=0, minutes=12, steps=3, confidence=0.80),
         )
 
+    # 3) Wiki / Documentation
+    elif any(k in g for k in ["wiki", "documentation", "knowledge base", "gitbook", "confluence", "docs site"]):
+        plan_steps = [
+            Step(id="step1", title="Pick a wiki tool", detail="Notion, GitBook, GitHub Wiki, or Confluence"),
+            Step(id="step2", title="Create structure", detail="Home page + sections (About, Setup, FAQ)"),
+            Step(id="step3", title="Draft & publish", detail="Add content, share link/permissions"),
+        ]
+        decision = Decision(
+            summary="Use Notion or GitBook for a quick, shareable wiki.",
+            toolId="notion",
+            estimates=Estimates(costINR=0, minutes=8, steps=3, confidence=0.85),
+        )
+
+    # Default generic plan
     else:
         plan_steps = [
             Step(id="step1", title="Clarify outcome", detail="Define deliverable + success metric"),
@@ -141,11 +161,13 @@ def plan(req: PlanRequest):
 
     return PlanResponse(plan=plan_steps, decision=decision)
 
+
 @app.post("/recommend", response_model=RecommendResponse)
 def recommend(req: RecommendRequest):
-    g = (req.goal or "").lower()
+    g = (req.goal or "").lower().strip()
 
-    if any(k in g for k in ["brochure", "flyer", "poster"]):
+    # 1) Brochure / Print design
+    if any(k in g for k in ["brochure", "flyer", "poster", "pamphlet"]):
         recs = [
             Recommendation(
                 toolId="canva",
@@ -163,7 +185,8 @@ def recommend(req: RecommendRequest):
             ),
         ]
 
-    elif any(k in g for k in ["presentation", "deck", "slides"]):
+    # 2) Presentation / Slides
+    elif any(k in g for k in ["presentation", "deck", "slides", "pitch deck"]):
         recs = [
             Recommendation(
                 toolId="google_docs",
@@ -181,6 +204,33 @@ def recommend(req: RecommendRequest):
             ),
         ]
 
+    # 3) Wiki / Documentation
+    elif any(k in g for k in ["wiki", "documentation", "knowledge base", "gitbook", "confluence", "docs site"]):
+        recs = [
+            Recommendation(
+                toolId="notion",
+                title="Notion (free)",
+                why="Fast, flexible wiki with easy sharing",
+                estimates=Estimates(costINR=0, minutes=8, steps=3),
+                badges={"pricing": "freemium", "reliability": 0.95},
+            ),
+            Recommendation(
+                toolId="gitbook",
+                title="GitBook (free tier)",
+                why="Great docs UX + public link",
+                estimates=Estimates(costINR=0, minutes=10, steps=3),
+                badges={"pricing": "freemium", "reliability": 0.90},
+            ),
+            Recommendation(
+                toolId="github_wiki",
+                title="GitHub Wiki (free)",
+                why="Ideal if your code is already on GitHub",
+                estimates=Estimates(costINR=0, minutes=10, steps=3),
+                badges={"pricing": "free", "reliability": 0.90},
+            ),
+        ]
+
+    # Default generic suggestions
     else:
         recs = [
             Recommendation(
@@ -201,6 +251,7 @@ def recommend(req: RecommendRequest):
         ),
         recommendations=recs,
     )
+
 
 @app.post("/estimate", response_model=EstimateResponse)
 def estimate(req: EstimateRequest):
