@@ -12,6 +12,7 @@ import DecisionBanner from '@/components/DecisionBanner'
 import PlanPanel from '@/components/PlanPanel'
 import Skeleton from '@/components/Skeleton'
 import ToolRunner from '@/components/ToolRunner'
+import { supabase } from '@/lib/supabase'
 
 export default function Page() {
   const {
@@ -54,6 +55,10 @@ export default function Page() {
         id: crypto.randomUUID(),
         role: 'assistant',
         text: p.decision?.summary || 'Drafted a plan.',
+      await supabase.from('user_prompts').insert({
+        goal: text,
+        decision_summary: p?.decision?.summary ?? null,
+        email: (await supabase.auth.getUser()).data.user?.email ?? null
       })
 
       // 2️⃣  Get RECOMMENDATIONS one by one
