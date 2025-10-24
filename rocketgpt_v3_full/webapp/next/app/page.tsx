@@ -1,5 +1,6 @@
 'use client'
 import { useChat } from '@/lib/store'
+import type { Recommendation } from '@/lib/store';
 import { plan as apiPlan, recommend as apiRecommend } from '@/lib/api'
 import PromptBar from '@/components/PromptBar'
 import MessageBubble from '@/components/MessageBubble'
@@ -22,7 +23,7 @@ export default function Page() {
       setPlan(p.plan || [])
       setDecision(p.decision)
       const r = await apiRecommend(text, p.plan, { optimize: 'balanced' })
-      setRecs(r.recommendations || [])
+      setRecs((prev: Recommendation[]) => [...prev, item])
       addMsg({ id: crypto.randomUUID(), role: 'assistant', text: p.decision?.summary || 'Drafted a plan.' })
     } catch (e: any) {
       addMsg({ id: crypto.randomUUID(), role: 'assistant', text: 'Error: ' + e.message })
