@@ -1,66 +1,83 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { getsupabase } from '@/lib/supabase'
 
-type PromptRow = {
-  id: string
+import { useEffect, useState } from 'react'
+import { getSupabase } from '@/lib/supabase'
+
+interface HistoryItem {
+  id?: string
   goal: string
-  created_at: string
-  decision_summary?: string | null
-  email?: string | null
+  created_at?: string
 }
 
 export function HistoryList({ onRerun }: { onRerun: (goal: string) => void }) {
-  const [rows, setRows] = useState<PromptRow[]>([])
-  const [loading, setLoading] = useState(true)
-  const [userEmail, setUserEmail] = useState<string | null>(null)
-
-  async function load() {
-    setLoading(true)
-
-    // If you want per-user history when signed in, get the email:
-    const { data: u } = await getsupabase.auth.getUser()
-    const email = u?.user?.email ?? null
-    setUserEmail(email)
-
-    let q = getsupabase.from('user_prompts').select('*')
-    if (email) q = q.eq('email', email)           // filter by user when logged in
-    q = q.order('created_at', { ascending: false }).limit(50)
-
-    const { data, error } = await q
-    if (!error && data) setRows(data as PromptRow[])
-    setLoading(false)
-  }
+  const [items, setItems] = useState<HistoryItem[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    load()
-    // realtime refresh on INSERT
-    const channel = getsupabase
-      .channel('user_prompts_changes')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_prompts' }, () => load())
-      .subscribe()
-    return () => { getsupabase.removeChannel(channel) }
+    const fetchHistory = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const sb = getSupabase()
+        if (!sb) throw new Error('Supabase not configured.')
+        const { data, error } = await sb
+          .from('user_prompts')
+          .select('id, goal, created_at')
+          .order('created_at', { ascending: false })
+          .limit(10)
+        if (error) throw error
+        setItems(data || [])
+      } catch (err: any) {
+        console.warn('⚠️ History fetch failed:', err.message)
+        setError('Could not load your history.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchHistory()
   }, [])
 
   return (
     <div className="card p-4">
-      <div className="font-semibold mb-2">Recent Prompts {userEmail ? `(you)` : ''}</div>
+      <div className="font-semibold mb-2 flex justify-between items-center">
+        <span>Recent Prompts</span>
+        {loading && <span className="text-xs text-muted">Loading…</span>}
+      </div>
 
-      {loading ? (
-        <div className="text-sm text-muted">Loading…</div>
-      ) : rows.length === 0 ? (
-        <div className="text-sm text-muted">No prompts yet.</div>
+      {error && (
+        <div className="text-sm text-red-500 mb-2">
+          {error}
+        </div>
+      )}
+
+      {items.length === 0 && !loading ? (
+        <div className="text-sm text-muted">No recent prompts yet.</div>
       ) : (
-        <ul className="text-sm max-h-[300px] overflow-y-auto space-y-2">
-          {rows.map((r) => (
-            <li key={r.id} className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="truncate">• {r.goal}</div>
-                <div className="text-xs text-muted">
-                  {new Date(r.created_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}
-                </div>
-              </div>
-              <button className="btn px-3 py-1 text-xs shrink-0" onClick={() => onRerun(r.goal)}>
+        <ul className="space-y-1 max-h-64 overflow-y-auto">
+          {items.map((it) => (
+            <li
+              key={it.id}
+              className="flex justify-between items-center p-2 rounded-md hover:bg-panel cursor-pointer transition"
+              onClick={() => onRerun(it.goal)}
+              title={it.goal}
+            >
+              <span className="truncate text-sm">• {it.goal}</span>
+              {it.created_at && (
+                <span className="text-xs text-muted">
+                  {new Date(it.created_at).toLocaleTimeString('en-IN', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+              )}
+              <button
+                className="btn-xs ml-2"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onRerun(it.goal)
+                }}
+              >
                 Re-run
               </button>
             </li>
