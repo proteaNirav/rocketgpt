@@ -11,6 +11,7 @@ import ToolRunner from '@/components/ToolRunner'
 import { useState } from 'react'
 import { HistoryList } from '@/components/HistoryList'
 
+export const dynamic = 'force-dynamic';
 
 export default function Page() {
   const { messages, addMsg, plan, setPlan, decision, setDecision, recs, setRecs, loading, setLoading, reset, openRunner, setController } = useChat()
