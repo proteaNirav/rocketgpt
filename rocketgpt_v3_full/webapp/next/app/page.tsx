@@ -6,17 +6,18 @@ import MessageBubble from '@/components/MessageBubble'
 import Toolcard from '@/components/Toolcard'
 import DecisionBanner from '@/components/DecisionBanner'
 import PlanPanel from '@/components/PlanPanel'
+import Skeleton from '@/components/Skeleton'
 import { useState } from 'react'
 
 export default function Page() {
   const { messages, addMsg, plan, setPlan, decision, setDecision, recs, setRecs, loading, setLoading, reset } = useChat()
-  const [lastGoal, setLastGoal] = useState<string>('')
+  const [firstRun, setFirstRun] = useState(true)
 
   async function onSend(text: string) {
     setLoading(true)
     try {
+      setFirstRun(false)
       addMsg({ id: crypto.randomUUID(), role: 'user', text })
-      setLastGoal(text)
       const p = await apiPlan(text, { preferences: ['free tools only'] })
       setPlan(p.plan || [])
       setDecision(p.decision)
@@ -35,15 +36,28 @@ export default function Page() {
       {/* Left: Chat Stream */}
       <div className="space-y-4">
         <PromptBar onSend={onSend} loading={loading} />
+
         <div className="space-y-3">
           {messages.map(m => <MessageBubble key={m.id} role={m.role} text={m.text} />)}
+          {loading && messages.filter(m=>m.role==='assistant').length===0 ? (
+            <MessageBubble role="assistant" typing text="" />
+          ) : null}
         </div>
 
-        {decision ? <DecisionBanner summary={decision.summary} estimates={decision.estimates} /> : null}
+        {loading && !decision ? (
+          <Skeleton className="h-16" />
+        ) : decision ? (
+          <DecisionBanner summary={decision.summary} estimates={decision.estimates} />
+        ) : null}
 
         {/* Recommendations */}
         <div className="space-y-3">
-          {recs.map((r:any)=>(
+          {loading && recs.length===0 ? (
+            <>
+              <Skeleton className="h-28" />
+              <Skeleton className="h-28" />
+            </>
+          ) : recs.map((r:any)=>(
             <Toolcard
               key={r.toolId}
               title={`${r.title}`}
@@ -57,7 +71,7 @@ export default function Page() {
 
       {/* Right: Assist Panel */}
       <div className="space-y-4">
-        <PlanPanel plan={plan} />
+        {loading && plan.length===0 ? <Skeleton className="h-48" /> : <PlanPanel plan={plan} />}
         <div className="card p-4">
           <div className="font-semibold mb-2">Estimates</div>
           {decision?.estimates ? (
@@ -66,7 +80,7 @@ export default function Page() {
               <div>ETA: {decision.estimates.minutes} minutes</div>
               <div>Steps: {decision.estimates.steps}</div>
             </div>
-          ): <div className="text-muted text-sm">Run a goal to see estimates.</div>}
+          ): <div className="text-muted text-sm">{firstRun ? 'Run a goal to see estimates.' : 'No estimates yet.'}</div>}
         </div>
         <button className="btn w-full" onClick={()=>reset()}>Reset</button>
         <div className="text-xs text-muted">API: {process.env.NEXT_PUBLIC_CORE_API_BASE || 'not set'}</div>
