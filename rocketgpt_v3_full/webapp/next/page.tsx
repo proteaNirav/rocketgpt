@@ -97,7 +97,7 @@ export default function Page() {
             </div>
           ) : <div className="text-muted text-sm">{firstRun ? 'Run a goal to see estimates.' : 'No estimates yet.'}</div>}
         </div>
-        <HistoryList />
+        <HistoryList onRerun={(goal) => onSend(goal)} />
 
         <button className="btn w-full" onClick={()=>reset()}>Reset</button>
         <div className="text-xs text-muted">API: {process.env.NEXT_PUBLIC_CORE_API_BASE || 'not set'}</div>
