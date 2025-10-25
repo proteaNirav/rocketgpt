@@ -1,0 +1,8 @@
+{
+  "name": "brochure smoke",
+  "goal": "design a brochure for a bakery",
+  "expect": {
+    "decisionContains": ["brochure", "canva"],
+    "toolsIncludeAny": ["canva", "gimp"]
+  }
+}
