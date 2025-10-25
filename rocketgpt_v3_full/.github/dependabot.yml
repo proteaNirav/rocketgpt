@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/webapp/next"
+    schedule: { interval: "daily" }
+    open-pull-requests-limit: 5
+    labels: ["dependencies"]
+  - package-ecosystem: "pip"
+    directory: "/apps/core-api"
+    schedule: { interval: "weekly" }
+    open-pull-requests-limit: 3
+    labels: ["dependencies"]
