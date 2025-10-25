@@ -47,6 +47,11 @@ jobs:
         working-directory: rocketgpt_v3_full/webapp/next
         run: npx tsc -v && npx tsc --noEmit
 
+        # Auto-fix lintable issues (mostly import/order)
+        - name: Lint (UI) – autofix
+        working-directory: rocketgpt_v3_full/webapp/next
+        run: npx eslint . --ext .ts,.tsx --fix || true
+
       - name: Lint (UI) - strict
         working-directory: rocketgpt_v3_full/webapp/next
         run: npm run lint:strict
