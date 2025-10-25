@@ -19,25 +19,29 @@ export default function ToolRunner() {
     }
   }, [runnerOpen, selectedTool])
 
+  // Runtime guard: if closed or no tool, render nothing
   if (!runnerOpen || !selectedTool) return null
 
-  async function handleRun() {
-    // Always coalesce to string to satisfy TS
-    setStatus(('running' as string) ?? '')
-    setOutput(('' as string) ?? '')
+  // TS narrowing: from here on, `tool` is definitely non-null
+  const tool = selectedTool as NonNullable<typeof selectedTool>
 
-    // You can wire this to your real API later; for now it’s a safe stub
+  async function handleRun() {
+    setStatus('running')
+    setOutput('')
+
     try {
-      // Simulate work
+      // Simulate real execution; replace with your API call if needed
       await new Promise((r) => setTimeout(r, 600))
+
       const msg =
-        `Executed tool "${selectedTool.toolId}" for goal ` +
-        `"${selectedTool.goal}". Steps: ${selectedTool.plan?.length ?? 0}.`
-      setStatus(('done' as string) ?? '')
-      setOutput((msg as string) ?? '')
+        `Executed tool "${tool.toolId}" for goal ` +
+        `"${tool.goal}". Steps: ${tool.plan?.length ?? 0}.`
+
+      setStatus('done')
+      setOutput(msg)
     } catch (e: any) {
-      setStatus(('failed' as string) ?? '')
-      setOutput((e?.message ?? 'Unknown error') as string)
+      setStatus('failed')
+      setOutput(e?.message ?? 'Unknown error')
     }
   }
 
@@ -45,16 +49,16 @@ export default function ToolRunner() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="card p-5 w-[min(640px,94vw)] space-y-3">
         <div className="flex items-center justify-between">
-          <div className="font-semibold text-lg">Run: {selectedTool.toolId}</div>
+          <div className="font-semibold text-lg">Run: {tool.toolId}</div>
           <button className="text-sm text-muted" onClick={closeRunner}>Close</button>
         </div>
 
         <div className="text-sm">
           <div className="mb-1">
-            <span className="font-medium">Goal:</span> {selectedTool.goal}
+            <span className="font-medium">Goal:</span> {tool.goal}
           </div>
           <div>
-            <span className="font-medium">Steps:</span> {selectedTool.plan?.length ?? 0}
+            <span className="font-medium">Steps:</span> {tool.plan?.length ?? 0}
           </div>
         </div>
 
