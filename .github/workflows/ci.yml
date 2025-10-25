@@ -47,9 +47,9 @@ jobs:
         working-directory: rocketgpt_v3_full/webapp/next
         run: npx tsc -v && npx tsc --noEmit
 
-      - name: Lint (UI) - non blocking
+      - name: Lint (UI) - strict
         working-directory: rocketgpt_v3_full/webapp/next
-        run: npx next lint || true
+        run: npm run lint:strict
 
       - name: Build (UI)
         working-directory: rocketgpt_v3_full/webapp/next
