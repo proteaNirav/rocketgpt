@@ -58,7 +58,7 @@ export default function Page() {
 
       // ---------- SAVE TO SUPABASE ----------
       try {
-        const { getSupabase } = await import('@/lib/supabase')
+        const { getSupabase } = await import('@/lib/supabaseClient')
         const sb = getSupabase()
         if (sb) {
           sb.from('user_prompts')
