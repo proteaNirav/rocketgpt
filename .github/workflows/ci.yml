@@ -8,13 +8,13 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     env:
-      # Change this if your Render Core API URL differs:
       CORE_API_BASE: https://rocketgpt-core-api.onrender.com
       NODE_OPTIONS: --max_old_space_size=4096
 
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
 
       # --- Debug: confirm paths/lockfile are where we expect ---
       - name: Show tree (top level + UI folder)
@@ -39,6 +39,10 @@ jobs:
           node-version: '20'
 
       # --- UI: install, typecheck, lint, build ---
+      - name: Validate package.json (UI)
+        working-directory: rocketgpt_v3_full/webapp/next
+        run: node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('package.json OK')"
+
       - name: Install UI deps
         working-directory: rocketgpt_v3_full/webapp/next
         run: npm ci || npm i
@@ -47,14 +51,14 @@ jobs:
         working-directory: rocketgpt_v3_full/webapp/next
         run: npx tsc -v && npx tsc --noEmit
 
-        # Auto-fix lintable issues (mostly import/order)
-        - name: Lint (UI) – autofix
+      # Auto-fix lintable issues (mostly import/order)
+      - name: Lint (UI) - autofix
         working-directory: rocketgpt_v3_full/webapp/next
         run: npx eslint . --ext .ts,.tsx --fix || true
 
       - name: Lint (UI) - strict
         working-directory: rocketgpt_v3_full/webapp/next
-        run: npm run lint:strict
+        run: npx eslint . --ext .ts,.tsx --max-warnings=0
 
       - name: Build (UI)
         working-directory: rocketgpt_v3_full/webapp/next
@@ -76,7 +80,6 @@ jobs:
         run: ruff format rocketgpt_v3_full/apps/core-api || true
 
       # --- QA smoke: run scenarios against live Core API ---
-      # Node 20 provides global fetch; runner is ES module (.mjs)
       - name: Run QA scenarios
         run: node qa/runner.mjs qa/scenarios/*.json | tee qa-report.json
 
