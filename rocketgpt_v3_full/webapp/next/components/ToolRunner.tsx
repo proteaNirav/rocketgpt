@@ -1,71 +1,89 @@
 'use client'
-import { useEffect, useMemo, useState } from 'react'
-import Modal from './Modal'
-import ProgressBar from './ProgressBar'
+
+import { useState } from 'react'
 import { useChat } from '@/lib/store'
-import { TOOL_CATALOG, buildToolUrl } from '@/lib/tools'
+import { estimate as apiEstimate } from '@/lib/api'
+
+function s(v: unknown): string {
+  // Safe stringifier to avoid TS2345 when values can be undefined/null
+  if (v === undefined || v === null) return ''
+  return typeof v === 'string' ? v : JSON.stringify(v)
+}
 
 export default function ToolRunner() {
   const { runnerOpen, selectedTool, closeRunner } = useChat()
-  const [progress, setProgress] = useState(0)
-  const [status, setStatus] = useState('Ready')
-  const meta = useMemo(() => selectedTool ? TOOL_CATALOG[selectedTool.toolId] : null, [selectedTool])
 
-  useEffect(() => {
-    if (!runnerOpen || !selectedTool || !meta) return
-    setProgress(0)
-    setStatus('Starting…')
+  // Keep these strictly strings
+  const [status, setStatus] = useState<string>('')
+  const [output, setOutput] = useState<string>('')
 
-    if (meta.runMode === 'redirect') {
-      const url = buildToolUrl(selectedTool.toolId, {
-        goal: selectedTool.goal,
-        plan: selectedTool.plan,
+  if (!runnerOpen || !selectedTool) return null
+
+  async function onRun() {
+    try {
+      setStatus('Running…')
+      setOutput('')
+
+      // Build a minimal estimate request from current selection
+      const resp = await apiEstimate({
+        path: {
+          toolId: selectedTool.toolId,
+          steps: selectedTool.plan || [],
+          template: undefined,
+          inputs: { goal: selectedTool.goal },
+        },
       })
-      setStatus('Opening tool in a new tab…')
-      const t = setTimeout(() => {
-        if (url) window.open(url, '_blank', 'noopener,noreferrer')
-        setProgress(100)
-        setStatus('Opened')
-      }, 800)
-      return () => clearTimeout(t)
-    }
 
-    if (meta.runMode === 'simulate') {
-      const steps = meta.steps || ['Preparing…', 'Working…', 'Finishing…']
-      let i = 0
-      setStatus(steps[0])
-      const interval = setInterval(() => {
-        i += 1
-        const pct = Math.round((i / (steps.length + 1)) * 100)
-        setProgress(Math.min(95, pct))
-        if (i < steps.length) {
-          setStatus(steps[i])
-        } else {
-          clearInterval(interval)
-          setProgress(100)
-          setStatus('Done')
-        }
-      }, 900)
-      return () => clearInterval(interval)
+      // Coalesce possibly-undefined fields to strings
+      setStatus('Done')
+      setOutput(
+        s({
+          estimates: resp?.estimates,
+          breakdown: resp?.breakdown,
+        })
+      )
+    } catch (err: any) {
+      setStatus('Error')
+      setOutput(s(err?.message || 'Failed to run tool'))
     }
-  }, [runnerOpen, selectedTool, meta])
+  }
 
   return (
-    <Modal open={runnerOpen} onClose={closeRunner} title={meta ? `Running: ${meta.title}` : 'Runner'}>
-      {!selectedTool || !meta ? (
-        <div className="text-muted">No tool selected.</div>
-      ) : (
-        <div className="space-y-4">
-          <div className="text-sm opacity-80">Goal: <span className="opacity-100">{selectedTool.goal}</span></div>
-          <ProgressBar value={progress} />
-          <div className="text-sm">{status}</div>
-          {meta.runMode === 'simulate' && meta.steps && (
-            <ul className="text-sm list-disc pl-5 space-y-1 opacity-80">
-              {meta.steps.map((s, idx) => <li key={idx}>{s}</li>)}
-            </ul>
-          )}
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+      <div className="card w-[min(720px,94vw)] p-5 space-y-4">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="font-semibold text-lg">
+              Run: {selectedTool.toolId}
+            </div>
+            <div className="text-sm text-muted truncate">
+              Goal: {selectedTool.goal}
+            </div>
+          </div>
+          <button className="btn" onClick={closeRunner}>Close</button>
         </div>
-      )}
-    </Modal>
+
+        <div className="bg-panel rounded-md p-3 text-sm">
+          <div className="font-medium mb-1">Plan steps</div>
+          <ol className="list-decimal ml-5 space-y-1">
+            {(selectedTool.plan || []).map((st) => (
+              <li key={st.id}>
+                <span className="font-medium">{st.title}</span>
+                {st.detail ? <span className="text-muted"> — {st.detail}</span> : null}
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="flex gap-2">
+          <button className="btn" onClick={onRun}>Run</button>
+          <span className="text-sm text-muted self-center">{status}</span>
+        </div>
+
+        <div className="bg-panel rounded-md p-3 text-sm whitespace-pre-wrap break-words min-h-[80px]">
+          {output || 'No output yet.'}
+        </div>
+      </div>
+    </div>
   )
 }
