@@ -1,7 +1,6 @@
 // services/selfApply.ts
 import type { PostgrestError } from "@supabase/supabase-js";
-import { getSupabase } from "@/lib/supabase"; // <-- your file from previous step
-// If your path is different (e.g., "@/lib/supabaseBrowser"), adjust the import.
+import { getSupabase } from "@/lib/supabase";
 
 export type QATaskRow = {
   kind: "lint" | "unit" | "e2e" | "static_analysis" | "security" | "manual_review";
@@ -11,7 +10,6 @@ export type QATaskRow = {
 
 type RpcRow = { kind: QATaskRow["kind"]; status: QATaskRow["status"]; updated_at: string };
 
-/** Pass Manual Review for a given jobId (RPC) */
 export async function passManualReview(jobId: string, actor = "superuser") {
   const sb = getSupabase();
   const { data, error } = await sb.rpc<RpcRow>("pass_manual_review", {
@@ -22,7 +20,6 @@ export async function passManualReview(jobId: string, actor = "superuser") {
   return data;
 }
 
-/** (Optional) Fetch the QA checklist for a job to refresh your UI */
 export async function getQaTasks(jobId: string) {
   const sb = getSupabase();
   const { data, error } = await sb
@@ -34,7 +31,6 @@ export async function getQaTasks(jobId: string) {
   return data as QATaskRow[];
 }
 
-/** (Optional) Fetch the job row for status chips */
 export async function getJob(jobId: string) {
   const sb = getSupabase();
   const { data, error } = await sb
