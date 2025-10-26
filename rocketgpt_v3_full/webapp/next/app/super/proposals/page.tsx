@@ -78,8 +78,7 @@ export default function SuperProposalsPage() {
       const patch: Partial<ProposalRow> = { status };
       // If approving, stamp approved_at (approved_by can be null in SQL editor context)
       if (status === "approved") {
-        // @ts-expect-error: approved_at exists in DB
-        (patch as any).approved_at = new Date().toISOString();
+          (patch as any).approved_at = new Date().toISOString();
       }
       const { error } = await sb
         .from("proposals")
