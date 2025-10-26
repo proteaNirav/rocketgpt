@@ -1,5 +1,6 @@
 'use client'
 
+import { ManualReviewButton } from "@/components/ManualReviewButton";
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { fetchProposals, isSuperuser, Proposal, updateProposal } from '@/lib/proposals'
