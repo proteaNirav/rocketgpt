@@ -1,5 +1,8 @@
 'use client'
 
+import { createSupabaseBrowserClient } from '@/lib/supabase/browser'
+import { useEffect, useState } from 'react'
+
 export const dynamic = 'force-dynamic';
 
 import { useState } from 'react'
@@ -28,6 +31,18 @@ export default function Page() {
 
   const [firstRun, setFirstRun] = useState(true)
   const [lastGoal, setLastGoal] = useState('')
+
+    // 👋 Welcome banner logic
+  const [userEmail, setUserEmail] = useState<string | null>(null)
+  const supabase = createSupabaseBrowserClient()
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      const email = data.user?.email ?? null
+      setUserEmail(email)
+    })
+  }, [])
+
 
   async function onSend(text: string) {
     setLoading(true)
@@ -114,6 +129,19 @@ export default function Page() {
 
   return (
     <div className="container py-6 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+            {/* 👋 Welcome banner */}
+      <div className="col-span-full rounded-md border bg-white p-4 mb-4">
+        {userEmail ? (
+          <div className="text-lg font-medium text-gray-800">
+            Welcome <span className="font-semibold text-black">{userEmail}</span> — to <b>RocketGPT</b>, your AI Orchestrator.
+          </div>
+        ) : (
+          <div className="text-lg font-medium text-gray-600">
+            Welcome to <b>RocketGPT</b> — please <a href="/login" className="underline">sign in</a> to unlock full features.
+          </div>
+        )}
+      </div>
+
       {/* 💬 Left: Conversation */}
       <div className="space-y-4">
         <PromptBar onSend={onSend} loading={loading} />
