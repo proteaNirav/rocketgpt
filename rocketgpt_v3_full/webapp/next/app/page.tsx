@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react'
 import { useChat } from '@/lib/store'
 import type { Recommendation } from '@/lib/store'
 import { plan as apiPlan, recommend as apiRecommend } from '@/lib/api'
