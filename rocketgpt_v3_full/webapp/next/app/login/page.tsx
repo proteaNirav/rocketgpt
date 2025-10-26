@@ -9,6 +9,11 @@ export default function LoginPage() {
   const [otpSent, setOtpSent] = useState(false)
   const [otp, setOtp] = useState('')
 
+    // ⬇️ NEW: force-create guest_id cookie + guest row
+  useEffect(() => {
+    fetch('/api/guest', { method: 'POST' }).catch(() => {})
+  }, [])
+  
   useEffect(() => {
     setSupabase(createSupabaseBrowserClient())
   }, [])
