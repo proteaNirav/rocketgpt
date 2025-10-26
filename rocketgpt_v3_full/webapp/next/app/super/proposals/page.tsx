@@ -5,6 +5,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { fetchProposals, isSuperuser, Proposal, updateProposal } from '@/lib/proposals'
 
+type ProposalWithJob = Proposal & {
+  last_self_apply_job_id: string | null;
+};
+
 function Badge({ children, tone = 'gray' }: { children: React.ReactNode; tone?: 'gray'|'green'|'red'|'blue'|'amber' }) {
   const tones: Record<string, string> = {
     gray: 'bg-gray-100 text-gray-700',
