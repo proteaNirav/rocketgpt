@@ -179,9 +179,11 @@ export default function SuperProposalsPage() {
                     Back to Queue
                   </button>
 
-                  {/* ✅ Only show Manual Review when the job exists */}
-                  {!!p.last_self_apply_job_id && (
-                    <ManualReviewButton jobId={p.last_self_apply_job_id} />
+                 {!!p.last_self_apply_job_id && (
+                    <ManualReviewButton
+                    jobId={p.last_self_apply_job_id}
+                    proposalId={p.id}
+                    />
                   )}
                 </div>
               </div>
