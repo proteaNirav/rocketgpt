@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { passManualReview } from "./selfApply";
+import { completeManualReviewAndApply } from "./selfApply";
 
-
-export function ManualReviewButton({ jobId }: { jobId: string }) {
+export function ManualReviewButton({
+  jobId,
+  proposalId,
+}: {
+  jobId: string;
+  proposalId: string;
+}) {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -13,7 +18,7 @@ export function ManualReviewButton({ jobId }: { jobId: string }) {
     setLoading(true);
     setError(null);
     try {
-      await passManualReview(jobId);
+      await completeManualReviewAndApply(jobId, proposalId);
       setDone(true);
     } catch (err: any) {
       setError(err.message || "Something went wrong");
@@ -27,11 +32,12 @@ export function ManualReviewButton({ jobId }: { jobId: string }) {
       <button
         onClick={handleClick}
         disabled={loading || done}
-        className={`rounded px-3 py-2 text-white text-sm font-medium ${
+        className={`rounded px-3 py-1.5 text-white text-sm font-medium ${
           done ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"
         }`}
+        title="Marks manual review as passed and triggers final apply"
       >
-        {loading ? "Marking..." : done ? "Passed ✅" : "Pass Manual Review"}
+        {loading ? "Processing…" : done ? "Applied ✅" : "Pass Manual Review"}
       </button>
       {error && <span className="text-red-500 text-xs">{error}</span>}
     </div>
