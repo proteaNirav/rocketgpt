@@ -1,0 +1,33 @@
+name: nightly-self-evaluator
+
+on:
+  workflow_dispatch:        # allow manual runs
+  schedule:
+    - cron: "0 21 * * *"    # 21:00 UTC = 03:30 IST; change if you want a different time
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call Supabase Edge Function (self_evaluator)
+        run: |
+          set -e
+          URL="${{ secrets.SELF_EVAL_URL }}"
+          echo "Invoking: $URL"
+          # Hit the function and capture output
+          HTTP_CODE=$(curl -sS -o out.json -w "%{http_code}" "$URL")
+          echo "HTTP $HTTP_CODE"
+          echo "Response:"
+          cat out.json
+          # Fail the job if not 2xx
+          if [ "${HTTP_CODE:0:1}" != "2" ]; then
+            exit 1
+          fi
+
+      - name: Upload response artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: self-evaluator-response
+          path: out.json
