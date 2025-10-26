@@ -1,15 +1,11 @@
 'use client'
 
-
 import { useState, useEffect, useMemo } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser'
-
 export const dynamic = 'force-dynamic';
-
 import { useChat } from '@/lib/store'
 import type { Recommendation } from '@/lib/store'
 import { plan as apiPlan, recommend as apiRecommend } from '@/lib/api'
-
 import PromptBar from '@/components/PromptBar'
 import MessageBubble from '@/components/MessageBubble'
 import Toolcard from '@/components/Toolcard'
