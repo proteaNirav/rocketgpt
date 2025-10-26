@@ -1,7 +1,8 @@
 'use client'
 
+
+import { useState, useEffect, useMemo } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser'
-import { useEffect, useState } from 'react'
 
 export const dynamic = 'force-dynamic';
 
@@ -33,14 +34,15 @@ export default function Page() {
 
     // 👋 Welcome banner logic
   const [userEmail, setUserEmail] = useState<string | null>(null)
-  const supabase = createSupabaseBrowserClient()
+const supabase = useMemo(() => createSupabaseBrowserClient(), [])
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      const email = data.user?.email ?? null
-      setUserEmail(email)
-    })
-  }, [])
+useEffect(() => {
+  supabase.auth.getUser().then(({ data }) => {
+    const email = data.user?.email ?? null
+    setUserEmail(email)
+  })
+}, [supabase])
+
 
 
   async function onSend(text: string) {
