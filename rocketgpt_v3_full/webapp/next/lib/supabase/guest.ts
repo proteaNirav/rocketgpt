@@ -1,6 +1,6 @@
 import { cookies, headers } from 'next/headers'
 import { randomUUID } from 'crypto'
-import { createSupabaseServerClient } from './supabase/server'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 /**
  * Ensure a guest_id cookie exists and a corresponding row in public.guests.
