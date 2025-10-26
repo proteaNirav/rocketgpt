@@ -10,20 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Call Supabase Edge Function (self_evaluator)
-        run: |
-          set -e
-          URL="${{ secrets.SELF_EVAL_URL }}"
-          echo "Invoking: $URL"
-          # Hit the function and capture output
-          HTTP_CODE=$(curl -sS -o out.json -w "%{http_code}" "$URL")
-          echo "HTTP $HTTP_CODE"
-          echo "Response:"
-          cat out.json
-          # Fail the job if not 2xx
-          if [ "${HTTP_CODE:0:1}" != "2" ]; then
-            exit 1
-          fi
+- name: Call Supabase Edge Function (evaluator)
+  run: |
+    set -e
+    URL="${{ secrets.SELF_EVAL_URL }}"
+    TOK="${{ secrets.SELF_EVAL_CRON_TOKEN }}"
+    HTTP_CODE=$(curl -sS -o out.json -w "%{http_code}" -H "x-cron-token: $TOK" "$URL")
+    echo "HTTP $HTTP_CODE"; echo "Response:"; cat out.json
+    if [ "${HTTP_CODE:0:1}" != "2" ]; then exit 1; fi
+
 
       - name: Upload response artifact
         if: always()
