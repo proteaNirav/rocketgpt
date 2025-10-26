@@ -1,46 +1,88 @@
 'use client'
-import { useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+
+import { useEffect, useState } from 'react'
+import { createSupabaseBrowserClient } from '@/lib/supabase/browser'
 
 export default function LoginPage() {
+  const [supabase, setSupabase] = useState<any>()
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [msg, setMsg] = useState<string>('')
+  const [otpSent, setOtpSent] = useState(false)
+  const [otp, setOtp] = useState('')
 
-  async function signIn() {
-    setMsg('Signing in...')
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) { setMsg('Error: ' + error.message); return }
-    setMsg('Signed in as ' + (data.user?.email ?? 'user'))
+  useEffect(() => {
+    setSupabase(createSupabaseBrowserClient())
+  }, [])
+
+  async function sendOtp() {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      emailRedirectTo: `${location.origin}/account`
+    })
+    if (error) alert(error.message)
+    else setOtpSent(true)
   }
 
-  async function signOut() {
-    await supabase.auth.signOut()
-    setMsg('Signed out')
+  async function verifyOtp() {
+    const { error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' })
+    if (error) alert(error.message)
+    else {
+      const guestId = getCookie('guest_id')
+      if (guestId) await supabase.rpc('migrate_guest_data', { p_guest_id: guestId })
+      window.location.href = '/account'
+    }
+  }
+
+  async function oauth(provider: 'google' | 'azure') {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${location.origin}/account` }
+    })
+    if (error) alert(error.message)
   }
 
   return (
-    <div className="max-w-sm mx-auto p-6 space-y-4">
-      <h1 className="text-xl font-semibold">Login</h1>
-      <input
-        className="w-full border rounded p-2"
-        placeholder="email"
-        type="email"
-        value={email}
-        onChange={e=>setEmail(e.target.value)}
-      />
-      <input
-        className="w-full border rounded p-2"
-        placeholder="password"
-        type="password"
-        value={password}
-        onChange={e=>setPassword(e.target.value)}
-      />
-      <div className="flex gap-2">
-        <button className="border rounded px-3 py-1" onClick={signIn}>Sign in</button>
-        <button className="border rounded px-3 py-1" onClick={signOut}>Sign out</button>
-      </div>
-      <div className="text-sm text-gray-600">{msg}</div>
+    <div className="mx-auto max-w-md p-6 space-y-4">
+      <h1 className="text-2xl font-semibold">Sign in</h1>
+
+      {!otpSent ? (
+        <>
+          <input
+            className="w-full border rounded p-2"
+            placeholder="you@example.com"
+            value={email}
+            onChange={e=>setEmail(e.target.value)}
+          />
+          <button onClick={sendOtp} className="w-full rounded bg-black text-white p-2 mt-2">
+            Send OTP Link
+          </button>
+
+          <div className="flex gap-2 pt-4">
+            <button onClick={()=>oauth('google')} className="flex-1 border rounded p-2">
+              Continue with Google
+            </button>
+            <button onClick={()=>oauth('azure')} className="flex-1 border rounded p-2">
+              Continue with Microsoft
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <input
+            className="w-full border rounded p-2"
+            placeholder="6-digit code"
+            value={otp}
+            onChange={e=>setOtp(e.target.value)}
+          />
+          <button onClick={verifyOtp} className="w-full rounded bg-black text-white p-2 mt-2">
+            Verify OTP
+          </button>
+        </>
+      )}
     </div>
   )
+}
+
+function getCookie(name: string) {
+  const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')
+  return m ? m.pop() : ''
 }
