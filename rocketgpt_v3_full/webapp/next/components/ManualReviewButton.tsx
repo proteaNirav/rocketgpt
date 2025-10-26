@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { passManualReview } from "@/services/selfApply";
+import { passManualReview } from "../services/selfApply";
+
 
 export function ManualReviewButton({ jobId }: { jobId: string }) {
   const [loading, setLoading] = useState(false);
