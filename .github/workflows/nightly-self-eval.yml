@@ -3,22 +3,26 @@ name: nightly-self-evaluator
 on:
   workflow_dispatch:        # allow manual runs
   schedule:
-    - cron: "0 21 * * *"    # 21:00 UTC = 03:30 IST; change if you want a different time
+    - cron: "0 21 * * *"    # 21:00 UTC = 02:30/03:30 IST depending on DST; adjust as you prefer
 
 jobs:
   run:
     runs-on: ubuntu-latest
 
     steps:
-- name: Call Supabase Edge Function (evaluator)
-  run: |
-    set -e
-    URL="${{ secrets.SELF_EVAL_URL }}"
-    TOK="${{ secrets.SELF_EVAL_CRON_TOKEN }}"
-    HTTP_CODE=$(curl -sS -o out.json -w "%{http_code}" -H "x-cron-token: $TOK" "$URL")
-    echo "HTTP $HTTP_CODE"; echo "Response:"; cat out.json
-    if [ "${HTTP_CODE:0:1}" != "2" ]; then exit 1; fi
-
+      - name: Call Supabase Edge Function (evaluator with header token)
+        run: |
+          set -e
+          URL="${{ secrets.SELF_EVAL_URL }}"
+          TOK="${{ secrets.SELF_EVAL_CRON_TOKEN }}"
+          echo "Invoking: $URL"
+          HTTP_CODE=$(curl -sS -o out.json -w "%{http_code}" -H "x-cron-token: $TOK" "$URL")
+          echo "HTTP $HTTP_CODE"
+          echo "Response:"
+          cat out.json
+          if [ "${HTTP_CODE:0:1}" != "2" ]; then
+            exit 1
+          fi
 
       - name: Upload response artifact
         if: always()
