@@ -108,6 +108,7 @@ function Row({ p, onChange }: {
         <button className="border rounded px-3 py-1 text-sm" onClick={()=>setStatus('rejected')} disabled={busy}>Reject</button>
         <button className="border rounded px-3 py-1 text-sm" onClick={()=>setStatus('implemented')} disabled={busy}>Implemented</button>
         <button className="border rounded px-3 py-1 text-sm" onClick={()=>setStatus('queued')} disabled={busy}>Back to Queue</button>
+        <ManualReviewButton jobId={p.last_self_apply_job_id} />
       </div>
 
       {error && <div className="text-xs text-red-600">{error}</div>}
