@@ -1,14 +1,16 @@
+import { withSentry } from '@sentry/nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-export async function POST(_req: NextRequest) {
+export async function postHandler(_req: NextRequest) {
   const cookieStore = cookies()
   let guestId = cookieStore.get('guest_id')?.value
 
   // Prepare response we can attach cookies to
   const res = NextResponse.json({ ok: true })
-
+export const POST = withSentry(postHandler, 'api-guest-post')
+  
   // 1) Ensure cookie
   if (!guestId) {
     guestId = crypto.randomUUID()
