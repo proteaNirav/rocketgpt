@@ -6,6 +6,9 @@ import SentryClientInit from '@/components/SentryClientInit'
 export const metadata = {
   title: 'RocketGPT',
   description: 'AI Orchestrator',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
