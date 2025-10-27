@@ -1,13 +1,13 @@
 import { createBrowserClient } from '@supabase/ssr'
 
-// Singleton to avoid multiple GoTrueClient instances
-let sb:
+// Singleton client to avoid "Multiple GoTrueClient instances..." warning
+let _client:
   | ReturnType<typeof createBrowserClient<{ [key: string]: any }>>
   | null = null
 
 export const getSupabaseBrowserClient = (guestId?: string) => {
-  if (sb) return sb
-  sb = createBrowserClient(
+  if (_client) return _client
+  _client = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -16,5 +16,9 @@ export const getSupabaseBrowserClient = (guestId?: string) => {
       },
     }
   )
-  return sb
+  return _client
 }
+
+// ✅ Back-compat alias (deprecated): some files may still import/call the old name
+export const createSupabaseBrowserClient = (guestId?: string) =>
+  getSupabaseBrowserClient(guestId)
