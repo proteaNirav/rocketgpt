@@ -14,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gray-50 text-gray-900">
+        <body className="min-h-screen bg-neutral-950 text-gray-100 antialiased">
         <SentryClientInit />
         {/* Header is a Server Component; rendering it here is fine */}
         <Header />
