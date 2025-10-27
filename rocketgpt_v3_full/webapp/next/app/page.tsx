@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { getSupabaseBrowserClient } from '@/lib/supabase/browser'
-export const dynamic = 'force-dynamic';
 import { useChat } from '@/lib/store'
 import type { Recommendation } from '@/lib/store'
 import { plan as apiPlan, recommend as apiRecommend } from '@/lib/api'
@@ -14,6 +12,9 @@ import PlanPanel from '@/components/PlanPanel'
 import Skeleton from '@/components/Skeleton'
 import ToolRunner from '@/components/ToolRunner'
 import { HistoryList } from '@/components/HistoryList'
+import { getSupabaseBrowserClient } from '@/lib/supabase/browser'
+
+export const dynamic = 'force-dynamic'
 
 export default function Page() {
   const {
@@ -28,18 +29,16 @@ export default function Page() {
   const [firstRun, setFirstRun] = useState(true)
   const [lastGoal, setLastGoal] = useState('')
 
-    // 👋 Welcome banner logic
+  // 👋 Welcome banner logic
   const [userEmail, setUserEmail] = useState<string | null>(null)
-const supabase = useMemo(() => createSupabaseBrowserClient(), [])
+  const supabase = useMemo(() => getSupabaseBrowserClient(), [])
 
-useEffect(() => {
-  supabase.auth.getUser().then(({ data }) => {
-    const email = data.user?.email ?? null
-    setUserEmail(email)
-  })
-}, [supabase])
-
-
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      const email = data.user?.email ?? null
+      setUserEmail(email)
+    })
+  }, [supabase])
 
   async function onSend(text: string) {
     setLoading(true)
@@ -98,7 +97,7 @@ useEffect(() => {
             addMsg({
               id: crypto.randomUUID(),
               role: 'assistant',
-              text: `You could also try **${item.title}** — ${item.why}`
+              text: `You could also try **${item.title}** — ${item.why}`,
             })
             chatter++
           }
@@ -112,7 +111,6 @@ useEffect(() => {
         })
         console.error('recommend error', recErr)
       }
-
     } catch (planErr) {
       useChat.getState().updateMsg(thinkingId, {
         text: 'Hmm… something went wrong while planning. Try rephrasing and I’ll rethink it.',
@@ -126,7 +124,7 @@ useEffect(() => {
 
   return (
     <div className="container py-6 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
-            {/* 👋 Welcome banner */}
+      {/* 👋 Welcome banner */}
       <div className="col-span-full rounded-md border bg-white p-4 mb-4">
         {userEmail ? (
           <div className="text-lg font-medium text-gray-800">
