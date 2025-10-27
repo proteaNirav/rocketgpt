@@ -15,6 +15,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="mx-auto max-w-6xl px-4 py-6">
           {children}
         </main>
+        import './globals.css'
+import Header from '@/components/Header'
+import SentryClientInit from '@/components/SentryClientInit'   // <— add this
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body className="min-h-screen bg-gray-50 text-gray-900">
+        <SentryClientInit />     {/* <— mount once so client init always runs */}
+        <Header />
+        <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
+      </body>
+    </html>
+  )
+}
+
       </body>
     </html>
   )
