@@ -6,29 +6,35 @@ import { getAuthUserId } from "../_shared/auth.ts";
 
 const ENDPOINT_KEY = "quick_responder";
 
-// Allow your site(s). Use "*" only for local testing.
 const corsHeaders: Record<string, string> = {
-  "Access-Control-Allow-Origin": "https://rocketgpt.dev", // or "http://localhost:3000" during dev
+  "Access-Control-Allow-Origin": "https://rocketgpt.dev", // use http://localhost:3000 during local dev
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-user-id",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
 serve(async (req: Request) => {
-  // Preflight
+  // CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // 1) Identify user — allow guests so testing works
-    const userId =
+    // ✅ Accept logged-in, header, or guest
+    const uid =
       getAuthUserId(req) ||
       req.headers.get("x-user-id")?.trim() ||
       "guest";
 
-    // 2) Rate-limit check
-    const rl = await checkRateLimit(userId, ENDPOINT_KEY);
+    if (req.method === "GET") {
+      return new Response(
+        JSON.stringify({ ok: true, endpoint: ENDPOINT_KEY, uid, version: "v2" }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
+      );
+    }
+
+    // Rate-limit
+    const rl = await checkRateLimit(uid, ENDPOINT_KEY);
     if (!rl.allowed) {
       return new Response(JSON.stringify({ error: "rate_limited", ...rl }), {
         status: 429,
@@ -40,17 +46,10 @@ serve(async (req: Request) => {
       });
     }
 
-    // 3) Business logic
     const body = await req.json().catch(() => ({}));
-    // ... your real work here ...
 
     return new Response(
-      JSON.stringify({
-        ok: true,
-        userId,
-        message: "Quick responder executed",
-        input: body,
-      }),
+      JSON.stringify({ ok: true, uid, message: "Quick responder executed", input: body }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
   } catch (e) {
