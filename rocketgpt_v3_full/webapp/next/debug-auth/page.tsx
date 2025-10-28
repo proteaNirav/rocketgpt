@@ -5,7 +5,7 @@ export default function DebugAuth() {
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    fetch("/api/quick-responder", {
+    fetch("/api/edge/quick-responder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: "whoami" })
@@ -27,3 +27,5 @@ export default function DebugAuth() {
     </main>
   );
 }
+
+

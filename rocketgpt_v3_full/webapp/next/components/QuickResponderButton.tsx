@@ -29,7 +29,9 @@ export default function QuickResponderButton() {
 
   return (
     <button className="btn" disabled={busy} onClick={run}>
-      {busy ? "Working…" : "Run Quick Responder"}
+      {busy ? "Workingâ€¦" : "Run Quick Responder"}
     </button>
   );
 }
+
+

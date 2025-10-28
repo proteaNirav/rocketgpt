@@ -22,13 +22,13 @@ export default function PromptBar({ onSend, loading }: any) {
     <form onSubmit={submit} className="card p-3 flex items-center gap-3">
       <textarea
         className="input min-h-[56px]"
-        placeholder="Describe what you want. I’ll build the cheapest + fastest path…"
+        placeholder="Describe what you want. Iâ€™ll build the cheapest + fastest pathâ€¦"
         value={text}
         onChange={(e)=>setText(e.target.value)}
       />
       {!loading ? (
         <button className="btn shrink-0 flex items-center gap-2" type="submit" aria-label="Run" title="Run">
-          <span className="inline-block rounded-full border border-border p-2">🟢</span>
+          <span className="inline-block rounded-full border border-border p-2">ðŸŸ¢</span>
           Run
         </button>
       ) : (
@@ -39,3 +39,5 @@ export default function PromptBar({ onSend, loading }: any) {
     </form>
   )
 }
+
+

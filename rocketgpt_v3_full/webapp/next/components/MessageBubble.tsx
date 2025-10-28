@@ -13,3 +13,5 @@ export default function MessageBubble({ role, text, typing=false }: any) {
     </div>
   )
 }
+
+

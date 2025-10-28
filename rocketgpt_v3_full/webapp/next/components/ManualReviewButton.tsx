@@ -37,9 +37,11 @@ export function ManualReviewButton({
         }`}
         title="Marks manual review as passed and triggers final apply"
       >
-        {loading ? "Processing…" : done ? "Applied ✅" : "Pass Manual Review"}
+        {loading ? "Processingâ€¦" : done ? "Applied âœ…" : "Pass Manual Review"}
       </button>
       {error && <span className="text-red-500 text-xs">{error}</span>}
     </div>
   );
 }
+
+

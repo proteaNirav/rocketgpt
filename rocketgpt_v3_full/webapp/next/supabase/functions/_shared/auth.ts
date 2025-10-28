@@ -11,3 +11,5 @@ export function getAuthUserId(req: Request): string | null {
   if (!uid || uid.trim().length === 0) return null;
   return uid.trim();
 }
+
+

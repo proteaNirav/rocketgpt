@@ -18,14 +18,14 @@ export default function AuthModal({
     e?.preventDefault()
     const sb = getSupabase()
     if (!sb) {
-      setMsg('Auth temporarily unavailable — missing Supabase config.')
+      setMsg('Auth temporarily unavailable â€” missing Supabase config.')
       return
     }
     const { error } = await sb.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined },
     })
-    setMsg(error ? error.message : 'Magic link sent — check your inbox.')
+    setMsg(error ? error.message : 'Magic link sent â€” check your inbox.')
   }
 
   return (
@@ -53,3 +53,5 @@ export default function AuthModal({
     </div>
   )
 }
+
+

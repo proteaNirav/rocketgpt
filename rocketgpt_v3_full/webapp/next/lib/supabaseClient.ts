@@ -14,7 +14,7 @@ export function getSupabase(): SupabaseClient {
 
   if (!url || !key) {
     // Safe runtime warning instead of build failure
-    console.warn('⚠️ Supabase environment variables missing')
+    console.warn('âš ï¸ Supabase environment variables missing')
     // Return a dummy client to avoid breaking UI; only for build phase
     return createClient('https://example.supabase.co', 'public-anon-key')
   }
@@ -28,3 +28,5 @@ export function getSupabase(): SupabaseClient {
  * instead of `getSupabase()`.
  */
 export const supabase = getSupabase()
+
+

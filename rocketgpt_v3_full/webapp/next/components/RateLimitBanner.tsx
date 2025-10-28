@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { onRateLimited } from "@/lib/ratelimitBus";
 
 export default function RateLimitBanner() {
@@ -8,17 +8,32 @@ export default function RateLimitBanner() {
   const [eta, setEta] = useState<number>(60);
   const [plan, setPlan] = useState<string>("");
 
+  // store the current hide timer id so we can clear/reset it
+  const hideTimerRef = useRef<number | null>(null);
+
   useEffect(() => {
-    return onRateLimited(({ message, retryAfter, plan }) => {
+    // subscribe once
+    const unsubscribe = onRateLimited(({ message, retryAfter, plan }) => {
       setMsg(message || "You’ve hit your rate limit.");
       setEta(retryAfter ?? 60);
       setPlan(plan || "BRONZE");
       setVisible(true);
 
-      // auto-hide after ~8s
-      const t = setTimeout(() => setVisible(false), 8000);
-      return () => clearTimeout(t);
+      // reset the hide timer
+      if (hideTimerRef.current !== null) {
+        window.clearTimeout(hideTimerRef.current);
+      }
+      hideTimerRef.current = window.setTimeout(() => setVisible(false), 8000);
     });
+
+    // proper cleanup: clear timer + unsubscribe
+    return () => {
+      if (hideTimerRef.current !== null) {
+        window.clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = null;
+      }
+      unsubscribe();
+    };
   }, []);
 
   if (!visible) return null;

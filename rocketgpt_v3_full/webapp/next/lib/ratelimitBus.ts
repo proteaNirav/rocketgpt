@@ -5,3 +5,5 @@ export function onRateLimited(cb: Listener) { listeners.add(cb); return () => li
 export function emitRateLimited(payload: { message: string; retryAfter?: number; plan?: string }) {
   listeners.forEach(l => l(payload));
 }
+
+

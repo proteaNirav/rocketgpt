@@ -5,3 +5,5 @@ export function getAuthUserId(req: Request): string | null {
   const hdr = req.headers.get("x-user-id");
   return hdr ? hdr.trim() : null;
 }
+
+

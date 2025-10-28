@@ -16,3 +16,5 @@ export default function PlanPanel({ plan }: any) {
     </div>
   )
 }
+
+

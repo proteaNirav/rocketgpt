@@ -23,7 +23,7 @@ export default function UsagePage() {
       });
   }, []);
 
-  if (loading) return <div className="p-6">Loading usage…</div>;
+  if (loading) return <div className="p-6">Loading usageâ€¦</div>;
 
   return (
     <main className="p-6 space-y-4">
@@ -55,3 +55,5 @@ export default function UsagePage() {
     </main>
   );
 }
+
+

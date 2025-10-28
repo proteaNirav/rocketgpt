@@ -29,7 +29,7 @@ export function HistoryList({ onRerun }: { onRerun: (goal: string) => void }) {
         if (error) throw error
         setItems(data || [])
       } catch (err: any) {
-        console.warn('⚠️ History fetch failed:', err.message)
+        console.warn('âš ï¸ History fetch failed:', err.message)
         setError('Could not load your history.')
       } finally {
         setLoading(false)
@@ -42,7 +42,7 @@ export function HistoryList({ onRerun }: { onRerun: (goal: string) => void }) {
     <div className="card p-4">
       <div className="font-semibold mb-2 flex justify-between items-center">
         <span>Recent Prompts</span>
-        {loading && <span className="text-xs text-muted">Loading…</span>}
+        {loading && <span className="text-xs text-muted">Loadingâ€¦</span>}
       </div>
 
       {error && (
@@ -62,7 +62,7 @@ export function HistoryList({ onRerun }: { onRerun: (goal: string) => void }) {
               onClick={() => onRerun(it.goal)}
               title={it.goal}
             >
-              <span className="truncate text-sm">• {it.goal}</span>
+              <span className="truncate text-sm">â€¢ {it.goal}</span>
               {it.created_at && (
                 <span className="text-xs text-muted">
                   {new Date(it.created_at).toLocaleTimeString('en-IN', {
@@ -87,3 +87,5 @@ export function HistoryList({ onRerun }: { onRerun: (goal: string) => void }) {
     </div>
   )
 }
+
+

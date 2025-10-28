@@ -64,7 +64,7 @@ export default function ToolRunner() {
 
         <div className="flex gap-2">
           <button className="btn" onClick={handleRun} disabled={status === 'running'}>
-            {status === 'running' ? 'Running…' : 'Run'}
+            {status === 'running' ? 'Runningâ€¦' : 'Run'}
           </button>
           <button className="btn btn-ghost" onClick={closeRunner}>
             Cancel
@@ -84,3 +84,5 @@ export default function ToolRunner() {
     </div>
   )
 }
+
+

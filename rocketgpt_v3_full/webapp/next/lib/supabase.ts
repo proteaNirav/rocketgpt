@@ -11,7 +11,7 @@ export function getSupabase(): SupabaseClient {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!url || !key) {
-    console.warn('⚠️ Supabase environment variables missing')
+    console.warn('âš ï¸ Supabase environment variables missing')
     // Safe fallback for build
     return createClient('https://example.supabase.co', 'public-anon-key')
   }
@@ -22,3 +22,5 @@ export function getSupabase(): SupabaseClient {
 
 /** Back-compat default export */
 export const supabase = getSupabase()
+
+

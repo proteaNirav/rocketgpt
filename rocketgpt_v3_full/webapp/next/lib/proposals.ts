@@ -51,3 +51,5 @@ export async function updateProposal(
     .eq('id', id)
   if (error) throw new Error(error.message)
 }
+
+

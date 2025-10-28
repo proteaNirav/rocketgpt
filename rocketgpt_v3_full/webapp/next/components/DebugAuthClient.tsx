@@ -13,7 +13,7 @@ export default function DebugAuthClient({ computedUid }: Props) {
   async function callProxy() {
     setProxyOut({ loading: true });
     try {
-      const r = await fetch("/api/quick-responder", {
+      const r = await fetch("/api/edge/quick-responder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: "ping from /debug-auth" }),
@@ -51,7 +51,7 @@ export default function DebugAuthClient({ computedUid }: Props) {
     <div className="space-y-4">
       <div className="flex gap-3">
         <button className="btn border rounded px-3 py-2" onClick={callProxy}>
-          Test via /api/quick-responder
+          Test via /api/edge/quick-responder
         </button>
         <button className="btn border rounded px-3 py-2" onClick={callEdgeDirect}>
           Test Supabase Edge (direct)
@@ -69,3 +69,5 @@ export default function DebugAuthClient({ computedUid }: Props) {
     </div>
   );
 }
+
+

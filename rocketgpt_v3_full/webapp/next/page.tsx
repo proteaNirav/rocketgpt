@@ -92,7 +92,7 @@ export default function Page() {
           <div className="font-semibold mb-2">Estimates</div>
           {decision?.estimates ? (
             <div className="text-sm">
-              <div>Cost: ₹ {Math.round(decision.estimates.costINR)}</div>
+              <div>Cost: â‚¹ {Math.round(decision.estimates.costINR)}</div>
               <div>ETA: {decision.estimates.minutes} minutes</div>
               <div>Steps: {decision.estimates.steps}</div>
             </div>
@@ -108,3 +108,5 @@ export default function Page() {
     </div>
   )
 }
+
+

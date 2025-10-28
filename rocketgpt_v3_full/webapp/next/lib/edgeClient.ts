@@ -21,3 +21,5 @@ export async function callEdge(fn: string, payload?: unknown, init?: RequestInit
 
   return res.json();
 }
+
+

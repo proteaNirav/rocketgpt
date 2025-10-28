@@ -19,7 +19,7 @@ export default async function AccountPage() {
       <div className="border rounded p-4 space-y-2">
         <div className="font-medium">{profile?.display_name ?? user.email}</div>
         <div className="text-sm text-gray-500">{user.email}</div>
-        <div className="text-sm">Role: <b>{profile?.role ?? 'user'}</b> · Plan: <b>{profile?.plan ?? 'free'}</b></div>
+        <div className="text-sm">Role: <b>{profile?.role ?? 'user'}</b> Â· Plan: <b>{profile?.plan ?? 'free'}</b></div>
       </div>
 
       <form action={signOutAction}>
@@ -35,3 +35,5 @@ async function signOutAction() {
   await supabase.auth.signOut()
   return (await import('next/navigation')).redirect('/login')
 }
+
+

@@ -11,3 +11,5 @@ export default function TypingDots({ className = '' }: { className?: string }) {
     </div>
   )
 }
+
+

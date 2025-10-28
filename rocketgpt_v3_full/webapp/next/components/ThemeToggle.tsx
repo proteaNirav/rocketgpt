@@ -6,7 +6,9 @@ export default function ThemeToggle() {
   useEffect(()=>{ document.documentElement.classList.toggle('dark', dark) }, [dark])
   return (
     <button className="btn text-sm" onClick={()=>setDark(!dark)}>
-      {dark ? '☀ Light' : '🌙 Dark'}
+      {dark ? 'â˜€ Light' : 'ðŸŒ™ Dark'}
     </button>
   )
 }
+
+

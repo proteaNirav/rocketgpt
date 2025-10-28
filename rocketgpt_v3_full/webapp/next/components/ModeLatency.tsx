@@ -19,3 +19,5 @@ export function Latency({ ms }: { ms?: number }) {
     </span>
   )
 }
+
+

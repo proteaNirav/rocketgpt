@@ -7,3 +7,5 @@ const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 export const sbAdmin = createClient(url, key, {
   auth: { persistSession: false },
 });
+
+

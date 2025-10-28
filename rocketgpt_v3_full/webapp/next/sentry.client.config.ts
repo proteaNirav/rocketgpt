@@ -8,5 +8,7 @@ Sentry.init({
   environment: process.env.VERCEL_ENV || process.env.NODE_ENV || 'development',
   enabled: !!(process.env.NEXT_PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN),
 })
-// ⬇️ add this so you can call it from DevTools
+// â¬‡ï¸ add this so you can call it from DevTools
 ;(globalThis as any).Sentry = Sentry
+
+

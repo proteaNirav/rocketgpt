@@ -19,6 +19,8 @@ export const getSupabaseBrowserClient = (guestId?: string) => {
   return _client
 }
 
-// ✅ Back-compat alias (deprecated): some files may still import/call the old name
+// âœ… Back-compat alias (deprecated): some files may still import/call the old name
 export const createSupabaseBrowserClient = (guestId?: string) =>
   getSupabaseBrowserClient(guestId)
+
+

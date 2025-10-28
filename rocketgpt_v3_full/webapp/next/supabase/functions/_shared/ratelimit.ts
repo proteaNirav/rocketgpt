@@ -29,3 +29,5 @@ export async function checkRateLimit(userId: string, endpoint: string): Promise<
   // data is jsonb -> already an object
   return data as RLCheckResult;
 }
+
+

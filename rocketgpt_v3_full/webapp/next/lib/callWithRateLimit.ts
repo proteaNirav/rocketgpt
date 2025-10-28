@@ -10,7 +10,7 @@ export async function callWithRateLimit<T>(fn: () => Promise<T>, context: string
   } catch (e: any) {
     if (isRateLimitError(e)) {
       emitRateLimited({
-        message: `You’ve hit your plan’s rate limit${context ? ` while ${context}` : ""}.`,
+        message: `Youâ€™ve hit your planâ€™s rate limit${context ? ` while ${context}` : ""}.`,
         retryAfter: e.retryAfter ?? e.rl?.retry_after_seconds,
         plan: e.rl?.limits?.plan_code,
       });
@@ -18,3 +18,5 @@ export async function callWithRateLimit<T>(fn: () => Promise<T>, context: string
     throw e; // rethrow for upstream handling (UI messages, etc.)
   }
 }
+
+

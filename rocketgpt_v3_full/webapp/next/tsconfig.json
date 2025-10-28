@@ -24,8 +24,11 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]         // <-- add this
-    }
+      "@/*": [
+        "./*"
+      ] // <-- add this
+    },
+    "incremental": true
   },
   "include": [
     "next-env.d.ts",
@@ -35,8 +38,8 @@
   ],
   "exclude": [
     "node_modules",
-     ".next",
-    "supabase",          
-    "**/supabase/**"    
+    ".next",
+    "supabase",
+    "**/supabase/**"
   ]
 }

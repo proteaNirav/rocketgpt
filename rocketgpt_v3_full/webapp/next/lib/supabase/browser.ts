@@ -10,3 +10,5 @@ export function getSupabaseBrowserClient() {
 
 // Backward-compat export (if your code calls createSupabaseBrowserClient)
 export const createSupabaseBrowserClient = getSupabaseBrowserClient;
+
+

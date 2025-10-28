@@ -26,3 +26,5 @@ export function getSupabaseServerClient() {
 
 // Backward-compat export (if your code calls createSupabaseServerClient)
 export const createSupabaseServerClient = getSupabaseServerClient;
+
+
