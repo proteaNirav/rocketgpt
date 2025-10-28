@@ -35,9 +35,10 @@ export async function edgeCall(path: string, payload?: unknown, init?: RequestIn
   // Bubble 429 details to client
   if (res.status === 429) {
     const j = await res.json().catch(() => ({}));
-    const err = new Error("RATE_LIMITED");
-    (err as any).rl = j;
-    throw err;
+    const err = new Error("RATE_LIMITED") as any;
+    err.rl = j;
+  err.retryAfter = res.headers.get("Retry-After");
+  throw err;
   }
   if (!res.ok) {
     const text = await res.text().catch(() => "");
