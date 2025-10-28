@@ -15,6 +15,9 @@ import { HistoryList } from '@/components/HistoryList'
 import { getSupabaseBrowserClient } from '@/lib/supabase/browser'
 import QuickResponderButton from '@/components/QuickResponderButton'
 
+import { emitRateLimited } from '@/lib/ratelimitBus'
+import { isRateLimitError } from '@/lib/errors'
+
 export const dynamic = 'force-dynamic'
 
 export default function Page() {
@@ -98,19 +101,44 @@ export default function Page() {
           }
           await new Promise(res => setTimeout(res, 160))
         }
-      } catch (recErr) {
+      } catch (err: unknown) {
+        if (isRateLimitError(err)) {
+          // Show banner + inline message
+          emitRateLimited({
+            message: "You’ve hit your plan’s rate limit while fetching recommendations.",
+            retryAfter: err.retryAfter ?? err.rl?.retry_after_seconds,
+            plan: err.rl?.limits?.plan_code,
+          })
+          addMsg({
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            text: 'I drafted the plan, but you’re currently rate-limited. Please retry shortly or upgrade your plan.',
+          })
+          return
+        }
         addMsg({
           id: crypto.randomUUID(),
           role: 'assistant',
           text: 'I drafted the plan, but tool suggestions are temporarily unavailable.',
         })
-        console.error('recommend error', recErr)
+        console.error('recommend error', err)
       }
-    } catch (planErr) {
-      useChat.getState().updateMsg(thinkingId, {
-        text: 'Hmm… something went wrong while planning. Try rephrasing and I’ll rethink it.',
-      })
-      console.error('plan error', planErr)
+    } catch (err: unknown) {
+      if (isRateLimitError(err)) {
+        emitRateLimited({
+          message: "You’ve hit your plan’s rate limit while planning.",
+          retryAfter: err.retryAfter ?? err.rl?.retry_after_seconds,
+          plan: err.rl?.limits?.plan_code,
+        })
+        useChat.getState().updateMsg(thinkingId, {
+          text: 'I’m currently rate-limited. Please retry shortly or consider upgrading your plan.',
+        })
+      } else {
+        useChat.getState().updateMsg(thinkingId, {
+          text: 'Hmm… something went wrong while planning. Try rephrasing and I’ll rethink it.',
+        })
+        console.error('plan error', err)
+      }
     } finally {
       setLoading(false)
       setController(undefined)
@@ -134,7 +162,7 @@ export default function Page() {
 
       {/* 💬 Left: Conversation */}
       <div className="space-y-4">
-        {/* Quick test button for rate-limited Edge Function (optional) */}
+        {/* Prompt + Quick test button (Edge Function) */}
         <div className="flex items-center gap-3">
           <PromptBar onSend={onSend} loading={loading} />
           <QuickResponderButton />
@@ -144,7 +172,6 @@ export default function Page() {
           {messages.map((m) => (
             <MessageBubble key={m.id} role={m.role} text={m.text} />
           ))}
-
           {loading && messages.filter((m) => m.role === 'assistant').length === 0 ? (
             <MessageBubble role="assistant" typing text="" />
           ) : null}
