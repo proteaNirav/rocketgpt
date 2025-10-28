@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { RateLimitError, RateLimitPayload } from "@/lib/errors";  
 
 const EDGE_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/$/, "") + "/functions/v1";
 
@@ -11,9 +12,9 @@ export async function edgeCall(path: string, payload?: unknown, init?: RequestIn
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(n: string) { return cookieStore.get(n)?.value; },
-        set(n: string, v: string, o: any) { cookieStore.set({ name: n, value: v, ...o }); },
-        remove(n: string, o: any) { cookieStore.set({ name: n, value: "", expires: new Date(0), ...o }); },
+        get(n) { return cookieStore.get(n)?.value; },
+        set(n, v, o) { cookieStore.set({ name: n, value: v, ...o }); },
+        remove(n, o) { cookieStore.set({ name: n, value: "", expires: new Date(0), ...o }); },
       },
     }
   );
@@ -34,15 +35,15 @@ export async function edgeCall(path: string, payload?: unknown, init?: RequestIn
 
   // Bubble 429 details to client
   if (res.status === 429) {
-    const j = await res.json().catch(() => ({}));
-    const err = new Error("RATE_LIMITED") as any;
-    err.rl = j;
-  err.retryAfter = res.headers.get("Retry-After");
-  throw err;
+    const j = (await res.json().catch(() => ({}))) as RateLimitPayload;
+    const retryAfter = Number(res.headers.get("Retry-After") || j?.retry_after_seconds || 60);
+    throw new RateLimitError("RATE_LIMITED", j, retryAfter);
   }
+
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Edge error ${res.status}: ${text}`);
   }
+
   return res.json();
 }
