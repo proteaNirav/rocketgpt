@@ -18,7 +18,9 @@ export async function edgeCall(path: string, payload?: unknown, init?: RequestIn
     }
   );
   const { data: { user } } = await supabase.auth.getUser();
-
+  const guest = cookieStore.get("guest_id")?.value;
+  const uid = user?.id ?? guest ?? "guest";
+  
   const res = await fetch(`${EDGE_BASE}/${path}`, {
     method: "POST",
     headers: {
