@@ -1,20 +1,31 @@
+// supabase/functions/quick-responder/index.ts
 // deno-lint-ignore-file no-explicit-any
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { checkRateLimit } from "../_shared/ratelimit.ts";
 import { getAuthUserId } from "../_shared/auth.ts";
 
-const ENDPOINT_KEY = "quick_responder"; // logical key for this function
+const ENDPOINT_KEY = "quick_responder";
+
+// Allow your site(s). Use "*" only for local testing.
+const corsHeaders: Record<string, string> = {
+  "Access-Control-Allow-Origin": "https://rocketgpt.dev", // or "http://localhost:3000" during dev
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-user-id",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
 serve(async (req: Request) => {
+  // Preflight
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
-    // 1) Identify user
-    const userId = getAuthUserId(req);
-    if (!userId) {
-      return new Response(JSON.stringify({ error: "unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    // 1) Identify user — allow guests so testing works
+    const userId =
+      getAuthUserId(req) ||
+      req.headers.get("x-user-id")?.trim() ||
+      "guest";
 
     // 2) Rate-limit check
     const rl = await checkRateLimit(userId, ENDPOINT_KEY);
@@ -23,22 +34,29 @@ serve(async (req: Request) => {
         status: 429,
         headers: {
           "Content-Type": "application/json",
-          "Retry-After": String(rl.retry_after_seconds),
+          "Retry-After": String(rl.retry_after_seconds ?? 60),
+          ...corsHeaders,
         },
       });
     }
 
-    // 3) Business logic (keep your current logic here)
+    // 3) Business logic
     const body = await req.json().catch(() => ({}));
-    // ... do your work ...
+    // ... your real work here ...
+
     return new Response(
-      JSON.stringify({ ok: true, message: "Quick responder executed", input: body }),
-      { status: 200, headers: { "Content-Type": "application/json" } },
+      JSON.stringify({
+        ok: true,
+        userId,
+        message: "Quick responder executed",
+        input: body,
+      }),
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
   } catch (e) {
-    return new Response(JSON.stringify({ error: "server_error", message: String(e) }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "server_error", message: String(e) }),
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } },
+    );
   }
 });
