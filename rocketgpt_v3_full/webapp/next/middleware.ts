@@ -33,5 +33,5 @@ export function middleware(req: NextRequest) {
 
 // 🔄 Apply middleware everywhere (including /login)
 export const config = {
-  matcher: ['/((?!_next|favicon.ico|images|public).*)'],
+  matcher: ['/((?!_next|favicon.ico|robots.txt|sitemap.xml|images|public|api).*)'],
 }
