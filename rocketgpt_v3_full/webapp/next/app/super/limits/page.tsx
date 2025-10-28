@@ -28,6 +28,7 @@ export default function LimitsPage() {
   useEffect(() => {
     fetch("/api/limits").then(r => r.json()).then(j => {
       setUsage(j.usage || []);
+      setUserPlan(p => ({ ...p, [user_id]: prev }));
       setPlans(j.plans || []);
       // derive current user plan from usage? If you want exact, you can also fetch rl_user_plans separately.
       setLoading(false);
