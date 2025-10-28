@@ -214,3 +214,12 @@ export default function Page() {
     </div>
   )
 }
+import QuickResponderButton from "@/components/QuickResponderButton";
+
+export default function Home() {
+  return (
+    <main className="p-6">
+      <QuickResponderButton />
+    </main>
+  );
+}
