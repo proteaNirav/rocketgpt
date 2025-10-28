@@ -25,7 +25,7 @@ export async function edgeCall(path: string, payload?: unknown, init?: RequestIn
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(user?.id ? { "x-user-id": user.id } : {}),
+       "x-user-id": uid,
       ...(init?.headers || {}),
     },
     body: JSON.stringify(payload ?? {}),
