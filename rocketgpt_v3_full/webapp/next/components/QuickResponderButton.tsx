@@ -1,30 +1,35 @@
-"use client";
+'use client';
 import { useState } from "react";
-import { clientJson } from "@/lib/clientJson";
+import { edgeCall } from "@/lib/edgeCall";
+import { emitRateLimited } from "@/lib/ratelimitBus";
+import { isRateLimitError } from "@/lib/errors";
 
 export default function QuickResponderButton() {
-  const [loading, setLoading] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function run() {
+    setBusy(true);
+    try {
+      const res = await edgeCall("quick-responder", { prompt: "ping" });
+      console.log("OK:", res);
+    } catch (e: any) {
+      if (isRateLimitError(e)) {
+        emitRateLimited({
+          message: "Quick Responder hit the rate limit.",
+          retryAfter: e.retryAfter ?? e.rl?.retry_after_seconds,
+          plan: e.rl?.limits?.plan_code,
+        });
+      } else {
+        console.error("QuickResponder error", e);
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <button
-      className="rounded border px-4 py-2"
-      disabled={loading}
-      onClick={async () => {
-        setLoading(true);
-        try {
-          await clientJson("/api/quick-responder", { body: JSON.stringify({ prompt: "ping" }) });
-          alert("OK");
-        } catch (e: any) {
-          if (e?.message === "RATE_LIMITED") {
-            // banner already shown
-          } else {
-            alert(`Error: ${String(e?.message || e)}`);
-          }
-        } finally {
-          setLoading(false);
-        }
-      }}
-    >
-      Run Quick Responder
+    <button className="btn" disabled={busy} onClick={run}>
+      {busy ? "Working…" : "Run Quick Responder"}
     </button>
   );
 }
