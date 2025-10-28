@@ -1,37 +1,40 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const res = NextResponse.next()
-
-  // 1️⃣ Always create guest_id if missing
-  if (!req.cookies.get('guest_id')) {
-    const guestId = crypto.randomUUID()
-    res.cookies.set('guest_id', guestId, {
+  // 1️⃣ Ensure guest_id cookie
+  const hasGuest = req.cookies.get("guest_id")?.value;
+  if (!hasGuest) {
+    const res = NextResponse.next();
+    const id = crypto.randomUUID();
+    console.log("guest_id created:", id);
+    res.cookies.set("guest_id", id, {
       httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 90, // 90 days
-      secure: process.env.NODE_ENV === 'production' ? true : false, // only secure in prod
-    })
-    console.log('guest_id created:', guestId)
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+    });
+    return res; // early return
   }
 
-  // 2️⃣ Protect /account when not signed in
-  if (req.nextUrl.pathname.startsWith('/account')) {
+  // 2️⃣ Protect /account (redirect to /login if not signed in)
+  if (req.nextUrl.pathname.startsWith("/account")) {
     const hasSession =
-      req.cookies.get('sb-access-token') || req.cookies.get('sb-refresh-token')
+      req.cookies.get("sb-access-token") || req.cookies.get("sb-refresh-token");
     if (!hasSession) {
-      const url = req.nextUrl.clone()
-      url.pathname = '/login'
-      url.searchParams.set('redirectedFrom', req.nextUrl.pathname)
-      return NextResponse.redirect(url)
+      const url = req.nextUrl.clone();
+      url.pathname = "/login";
+      url.searchParams.set("redirectedFrom", req.nextUrl.pathname);
+      return NextResponse.redirect(url);
     }
   }
 
-  return res
+  return NextResponse.next();
 }
 
-// 🔄 Apply middleware everywhere (including /login)
+// 🔄 Apply middleware everywhere except Next internals & API routes
 export const config = {
-  matcher: ['/((?!_next|favicon.ico|robots.txt|sitemap.xml|images|public|api).*)'],
-}
+  matcher: [
+    "/((?!_next|favicon.ico|robots.txt|sitemap.xml|images|public|api).*)",
+  ],
+};
