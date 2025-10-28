@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useChat } from '@/lib/store'
 import type { Recommendation } from '@/lib/store'
 import { plan as apiPlan, recommend as apiRecommend } from '@/lib/api'
@@ -13,6 +13,7 @@ import Skeleton from '@/components/Skeleton'
 import ToolRunner from '@/components/ToolRunner'
 import { HistoryList } from '@/components/HistoryList'
 import { getSupabaseBrowserClient } from '@/lib/supabase/browser'
+import QuickResponderButton from '@/components/QuickResponderButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,9 +29,9 @@ export default function Page() {
 
   const [firstRun, setFirstRun] = useState(true)
   const [lastGoal, setLastGoal] = useState('')
-
-  // 👋 Welcome banner logic
   const [userEmail, setUserEmail] = useState<string | null>(null)
+
+  // Supabase (browser) client
   const supabase = useMemo(() => getSupabaseBrowserClient(), [])
 
   useEffect(() => {
@@ -67,21 +68,15 @@ export default function Page() {
         text: p.decision?.summary || 'Here’s a quick plan you can follow:',
       })
 
-      // ---------- SAVE TO SUPABASE ----------
+      // ---------- SAVE TO SUPABASE (browser) ----------
       try {
-        const { getSupabase } = await import('@/lib/supabaseClient')
-        const sb = getSupabase()
-        if (sb) {
-          sb.from('user_prompts')
-            .insert({
-              goal: text,
-              decision_summary: p?.decision?.summary ?? null,
-              email: (await sb.auth.getUser()).data.user?.email ?? null,
-            })
-            .then(({ error }) => {
-              if (error) console.error('Save prompt failed:', error.message)
-            })
-        }
+        await supabase
+          .from('user_prompts')
+          .insert({
+            goal: text,
+            decision_summary: p?.decision?.summary ?? null,
+            email: (await supabase.auth.getUser()).data.user?.email ?? null,
+          })
       } catch (saveErr) {
         console.warn('Supabase save skipped:', saveErr)
       }
@@ -139,12 +134,17 @@ export default function Page() {
 
       {/* 💬 Left: Conversation */}
       <div className="space-y-4">
-        <PromptBar onSend={onSend} loading={loading} />
+        {/* Quick test button for rate-limited Edge Function (optional) */}
+        <div className="flex items-center gap-3">
+          <PromptBar onSend={onSend} loading={loading} />
+          <QuickResponderButton />
+        </div>
 
         <div className="space-y-3">
           {messages.map((m) => (
             <MessageBubble key={m.id} role={m.role} text={m.text} />
           ))}
+
           {loading && messages.filter((m) => m.role === 'assistant').length === 0 ? (
             <MessageBubble role="assistant" typing text="" />
           ) : null}
@@ -198,7 +198,7 @@ export default function Page() {
         </div>
 
         {/* 🕓 History list (live updates + re-run) */}
-        <HistoryList onRerun={(goal) => onSend(goal)} />
+        <HistoryList onRerun={(goal: string) => onSend(goal)} />
 
         <button className="btn w-full" onClick={() => reset()}>
           Reset
@@ -213,13 +213,4 @@ export default function Page() {
       <ToolRunner />
     </div>
   )
-}
-import QuickResponderButton from "@/components/QuickResponderButton";
-
-export default function Home() {
-  return (
-    <main className="p-6">
-      <QuickResponderButton />
-    </main>
-  );
 }
