@@ -1,0 +1,68 @@
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
+
+const EDGE_BASE =
+  process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/$/, "") + "/functions/v1";
+
+async function forward(req: NextRequest, fn: string) {
+  // Build Supabase server client to read auth session cookies on the server
+  const cookieStore = cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) { return cookieStore.get(name)?.value; },
+        set(name: string, value: string, options: any) {
+          cookieStore.set({ name, value, ...options });
+        },
+        remove(name: string, options: any) {
+          cookieStore.set({ name, value: "", expires: new Date(0), ...options });
+        },
+      },
+    }
+  );
+
+  const { data: { user } } = await supabase.auth.getUser();
+  const guest = cookieStore.get("guest_id")?.value;
+  const uid = user?.id ?? guest ?? "guest";
+
+  // Clone request body (works for POST/PUT/etc.)
+  const body = req.method === "GET" ? undefined : await req.text();
+
+  const resp = await fetch(`${EDGE_BASE}/${fn}`, {
+    method: req.method,
+    headers: {
+      "Content-Type": req.headers.get("content-type") ?? "application/json",
+      "x-user-id": uid,
+    },
+    body,
+    cache: "no-store",
+  });
+
+  // Stream back JSON and pass through RL headers if any
+  const data = await resp.text();
+  const jsonSafe = data || "{}";
+
+  const out = new NextResponse(jsonSafe, {
+    status: resp.status,
+    headers: {
+      "Content-Type": "application/json",
+      "X-RateLimit-Remaining-Minute": resp.headers.get("X-RateLimit-Remaining-Minute") ?? "",
+      "X-RateLimit-Remaining-Hour": resp.headers.get("X-RateLimit-Remaining-Hour") ?? "",
+      "Retry-After": resp.headers.get("Retry-After") ?? "",
+      "X-RateLimit-Plan": resp.headers.get("X-RateLimit-Plan") ?? "",
+    },
+  });
+
+  return out;
+}
+
+export async function GET(_: NextRequest, { params }: { params: { fn: string } }) {
+  return forward(_, params.fn);
+}
+
+export async function POST(req: NextRequest, { params }: { params: { fn: string } }) {
+  return forward(req, params.fn);
+}
