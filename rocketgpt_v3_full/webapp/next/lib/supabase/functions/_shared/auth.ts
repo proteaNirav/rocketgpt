@@ -1,12 +1,13 @@
 // deno-lint-ignore-file no-explicit-any
 export function getAuthUserId(req: Request): string | null {
-  const auth = req.headers.get("authorization") || "";
-  const token = auth.startsWith("Bearer ") ? auth.slice(7) : null;
-  if (!token) return null;
+  // Retrieve all headers and handle any casing variations
+  const headers = new Headers(req.headers);
+  const uid =
+    headers.get("x-user-id") ||
+    headers.get("X-User-Id") ||
+    headers.get("X-USER-ID") ||
+    headers.get("user-id");
 
-  // Trust Supabase’s JWT. In Deno, we avoid verifying here (Supabase already did),
-  // you likely pass user_id from your app as header if you’re using service calls.
-  // If you prefer strict, add jose decode here.
-  const uid = req.headers.get("x-user-id"); // <- recommended: send from your web app after verifying session
-  return uid;
+  if (!uid || uid.trim().length === 0) return null;
+  return uid.trim();
 }
