@@ -1,6 +1,6 @@
 'use client';
 import { useState } from "react";
-import { edgeCall } from "@/lib/edgeCall";
+import { callEdge } from "@/lib/edgeClient";
 import { emitRateLimited } from "@/lib/ratelimitBus";
 import { isRateLimitError } from "@/lib/errors";
 
@@ -10,7 +10,7 @@ export default function QuickResponderButton() {
   async function run() {
     setBusy(true);
     try {
-      const res = await edgeCall("quick-responder", { prompt: "ping" });
+      const res = await callEdge("quick-responder", { prompt: "ping" });
       console.log("OK:", res);
     } catch (e: any) {
       if (isRateLimitError(e)) {
