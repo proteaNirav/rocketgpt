@@ -1,26 +1,37 @@
 name: AI Codegen
+
 on:
   issues:
     types: [labeled]
+
 permissions:
   contents: write
   pull-requests: write
   issues: write
+
+concurrency:
+  group: codegen-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
 jobs:
   codegen:
     if: contains(github.event.issue.labels.*.name, 'codegen:ready')
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
-        with: { node-version: '20' }
+        with:
+          node-version: '20'
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
-        with: { dotnet-version: '9.0.x' }
+        with:
+          dotnet-version: '9.0.x'
 
       - name: Pull Spec from Issue
         id: spec
@@ -28,7 +39,7 @@ jobs:
         with:
           script: |
             const issue = context.payload.issue;
-            const m = (issue.body||'').match(/```json([\s\S]*?)```/i);
+            const m = (issue.body || '').match(/```json([\s\S]*?)```/i);
             const json = m ? m[1].trim() : '{}';
             core.setOutput('spec', json);
             core.setOutput('title', issue.title);
@@ -38,32 +49,56 @@ jobs:
 
       - name: Generate Code (Plan→Code→Tests→Docs→Guard)
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          DRIVE_SVC_JSON: ${{ secrets.DRIVE_SVC_JSON }}
+          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
+          DRIVE_SVC_JSON:     ${{ secrets.DRIVE_SVC_JSON }}
         run: |
           echo '${{ steps.spec.outputs.spec }}' > spec.json
-          node rocketgpt-agents/runners/github_actions.js code spec.json
-          node rocketgpt-agents/runners/github_actions.js test spec.json
-          node rocketgpt-agents/runners/github_actions.js doc spec.json
+          # Your agents
+          node rocketgpt-agents/runners/github_actions.js code  spec.json
+          node rocketgpt-agents/runners/github_actions.js test  spec.json
+          node rocketgpt-agents/runners/github_actions.js doc   spec.json
           node rocketgpt-agents/runners/github_actions.js guard spec.json
+          # Always add a small, harmless artifact so the PR shows changes
+          mkdir -p generated
+          echo "Auto-generated for issue #${{ github.event.issue.number }} on $GITHUB_REPOSITORY" \
+            > generated/ai_test_${{ github.event.issue.number }}.md
 
       - name: Build (JS + .NET)
         run: |
           echo "Running dotnet build (if solution present)"
-          if [ -f "./LicenseManager.sln" ]; then dotnet build ./LicenseManager.sln -c Release; else echo "No .sln found, skipping."; fi
+          if [ -f "./LicenseManager.sln" ]; then
+            dotnet build ./LicenseManager.sln -c Release
+          else
+            echo "No .sln found, skipping."
+          fi
 
       - name: Run Tests (if present)
         run: |
-          if [ -f "./LicenseManager.sln" ]; then dotnet test ./LicenseManager.sln -c Release --logger "trx;LogFileName=test.trx"; else echo "No tests, skipping."; fi
+          if [ -f "./LicenseManager.sln" ]; then
+            dotnet test ./LicenseManager.sln -c Release --logger "trx;LogFileName=test.trx"
+          else
+            echo "No tests, skipping."
+          fi
+
+      # 🔧 Fix: set committer identity before committing
+      - name: Configure Git author
+        run: |
+          git config --global user.name  "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: Create Branch, Commit & Push
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH="ai/codegen/${{ github.event.issue.number }}"
-          git checkout -b "$BRANCH"
+          # create or switch to branch
+          if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
+            git checkout "$BRANCH"
+          else
+            git checkout -b "$BRANCH"
+          fi
           git add -A
           git commit -m "AI codegen for #${{ github.event.issue.number }}: ${{ steps.spec.outputs.title }}"
           git push origin "$BRANCH"
@@ -86,4 +121,5 @@ jobs:
             - [ ] Product acceptance met
 
             ### Artifacts
-            - See commit diff. Agents wrote files under project paths.
+            - `generated/ai_test_${{ github.event.issue.number }}.md`
+            - See commit diff for agent-written files.
