@@ -1,18 +1,33 @@
 name: RocketGPT Review Pipeline
+
 on:
   pull_request:
-    branches: [main, dev]
+    branches: [ main, dev ]
+
 jobs:
   lint-test-build:
+    # Run only if package.json exists
+    if: ${{ hashFiles('package.json') != '' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run build
+          # no cache when we might not have a lockfile yet
+          cache: 'none'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Test
+        run: npm test --if-present
