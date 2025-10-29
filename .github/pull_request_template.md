@@ -1,15 +1,11 @@
-## What & Why
-- [ ] Epic: M1.5 – (Sentry | Rate limit | Cache | Cost | Failover)
-- Short summary of change and reason.
+## 🤖 What changed
+- Generated code from spec in linked Issue.
 
-## Changes
-- Key files and functions touched.
+## ✅ Must pass before merge
+- [ ] Build succeeds
+- [ ] Tests added & green
+- [ ] Security scan clean
+- [ ] Acceptance criteria met
 
-## Testing
-- [ ] Local build ok
-- [ ] ESLint ok
-- [ ] Manually verified in preview
-
-## Risk & Rollback
-- Risk level: Low/Med/High
-- Rollback steps:
+## 🔎 Review notes
+- Risks and open questions are documented in `docs/activation_flow.md`.
