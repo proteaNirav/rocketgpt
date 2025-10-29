@@ -14,6 +14,13 @@ const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
+const userId = getAuthUserId(req) || req.headers.get("x-user-id");
+if (!userId) {
+  return new Response(JSON.stringify({ error: "unauthorized" }), {
+    status: 401, headers: { "Content-Type": "application/json" },
+  });
+}
+
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
