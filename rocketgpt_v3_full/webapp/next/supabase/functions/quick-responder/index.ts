@@ -1,66 +1,44 @@
-// supabase/functions/quick-responder/index.ts
 // deno-lint-ignore-file no-explicit-any
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { checkRateLimit } from "./_shared/ratelimit.ts";
-import { getAuthUserId } from "./_shared/auth.ts";
+import { checkRateLimit } from "../_shared/ratelimit.ts";
+import { getAuthUserId } from "../_shared/auth.ts";
 
 const ENDPOINT_KEY = "quick_responder";
 
-// CORS (use "*" while testing, restrict later)
-const corsHeaders: Record<string, string> = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-user-id",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-};
-
-const userId = getAuthUserId(req) || req.headers.get("x-user-id");
-if (!userId) {
-  return new Response(JSON.stringify({ error: "unauthorized" }), {
-    status: 401, headers: { "Content-Type": "application/json" },
-  });
-}
-
 serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
   try {
-    // Accept logged-in, header-provided, or guest
-    const uid =
-      getAuthUserId(req) ||
-      req.headers.get("x-user-id")?.trim() ||
-      "guest";
-
-    if (req.method === "GET") {
-      return new Response(
-        JSON.stringify({ ok: true, endpoint: ENDPOINT_KEY, uid, version: "v5" }),
-        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
-      );
+    // ⛔ guests blocked — only real users
+    const userId = getAuthUserId(req) || req.headers.get("x-user-id");
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
-    // Rate limit
-    const rl = await checkRateLimit(uid, ENDPOINT_KEY);
+    const rl = await checkRateLimit(userId, ENDPOINT_KEY);
+
+    const base = new Headers({
+      "Content-Type": "application/json",
+      "X-RateLimit-Remaining-Minute": String(rl.minute_remaining),
+      "X-RateLimit-Remaining-Hour":   String(rl.hour_remaining),
+      "X-RateLimit-Plan":             rl.limits.plan_code,
+    });
+
     if (!rl.allowed) {
+      base.set("Retry-After", String(rl.retry_after_seconds));
       return new Response(JSON.stringify({ error: "rate_limited", ...rl }), {
-        status: 429,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        status: 429, headers: base
       });
     }
 
     const body = await req.json().catch(() => ({}));
-
-    return new Response(
-      JSON.stringify({ ok: true, uid, input: body, message: "Quick responder executed" }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
-    );
-  } catch (err) {
-    return new Response(
-      JSON.stringify({ error: "server_error", message: String(err) }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } },
-    );
+    return new Response(JSON.stringify({ ok: true, input: body }), {
+      status: 200, headers: base
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: "server_error", message: String(e) }), {
+      status: 500, headers: { "Content-Type": "application/json" }
+    });
   }
 });
-
-
