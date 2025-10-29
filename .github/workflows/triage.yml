@@ -1,0 +1,48 @@
+name: Triage Spec
+on:
+  issues:
+    types: [opened, edited, labeled]
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+jobs:
+  triage:
+    if: contains(github.event.issue.labels.*.name, 'self-apply')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse Business Spec from Issue Body
+        id: spec
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            const m = body.match(/```json([\s\S]*?)```/i);
+            const json = m ? m[1].trim() : '{}';
+            core.setOutput('spec', json);
+
+      - name: Expand to Tasks (Plan Agent)
+        run: |
+          mkdir -p rocketgpt-agents/out
+          echo '${{ steps.spec.outputs.spec }}' > spec.json
+          node rocketgpt-agents/runners/github_actions.js plan spec.json > rocketgpt-agents/out/tasks.json
+          echo "Planned tasks:"
+          cat rocketgpt-agents/out/tasks.json
+
+      - name: Attach tasks comment
+        uses: actions-ecosystem/action-add-comment@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            ### 🗂 Planned Tasks
+            ```json
+            ${{ steps.spec.outputs.spec }}
+            ```
+            **Next:** Add label `codegen:ready` to start code generation.
+
+      - name: Label codegen:ready
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: codegen:ready
