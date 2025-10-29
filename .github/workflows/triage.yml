@@ -8,7 +8,9 @@ permissions:
   pull-requests: write
 jobs:
   triage:
-    if: contains(github.event.issue.labels.*.name, 'self-apply')
+    if: |
+  github.event.action == 'labeled' &&
+  github.event.label.name == 'self-apply'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
