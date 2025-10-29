@@ -1,120 +1,142 @@
-name: AI PR Review
+name: AI Pull Request Review
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
-    branches: [ main, dev ]
+    types: [opened, reopened, ready_for_review, synchronize]
 
 permissions:
   contents: read
   pull-requests: write
 
 concurrency:
-  group: ai-review-${{ github.event.pull_request.number }}
+  group: ai-review-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
   review:
+    if: ${{ !github.event.pull_request.draft }} # skip drafts
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check keys (skip if missing)
-        id: gate
-        run: |
-          missing=0
-          if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then missing=$((missing+1)); fi
-          echo "missing=$missing" >> $GITHUB_OUTPUT
-
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-      - name: Collect PR diff (summary)
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Decide which model provider to use for the reviewer.
+      # Set a repo variable "DEFAULT_ENGINE" = openai|anthropic|google|groq (optional).
+      - name: Resolve engine
+        id: engine
+        uses: actions/github-script@v7
+        env:
+          DEFAULT_ENGINE: ${{ vars.DEFAULT_ENGINE }}
+        with:
+          script: |
+            const engine = (process.env.DEFAULT_ENGINE || 'openai').toLowerCase();
+            core.setOutput('engine', engine);
+
+      - name: Collect changed files / summary
         id: diff
         uses: actions/github-script@v7
         with:
           script: |
-            const pr = context.payload.pull_request;
-            const files = await github.paginate(github.rest.pulls.listFiles, {
+            const {owner, repo, number} = {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: pr.number,
-              per_page: 100
-            });
-            const changed = files.map(f => `• ${f.filename} (+${f.additions}/-${f.deletions})`).join('\n');
-            const patchSample = files.slice(0, 10).map(f => {
-              const p = (f.patch || '').split('\n').slice(0, 200).join('\n');
-              return `# ${f.filename}\n${p}`;
-            }).join('\n\n-----\n\n');
-            core.setOutput('changed', changed || 'No changes?');
-            core.setOutput('patch', patchSample || 'No patch?');
+              number: context.payload.pull_request.number
+            };
 
-      - name: Run AI review
-        if: steps.gate.outputs.missing == '0'
-        id: ai
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TITLE: ${{ github.event.pull_request.title }}
-          AUTHOR: ${{ github.event.pull_request.user.login }}
-          CHANGED: ${{ steps.diff.outputs.changed }}
-          PATCH: ${{ steps.diff.outputs.patch }}
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              { owner, repo, pull_number: number, per_page: 100 }
+            );
+
+            // A short textual diff summary for the reviewer LLM
+            const summary = files.map(f =>
+              `- ${f.filename} (${f.status}) +${f.additions} -${f.deletions}`
+            ).join('\n');
+
+            core.setOutput('files', JSON.stringify(files));
+            core.setOutput('summary', summary);
+
+      - name: Prepare review input
         run: |
-          cat > prompt.txt << 'EOF'
-          You are a senior code reviewer. Provide a concise, actionable review.
-          1) Start with an overall verdict (OK / Minor issues / Blocking issues).
-          2) List specific findings as bullets, each with: Area, Risk, Action.
-          3) Include a short security pass (secrets, injections, unsafe I/O).
-          4) Include a short testing pass (what to test; gaps).
-          Keep it under 300-400 words. Be specific and practical.
-          Context:
-          - Title: ${TITLE}
-          - Author: ${AUTHOR}
-          - Changes:
-          ${CHANGED}
-
-          Patch (truncated):
-          ${PATCH}
-          EOF
-
-          # Call OpenAI (gpt-4o-mini as default; change if needed)
-          REVIEW=$(curl -sS https://api.openai.com/v1/chat/completions \
-            -H "Authorization: Bearer ${OPENAI_API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d @- <<'JSON' | jq -r '.choices[0].message.content'
+          cat > review_input.json << 'JSON'
           {
-            "model": "gpt-4o-mini",
-            "messages": [
-              {"role":"system","content":"You are an expert code reviewer."},
-              {"role":"user","content": "'"$(sed 's/\\/\\\\/g; s/"/\\"/g' prompt.txt)"'"}
-            ],
-            "temperature": 0.2
+            "pr": {
+              "number": ${{ github.event.pull_request.number }},
+              "title": "${{ github.event.pull_request.title }}",
+              "author": "${{ github.event.pull_request.user.login }}",
+              "base": "${{ github.event.pull_request.base.ref }}",
+              "head": "${{ github.event.pull_request.head.ref }}"
+            },
+            "repo": "${{ github.repository }}",
+            "summary": ${{ toJson(steps.diff.outputs.summary) }},
+            "files": ${{ steps.diff.outputs.files }}
           }
           JSON
-          )
-          echo "$REVIEW" > review.md
-          echo "review=$(printf '%q' "$REVIEW")" >> $GITHUB_OUTPUT
+          echo "Prepared review_input.json"
 
-      - name: Post review comment
-        if: steps.gate.outputs.missing == '0'
+      - name: Run AI reviewer (analysis → findings → verdict)
+        env:
+          MODEL_PROVIDER:    ${{ steps.engine.outputs.engine }}
+          OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY:    ${{ secrets.GOOGLE_API_KEY }}
+          GROQ_API_KEY:      ${{ secrets.GROQ_API_KEY }}
+        run: |
+          # Your reviewer should read review_input.json and write review_result.json:
+          # {
+          #   "decision": "approve" | "comment" | "block",
+          #   "summary_md": "markdown bullets and risks",
+          #   "nitpicks_md": "- item 1\n- item 2"
+          # }
+          node rocketgpt-agents/runners/github_actions.js review review_input.json
+
+          test -f review_result.json || (echo "review_result.json missing"; exit 1)
+          echo "AI review produced:"
+          cat review_result.json
+
+      - name: Post GitHub Review & labels
         uses: actions/github-script@v7
         with:
           script: |
-            const pr = context.payload.pull_request;
-            const fs = require('fs');
-            const body = fs.readFileSync('review.md', 'utf8');
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr.number,
-              body: `### 🤖 AI Review\n\n${body}`
-            })
+            const result = require(process.cwd() + '/review_result.json');
 
-      - name: Note missing key (soft)
-        if: steps.gate.outputs.missing != '0'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const pr = context.payload.pull_request;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr.number,
-              body: "AI Review skipped: `OPENAI_API_KEY` not configured."
-            })
+            // Map AI decision to GitHub review event
+            const eventMap = { approve: 'APPROVE', block: 'REQUEST_CHANGES', comment: 'COMMENT' };
+            const event = eventMap[(result.decision || 'comment').toLowerCase()] || 'COMMENT';
+
+            const body =
+              `### 🤖 AI Review (engine: ${process.env.ENGINE})\n\n` +
+              (result.summary_md || '*No summary provided.*') +
+              (result.nitpicks_md ? `\n\n#### Nitpicks\n${result.nitpicks_md}` : '');
+
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+            const pull_number = context.payload.pull_request.number;
+
+            // Submit review
+            await github.rest.pulls.createReview({
+              owner, repo, pull_number, body, event
+            });
+
+            // Ensure "ai:reviewed" label is present
+            try {
+              await github.rest.issues.addLabels({ owner, repo, issue_number: pull_number, labels: ['ai:reviewed'] });
+            } catch (e) { /* ignore */ }
+
+            // If approved, also mark for auto-merge
+            if (event === 'APPROVE') {
+              try {
+                await github.rest.issues.addLabels({
+                  owner, repo, issue_number: pull_number, labels: ['auto-merge:ready']
+                });
+              } catch (e) { /* ignore */ }
+            }
+        env:
+          ENGINE: ${{ steps.engine.outputs.engine }}
