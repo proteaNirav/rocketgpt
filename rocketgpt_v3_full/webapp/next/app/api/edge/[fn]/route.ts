@@ -1,8 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+// app/api/edge/[fn]/route.ts
 import { cookies } from "next/headers";
-import { createServerClient /*, type CookieOptions */ } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
+import { NextRequest, NextResponse } from "next/server";
 
-const EDGE_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/$/, "") + "/functions/v1";
+const EDGE_BASE =
+  process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/$/, "") + "/functions/v1";
 
 async function forward(req: NextRequest, fn: string) {
   const cookieStore = cookies();
@@ -26,33 +28,53 @@ async function forward(req: NextRequest, fn: string) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
-  const guest = cookieStore.get("guest_id")?.value;
-  const uid = user?.id ?? guest ?? "guest";
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Only send x-user-id for authenticated users (prevents FK errors for guests)
+  const fwdHeaders: Record<string, string> = {
+    "Content-Type": req.headers.get("content-type") ?? "application/json",
+  };
+  if (user?.id) {
+    fwdHeaders["x-user-id"] = user.id;
+  }
 
   const body = req.method === "GET" ? undefined : await req.text();
+
   const resp = await fetch(`${EDGE_BASE}/${fn}`, {
     method: req.method,
-    headers: {
-      "Content-Type": req.headers.get("content-type") ?? "application/json",
-      "x-user-id": uid,
-    },
+    headers: fwdHeaders,
     body,
     cache: "no-store",
   });
 
   const data = await resp.text();
+
   return new NextResponse(data || "{}", {
     status: resp.status,
     headers: {
       "Content-Type": "application/json",
-      "X-RateLimit-Remaining-Minute": resp.headers.get("X-RateLimit-Remaining-Minute") ?? "",
-      "X-RateLimit-Remaining-Hour":   resp.headers.get("X-RateLimit-Remaining-Hour") ?? "",
-      "Retry-After":                  resp.headers.get("Retry-After") ?? "",
-      "X-RateLimit-Plan":             resp.headers.get("X-RateLimit-Plan") ?? "",
+      "X-RateLimit-Remaining-Minute":
+        resp.headers.get("X-RateLimit-Remaining-Minute") ?? "",
+      "X-RateLimit-Remaining-Hour":
+        resp.headers.get("X-RateLimit-Remaining-Hour") ?? "",
+      "Retry-After": resp.headers.get("Retry-After") ?? "",
+      "X-RateLimit-Plan": resp.headers.get("X-RateLimit-Plan") ?? "",
     },
   });
 }
 
-export async function GET(req: NextRequest, ctx: { params: { fn: string } })  { return forward(req, ctx.params.fn); }
-export async function POST(req: NextRequest, ctx: { params: { fn: string } }) { return forward(req, ctx.params.fn); }
+export async function GET(
+  req: NextRequest,
+  ctx: { params: { fn: string } }
+) {
+  return forward(req, ctx.params.fn);
+}
+
+export async function POST(
+  req: NextRequest,
+  ctx: { params: { fn: string } }
+) {
+  return forward(req, ctx.params.fn);
+}
