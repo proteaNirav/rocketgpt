@@ -1,0 +1,277 @@
+name: AI Codegen (Matrix)
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: codegen-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  plan-matrix:
+    if: contains(github.event.issue.labels.*.name, 'codegen:ready')
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      priority: ${{ steps.plan.outputs.priority }}
+      title: ${{ steps.spec.outputs.title }}
+      spec: ${{ steps.spec.outputs.spec }}
+      requested_engine: ${{ steps.spec.outputs.engine }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Parse JSON spec from issue body and extract `engine` (optional)
+      - name: Pull Spec from Issue (with engine)
+        id: spec
+        uses: actions/github-script@v7
+        env:
+          DEFAULT_ENGINE: ${{ vars.DEFAULT_ENGINE }}
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body || '';
+            const match = body.match(/```json([\s\S]*?)```/i);
+            let obj = {};
+            try {
+              obj = match ? JSON.parse(match[1].trim()) : {};
+            } catch (e) {
+              core.warning(`Failed to parse JSON: ${e.message}`);
+              obj = {};
+            }
+            const engine = (obj.engine || process.env.DEFAULT_ENGINE || 'openai')
+              .toString().trim().toLowerCase();
+            core.setOutput('title', issue.title || 'Untitled');
+            core.setOutput('spec', JSON.stringify(obj));
+            core.setOutput('engine', engine);
+
+      # Build matrix & priority list from available secrets + requested engine
+      - name: Plan providers matrix
+        id: plan
+        uses: actions/github-script@v7
+        env:
+          REQ:                 ${{ steps.spec.outputs.engine }}
+          OPENAI_API_KEY:      ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY:   ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY:      ${{ secrets.GOOGLE_API_KEY }}
+          GROQ_API_KEY:        ${{ secrets.GROQ_API_KEY }}
+        with:
+          script: |
+            // Discover available providers
+            const available = [];
+            if (process.env.OPENAI_API_KEY)    available.push('openai');
+            if (process.env.ANTHROPIC_API_KEY) available.push('anthropic');
+            if (process.env.GOOGLE_API_KEY)    available.push('google');
+            if (process.env.GROQ_API_KEY)      available.push('groq');
+
+            // Default priority order; put requested engine first if present
+            const baseOrder = ['openai', 'anthropic', 'google', 'groq'];
+            const req = (process.env.REQ || '').trim().toLowerCase();
+            const dedupe = (arr) => [...new Set(arr)];
+
+            let priority = dedupe([req, ...baseOrder]).filter(p => p && available.includes(p));
+
+            // Fallback: if nothing is available, still allow openai (agents should no-op gracefully)
+            if (priority.length === 0) {
+              priority = ['openai'];
+            }
+
+            // Matrix is just the providers we intend to try in parallel
+            const matrix = { provider: priority };
+
+            core.info(`Matrix providers: ${JSON.stringify(matrix)}`);
+            core.setOutput('matrix', JSON.stringify(matrix));
+            core.setOutput('priority', JSON.stringify(priority));
+
+  codegen-matrix:
+    name: codegen (${{ matrix.provider }})
+    needs: plan-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.plan-matrix.outputs.matrix) }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Configure Git author
+        run: |
+          git config --global user.name  "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Show provider choice
+        run: echo "MODEL_PROVIDER=${{ matrix.provider }}"
+
+      - name: Generate Code (Plan→Code→Tests→Docs→Guard)
+        env:
+          MODEL_PROVIDER:     ${{ matrix.provider }}
+          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          DRIVE_SVC_JSON:     ${{ secrets.DRIVE_SVC_JSON }}
+          SPEC_JSON:          ${{ needs.plan-matrix.outputs.spec }}
+        run: |
+          echo "${SPEC_JSON}" > spec.json
+          echo "Selected provider: ${MODEL_PROVIDER}"
+
+          # Your agents (should branch internally on MODEL_PROVIDER)
+          node rocketgpt-agents/runners/github_actions.js code  spec.json
+          node rocketgpt-agents/runners/github_actions.js test  spec.json
+          node rocketgpt-agents/runners/github_actions.js doc   spec.json
+          node rocketgpt-agents/runners/github_actions.js guard spec.json
+
+          # Harmless artifact so we always see diff per-provider
+          mkdir -p generated/${MODEL_PROVIDER}
+          echo "Auto-generated for issue #${{ github.event.issue.number }} on $GITHUB_REPOSITORY (engine=${MODEL_PROVIDER})" \
+            > generated/${MODEL_PROVIDER}/ai_test_${{ github.event.issue.number }}_${MODEL_PROVIDER}.md
+
+      - name: Build (JS + .NET)
+        run: |
+          echo "Running dotnet build (if solution present)"
+          if [ -f "./LicenseManager.sln" ]; then
+            dotnet build ./LicenseManager.sln -c Release
+          else
+            echo "No .sln found, skipping."
+          fi
+
+      - name: Run Tests (if present)
+        run: |
+          if [ -f "./LicenseManager.sln" ]; then
+            dotnet test ./LicenseManager.sln -c Release --logger "trx;LogFileName=test.trx"
+          else
+            echo "No tests, skipping."
+          fi
+
+      - name: Create Branch, Commit & Push (provider branch)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROVIDER: ${{ matrix.provider }}
+        run: |
+          BRANCH="ai/codegen/${{ github.event.issue.number }}/${PROVIDER}"
+          if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
+            git checkout "$BRANCH"
+          else
+            git checkout -b "$BRANCH"
+          fi
+
+          git add -A
+          git commit -m "AI codegen for #${{ github.event.issue.number }} (provider=${PROVIDER}): ${{ needs.plan-matrix.outputs.title }}"
+          git push origin "$BRANCH"
+
+  choose-and-open-pr:
+    name: choose & open PR
+    needs: [plan-matrix, codegen-matrix]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Pick best provider branch (by priority)
+        id: pick
+        uses: actions/github-script@v7
+        env:
+          PRIORITY: ${{ needs.plan-matrix.outputs.priority }}
+          ISSUE: ${{ github.event.issue.number }}
+          OWNER: ${{ github.repository_owner }}
+          REPO:  ${{ github.event.repository.name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const priority = JSON.parse(process.env.PRIORITY || '[]');
+            const owner = process.env.OWNER;
+            const repo  = process.env.REPO;
+            const issue = process.env.ISSUE;
+
+            // We'll detect which branch exists on origin, in priority order
+            const { execSync } = require('child_process');
+
+            function branchExists(branch) {
+              try {
+                execSync(`git ls-remote --exit-code --heads https://github.com/${owner}/${repo}.git ${branch}`, { stdio: 'ignore' });
+                return true;
+              } catch {
+                return false;
+              }
+            }
+
+            let chosenProvider = null;
+            let chosenBranch   = null;
+
+            for (const p of priority) {
+              const candidate = `ai/codegen/${issue}/${p}`;
+              if (branchExists(candidate)) {
+                chosenProvider = p;
+                chosenBranch = candidate;
+                break;
+              }
+            }
+
+            if (!chosenBranch) {
+              core.setFailed(`No provider branches found for issue #${issue}.`);
+              return;
+            }
+
+            core.info(`Chosen provider: ${chosenProvider}, branch: ${chosenBranch}`);
+            core.setOutput('provider', chosenProvider);
+            core.setOutput('branch', chosenBranch);
+
+      - name: Open PR (single, from chosen provider)
+        uses: actions/github-script@v7
+        env:
+          BRANCH:   ${{ steps.pick.outputs.branch }}
+          PROVIDER: ${{ steps.pick.outputs.provider }}
+          TITLE:    ${{ needs.plan-matrix.outputs.title }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+            const head  = process.env.BRANCH;
+            const base  = 'main';
+            const title = `AI Codegen: ${process.env.TITLE} (provider=${process.env.PROVIDER})`;
+            const body  = [
+              '## 🤖 What changed',
+              `Generated code and tests from issue #${context.payload.issue.number}.`,
+              '',
+              `**Chosen provider:** \`${process.env.PROVIDER}\``,
+              '## ✅ Checklist',
+              '- [ ] Builds pass',
+              '- [ ] Tests added & green',
+              '- [ ] Security scan clean',
+              '- [ ] Product acceptance met',
+              '',
+              '### Notes',
+              `Branch: \`${head}\``,
+            ].join('\n');
+
+            // Check if a PR from this branch already exists
+            const prs = await github.rest.pulls.list({
+              owner, repo, state: 'open', head: `${owner}:${head}`, base
+            });
+            if (prs.data.length > 0) {
+              core.info(`PR already exists: #${prs.data[0].number}`);
+            } else {
+              const { data: pr } = await github.rest.pulls.create({ owner, repo, head, base, title, body });
+              core.info(`Opened PR #${pr.number}`);
+            }
