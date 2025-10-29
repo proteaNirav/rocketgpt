@@ -33,36 +33,60 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Pull Spec from Issue
+      # Parse JSON spec from the issue body and extract `engine`
+      - name: Pull Spec from Issue (with engine)
         id: spec
         uses: actions/github-script@v7
+        env:
+          DEFAULT_ENGINE: ${{ vars.DEFAULT_ENGINE }} # optional repo variable, e.g. "openai"
         with:
           script: |
             const issue = context.payload.issue;
-            const m = (issue.body || '').match(/```json([\s\S]*?)```/i);
-            const json = m ? m[1].trim() : '{}';
-            core.setOutput('spec', json);
-            core.setOutput('title', issue.title);
+            const body = issue.body || '';
+            const match = body.match(/```json([\s\S]*?)```/i);
+            let obj = {};
+            try {
+              obj = match ? JSON.parse(match[1].trim()) : {};
+            } catch (e) {
+              core.warning(`Failed to parse JSON from issue body: ${e.message}`);
+              obj = {};
+            }
+            const engine =
+              (obj.engine || process.env.DEFAULT_ENGINE || 'openai')
+                .toString()
+                .trim()
+                .toLowerCase(); // openai|anthropic|google|groq
+
+            core.setOutput('spec', JSON.stringify(obj));
+            core.setOutput('title', issue.title || 'Untitled');
+            core.setOutput('engine', engine);
 
       - name: Install (no external deps)
         run: echo "No npm deps required."
 
       - name: Generate Code (Plan→Code→Tests→Docs→Guard)
         env:
+          # Provider keys (present if configured)
           OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
           GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
           DRIVE_SVC_JSON:     ${{ secrets.DRIVE_SVC_JSON }}
+          # Routing hint for your agents
+          MODEL_PROVIDER:     ${{ steps.spec.outputs.engine }}
         run: |
           echo '${{ steps.spec.outputs.spec }}' > spec.json
-          # Your agents
+          echo "Using provider: ${MODEL_PROVIDER}"
+
+          # Your agents (branch internally on MODEL_PROVIDER)
           node rocketgpt-agents/runners/github_actions.js code  spec.json
           node rocketgpt-agents/runners/github_actions.js test  spec.json
           node rocketgpt-agents/runners/github_actions.js doc   spec.json
           node rocketgpt-agents/runners/github_actions.js guard spec.json
+
           # Always add a small, harmless artifact so the PR shows changes
           mkdir -p generated
-          echo "Auto-generated for issue #${{ github.event.issue.number }} on $GITHUB_REPOSITORY" \
+          echo "Auto-generated for issue #${{ github.event.issue.number }} on $GITHUB_REPOSITORY (engine=${MODEL_PROVIDER})" \
             > generated/ai_test_${{ github.event.issue.number }}.md
 
       - name: Build (JS + .NET)
@@ -82,7 +106,7 @@ jobs:
             echo "No tests, skipping."
           fi
 
-      # 🔧 Fix: set committer identity before committing
+      # Fix: set committer identity before committing
       - name: Configure Git author
         run: |
           git config --global user.name  "${{ github.actor }}"
@@ -93,14 +117,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH="ai/codegen/${{ github.event.issue.number }}"
-          # create or switch to branch
           if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
             git checkout "$BRANCH"
           else
             git checkout -b "$BRANCH"
           fi
           git add -A
-          git commit -m "AI codegen for #${{ github.event.issue.number }}: ${{ steps.spec.outputs.title }}"
+          git commit -m "AI codegen for #${{ github.event.issue.number }} (engine=${{ steps.spec.outputs.engine }}): ${{ steps.spec.outputs.title }}"
           git push origin "$BRANCH"
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
 
@@ -109,10 +132,13 @@ jobs:
         with:
           base: main
           branch: ${{ env.BRANCH }}
-          title: "AI Codegen: ${{ steps.spec.outputs.title }}"
+          title: "AI Codegen: ${{ steps.spec.outputs.title }} (engine=${{ steps.spec.outputs.engine }})"
           body: |
             ## 🤖 What changed
             Generated code and tests from spec in #${{ github.event.issue.number }}.
+
+            **Engine:** `${{ steps.spec.outputs.engine }}`  
+            **Routing hint:** `MODEL_PROVIDER=${{ steps.spec.outputs.engine }}`
 
             ## ✅ Checklist
             - [ ] Builds pass
