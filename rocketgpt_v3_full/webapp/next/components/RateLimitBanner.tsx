@@ -1,51 +1,35 @@
-'use client';
-import { useEffect, useRef, useState } from "react";
-import { onRateLimited } from "@/lib/ratelimitBus";
+// components/RateLimitBanner.tsx
+'use client'
+
+import { useEffect, useState } from 'react'
+import { onRateLimited } from '@/lib/ratelimitBus'
 
 export default function RateLimitBanner() {
-  const [visible, setVisible] = useState(false);
-  const [msg, setMsg] = useState<string>("");
-  const [eta, setEta] = useState<number>(60);
-  const [plan, setPlan] = useState<string>("");
-
-  // store the current hide timer id so we can clear/reset it
-  const hideTimerRef = useRef<number | null>(null);
+  const [visible, setVisible] = useState(false)
+  const [eta, setEta] = useState<number>(0)
+  const [plan, setPlan] = useState<string>('')
 
   useEffect(() => {
-    // subscribe once
+    // Register listener for rate limit events
     const unsubscribe = onRateLimited(({ message, retryAfter, plan }) => {
-      setMsg(message || "You’ve hit your rate limit.");
-      setEta(retryAfter ?? 60);
-      setPlan(plan || "BRONZE");
-      setVisible(true);
+      setVisible(true)
+      setEta(retryAfter ?? 60)
+      setPlan(plan ?? '')
+      console.warn(message || 'Rate limit reached')
+    })
 
-      // reset the hide timer
-      if (hideTimerRef.current !== null) {
-        window.clearTimeout(hideTimerRef.current);
-      }
-      hideTimerRef.current = window.setTimeout(() => setVisible(false), 8000);
-    });
-
-    // proper cleanup: clear timer + unsubscribe
     return () => {
-      if (hideTimerRef.current !== null) {
-        window.clearTimeout(hideTimerRef.current);
-        hideTimerRef.current = null;
-      }
-      unsubscribe();
-    };
-  }, []);
+      unsubscribe()
+    }
+  }, [])
 
-  if (!visible) return null;
+  if (!visible) return null
 
   return (
-    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50">
-      <div className="rounded-lg border bg-neutral-900 text-gray-100 px-4 py-3 shadow-lg">
-        <div className="text-sm">
-          <b>Rate limit reached</b> (plan: {plan}). Try again in ~{eta}s,
-          or upgrade in <a href="/super/plans" className="underline">Plans</a>.
-        </div>
-      </div>
+    <div className="fixed bottom-0 left-0 right-0 bg-red-600 text-white text-center py-2 text-sm z-50">
+      <b>Rate limit reached.</b>{' '}
+      {eta > 0 && <>Please retry in {eta} seconds.</>} {' '}
+      {plan && <span className="ml-1">(Your plan: {plan})</span>}
     </div>
-  );
+  )
 }
