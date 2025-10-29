@@ -2,14 +2,18 @@ name: AI Codegen
 on:
   issues:
     types: [labeled]
+
 permissions:
   contents: write
   pull-requests: write
   issues: write
+
 jobs:
-  codegen:
+  prepare:
     if: contains(github.event.issue.labels.*.name, 'codegen:ready')
     runs-on: ubuntu-latest
+    outputs:
+      pr_title: ${{ steps.spec.outputs.title }}
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -32,11 +36,7 @@ jobs:
             const json = m ? m[1].trim() : '{}';
             core.setOutput('spec', json);
             core.setOutput('title', issue.title);
-
-      - name: Install (no external deps)
-        run: echo "No npm deps required."
-
-      - name: Generate Code (Plan→Code→Tests→Docs→Guard)
+      - name: Generate Code (Plan→Code→Tests→Docs→Guard prep)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -47,20 +47,9 @@ jobs:
           node rocketgpt-agents/runners/github_actions.js code spec.json
           node rocketgpt-agents/runners/github_actions.js test spec.json
           node rocketgpt-agents/runners/github_actions.js doc spec.json
-          node rocketgpt-agents/runners/github_actions.js guard spec.json
+          # guard runs as its own job; we just prepare files here
 
-      - name: Build (JS + .NET)
-        run: |
-          echo "Running dotnet build (if solution present)"
-          if [ -f "./LicenseManager.sln" ]; then dotnet build ./LicenseManager.sln -c Release; else echo "No .sln found, skipping."; fi
-
-      - name: Run Tests (if present)
-        run: |
-          if [ -f "./LicenseManager.sln" ]; then dotnet test ./LicenseManager.sln -c Release --logger "trx;LogFileName=test.trx"; else echo "No tests, skipping."; fi
-
-      - name: Create Branch, Commit & Push
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Branch & Commit
         run: |
           BRANCH="ai/codegen/${{ github.event.issue.number }}"
           git checkout -b "$BRANCH"
@@ -70,6 +59,7 @@ jobs:
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
 
       - name: Open PR
+        id: openpr
         uses: peter-evans/create-pull-request@v6
         with:
           base: main
@@ -78,12 +68,47 @@ jobs:
           body: |
             ## 🤖 What changed
             Generated code and tests from spec in #${{ github.event.issue.number }}.
+          draft: false
 
-            ## ✅ Checklist
-            - [ ] Builds pass
-            - [ ] Tests added & green
-            - [ ] Security scan clean
-            - [ ] Product acceptance met
+  build:
+    name: build
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '9.0.x' }
+      - name: Build (if solution exists)
+        run: |
+          if [ -f "./LicenseManager.sln" ]; then
+            dotnet build ./LicenseManager.sln -c Release
+          else
+            echo "No .sln found; marking build as success."
+          fi
 
-            ### Artifacts
-            - See commit diff. Agents wrote files under project paths.
+  test:
+    name: test
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '9.0.x' }
+      - name: Run Tests (if present)
+        run: |
+          if [ -f "./LicenseManager.sln" ]; then
+            dotnet test ./LicenseManager.sln -c Release --logger "trx;LogFileName=test.trx"
+          else
+            echo "No tests to run; marking test as success."
+          fi
+
+  guard:
+    name: guard
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Guard (secret scan placeholder)
+        run: |
+          node rocketgpt-agents/runners/github_actions.js guard spec.json || exit 1
