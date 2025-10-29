@@ -1,14 +1,16 @@
 name: Triage Spec
+
 on:
   issues:
     types: [opened, edited, labeled]
+
 permissions:
   contents: read
   issues: write
   pull-requests: write
+
 jobs:
   triage:
-    if: contains(github.event.issue.labels.*.name, 'self-apply')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +25,16 @@ jobs:
             const json = m ? m[1].trim() : '{}';
             core.setOutput('spec', json);
 
+      - name: Check label & auto-exit if not self-apply
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = context.payload.issue.labels.map(l => l.name);
+            if (!labels.includes('self-apply')) {
+              core.notice('Label self-apply not found — skipping gracefully.');
+              process.exit(0);
+            }
+
       - name: Expand to Tasks (Plan Agent)
         run: |
           mkdir -p rocketgpt-agents/out
@@ -31,18 +43,31 @@ jobs:
           echo "Planned tasks:"
           cat rocketgpt-agents/out/tasks.json
 
-      - name: Attach tasks comment
-        uses: actions-ecosystem/action-add-comment@v1
+      - name: Comment planned tasks + add codegen:ready
+        uses: actions/github-script@v7
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            ### 🗂 Planned Tasks
-            ```json
-            ${{ steps.spec.outputs.spec }}
-            ```
-            **Next:** Add label `codegen:ready` to start code generation.
+          script: |
+            const issue_number = context.payload.issue.number;
+            const body = [
+              "### 🗂 Planned Tasks",
+              "```json",
+              `${{ steps.spec.outputs.spec }}`,
+              "```",
+              "**Next:** Label `codegen:ready` to start code generation."
+            ].join("\n");
 
-      - name: Label codegen:ready
-        uses: actions-ecosystem/action-add-labels@v1
-        with:
-          labels: codegen:ready
+            // Add comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              body
+            });
+
+            // Add label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              labels: ['codegen:ready']
+            });
