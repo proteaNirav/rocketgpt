@@ -71,6 +71,49 @@ jobs:
           echo "Score ${{ steps.scoreval.outputs.score }} < MIN_ACCEPT_SCORE (${MIN_ACCEPT_SCORE}). Refusing auto-merge."
           exit 1
 
+            - name: Guard sensitive paths
+        id: guard
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const number = context.payload.pull_request.number;
+
+            // List changed files in this PR
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              { owner, repo, pull_number: number, per_page: 100 }
+            );
+
+            // Directories or filenames considered sensitive
+            const sensitive = [
+              '.github/workflows/',
+              'infra/',
+              'deploy/',
+              'config/',
+              'secrets/',
+              'env/',
+              'docker/',
+              'scripts/prod/'
+            ];
+
+            const flagged = files.some(f =>
+              sensitive.some(p => f.filename.startsWith(p))
+            );
+
+            if (flagged) {
+              const touched = files
+                .filter(f => sensitive.some(p => f.filename.startsWith(p)))
+                .map(f => `- ${f.filename}`)
+                .join('\n');
+              core.setFailed(
+                `❌ Sensitive paths modified:\n${touched}\nManual review required.`
+              );
+            } else {
+              core.info('✅ No sensitive paths modified. Safe to continue.');
+            }
+
+
       - name: Ensure all checks are green
         id: checks
         uses: actions/github-script@v7
