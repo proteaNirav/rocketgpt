@@ -160,6 +160,35 @@ jobs:
             echo "No tests, skipping."
           fi
 
+            - name: Ensure score.json (fallback)
+        env:
+          PROVIDER: ${{ matrix.provider }}
+        run: |
+          SCORE_DIR="generated/${PROVIDER}"
+          SCORE_FILE="${SCORE_DIR}/score.json"
+          mkdir -p "${SCORE_DIR}"
+
+          # If your agents already wrote a score, keep it. Otherwise create a basic one.
+          if [ ! -f "${SCORE_FILE}" ]; then
+            # You can make this smarter: parse test TRX for pass/fail, etc.
+            OVERALL=60
+            if [ -f "./LicenseManager.sln" ]; then
+              # naive bump if .NET build was attempted
+              OVERALL=70
+            fi
+            cat > "${SCORE_FILE}" <<JSON
+{
+  "provider": "${PROVIDER}",
+  "overall": ${OVERALL},
+  "notes": "Default fallback score. Replace in agents with a computed score from tests/lint/security."
+}
+JSON
+          fi
+
+          echo "Score file:"
+          cat "${SCORE_FILE}"
+
+
       - name: Create Branch, Commit & Push (provider branch)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
