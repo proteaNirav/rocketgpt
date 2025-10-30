@@ -1,4 +1,4 @@
-name: AI Pull Request Review
+name: AI Pull Request Review (score-aware)
 
 on:
   pull_request:
@@ -7,10 +7,16 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  issues: write
 
 concurrency:
   group: ai-review-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
+
+env:
+  # Optional repo variable (Settings → Secrets and variables → Actions → Variables)
+  MIN_ACCEPT_SCORE: ${{ vars.MIN_ACCEPT_SCORE || 75 }}
+  DEFAULT_ENGINE:   ${{ vars.DEFAULT_ENGINE || 'openai' }}
 
 jobs:
   review:
@@ -27,59 +33,116 @@ jobs:
         with:
           node-version: '20'
 
-      # Decide which model provider to use for the reviewer.
-      # Set a repo variable "DEFAULT_ENGINE" = openai|anthropic|google|groq (optional).
-      - name: Resolve engine
-        id: engine
+      # Try to read score.json from the PR head branch (produced by codegen-matrix)
+      - name: Read score.json (best effort)
+        id: score
+        run: |
+          set -e
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          echo "Head branch: $BRANCH"
+
+          # Fetch PR head minimally; ignore if not found
+          git fetch --depth=1 origin "${BRANCH}:${BRANCH}" || true
+
+          # Providers we support; read the first score.json we can find
+          for p in openai anthropic google groq; do
+            if git cat-file -e "${BRANCH}:generated/${p}/score.json" 2>/dev/null; then
+              git show "${BRANCH}:generated/${p}/score.json" > score.json
+              echo "provider=${p}" >> $GITHUB_OUTPUT
+              echo "found=true"    >> $GITHUB_OUTPUT
+              echo "Score file:"
+              cat score.json
+              exit 0
+            fi
+          done
+
+          echo "found=false" >> $GITHUB_OUTPUT
+          echo '{"provider":"unknown","overall":60,"notes":"No score found; defaulting."}' > score.json
+          echo "Score defaulted to 60"
+
+      - name: Parse score.json
+        id: scoreval
         uses: actions/github-script@v7
-        env:
-          DEFAULT_ENGINE: ${{ vars.DEFAULT_ENGINE }}
         with:
           script: |
-            const engine = (process.env.DEFAULT_ENGINE || 'openai').toLowerCase();
-            core.setOutput('engine', engine);
+            const fs = require('fs');
+            const raw = fs.readFileSync('score.json','utf8');
+            let obj = {};
+            try { obj = JSON.parse(raw); } catch { obj = {}; }
+            const score = Number(obj.overall ?? 60);
+            core.setOutput('score', score);
+            core.setOutput('provider', obj.provider || (process.env.PROVIDER || 'unknown'));
 
-      - name: Collect changed files / summary
+      # Collect a concise diff summary for the reviewer LLM
+      - name: Summarize diff
         id: diff
         uses: actions/github-script@v7
         with:
           script: |
-            const {owner, repo, number} = {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              number: context.payload.pull_request.number
-            };
-
+            const {owner, repo} = context.repo;
+            const number = context.payload.pull_request.number;
             const files = await github.paginate(
               github.rest.pulls.listFiles,
               { owner, repo, pull_number: number, per_page: 100 }
             );
-
-            // A short textual diff summary for the reviewer LLM
-            const summary = files.map(f =>
-              `- ${f.filename} (${f.status}) +${f.additions} -${f.deletions}`
-            ).join('\n');
-
+            const summary = files.map(f => `- ${f.filename} (${f.status}) +${f.additions} -${f.deletions}`).join('\n');
             core.setOutput('files', JSON.stringify(files));
             core.setOutput('summary', summary);
 
-      - name: Prepare review input
+      - name: Prepare review_input.json
         run: |
-          cat > review_input.json << 'JSON'
+          cat > review_input.json <<JSON
           {
             "pr": {
-              "number": ${{ github.event.pull_request.number }},
+              "number": ${{
+                github.event.pull_request.number
+              }},
               "title": "${{ github.event.pull_request.title }}",
               "author": "${{ github.event.pull_request.user.login }}",
               "base": "${{ github.event.pull_request.base.ref }}",
               "head": "${{ github.event.pull_request.head.ref }}"
             },
             "repo": "${{ github.repository }}",
-            "summary": ${{ toJson(steps.diff.outputs.summary) }},
-            "files": ${{ steps.diff.outputs.files }}
+            "summary": ${{
+              toJson(steps.diff.outputs.summary)
+            }},
+            "files": ${{ steps.diff.outputs.files }},
+            "score": ${{
+              steps.scoreval.outputs.score
+            }},
+            "min_accept_score": ${{
+              env.MIN_ACCEPT_SCORE
+            }},
+            "provider_hint": "${{ steps.scoreval.outputs.provider }}"
           }
           JSON
-          echo "Prepared review_input.json"
+          echo "review_input.json created"
+
+      # Resolve engine/provider for the reviewer
+      - name: Resolve engine (fallback-safe)
+        id: engine
+        uses: actions/github-script@v7
+        env:
+          DEFAULT_ENGINE: ${{ env.DEFAULT_ENGINE }}
+          OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY:    ${{ secrets.GOOGLE_API_KEY }}
+          GROQ_API_KEY:      ${{ secrets.GROQ_API_KEY }}
+        with:
+          script: |
+            const req = (process.env.DEFAULT_ENGINE || 'openai').toLowerCase();
+            const providers = [
+              { key: 'openai',    present: !!process.env.OPENAI_API_KEY },
+              { key: 'anthropic', present: !!process.env.ANTHROPIC_API_KEY },
+              { key: 'google',    present: !!process.env.GOOGLE_API_KEY },
+              { key: 'groq',      present: !!process.env.GROQ_API_KEY }
+            ];
+            function firstAvail() {
+              const p = providers.find(p => p.present);
+              return p ? p.key : 'openai';
+            }
+            const chosen = providers.some(p => p.key===req && p.present) ? req : firstAvail();
+            core.setOutput('engine', chosen);
 
       - name: Run AI reviewer (analysis → findings → verdict)
         env:
@@ -88,31 +151,45 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GOOGLE_API_KEY:    ${{ secrets.GOOGLE_API_KEY }}
           GROQ_API_KEY:      ${{ secrets.GROQ_API_KEY }}
+          MIN_ACCEPT_SCORE:  ${{ env.MIN_ACCEPT_SCORE }}
         run: |
-          # Your reviewer should read review_input.json and write review_result.json:
+          # Your runner should read review_input.json and emit review_result.json:
           # {
           #   "decision": "approve" | "comment" | "block",
-          #   "summary_md": "markdown bullets and risks",
-          #   "nitpicks_md": "- item 1\n- item 2"
+          #   "summary_md": "markdown summary",
+          #   "nitpicks_md": "- bullet 1\n- bullet 2"
           # }
           node rocketgpt-agents/runners/github_actions.js review review_input.json
-
           test -f review_result.json || (echo "review_result.json missing"; exit 1)
           echo "AI review produced:"
           cat review_result.json
 
-      - name: Post GitHub Review & labels
+      - name: Post GitHub review + labels (score-gated)
         uses: actions/github-script@v7
+        env:
+          ENGINE: ${{ steps.engine.outputs.engine }}
+          SCORE:  ${{ steps.scoreval.outputs.score }}
+          MIN:    ${{ env.MIN_ACCEPT_SCORE }}
         with:
           script: |
             const result = require(process.cwd() + '/review_result.json');
-
-            // Map AI decision to GitHub review event
             const eventMap = { approve: 'APPROVE', block: 'REQUEST_CHANGES', comment: 'COMMENT' };
-            const event = eventMap[(result.decision || 'comment').toLowerCase()] || 'COMMENT';
+            let event = eventMap[(result.decision || 'comment').toLowerCase()] || 'COMMENT';
+
+            // Enforce score threshold for auto-approval
+            const score = Number(process.env.SCORE || 0);
+            const min   = Number(process.env.MIN || 75);
+            let autoMergeReady = false;
+            if (event === 'APPROVE' && score >= min) {
+              autoMergeReady = true;
+            } else if (event === 'APPROVE' && score < min) {
+              // downgrade to comment if score is under threshold
+              event = 'COMMENT';
+            }
 
             const body =
               `### 🤖 AI Review (engine: ${process.env.ENGINE})\n\n` +
+              `**Score:** ${score} (min: ${min})\n\n` +
               (result.summary_md || '*No summary provided.*') +
               (result.nitpicks_md ? `\n\n#### Nitpicks\n${result.nitpicks_md}` : '');
 
@@ -120,23 +197,12 @@ jobs:
             const repo  = context.repo.repo;
             const pull_number = context.payload.pull_request.number;
 
-            // Submit review
-            await github.rest.pulls.createReview({
-              owner, repo, pull_number, body, event
-            });
+            await github.rest.pulls.createReview({ owner, repo, pull_number, body, event });
 
-            // Ensure "ai:reviewed" label is present
-            try {
-              await github.rest.issues.addLabels({ owner, repo, issue_number: pull_number, labels: ['ai:reviewed'] });
-            } catch (e) { /* ignore */ }
+            // Always mark as reviewed
+            try { await github.rest.issues.addLabels({ owner, repo, issue_number: pull_number, labels: ['ai:reviewed'] }); } catch(e){}
 
-            // If approved, also mark for auto-merge
-            if (event === 'APPROVE') {
-              try {
-                await github.rest.issues.addLabels({
-                  owner, repo, issue_number: pull_number, labels: ['auto-merge:ready']
-                });
-              } catch (e) { /* ignore */ }
+            // Add auto-merge label only if approved & score >= min
+            if (autoMergeReady) {
+              try { await github.rest.issues.addLabels({ owner, repo, issue_number: pull_number, labels: ['auto-merge:ready'] }); } catch(e){}
             }
-        env:
-          ENGINE: ${{ steps.engine.outputs.engine }}
