@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Parse JSON spec from issue body and extract `engine` (optional)
+      # Parse JSON spec from issue body and extract engine
       - name: Pull Spec from Issue (with engine)
         id: spec
         uses: actions/github-script@v7
@@ -62,26 +62,19 @@ jobs:
           GROQ_API_KEY:        ${{ secrets.GROQ_API_KEY }}
         with:
           script: |
-            // Discover available providers
             const available = [];
             if (process.env.OPENAI_API_KEY)    available.push('openai');
             if (process.env.ANTHROPIC_API_KEY) available.push('anthropic');
             if (process.env.GOOGLE_API_KEY)    available.push('google');
             if (process.env.GROQ_API_KEY)      available.push('groq');
 
-            // Default priority order; put requested engine first if present
             const baseOrder = ['openai', 'anthropic', 'google', 'groq'];
             const req = (process.env.REQ || '').trim().toLowerCase();
             const dedupe = (arr) => [...new Set(arr)];
 
             let priority = dedupe([req, ...baseOrder]).filter(p => p && available.includes(p));
+            if (priority.length === 0) priority = ['openai'];
 
-            // Fallback: if nothing is available, still allow openai (agents should no-op gracefully)
-            if (priority.length === 0) {
-              priority = ['openai'];
-            }
-
-            // Matrix is just the providers we intend to try in parallel
             const matrix = { provider: priority };
 
             core.info(`Matrix providers: ${JSON.stringify(matrix)}`);
@@ -132,13 +125,11 @@ jobs:
           echo "${SPEC_JSON}" > spec.json
           echo "Selected provider: ${MODEL_PROVIDER}"
 
-          # Your agents (should branch internally on MODEL_PROVIDER)
           node rocketgpt-agents/runners/github_actions.js code  spec.json
           node rocketgpt-agents/runners/github_actions.js test  spec.json
           node rocketgpt-agents/runners/github_actions.js doc   spec.json
           node rocketgpt-agents/runners/github_actions.js guard spec.json
 
-          # Harmless artifact so we always see diff per-provider
           mkdir -p generated/${MODEL_PROVIDER}
           echo "Auto-generated for issue #${{ github.event.issue.number }} on $GITHUB_REPOSITORY (engine=${MODEL_PROVIDER})" \
             > generated/${MODEL_PROVIDER}/ai_test_${{ github.event.issue.number }}_${MODEL_PROVIDER}.md
@@ -160,34 +151,27 @@ jobs:
             echo "No tests, skipping."
           fi
 
-            - name: Ensure score.json (fallback)
+      # Ensure score.json exists (agents may overwrite this)
+      - name: Ensure score.json (fallback)
         env:
           PROVIDER: ${{ matrix.provider }}
         run: |
           SCORE_DIR="generated/${PROVIDER}"
           SCORE_FILE="${SCORE_DIR}/score.json"
           mkdir -p "${SCORE_DIR}"
-
-          # If your agents already wrote a score, keep it. Otherwise create a basic one.
           if [ ! -f "${SCORE_FILE}" ]; then
-            # You can make this smarter: parse test TRX for pass/fail, etc.
             OVERALL=60
-            if [ -f "./LicenseManager.sln" ]; then
-              # naive bump if .NET build was attempted
-              OVERALL=70
-            fi
+            if [ -f "./LicenseManager.sln" ]; then OVERALL=70; fi
             cat > "${SCORE_FILE}" <<JSON
 {
   "provider": "${PROVIDER}",
   "overall": ${OVERALL},
-  "notes": "Default fallback score. Replace in agents with a computed score from tests/lint/security."
+  "notes": "Default fallback score."
 }
 JSON
           fi
-
-          echo "Score file:"
+          echo "Score file created:"
           cat "${SCORE_FILE}"
-
 
       - name: Create Branch, Commit & Push (provider branch)
         env:
@@ -200,7 +184,6 @@ JSON
           else
             git checkout -b "$BRANCH"
           fi
-
           git add -A
           git commit -m "AI codegen for #${{ github.event.issue.number }} (provider=${PROVIDER}): ${{ needs.plan-matrix.outputs.title }}"
           git push origin "$BRANCH"
@@ -217,7 +200,7 @@ JSON
         with:
           fetch-depth: 0
 
-      - name: Pick best provider branch (by priority)
+      - name: Pick best provider branch (by score, fallback to priority)
         id: pick
         uses: actions/github-script@v7
         env:
@@ -225,16 +208,13 @@ JSON
           ISSUE: ${{ github.event.issue.number }}
           OWNER: ${{ github.repository_owner }}
           REPO:  ${{ github.event.repository.name }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            const priority = JSON.parse(process.env.PRIORITY || '[]');
+            const { execSync } = require('child_process');
             const owner = process.env.OWNER;
             const repo  = process.env.REPO;
             const issue = process.env.ISSUE;
-
-            // We'll detect which branch exists on origin, in priority order
-            const { execSync } = require('child_process');
+            const priority = JSON.parse(process.env.PRIORITY || '[]');
 
             function branchExists(branch) {
               try {
@@ -245,26 +225,43 @@ JSON
               }
             }
 
-            let chosenProvider = null;
-            let chosenBranch   = null;
-
-            for (const p of priority) {
-              const candidate = `ai/codegen/${issue}/${p}`;
-              if (branchExists(candidate)) {
-                chosenProvider = p;
-                chosenBranch = candidate;
-                break;
+            function readScore(branch, provider) {
+              try {
+                execSync(`git fetch --depth=1 https://github.com/${owner}/${repo}.git ${branch}:${branch}`, { stdio: 'ignore' });
+                const path = `generated/${provider}/score.json`;
+                const raw = execSync(`git show ${branch}:${path}`, { encoding: 'utf8' });
+                const obj = JSON.parse(raw);
+                const score = Number(obj.overall);
+                if (!Number.isFinite(score)) throw new Error('invalid score');
+                return { score, raw: obj };
+              } catch {
+                return null;
               }
             }
 
-            if (!chosenBranch) {
+            let candidates = [];
+            for (const p of priority) {
+              const branch = `ai/codegen/${issue}/${p}`;
+              if (branchExists(branch)) {
+                const s = readScore(branch, p);
+                candidates.push({ provider: p, branch, score: s?.score ?? null, details: s?.raw ?? null });
+              }
+            }
+
+            if (candidates.length === 0) {
               core.setFailed(`No provider branches found for issue #${issue}.`);
               return;
             }
 
-            core.info(`Chosen provider: ${chosenProvider}, branch: ${chosenBranch}`);
-            core.setOutput('provider', chosenProvider);
-            core.setOutput('branch', chosenBranch);
+            let chosen = null;
+            const scored = candidates.filter(c => c.score !== null).sort((a,b) => b.score - a.score);
+            chosen = scored.length > 0 ? scored[0] : candidates[0];
+
+            core.info(`Candidates: ${JSON.stringify(candidates, null, 2)}`);
+            core.info(`Chosen: provider=${chosen.provider}, branch=${chosen.branch}, score=${chosen.score}`);
+
+            core.setOutput('provider', chosen.provider);
+            core.setOutput('branch', chosen.branch);
 
       - name: Open PR (single, from chosen provider)
         uses: actions/github-script@v7
@@ -291,10 +288,9 @@ JSON
               '- [ ] Product acceptance met',
               '',
               '### Notes',
-              `Branch: \`${head}\``,
+              `Branch: \`${head}\``
             ].join('\n');
 
-            // Check if a PR from this branch already exists
             const prs = await github.rest.pulls.list({
               owner, repo, state: 'open', head: `${owner}:${head}`, base
             });
