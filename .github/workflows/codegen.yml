@@ -1,6 +1,9 @@
 name: AI Codegen
 
 on:
+  # Manual trigger for testing/re-runs
+  workflow_dispatch:
+  # Automatic trigger when a label is added on an issue
   issues:
     types: [labeled]
 
@@ -15,7 +18,8 @@ concurrency:
 
 jobs:
   codegen:
-    if: contains(github.event.issue.labels.*.name, 'codegen:ready')
+    # Fire only when the newly added label is exactly 'codegen:ready'
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'codegen:ready'
     runs-on: ubuntu-latest
 
     steps:
@@ -33,6 +37,11 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      - name: Validate runner files exist
+        run: |
+          test -f rocketgpt-agents/runners/github_actions.js || \
+            (echo "Missing runner: rocketgpt-agents/runners/github_actions.js" && exit 1)
+
       # Parse JSON spec from the issue body and extract `engine`
       - name: Pull Spec from Issue (with engine)
         id: spec
@@ -41,7 +50,7 @@ jobs:
           DEFAULT_ENGINE: ${{ vars.DEFAULT_ENGINE }} # optional repo variable, e.g. "openai"
         with:
           script: |
-            const issue = context.payload.issue;
+            const issue = context.payload.issue || {};
             const body = issue.body || '';
             const match = body.match(/```json([\s\S]*?)```/i);
             let obj = {};
@@ -112,7 +121,7 @@ jobs:
           node rocketgpt-agents/runners/github_actions.js doc   spec.json
           node rocketgpt-agents/runners/github_actions.js guard spec.json
 
-          # Always add a small, harmless artifact so the PR shows changes
+          # Always add a tiny artifact so the PR has a diff
           mkdir -p generated
           echo "Auto-generated for issue #${{ github.event.issue.number }} on $GITHUB_REPOSITORY (engine=${MODEL_PROVIDER})" \
             > generated/ai_test_${{ github.event.issue.number }}.md
@@ -134,7 +143,6 @@ jobs:
             echo "No tests, skipping."
           fi
 
-      # Fix: set committer identity before committing
       - name: Configure Git author
         run: |
           git config --global user.name  "${{ github.actor }}"
@@ -151,11 +159,12 @@ jobs:
             git checkout -b "$BRANCH"
           fi
           git add -A
-          git commit -m "AI codegen for #${{ github.event.issue.number }} (engine=${{ steps.engine.outputs.engine }}): ${{ steps.spec.outputs.title }}"
+          git commit -m "AI codegen for #${{ github.event.issue.number }} (engine=${{ steps.engine.outputs.engine }}): ${{ steps.spec.outputs.title }}" || echo "No changes to commit."
           git push origin "$BRANCH"
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
 
       - name: Open PR
+        id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
           base: main
@@ -165,7 +174,7 @@ jobs:
             ## 🤖 What changed
             Generated code and tests from spec in #${{ github.event.issue.number }}.
 
-            **Engine (chosen):** `${{ steps.engine.outputs.engine }}`  
+            **Engine (chosen):** `${{ steps.engine.outputs.engine }}`
             **Routing hint:** `MODEL_PROVIDER=${{ steps.engine.outputs.engine }}`
 
             ## ✅ Checklist
@@ -177,3 +186,16 @@ jobs:
             ### Artifacts
             - `generated/ai_test_${{ github.event.issue.number }}.md`
             - See commit diff for agent-written files.
+
+      - name: Link PR in Issue (visible proof of execution)
+        uses: actions/github-script@v7
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        with:
+          script: |
+            const pr = `${{ steps.cpr.outputs.pull-request-url }}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `✅ Codegen executed.\n\n- Engine: \`${{ steps.engine.outputs.engine }}\`\n- PR: ${pr}`
+            });
