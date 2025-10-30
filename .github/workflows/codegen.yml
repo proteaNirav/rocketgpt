@@ -1,43 +1,50 @@
 name: AI Codegen
 
 on:
-  # Manual trigger will ask for an issue number
+  # Manual run
   workflow_dispatch:
     inputs:
       issue_number:
         description: "Issue number to generate from"
         required: true
         type: number
-  # Automatic trigger when any label is added on an issue
+  # Human labeling still works
   issues:
     types: [labeled]
+  # Triage will trigger this explicitly
+  repository_dispatch:
+    types: [codegen]
 
 permissions:
   contents: write
   pull-requests: write
   issues: write
 
-# Concurrency keyed by issue number (or run_id if unavailable)
 concurrency:
-  group: codegen-${{ github.event.issue.number || inputs.issue_number || github.run_id }}
+  group: codegen-${{ github.event.issue.number || inputs.issue_number || github.event.client_payload.issue_number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   codegen:
-    # Run if:
-    # - manual dispatch, OR
-    # - the newly added label IS codegen:ready, OR
-    # - the issue already contains codegen:ready (re-runs on subsequent labels)
     if: |
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'repository_dispatch' ||
       github.event.label.name == 'codegen:ready' ||
       contains(github.event.issue.labels.*.name, 'codegen:ready')
     runs-on: ubuntu-latest
 
     env:
-      ISSUE_NO: ${{ github.event.issue.number || inputs.issue_number }}
+      ISSUE_NO: ${{ github.event.issue.number || inputs.issue_number || github.event.client_payload.issue_number }}
 
     steps:
+      - name: Debug event
+        run: |
+          echo "event_name=${{ github.event_name }}"
+          echo "issue_from_event=${{ github.event.issue.number }}"
+          echo "issue_from_input=${{ inputs.issue_number }}"
+          echo "issue_from_dispatch=${{ github.event.client_payload.issue_number }}"
+          echo "ISSUE_NO=${ISSUE_NO}"
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -57,14 +64,12 @@ jobs:
           test -f rocketgpt-agents/runners/github_actions.js || \
             (echo "Missing runner: rocketgpt-agents/runners/github_actions.js" && exit 1)
 
-      # Make sure ISSUE_NO is valid (for safety on label events)
       - name: Ensure ISSUE_NO is set
         if: ${{ env.ISSUE_NO == '' }}
         run: |
-          echo "ERROR: ISSUE_NO is empty. On label events this should never happen; on manual runs pass 'issue_number' input."
+          echo "ERROR: ISSUE_NO is empty. Pass 'issue_number' (manual) or dispatch with client_payload.issue_number."
           exit 1
 
-      # Ensure the issue has the 'codegen:ready' label; add it if missing (so the state is consistent)
       - name: Ensure 'codegen:ready' label on the Issue
         uses: actions/github-script@v7
         with:
@@ -72,53 +77,30 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const issue_number = parseInt(process.env.ISSUE_NO, 10);
-
-            // Fetch current labels
             const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number });
-            const hasLabel = (issue.labels || []).some(l => (typeof l === 'string' ? l : l.name) === 'codegen:ready');
+            const has = (issue.labels || []).some(l => (typeof l === 'string' ? l : l.name) === 'codegen:ready');
+            if (!has) await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['codegen:ready'] });
 
-            if (!hasLabel) {
-              await github.rest.issues.addLabels({
-                owner, repo, issue_number,
-                labels: ['codegen:ready']
-              });
-              core.info(`Added label 'codegen:ready' to #${issue_number}`);
-            } else {
-              core.info(`Issue #${issue_number} already has 'codegen:ready'`);
-            }
-
-      # Parse JSON spec (```json ... ```) and extract engine
       - name: Pull Spec from Issue (with engine)
         id: spec
         uses: actions/github-script@v7
         env:
-          DEFAULT_ENGINE: ${{ vars.DEFAULT_ENGINE }} # optional repo variable, e.g. "openai"
+          DEFAULT_ENGINE: ${{ vars.DEFAULT_ENGINE }}
         with:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const issue_number = parseInt(process.env.ISSUE_NO, 10);
-
             const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number });
             const body = issue.body || '';
             const match = body.match(/```json([\s\S]*?)```/i);
             let obj = {};
-            try {
-              obj = match ? JSON.parse(match[1].trim()) : {};
-            } catch (e) {
-              core.warning(`Failed to parse JSON from issue body: ${e.message}`);
-              obj = {};
-            }
-            const engine =
-              (obj.engine || process.env.DEFAULT_ENGINE || 'openai')
-                .toString().trim().toLowerCase(); // openai|anthropic|google|groq
-
+            try { obj = match ? JSON.parse(match[1].trim()) : {}; }
+            catch (e) { core.warning(`Failed to parse JSON: ${e.message}`); obj = {}; }
+            const engine = (obj.engine || process.env.DEFAULT_ENGINE || 'openai').toString().trim().toLowerCase();
             core.setOutput('spec', JSON.stringify(obj));
             core.setOutput('title', issue.title || 'Untitled');
             core.setOutput('engine', engine);
-
-      - name: Install (no external deps)
-        run: echo "No npm deps required."
 
       - name: Resolve engine (with safe fallback)
         id: engine
@@ -139,9 +121,9 @@ jobs:
               { key: 'google',    present: !!process.env.GOOGLE_API_KEY },
               { key: 'groq',      present: !!process.env.GROQ_API_KEY },
             ];
-            const firstAvailable = () => (providers.find(p => p.present)?.key) || 'openai';
-            const chosen = (request && providers.some(p => p.key === request && p.present)) ? request : firstAvailable();
-
+            const chosen = (request && providers.some(p => p.key === request && p.present))
+              ? request
+              : (providers.find(p => p.present)?.key || 'openai');
             core.info(`Engine requested: "${request || '(none)'}" -> chosen: "${chosen}"`);
             core.setOutput('engine', chosen);
 
@@ -161,18 +143,15 @@ jobs:
           node rocketgpt-agents/runners/github_actions.js test  spec.json
           node rocketgpt-agents/runners/github_actions.js doc   spec.json
           node rocketgpt-agents/runners/github_actions.js guard spec.json
-
           mkdir -p generated
-          echo "Auto-generated for issue #${ISSUE_NO} on $GITHUB_REPOSITORY (engine=${MODEL_PROVIDER})" \
-            > generated/ai_test_${ISSUE_NO}.md
+          echo "Auto-generated for issue #${ISSUE_NO} on $GITHUB_REPOSITORY (engine=${MODEL_PROVIDER})" > generated/ai_test_${ISSUE_NO}.md
 
       - name: Build (JS + .NET)
         run: |
-          echo "Running dotnet build (if solution present)"
           if [ -f "./LicenseManager.sln" ]; then
             dotnet build ./LicenseManager.sln -c Release
           else
-            echo "No .sln found, skipping."
+            echo "No .sln found, skipping .NET build."
           fi
 
       - name: Run Tests (if present)
@@ -180,7 +159,7 @@ jobs:
           if [ -f "./LicenseManager.sln" ]; then
             dotnet test ./LicenseManager.sln -c Release --logger "trx;LogFileName=test.trx"
           else
-            echo "No tests, skipping."
+            echo "No .NET tests."
           fi
 
       - name: Configure Git author
@@ -228,7 +207,7 @@ jobs:
             - `generated/ai_test_${{ env.ISSUE_NO }}.md`
             - See commit diff for agent-written files.
 
-      - name: Link PR in Issue (visible proof of execution)
+      - name: Link PR in Issue (proof)
         uses: actions/github-script@v7
         if: ${{ steps.cpr.outputs.pull-request-number }}
         with:
