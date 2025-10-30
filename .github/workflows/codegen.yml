@@ -1,9 +1,14 @@
 name: AI Codegen
 
 on:
-  # Manual trigger for testing/re-runs
+  # Manual trigger will ask for an issue number
   workflow_dispatch:
-  # Automatic trigger when a label is added on an issue
+    inputs:
+      issue_number:
+        description: "Issue number to generate from"
+        required: true
+        type: number
+  # Automatic trigger when any label is added on an issue
   issues:
     types: [labeled]
 
@@ -12,15 +17,25 @@ permissions:
   pull-requests: write
   issues: write
 
+# Concurrency keyed by issue number (or run_id if unavailable)
 concurrency:
-  group: codegen-${{ github.event.issue.number }}
+  group: codegen-${{ github.event.issue.number || inputs.issue_number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   codegen:
-    # Fire only when the newly added label is exactly 'codegen:ready'
-    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'codegen:ready'
+    # Run if:
+    # - manual dispatch, OR
+    # - the newly added label IS codegen:ready, OR
+    # - the issue already contains codegen:ready (re-runs on subsequent labels)
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event.label.name == 'codegen:ready' ||
+      contains(github.event.issue.labels.*.name, 'codegen:ready')
     runs-on: ubuntu-latest
+
+    env:
+      ISSUE_NO: ${{ github.event.issue.number || inputs.issue_number }}
 
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +57,37 @@ jobs:
           test -f rocketgpt-agents/runners/github_actions.js || \
             (echo "Missing runner: rocketgpt-agents/runners/github_actions.js" && exit 1)
 
-      # Parse JSON spec from the issue body and extract `engine`
+      # Make sure ISSUE_NO is valid (for safety on label events)
+      - name: Ensure ISSUE_NO is set
+        if: ${{ env.ISSUE_NO == '' }}
+        run: |
+          echo "ERROR: ISSUE_NO is empty. On label events this should never happen; on manual runs pass 'issue_number' input."
+          exit 1
+
+      # Ensure the issue has the 'codegen:ready' label; add it if missing (so the state is consistent)
+      - name: Ensure 'codegen:ready' label on the Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = parseInt(process.env.ISSUE_NO, 10);
+
+            // Fetch current labels
+            const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number });
+            const hasLabel = (issue.labels || []).some(l => (typeof l === 'string' ? l : l.name) === 'codegen:ready');
+
+            if (!hasLabel) {
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number,
+                labels: ['codegen:ready']
+              });
+              core.info(`Added label 'codegen:ready' to #${issue_number}`);
+            } else {
+              core.info(`Issue #${issue_number} already has 'codegen:ready'`);
+            }
+
+      # Parse JSON spec (```json ... ```) and extract engine
       - name: Pull Spec from Issue (with engine)
         id: spec
         uses: actions/github-script@v7
@@ -50,7 +95,11 @@ jobs:
           DEFAULT_ENGINE: ${{ vars.DEFAULT_ENGINE }} # optional repo variable, e.g. "openai"
         with:
           script: |
-            const issue = context.payload.issue || {};
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = parseInt(process.env.ISSUE_NO, 10);
+
+            const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number });
             const body = issue.body || '';
             const match = body.match(/```json([\s\S]*?)```/i);
             let obj = {};
@@ -62,9 +111,7 @@ jobs:
             }
             const engine =
               (obj.engine || process.env.DEFAULT_ENGINE || 'openai')
-                .toString()
-                .trim()
-                .toLowerCase(); // openai|anthropic|google|groq
+                .toString().trim().toLowerCase(); // openai|anthropic|google|groq
 
             core.setOutput('spec', JSON.stringify(obj));
             core.setOutput('title', issue.title || 'Untitled');
@@ -77,14 +124,12 @@ jobs:
         id: engine
         uses: actions/github-script@v7
         env:
-          # optional repo variable; may be empty
           DEFAULT_ENGINE: ${{ vars.DEFAULT_ENGINE }}
-          # masked env lets us test presence without leaking values
           OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
           GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
-          SPEC_ENGINE:        ${{ steps.spec.outputs.engine }}   # from issue JSON if provided
+          SPEC_ENGINE:        ${{ steps.spec.outputs.engine }}
         with:
           script: |
             const request = (process.env.SPEC_ENGINE || process.env.DEFAULT_ENGINE || '').toLowerCase().trim();
@@ -94,13 +139,8 @@ jobs:
               { key: 'google',    present: !!process.env.GOOGLE_API_KEY },
               { key: 'groq',      present: !!process.env.GROQ_API_KEY },
             ];
-
-            function firstAvailable() {
-              const p = providers.find(p => p.present);
-              return p ? p.key : 'openai'; // final hard fallback
-            }
-
-            let chosen = request && providers.some(p => p.key === request && p.present) ? request : firstAvailable();
+            const firstAvailable = () => (providers.find(p => p.present)?.key) || 'openai';
+            const chosen = (request && providers.some(p => p.key === request && p.present)) ? request : firstAvailable();
 
             core.info(`Engine requested: "${request || '(none)'}" -> chosen: "${chosen}"`);
             core.setOutput('engine', chosen);
@@ -113,6 +153,7 @@ jobs:
           GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
           DRIVE_SVC_JSON:     ${{ secrets.DRIVE_SVC_JSON }}
+          ISSUE_NO:           ${{ env.ISSUE_NO }}
         run: |
           echo "Selected provider: ${MODEL_PROVIDER}"
           echo '${{ steps.spec.outputs.spec }}' > spec.json
@@ -121,10 +162,9 @@ jobs:
           node rocketgpt-agents/runners/github_actions.js doc   spec.json
           node rocketgpt-agents/runners/github_actions.js guard spec.json
 
-          # Always add a tiny artifact so the PR has a diff
           mkdir -p generated
-          echo "Auto-generated for issue #${{ github.event.issue.number }} on $GITHUB_REPOSITORY (engine=${MODEL_PROVIDER})" \
-            > generated/ai_test_${{ github.event.issue.number }}.md
+          echo "Auto-generated for issue #${ISSUE_NO} on $GITHUB_REPOSITORY (engine=${MODEL_PROVIDER})" \
+            > generated/ai_test_${ISSUE_NO}.md
 
       - name: Build (JS + .NET)
         run: |
@@ -151,15 +191,16 @@ jobs:
       - name: Create Branch, Commit & Push
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NO: ${{ env.ISSUE_NO }}
         run: |
-          BRANCH="ai/codegen/${{ github.event.issue.number }}"
+          BRANCH="ai/codegen/${ISSUE_NO}"
           if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
             git checkout "$BRANCH"
           else
             git checkout -b "$BRANCH"
           fi
           git add -A
-          git commit -m "AI codegen for #${{ github.event.issue.number }} (engine=${{ steps.engine.outputs.engine }}): ${{ steps.spec.outputs.title }}" || echo "No changes to commit."
+          git commit -m "AI codegen for #${ISSUE_NO} (engine=${{ steps.engine.outputs.engine }}): ${{ steps.spec.outputs.title }}" || echo "No changes to commit."
           git push origin "$BRANCH"
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
 
@@ -169,10 +210,10 @@ jobs:
         with:
           base: main
           branch: ${{ env.BRANCH }}
-          title: "AI Codegen: ${{ steps.spec.outputs.title }} (engine=${{ steps.engine.outputs.engine }})"
+          title: "AI Codegen: #${{ env.ISSUE_NO }} — ${{ steps.spec.outputs.title }} (engine=${{ steps.engine.outputs.engine }})"
           body: |
             ## 🤖 What changed
-            Generated code and tests from spec in #${{ github.event.issue.number }}.
+            Generated code and tests from spec in #${{ env.ISSUE_NO }}.
 
             **Engine (chosen):** `${{ steps.engine.outputs.engine }}`
             **Routing hint:** `MODEL_PROVIDER=${{ steps.engine.outputs.engine }}`
@@ -184,7 +225,7 @@ jobs:
             - [ ] Product acceptance met
 
             ### Artifacts
-            - `generated/ai_test_${{ github.event.issue.number }}.md`
+            - `generated/ai_test_${{ env.ISSUE_NO }}.md`
             - See commit diff for agent-written files.
 
       - name: Link PR in Issue (visible proof of execution)
@@ -193,9 +234,10 @@ jobs:
         with:
           script: |
             const pr = `${{ steps.cpr.outputs.pull-request-url }}`;
+            const issue_number = parseInt(process.env.ISSUE_NO, 10);
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number,
               body: `✅ Codegen executed.\n\n- Engine: \`${{ steps.engine.outputs.engine }}\`\n- PR: ${pr}`
             });
