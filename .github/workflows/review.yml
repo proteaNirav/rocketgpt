@@ -30,7 +30,11 @@ jobs:
         with:
           node-version: 20
 
-      # 1️⃣ Determine PR number (works for PR + dispatch)
+      - name: Log event payload (review)
+        run: |
+          echo '${{ toJson(github.event) }}' > event.json
+          jq -C '.' event.json || cat event.json
+
       - name: Determine PR number
         id: pr
         uses: actions/github-script@v7
@@ -48,13 +52,11 @@ jobs:
               core.setOutput('number', prNumber);
             }
 
-      # 2️⃣ Validate runner
       - name: Validate runner exists
         run: |
           test -f rocketgpt-agents/runners/github_actions.js || \
             (echo "Missing runner: rocketgpt-agents/runners/github_actions.js"; exit 1)
 
-      # 3️⃣ Pick model provider
       - name: Pick model provider
         id: engine
         uses: actions/github-script@v7
@@ -79,7 +81,6 @@ jobs:
             core.info(`Chosen provider: ${chosen}`);
             core.setOutput('engine', chosen);
 
-      # 4️⃣ Collect changed files
       - name: Collect changed files
         id: files
         uses: actions/github-script@v7
@@ -94,13 +95,71 @@ jobs:
             const summary = files.map(f => `- ${f.filename} (${f.status}) +${f.additions} -${f.deletions}`).join('\n');
             core.setOutput('files', JSON.stringify(files));
             core.setOutput('summary', summary);
+        # also save a copy for artifacts:
+      - name: Save changed files list
+        run: echo '${{ steps.files.outputs.files }}' > files.json
 
-      # 5️⃣ Compute placeholder score
-      - name: Compute score
+      # ---- Policy-based score (smart) ----
+      - name: Read PR labels
+        id: prlabels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const number = Number('${{ steps.pr.outputs.number }}');
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: number });
+            const names = labels.map(l => l.name);
+            core.setOutput('names', JSON.stringify(names));
+
+      - name: Compute score (policy)
         id: score
-        run: echo "score=60" >> $GITHUB_OUTPUT
+        shell: bash
+        run: |
+          set -e
+          FILES_JSON='${{ steps.files.outputs.files }}'
+          echo "$FILES_JSON" > files.json
 
-      # 6️⃣ Build review_input.json safely
+          # ------------- Policy knobs -------------
+          BASE=90
+          MINOR_DIFF_CUTOFF=300
+          LARGE_DIFF_CUTOFF=1000
+
+          SENSITIVE_REGEX='^(\.github/workflows/|\.github/actions/|\.github/.*\.yml$|(^|/)\.env(\.|$)|^secrets?/|^Dockerfile$|^docker-compose\.ya?ml$|^render\.ya?ml$|^vercel\.json$|^supabase/migrations/|^supabase/.*\.sql$|\.sql$|^rocketgpt-agents/runners/|^infra/|^deploy/|^k8s/|^helm/)'
+          LOCKS_REGEX='(^|/)(package-lock\.json|pnpm-lock\.yaml|yarn\.lock)$'
+          ALLOW=$(echo '${{ steps.prlabels.outputs.names }}' | jq -r 'index("ai:unsafe-ok") | if . == null then "no" else "yes" end')
+
+          TOTAL_ADD=$(jq '[.[].additions] | add // 0' files.json)
+          TOTAL_DEL=$(jq '[.[].deletions] | add // 0' files.json)
+          TOTAL_CHG=$(( TOTAL_ADD + TOTAL_DEL ))
+
+          HAS_SENSITIVE=$(jq --arg re "$SENSITIVE_REGEX" '[ .[] | select(.filename|test($re)) ] | length' files.json)
+          HAS_LOCKS=$(jq --arg re "$LOCKS_REGEX"     '[ .[] | select(.filename|test($re)) ] | length' files.json)
+
+          SCORE=$BASE
+
+          if [ "$HAS_SENSITIVE" -gt 0 ] && [ "$ALLOW" != "yes" ]; then
+            SCORE=0
+          else
+            if [ "$TOTAL_CHG" -gt "$LARGE_DIFF_CUTOFF" ]; then
+              SCORE=$(( SCORE - 40 ))
+            elif [ "$TOTAL_CHG" -gt "$MINOR_DIFF_CUTOFF" ]; then
+              SCORE=$(( SCORE - 20 ))
+            fi
+            if [ "$HAS_LOCKS" -gt 0 ]; then
+              SCORE=$(( SCORE - 10 ))
+            fi
+            if [ "$TOTAL_DEL" -gt $(( TOTAL_ADD * 3 )) ]; then
+              SCORE=$(( SCORE - 15 ))
+            fi
+            [ "$SCORE" -lt 0 ] && SCORE=0
+            [ "$SCORE" -gt 100 ] && SCORE=100
+          fi
+
+          echo "TOTAL_ADD=$TOTAL_ADD  TOTAL_DEL=$TOTAL_DEL  TOTAL_CHG=$TOTAL_CHG"
+          echo "HAS_SENSITIVE=$HAS_SENSITIVE  HAS_LOCKS=$HAS_LOCKS  ALLOW=${ALLOW}"
+          echo "score=$SCORE" | tee -a "$GITHUB_OUTPUT"
+
+      # ---- Build review input safely ----
       - name: Build review_input.json
         run: |
           cat > review_input.json <<'JSON'
@@ -120,25 +179,20 @@ jobs:
             "provider_hint": "${{ steps.engine.outputs.engine || 'unknown' }}"
           }
           JSON
-          echo "Created review_input.json:"
-          cat review_input.json
+          echo "Created review_input.json:" && cat review_input.json
 
-      # 7️⃣ Run the local review runner
       - name: Run AI review (runner -> review_result.json)
         env:
           MODEL_PROVIDER: ${{ steps.engine.outputs.engine }}
         run: |
           node rocketgpt-agents/runners/github_actions.js review review_input.json
           test -f review_result.json || (echo "review_result.json missing"; exit 1)
-          echo "AI review produced:"
-          cat review_result.json
+          echo "AI review produced:" && cat review_result.json
 
-      # 8️⃣ Read decision
       - name: Read decision
         id: rr
         run: echo "decision=$(jq -r '.decision' review_result.json)" >> $GITHUB_OUTPUT
 
-      # 9️⃣ Post review on PR
       - name: Post review on PR
         uses: actions/github-script@v7
         with:
@@ -149,14 +203,26 @@ jobs:
             const pull_number = Number('${{ steps.pr.outputs.number }}');
             let event = 'COMMENT';
             if (r.decision === 'approve') event = 'APPROVE';
-            if (r.decision === 'block') event = 'REQUEST_CHANGES';
+            if (r.decision === 'block')   event = 'REQUEST_CHANGES';
             await github.rest.pulls.createReview({
-              owner, repo, pull_number, event,
+              owner, repo, pull_number,
+              event,
               body: `${r.summary_md}\n\n${r.nitpicks_md ? '---\n' + r.nitpicks_md : ''}`
             });
 
-      # 🔁 Auto-dispatch merge if approved
-      - name: Trigger Auto-Merge
+      - name: Save review I/O artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-artifacts-${{ github.run_id }}
+          path: |
+            event.json
+            files.json
+            review_input.json
+            review_result.json
+
+      # ➡ Dispatch merge if approved
+      - name: Trigger Auto-Merge (log req/resp)
         if: ${{ steps.rr.outputs.decision == 'approve' }}
         env:
           OWNER:  ${{ github.repository_owner }}
@@ -164,15 +230,29 @@ jobs:
           PR:     ${{ steps.pr.outputs.number }}
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          set -e
-          [ -n "$GH_PAT" ] || { echo "GH_PAT missing"; exit 1; }
-          echo "Dispatching merge for PR #${PR}"
-          STATUS=$(curl -s -o /tmp/resp.json -w "%{http_code}" \
-            -X POST \
-            -H "Authorization: token ${GH_PAT}" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${OWNER}/${REPO}/dispatches \
-            -d "{\"event_type\":\"merge\",\"client_payload\":{\"pr_number\":${PR}}}" )
-          echo "Dispatch HTTP ${STATUS}"
-          cat /tmp/resp.json || true
-          test "${STATUS}" = "204" || (echo "ERR: dispatch failed"; exit 1)
+          set -euo pipefail
+          echo "::group::Dispatch Merge Request"
+          PAYLOAD=$(jq -n --argjson n "$PR" '{event_type:"merge", client_payload:{pr_number:$n}}')
+          echo "$PAYLOAD" | jq -C .
+          echo "$PAYLOAD" > dispatch.merge.req.json
+          echo "::endgroup::"
+
+          STATUS=$(curl -s -o dispatch.merge.resp.json -w "%{http_code}" \
+            -X POST -H "Authorization: token ${GH_PAT}" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${OWNER}/${REPO}/dispatches" \
+            -d "$PAYLOAD")
+
+          echo "::group::Dispatch Merge Response"
+          echo "HTTP: $STATUS"
+          jq -C '.' dispatch.merge.resp.json || cat dispatch.merge.resp.json
+          echo "::endgroup::"
+          test "${STATUS}" = "204" || (echo "ERR: merge dispatch failed"; exit 1)
+
+      - name: Save merge dispatch artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-dispatch-${{ github.run_id }}
+          path: |
+            dispatch.merge.req.json
+            dispatch.merge.resp.json
