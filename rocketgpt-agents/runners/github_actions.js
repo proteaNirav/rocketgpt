@@ -144,21 +144,55 @@ async function reviewWithClaude(input) {
     case 'guard': await ensureArtifact('guard_result', 'noop', spec); break;
 
     case 'review': {
-      // Inputs / outputs
-      const inputPath  = arg || 'review_input.json';
-      const outputPath = 'review_result.json';
+  const inputPath  = arg || 'review_input.json';
+  const outputPath = 'review_result.json';
 
-      const envMin = Number(process.env.MIN_ACCEPT_SCORE || 75);
-      const input  = await readJson(inputPath, {});
-      const score  = Number(input.score ?? 0);
+  const envMin = Number(process.env.MIN_ACCEPT_SCORE || 75);
+  const input  = await readJson(inputPath, {});
+  const providerHint = String(
+    input.provider_hint || process.env.MODEL_PROVIDER || process.env.PROVIDER || 'unknown'
+  );
 
-      // Choose provider for logging/metadata only
-      const provider = String(
-        input.provider_hint ||
-        process.env.MODEL_PROVIDER ||
-        process.env.PROVIDER ||
-        'unknown'
-      );
+  // 1) Try Claude if requested/available
+  let result = null;
+  if ((providerHint === 'anthropic' || process.env.ANTHROPIC_API_KEY) && global.fetch) {
+    try { result = await reviewWithClaude(input); }
+    catch (e) { console.error('Claude review failed:', e?.stack || String(e)); }
+  }
+
+  // 2) Fallback: score threshold policy (your existing behavior)
+  if (!result) {
+    const score  = Number(input.score ?? 0);
+    const decision = (isFinite(score) && score >= envMin) ? 'approve' : 'block';
+    const summary = [
+      `**Automated Review (fallback)**`,
+      `- Score: **${isFinite(score) ? score : 'N/A'}**`,
+      `- Threshold: **${envMin}**`,
+      `- Decision: **${decision.toUpperCase()}**`,
+      input.summary ? `\n**Changes:**\n${input.summary}` : ''
+    ].filter(Boolean).join('\n');
+    result = { decision, summary_md: summary, nitpicks_md: '' };
+  }
+
+  const out = {
+    decision: result.decision,
+    summary_md: result.summary_md,
+    nitpicks_md: result.nitpicks_md || '',
+    meta: {
+      runner: 'rocketgpt-agents/github_actions.js',
+      mode: 'review',
+      timestamp: new Date().toISOString(),
+      provider: providerHint,
+      pr: input.pr || null,
+      repo: input.repo || null
+    }
+  };
+
+  await writeJson(outputPath, out);
+  console.log(`Wrote ${outputPath}`);
+  break;
+}
+
 
       // Extremely simple policy: approve if score >= threshold, else block.
       // You can enrich this later (diff size, file types, lint results, etc.).
