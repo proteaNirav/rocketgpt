@@ -8,7 +8,9 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write   # needed to post a PR review comment
+  pull-requests: write   # to comment on PR
+  checks: write          # to create the "AI Review" check run
+  statuses: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -95,7 +97,7 @@ jobs:
             const summary = files.map(f => `- ${f.filename} (${f.status}) +${f.additions} -${f.deletions}`).join('\n');
             core.setOutput('files', JSON.stringify(files));
             core.setOutput('summary', summary);
-        # also save a copy for artifacts:
+
       - name: Save changed files list
         run: echo '${{ steps.files.outputs.files }}' > files.json
 
@@ -193,7 +195,8 @@ jobs:
         id: rr
         run: echo "decision=$(jq -r '.decision' review_result.json)" >> $GITHUB_OUTPUT
 
-      - name: Post review on PR
+      # --- Post comment (no approval) ---
+      - name: Post AI review as PR comment
         uses: actions/github-script@v7
         with:
           script: |
@@ -201,14 +204,49 @@ jobs:
             const r = JSON.parse(fs.readFileSync('review_result.json','utf8'));
             const {owner, repo} = context.repo;
             const pull_number = Number('${{ steps.pr.outputs.number }}');
-            let event = 'COMMENT';
-            if (r.decision === 'approve') event = 'APPROVE';
-            if (r.decision === 'block')   event = 'REQUEST_CHANGES';
-            await github.rest.pulls.createReview({
-              owner, repo, pull_number,
-              event,
-              body: `${r.summary_md}\n\n${r.nitpicks_md ? '---\n' + r.nitpicks_md : ''}`
+            const body = `${r.summary_md}\n\n${r.nitpicks_md ? '---\n' + r.nitpicks_md : ''}`;
+            await github.rest.issues.createComment({ owner, repo, issue_number: pull_number, body });
+
+      # --- Create the "AI Review" check run ---
+      - name: Create/Update "AI Review" check run
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const r = JSON.parse(fs.readFileSync('review_result.json','utf8'));
+            const {owner, repo} = context.repo;
+            const prNumber = Number('${{ steps.pr.outputs.number }}');
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
+
+            let conclusion = 'neutral';
+            if (r.decision === 'approve') conclusion = 'success';
+            else if (r.decision === 'block') conclusion = 'failure';
+
+            await github.request('POST /repos/{owner}/{repo}/check-runs', {
+              owner, repo,
+              name: 'AI Review',
+              head_sha: pr.head.sha,
+              status: 'completed',
+              conclusion,
+              output: {
+                title: 'AI Review',
+                summary: r.summary_md,
+                text: r.nitpicks_md || ''
+              }
             });
+            core.setOutput('conclusion', conclusion);
+
+      - name: Label PR with AI review status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const prNumber = Number('${{ steps.pr.outputs.number }}');
+            const conclusion = '${{ steps.check.outputs.conclusion }}';
+            const add = ['ai:reviewed'];
+            if (conclusion === 'success') add.push('ai:approved');
+            await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: add });
 
       - name: Save review I/O artifacts
         if: always()
@@ -221,9 +259,9 @@ jobs:
             review_input.json
             review_result.json
 
-      # ➡ Dispatch merge if approved
+      # ➡ Dispatch merge if AI check succeeded
       - name: Trigger Auto-Merge (log req/resp)
-        if: ${{ steps.rr.outputs.decision == 'approve' }}
+        if: ${{ steps.check.outputs.conclusion == 'success' }}
         env:
           OWNER:  ${{ github.repository_owner }}
           REPO:   ${{ github.event.repository.name }}
