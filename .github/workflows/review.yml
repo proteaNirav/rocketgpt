@@ -59,29 +59,30 @@ jobs:
           test -f rocketgpt-agents/runners/github_actions.js || \
             (echo "Missing runner: rocketgpt-agents/runners/github_actions.js"; exit 1)
 
-      - name: Pick model provider
+           - name: Pick model provider
         id: engine
         uses: actions/github-script@v7
         env:
-          DEFAULT_ENGINE: openai
+          DEFAULT_ENGINE: anthropic        # ← prefer Claude for REVIEW
           OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
           GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
         with:
           script: |
-            const req = (process.env.DEFAULT_ENGINE || 'openai').toLowerCase();
+            const req = (process.env.DEFAULT_ENGINE || 'anthropic').toLowerCase();
             const providers = [
-              { key:'openai', ok:!!process.env.OPENAI_API_KEY },
-              { key:'anthropic', ok:!!process.env.ANTHROPIC_API_KEY },
-              { key:'google', ok:!!process.env.GOOGLE_API_KEY },
-              { key:'groq', ok:!!process.env.GROQ_API_KEY },
+              { key:'anthropic', ok:!!process.env.ANTHROPIC_API_KEY }, // prefer Claude
+              { key:'openai',    ok:!!process.env.OPENAI_API_KEY },
+              { key:'google',    ok:!!process.env.GOOGLE_API_KEY },
+              { key:'groq',      ok:!!process.env.GROQ_API_KEY },
             ];
             const chosen = providers.some(p=>p.key===req && p.ok)
               ? req
               : (providers.find(p=>p.ok)?.key || 'openai');
             core.info(`Chosen provider: ${chosen}`);
             core.setOutput('engine', chosen);
+
 
       - name: Collect changed files
         id: files
