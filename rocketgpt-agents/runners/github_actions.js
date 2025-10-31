@@ -5,22 +5,22 @@
  * Supported subcommands:
  *   - plan | code | test | doc | guard | review
  *
- * Behavior:
- *   • For plan/code/test/doc/guard: writes a small JSON artifact so CI stays green (replace with real logic anytime).
- *   • For review: reads review_input.json and MUST emit review_result.json with a decision.
+ * REVIEW behavior:
+ *   • If ANTHROPIC_API_KEY is present (or provider_hint === 'anthropic') → call Claude (claude-3-5-sonnet-latest)
+ *     and expect STRICT JSON: { decision, summary_md, nitpicks_md }.
+ *   • Else → fall back to a simple score threshold policy.
  *
  * Env knobs:
- *   - MIN_ACCEPT_SCORE (default 75)  → threshold for "approve" vs "block"
- *   - MODEL_PROVIDER / provider_hint → surfaced in the review metadata
+ *   - MIN_ACCEPT_SCORE (default 75)
+ *   - MODEL_PROVIDER / provider_hint
+ *   - CLAUDE_MODEL (default "claude-3-5-sonnet-latest")
  */
 
 const fs = require('fs');
 const path = require('path');
 
-function fail(msg) {
-  console.error(msg);
-  process.exit(2);
-}
+// -------------------------- utils -------------------------------------------
+function fail(msg) { console.error(msg); process.exit(2); }
 
 async function readJson(p, fallback = {}) {
   try { return JSON.parse(await fs.promises.readFile(p, 'utf8')); }
@@ -39,10 +39,11 @@ async function ensureArtifact(name, content, spec) {
   return out;
 }
 
-// --- Claude helper (Anthropic) ----------------------------------------------
+// -------------------- Claude helper (Anthropic) ------------------------------
 async function reviewWithClaude(input) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey || !global.fetch) return null;
+  const fetchFn = global.fetch;
+  const apiKey  = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey || !fetchFn) return null;
 
   const model = process.env.CLAUDE_MODEL || 'claude-3-5-sonnet-latest';
 
@@ -87,7 +88,7 @@ async function reviewWithClaude(input) {
     response_format: { type: 'json_object' }
   };
 
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+  const resp = await fetchFn('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -99,7 +100,8 @@ async function reviewWithClaude(input) {
 
   if (!resp.ok) {
     console.error(`Claude API error: ${resp.status} ${resp.statusText}`);
-    console.error(await resp.text().catch(()=> ''));
+    const text = await resp.text().catch(()=> '');
+    console.error(text);
     return null;
   }
 
@@ -123,7 +125,7 @@ async function reviewWithClaude(input) {
   };
 }
 
-
+// ------------------------------ main -----------------------------------------
 (async () => {
   const step = (process.argv[2] || '').trim();     // plan|code|test|doc|guard|review
   const arg  = (process.argv[3] || '').trim();     // spec.json OR review_input.json
@@ -144,83 +146,51 @@ async function reviewWithClaude(input) {
     case 'guard': await ensureArtifact('guard_result', 'noop', spec); break;
 
     case 'review': {
-  const inputPath  = arg || 'review_input.json';
-  const outputPath = 'review_result.json';
+      const inputPath  = arg || 'review_input.json';
+      const outputPath = 'review_result.json';
 
-  const envMin = Number(process.env.MIN_ACCEPT_SCORE || 75);
-  const input  = await readJson(inputPath, {});
-  const providerHint = String(
-    input.provider_hint || process.env.MODEL_PROVIDER || process.env.PROVIDER || 'unknown'
-  );
+      const envMin = Number(process.env.MIN_ACCEPT_SCORE || 75);
+      const input  = await readJson(inputPath, {});
+      const providerHint = String(
+        input.provider_hint || process.env.MODEL_PROVIDER || process.env.PROVIDER || 'unknown'
+      );
 
-  // 1) Try Claude if requested/available
-  let result = null;
-  if ((providerHint === 'anthropic' || process.env.ANTHROPIC_API_KEY) && global.fetch) {
-    try { result = await reviewWithClaude(input); }
-    catch (e) { console.error('Claude review failed:', e?.stack || String(e)); }
-  }
+      // 1) Try Claude if requested/available
+      let result = null;
+      if ((providerHint === 'anthropic' || process.env.ANTHROPIC_API_KEY) && global.fetch) {
+        try { result = await reviewWithClaude(input); }
+        catch (e) { console.error('Claude review failed:', e?.stack || String(e)); }
+      }
 
-  // 2) Fallback: score threshold policy (your existing behavior)
-  if (!result) {
-    const score  = Number(input.score ?? 0);
-    const decision = (isFinite(score) && score >= envMin) ? 'approve' : 'block';
-    const summary = [
-      `**Automated Review (fallback)**`,
-      `- Score: **${isFinite(score) ? score : 'N/A'}**`,
-      `- Threshold: **${envMin}**`,
-      `- Decision: **${decision.toUpperCase()}**`,
-      input.summary ? `\n**Changes:**\n${input.summary}` : ''
-    ].filter(Boolean).join('\n');
-    result = { decision, summary_md: summary, nitpicks_md: '' };
-  }
+      // 2) Fallback: score threshold policy
+      if (!result) {
+        const score  = Number(input.score ?? 0);
+        const decision = (isFinite(score) && score >= envMin) ? 'approve' : 'block';
+        const summary = [
+          `**Automated Review (fallback)**`,
+          `- Score: **${isFinite(score) ? score : 'N/A'}**`,
+          `- Threshold: **${envMin}**`,
+          `- Decision: **${decision.toUpperCase()}**`,
+          input.summary ? `\n**Changes:**\n${input.summary}` : ''
+        ].filter(Boolean).join('\n');
+        result = { decision, summary_md: summary, nitpicks_md: '' };
+      }
 
-  const out = {
-    decision: result.decision,
-    summary_md: result.summary_md,
-    nitpicks_md: result.nitpicks_md || '',
-    meta: {
-      runner: 'rocketgpt-agents/github_actions.js',
-      mode: 'review',
-      timestamp: new Date().toISOString(),
-      provider: providerHint,
-      pr: input.pr || null,
-      repo: input.repo || null
-    }
-  };
-
-  await writeJson(outputPath, out);
-  console.log(`Wrote ${outputPath}`);
-  break;
-}
-
-
-      // Extremely simple policy: approve if score >= threshold, else block.
-      // You can enrich this later (diff size, file types, lint results, etc.).
-      const decision = (isFinite(score) && score >= envMin) ? 'approve' : 'block';
-
-      const summary = [
-        `**Automated Review** (provider: \`${provider}\`)`,
-        `- Score: **${isFinite(score) ? score : 'N/A'}**`,
-        `- Threshold: **${envMin}**`,
-        `- Decision: **${decision.toUpperCase()}**`,
-        input.summary ? `\n**Changes:**\n${input.summary}` : ''
-      ].filter(Boolean).join('\n');
-
-      const result = {
-        decision,                 // "approve" | "comment" | "block"
-        summary_md: summary,      // Markdown body for PR review
-        nitpicks_md: input.nitpicks_md || '', // optional bullets if you provide any
+      const out = {
+        decision: result.decision,
+        summary_md: result.summary_md,
+        nitpicks_md: result.nitpicks_md || '',
         meta: {
           runner: 'rocketgpt-agents/github_actions.js',
           mode: 'review',
           timestamp: new Date().toISOString(),
-          provider,
+          provider: providerHint,
           pr: input.pr || null,
           repo: input.repo || null
         }
       };
 
-      await writeJson(outputPath, result);
+      await writeJson(outputPath, out);
       console.log(`Wrote ${outputPath}`);
       break;
     }
