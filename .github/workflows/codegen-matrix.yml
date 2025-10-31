@@ -3,6 +3,8 @@ name: AI Codegen (Matrix)
 on:
   issues:
     types: [labeled]
+  repository_dispatch:
+    types: [codegen]  # optional: allows triage.yml to dispatch codegen explicitly
 
 permissions:
   contents: write
@@ -10,12 +12,16 @@ permissions:
   issues: write
 
 concurrency:
-  group: codegen-${{ github.event.issue.number }}
+  group: codegen-${{ github.event.issue.number || github.event.client_payload.issue_number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   plan-matrix:
-    if: contains(github.event.issue.labels.*.name, 'codegen:ready')
+    # fire on label OR repository_dispatch(codegen)
+    if: >
+      (github.event_name == 'issues' &&
+       contains(github.event.issue.labels.*.name, 'codegen:ready'))
+      || github.event_name == 'repository_dispatch'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
@@ -23,43 +29,58 @@ jobs:
       title: ${{ steps.spec.outputs.title }}
       spec: ${{ steps.spec.outputs.spec }}
       requested_engine: ${{ steps.spec.outputs.engine }}
+
     steps:
       - uses: actions/checkout@v4
 
-      # Parse JSON spec from issue body and extract engine
-      - name: Pull Spec from Issue (with engine)
+      # Parse JSON spec from the issue body (or from repository_dispatch payload)
+      - name: Pull Spec (issue body or dispatch)
         id: spec
         uses: actions/github-script@v7
         env:
           DEFAULT_ENGINE: ${{ vars.DEFAULT_ENGINE }}
         with:
           script: |
-            const issue = context.payload.issue;
-            const body = issue.body || '';
-            const match = body.match(/```json([\s\S]*?)```/i);
-            let obj = {};
-            try {
-              obj = match ? JSON.parse(match[1].trim()) : {};
-            } catch (e) {
-              core.warning(`Failed to parse JSON: ${e.message}`);
-              obj = {};
+            let title   = 'Untitled';
+            let obj     = {};
+            let engine  = (process.env.DEFAULT_ENGINE || 'openai').toLowerCase().trim();
+
+            if (context.eventName === 'issues') {
+              const issue = context.payload.issue;
+              title = issue.title || title;
+              const body  = issue.body || '';
+              const match = body.match(/```json([\s\S]*?)```/i);
+              try { obj = match ? JSON.parse(match[1].trim()) : {}; } catch (e) {
+                core.warning(`Failed to parse JSON from issue body: ${e.message}`);
+                obj = {};
+              }
+              engine = (obj.engine || engine).toString().toLowerCase().trim();
+            } else if (context.eventName === 'repository_dispatch') {
+              // triage.yml can dispatch with a spec in the payload later if desired
+              title = context.payload.client_payload?.title || title;
+              const raw = context.payload.client_payload?.spec_json || null;
+              if (raw) {
+                try { obj = JSON.parse(raw); } catch (e) {
+                  core.warning(`Failed to parse spec_json from dispatch: ${e.message}`);
+                }
+              }
+              if (obj.engine) engine = String(obj.engine).toLowerCase().trim();
             }
-            const engine = (obj.engine || process.env.DEFAULT_ENGINE || 'openai')
-              .toString().trim().toLowerCase();
-            core.setOutput('title', issue.title || 'Untitled');
+
+            core.setOutput('title', title);
             core.setOutput('spec', JSON.stringify(obj));
             core.setOutput('engine', engine);
 
-      # Build matrix & priority list from available secrets + requested engine
+      # Build provider matrix from available secrets + requested engine
       - name: Plan providers matrix
         id: plan
         uses: actions/github-script@v7
         env:
-          REQ:                 ${{ steps.spec.outputs.engine }}
-          OPENAI_API_KEY:      ${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY:   ${{ secrets.ANTHROPIC_API_KEY }}
-          GOOGLE_API_KEY:      ${{ secrets.GOOGLE_API_KEY }}
-          GROQ_API_KEY:        ${{ secrets.GROQ_API_KEY }}
+          REQ:               ${{ steps.spec.outputs.engine }}
+          OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY:    ${{ secrets.GOOGLE_API_KEY }}
+          GROQ_API_KEY:      ${{ secrets.GROQ_API_KEY }}
         with:
           script: |
             const available = [];
@@ -73,7 +94,7 @@ jobs:
             const dedupe = (arr) => [...new Set(arr)];
 
             let priority = dedupe([req, ...baseOrder]).filter(p => p && available.includes(p));
-            if (priority.length === 0) priority = ['openai'];
+            if (priority.length === 0) priority = ['openai']; // safe default
 
             const matrix = { provider: priority };
 
@@ -125,14 +146,15 @@ jobs:
           echo "${SPEC_JSON}" > spec.json
           echo "Selected provider: ${MODEL_PROVIDER}"
 
+          node rocketgpt-agents/runners/github_actions.js plan  spec.json
           node rocketgpt-agents/runners/github_actions.js code  spec.json
           node rocketgpt-agents/runners/github_actions.js test  spec.json
           node rocketgpt-agents/runners/github_actions.js doc   spec.json
           node rocketgpt-agents/runners/github_actions.js guard spec.json
 
-          mkdir -p generated/${MODEL_PROVIDER}
-          echo "Auto-generated for issue #${{ github.event.issue.number }} on $GITHUB_REPOSITORY (engine=${MODEL_PROVIDER})" \
-            > generated/${MODEL_PROVIDER}/ai_test_${{ github.event.issue.number }}_${MODEL_PROVIDER}.md
+          mkdir -p "generated/${MODEL_PROVIDER}"
+          echo "Auto-generated for issue #${{ github.event.issue.number || github.event.client_payload.issue_number }} on $GITHUB_REPOSITORY (engine=${MODEL_PROVIDER})" \
+            > "generated/${MODEL_PROVIDER}/ai_test_${{ github.event.issue.number || github.event.client_payload.issue_number }}_${MODEL_PROVIDER}.md"
 
       - name: Build (JS + .NET)
         run: |
@@ -170,22 +192,22 @@ jobs:
 }
 JSON
           fi
-          echo "Score file created:"
-          cat "${SCORE_FILE}"
+          echo "Score file created:" && cat "${SCORE_FILE}"
 
       - name: Create Branch, Commit & Push (provider branch)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PROVIDER: ${{ matrix.provider }}
         run: |
-          BRANCH="ai/codegen/${{ github.event.issue.number }}/${PROVIDER}"
+          ISSUE_NO="${{ github.event.issue.number || github.event.client_payload.issue_number }}"
+          BRANCH="ai/codegen/${ISSUE_NO}/${PROVIDER}"
           if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
             git checkout "$BRANCH"
           else
             git checkout -b "$BRANCH"
           fi
           git add -A
-          git commit -m "AI codegen for #${{ github.event.issue.number }} (provider=${PROVIDER}): ${{ needs.plan-matrix.outputs.title }}"
+          git commit -m "AI codegen for #${ISSUE_NO} (provider=${PROVIDER}): ${{ needs.plan-matrix.outputs.title }}" || echo "No changes to commit."
           git push origin "$BRANCH"
 
   choose-and-open-pr:
@@ -195,6 +217,7 @@ JSON
     permissions:
       contents: write
       pull-requests: write
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -205,9 +228,9 @@ JSON
         uses: actions/github-script@v7
         env:
           PRIORITY: ${{ needs.plan-matrix.outputs.priority }}
-          ISSUE: ${{ github.event.issue.number }}
           OWNER: ${{ github.repository_owner }}
           REPO:  ${{ github.event.repository.name }}
+          ISSUE: ${{ github.event.issue.number || github.event.client_payload.issue_number }}
         with:
           script: |
             const { execSync } = require('child_process');
@@ -259,7 +282,6 @@ JSON
 
             core.info(`Candidates: ${JSON.stringify(candidates, null, 2)}`);
             core.info(`Chosen: provider=${chosen.provider}, branch=${chosen.branch}, score=${chosen.score}`);
-
             core.setOutput('provider', chosen.provider);
             core.setOutput('branch', chosen.branch);
 
@@ -278,7 +300,7 @@ JSON
             const title = `AI Codegen: ${process.env.TITLE} (provider=${process.env.PROVIDER})`;
             const body  = [
               '## 🤖 What changed',
-              `Generated code and tests from issue #${context.payload.issue.number}.`,
+              `Generated code and tests from issue #${{ github.event.issue.number || github.event.client_payload.issue_number }}.`,
               '',
               `**Chosen provider:** \`${process.env.PROVIDER}\``,
               '## ✅ Checklist',
@@ -291,9 +313,7 @@ JSON
               `Branch: \`${head}\``
             ].join('\n');
 
-            const prs = await github.rest.pulls.list({
-              owner, repo, state: 'open', head: `${owner}:${head}`, base
-            });
+            const prs = await github.rest.pulls.list({ owner, repo, state: 'open', head: `${owner}:${head}`, base });
             if (prs.data.length > 0) {
               core.info(`PR already exists: #${prs.data[0].number}`);
             } else {
