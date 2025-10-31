@@ -163,26 +163,27 @@ jobs:
           echo "score=$SCORE" | tee -a "$GITHUB_OUTPUT"
 
       # ---- Build review input safely ----
-      - name: Build review_input.json
-        run: |
-          cat > review_input.json <<'JSON'
-          {
-            "pr": {
-              "number": ${{ steps.pr.outputs.number }},
-              "title": "${{ github.event.pull_request.title || '' }}",
-              "author": "${{ github.event.pull_request.user.login || github.actor }}",
-              "base": "${{ github.event.pull_request.base.ref || '' }}",
-              "head": "${{ github.event.pull_request.head.ref || '' }}"
-            },
-            "repo": "${{ github.repository }}",
-            "summary": "${{ steps.files.outputs.summary || '' }}",
-            "files": ${{ steps.files.outputs.files || '[]' }},
-            "score": ${{ steps.score.outputs.score || 60 }},
-            "min_accept_score": ${{ env.MIN_ACCEPT_SCORE || 75 }},
-            "provider_hint": "${{ steps.engine.outputs.engine || 'unknown' }}"
-          }
-          JSON
-          echo "Created review_input.json:" && cat review_input.json
+- name: Build review_input.json
+  run: |
+    cat > review_input.json <<'JSON'
+    {
+      "pr": {
+        "number": ${{ steps.pr.outputs.number }},
+        "title": "${{ github.event.pull_request.title || '' }}",
+        "author": "${{ github.event.pull_request.user.login || github.actor }}",
+        "base": "${{ github.event.pull_request.base.ref || '' }}",
+        "head": "${{ github.event.pull_request.head.ref || '' }}"
+      },
+      "repo": "${{ github.repository }}",
+      "summary": "${{ steps.files.outputs.summary || '' }}",
+      "files": ${{ steps.files.outputs.files || '[]' }},
+      "score": ${{ steps.score.outputs.score || 60 }},
+      "min_accept_score": ${{ env.MIN_ACCEPT_SCORE || 75 }},
+      "provider_hint": "${{ steps.engine.outputs.engine || 'unknown' }}"
+    }
+    JSON
+    echo "Created review_input.json:" && cat review_input.json
+
 
       - name: Run AI review (runner -> review_result.json)
         env:
