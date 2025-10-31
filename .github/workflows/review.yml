@@ -4,12 +4,12 @@ on:
   pull_request:
     branches: [ main, dev ]
   repository_dispatch:
-    types: [review] # allows Codegen to explicitly trigger review
+    types: [review]  # allow Codegen to trigger a review
 
 permissions:
   contents: read
-  pull-requests: write   # to comment on PR
-  checks: write          # to create the "AI Review" check run
+  pull-requests: write
+  checks: write
   statuses: write
 
 concurrency:
@@ -23,19 +23,22 @@ jobs:
   ai-review:
     name: AI Review
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Log event payload (review)
         run: |
           echo '${{ toJson(github.event) }}' > event.json
-          jq -C '.' event.json || cat event.json
+          (command -v jq >/dev/null && jq -C '.' event.json) || cat event.json
 
       - name: Determine PR number
         id: pr
@@ -48,22 +51,19 @@ jobs:
             } else if (context.eventName === 'repository_dispatch') {
               prNumber = context.payload.client_payload?.pr_number ?? null;
             }
-            if (!prNumber) {
-              core.setFailed('PR number not found in event payload.');
-            } else {
-              core.setOutput('number', prNumber);
-            }
+            if (!prNumber) core.setFailed('PR number not found in event payload.');
+            core.setOutput('number', prNumber);
 
       - name: Validate runner exists
         run: |
           test -f rocketgpt-agents/runners/github_actions.js || \
             (echo "Missing runner: rocketgpt-agents/runners/github_actions.js"; exit 1)
 
-           - name: Pick model provider
+      - name: Pick model provider (prefer Claude)
         id: engine
         uses: actions/github-script@v7
         env:
-          DEFAULT_ENGINE: anthropic        # ← prefer Claude for REVIEW
+          DEFAULT_ENGINE: anthropic
           OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
           GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
@@ -72,7 +72,7 @@ jobs:
           script: |
             const req = (process.env.DEFAULT_ENGINE || 'anthropic').toLowerCase();
             const providers = [
-              { key:'anthropic', ok:!!process.env.ANTHROPIC_API_KEY }, // prefer Claude
+              { key:'anthropic', ok:!!process.env.ANTHROPIC_API_KEY },
               { key:'openai',    ok:!!process.env.OPENAI_API_KEY },
               { key:'google',    ok:!!process.env.GOOGLE_API_KEY },
               { key:'groq',      ok:!!process.env.GROQ_API_KEY },
@@ -83,33 +83,45 @@ jobs:
             core.info(`Chosen provider: ${chosen}`);
             core.setOutput('engine', chosen);
 
-
-      - name: Collect changed files
+      - name: Collect changed files (slim; no patch)
         id: files
         uses: actions/github-script@v7
         with:
           script: |
             const {owner, repo} = context.repo;
-            const pull_number = Number('${{ steps.pr.outputs.number }}');
+            const pull_number = Number("${{ steps.pr.outputs.number }}");
             const files = await github.paginate(
               github.rest.pulls.listFiles,
               { owner, repo, pull_number, per_page: 100 }
             );
+            const slim = files.map(f => ({
+              sha: f.sha,
+              filename: f.filename,
+              status: f.status,
+              additions: f.additions,
+              deletions: f.deletions,
+              changes: f.changes,
+              blob_url: f.blob_url,
+              raw_url: f.raw_url,
+              contents_url: f.contents_url
+            }));
             const summary = files.map(f => `- ${f.filename} (${f.status}) +${f.additions} -${f.deletions}`).join('\n');
-            core.setOutput('files', JSON.stringify(files));
+            core.setOutput('files', JSON.stringify(slim));
             core.setOutput('summary', summary);
 
-      - name: Save changed files list
-        run: echo '${{ steps.files.outputs.files }}' > files.json
+      - name: Save changed files list (quote-safe)
+        run: |
+          cat > files.json <<'JSON'
+          ${{ steps.files.outputs.files }}
+          JSON
 
-      # ---- Policy-based score (smart) ----
       - name: Read PR labels
         id: prlabels
         uses: actions/github-script@v7
         with:
           script: |
             const {owner, repo} = context.repo;
-            const number = Number('${{ steps.pr.outputs.number }}');
+            const number = Number("${{ steps.pr.outputs.number }}");
             const { data: labels } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: number });
             const names = labels.map(l => l.name);
             core.setOutput('names', JSON.stringify(names));
@@ -119,10 +131,8 @@ jobs:
         shell: bash
         run: |
           set -e
-          FILES_JSON='${{ steps.files.outputs.files }}'
-          echo "$FILES_JSON" > files.json
+          FILES_JSON=$(cat files.json)
 
-          # ------------- Policy knobs -------------
           BASE=90
           MINOR_DIFF_CUTOFF=300
           LARGE_DIFF_CUTOFF=1000
@@ -131,6 +141,7 @@ jobs:
           LOCKS_REGEX='(^|/)(package-lock\.json|pnpm-lock\.yaml|yarn\.lock)$'
           ALLOW=$(echo '${{ steps.prlabels.outputs.names }}' | jq -r 'index("ai:unsafe-ok") | if . == null then "no" else "yes" end')
 
+          echo "$FILES_JSON" > files.json
           TOTAL_ADD=$(jq '[.[].additions] | add // 0' files.json)
           TOTAL_DEL=$(jq '[.[].deletions] | add // 0' files.json)
           TOTAL_CHG=$(( TOTAL_ADD + TOTAL_DEL ))
@@ -139,7 +150,6 @@ jobs:
           HAS_LOCKS=$(jq --arg re "$LOCKS_REGEX"     '[ .[] | select(.filename|test($re)) ] | length' files.json)
 
           SCORE=$BASE
-
           if [ "$HAS_SENSITIVE" -gt 0 ] && [ "$ALLOW" != "yes" ]; then
             SCORE=0
           else
@@ -162,31 +172,37 @@ jobs:
           echo "HAS_SENSITIVE=$HAS_SENSITIVE  HAS_LOCKS=$HAS_LOCKS  ALLOW=${ALLOW}"
           echo "score=$SCORE" | tee -a "$GITHUB_OUTPUT"
 
-      # ---- Build review input safely ----
-      - name: Build review_input.json
-        run: |
-          cat > review_input.json <<'JSON'
-          {
-            "pr": {
-              "number": ${{ steps.pr.outputs.number }},
-              "title": "${{ github.event.pull_request.title || '' }}",
-              "author": "${{ github.event.pull_request.user.login || github.actor }}",
-              "base": "${{ github.event.pull_request.base.ref || '' }}",
-              "head": "${{ github.event.pull_request.head.ref || '' }}"
-            },
-            "repo": "${{ github.repository }}",
-            "summary": "${{ steps.files.outputs.summary || '' }}",
-            "files": ${{ steps.files.outputs.files || '[]' }},
-            "score": ${{ steps.score.outputs.score || 60 }},
-            "min_accept_score": ${{ env.MIN_ACCEPT_SCORE || 75 }},
-            "provider_hint": "${{ steps.engine.outputs.engine || 'unknown' }}"
-          }
-          JSON
-          echo "Created review_input.json:" && cat review_input.json
+      - name: Build review_input.json (safe; no heredoc)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const prNumber = Number("${{ steps.pr.outputs.number }}");
+            const obj = {
+              pr: {
+                number: prNumber,
+                title: ${{ toJson(github.event.pull_request?.title || '') }},
+                author: ${{ toJson(github.event.pull_request?.user?.login || github.actor) }},
+                base: ${{ toJson(github.event.pull_request?.base?.ref || '') }},
+                head: ${{ toJson(github.event.pull_request?.head?.ref || '') }}
+              },
+              repo: ${{ toJson(github.repository) }},
+              summary: ${{ toJson(steps.files.outputs.summary || '') }},
+              files: ${{ steps.files.outputs.files || '[]' }},
+              score: Number("${{ steps.score.outputs.score || 60 }}"),
+              min_accept_score: Number("${{ env.MIN_ACCEPT_SCORE || 75 }}"),
+              provider_hint: ${{ toJson(steps.engine.outputs.engine || 'unknown') }}
+            };
+            fs.writeFileSync('review_input.json', JSON.stringify(obj, null, 2));
+            console.log('✅ Created review_input.json');
 
       - name: Run AI review (runner -> review_result.json)
         env:
           MODEL_PROVIDER: ${{ steps.engine.outputs.engine }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
         run: |
           node rocketgpt-agents/runners/github_actions.js review review_input.json
           test -f review_result.json || (echo "review_result.json missing"; exit 1)
@@ -196,58 +212,27 @@ jobs:
         id: rr
         run: echo "decision=$(jq -r '.decision' review_result.json)" >> $GITHUB_OUTPUT
 
-      # --- Post comment (no approval) ---
-      - name: Post AI review as PR comment
+      - name: Post review on PR (approve/request-changes or fallback comment)
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
             const r = JSON.parse(fs.readFileSync('review_result.json','utf8'));
             const {owner, repo} = context.repo;
-            const pull_number = Number('${{ steps.pr.outputs.number }}');
+            const pull_number = Number("${{ steps.pr.outputs.number }}");
+
+            let event = 'COMMENT';
+            if (r.decision === 'approve') event = 'APPROVE';
+            if (r.decision === 'block')   event = 'REQUEST_CHANGES';
+
             const body = `${r.summary_md}\n\n${r.nitpicks_md ? '---\n' + r.nitpicks_md : ''}`;
-            await github.rest.issues.createComment({ owner, repo, issue_number: pull_number, body });
 
-      # --- Create the "AI Review" check run ---
-      - name: Create/Update "AI Review" check run
-        id: check
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const r = JSON.parse(fs.readFileSync('review_result.json','utf8'));
-            const {owner, repo} = context.repo;
-            const prNumber = Number('${{ steps.pr.outputs.number }}');
-            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
-
-            let conclusion = 'neutral';
-            if (r.decision === 'approve') conclusion = 'success';
-            else if (r.decision === 'block') conclusion = 'failure';
-
-            await github.request('POST /repos/{owner}/{repo}/check-runs', {
-              owner, repo,
-              name: 'AI Review',
-              head_sha: pr.head.sha,
-              status: 'completed',
-              conclusion,
-              output: {
-                title: 'AI Review',
-                summary: r.summary_md,
-                text: r.nitpicks_md || ''
-              }
-            });
-            core.setOutput('conclusion', conclusion);
-
-      - name: Label PR with AI review status
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const {owner, repo} = context.repo;
-            const prNumber = Number('${{ steps.pr.outputs.number }}');
-            const conclusion = '${{ steps.check.outputs.conclusion }}';
-            const add = ['ai:reviewed'];
-            if (conclusion === 'success') add.push('ai:approved');
-            await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: add });
+            try {
+              await github.rest.pulls.createReview({ owner, repo, pull_number, event, body });
+            } catch (e) {
+              // If Actions cannot approve PRs (422), fall back to a regular comment
+              await github.rest.issues.createComment({ owner, repo, issue_number: pull_number, body: `*(Fallback comment)*\n\n${body}` });
+            }
 
       - name: Save review I/O artifacts
         if: always()
@@ -260,9 +245,8 @@ jobs:
             review_input.json
             review_result.json
 
-      # ➡ Dispatch merge if AI check succeeded
       - name: Trigger Auto-Merge (log req/resp)
-        if: ${{ steps.check.outputs.conclusion == 'success' }}
+        if: ${{ steps.rr.outputs.decision == 'approve' && steps.engine.outputs.engine == 'anthropic' }}
         env:
           OWNER:  ${{ github.repository_owner }}
           REPO:   ${{ github.event.repository.name }}
@@ -283,15 +267,6 @@ jobs:
 
           echo "::group::Dispatch Merge Response"
           echo "HTTP: $STATUS"
-          jq -C '.' dispatch.merge.resp.json || cat dispatch.merge.resp.json
+          (command -v jq >/dev/null && jq -C '.' dispatch.merge.resp.json) || cat dispatch.merge.resp.json
           echo "::endgroup::"
           test "${STATUS}" = "204" || (echo "ERR: merge dispatch failed"; exit 1)
-
-      - name: Save merge dispatch artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: review-dispatch-${{ github.run_id }}
-          path: |
-            dispatch.merge.req.json
-            dispatch.merge.resp.json
