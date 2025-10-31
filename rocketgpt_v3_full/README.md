@@ -1,3 +1,9 @@
+[![Triage](https://github.com/Nirav/RocketGPT/actions/workflows/triage.yml/badge.svg)](../../actions/workflows/triage.yml)
+[![Codegen](https://github.com/Nirav/RocketGPT/actions/workflows/codegen.yml/badge.svg)](../../actions/workflows/codegen.yml)
+[![Review](https://github.com/Nirav/RocketGPT/actions/workflows/review.yml/badge.svg)](../../actions/workflows/review.yml)
+[![Auto Merge](https://github.comNirav/RocketGPT/actions/workflows/auto-merge.yml/badge.svg)](../../actions/workflows/auto-merge.yml)
+
+
 RocketGPT – The AI Generalist Orchestrator
 RocketGPT is a next-generation AI orchestration platform that connects users to the right AI tools and workflows — blending the wisdom of ChatGPT, the speed of Gemini, and the adaptability of Claude.
 
