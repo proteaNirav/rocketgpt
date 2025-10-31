@@ -29,7 +29,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const labels = context.payload.issue.labels.map(l => l.name);
+            const labels = (context.payload.issue.labels || []).map(l => (typeof l === 'string' ? l : l.name));
             if (!labels.includes('self-apply')) {
               core.notice('Label self-apply not found — skipping gracefully.');
               process.exit(0);
@@ -39,9 +39,9 @@ jobs:
         run: |
           mkdir -p rocketgpt-agents/out
           echo '${{ steps.spec.outputs.spec }}' > spec.json
-          node rocketgpt-agents/runners/github_actions.js plan spec.json > rocketgpt-agents/out/tasks.json
+          node rocketgpt-agents/runners/github_actions.js plan spec.json > rocketgpt-agents/out/tasks.json || true
           echo "Planned tasks:"
-          cat rocketgpt-agents/out/tasks.json
+          cat rocketgpt-agents/out/tasks.json || true
 
       - name: Comment planned tasks + add codegen:ready
         uses: actions/github-script@v7
@@ -53,7 +53,7 @@ jobs:
               "```json",
               `${{ steps.spec.outputs.spec }}`,
               "```",
-              "**Next:** Label `codegen:ready` to start code generation."
+              "**Next:** Codegen will be triggered automatically."
             ].join("\n");
 
             // Add comment
@@ -64,10 +64,35 @@ jobs:
               body
             });
 
-            // Add label
+            // Add label (note: this alone won't trigger other workflows)
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number,
               labels: ['codegen:ready']
             });
+
+      # 🔗 NEW: Explicitly trigger AI Codegen via repository_dispatch (requires PAT)
+      - name: Trigger Codegen via repository_dispatch
+        env:
+          OWNER:  ${{ github.repository_owner }}
+          REPO:   ${{ github.event.repository.name }}
+          ISSUE:  ${{ github.event.issue.number }}
+          GH_PAT: ${{ secrets.GH_PAT }} # classic PAT with 'repo' + 'workflow' scopes
+        run: |
+          set -e
+          if [ -z "$GH_PAT" ]; then
+            echo "ERROR: GH_PAT secret not configured. Create a classic PAT with 'repo' and 'workflow' scopes and add it as GH_PAT in repo secrets."
+            exit 1
+          fi
+          echo "Dispatching codegen for issue #${ISSUE} on ${OWNER}/${REPO}…"
+          STATUS=$(curl -s -o /tmp/resp.json -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: token ${GH_PAT}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${OWNER}/${REPO}/dispatches \
+            -d "{\"event_type\":\"codegen\",\"client_payload\":{\"issue_number\":${ISSUE}}}" )
+
+          echo "Dispatch HTTP ${STATUS}"
+          cat /tmp/resp.json || true
+          test "${STATUS}" = "204" && echo "OK: dispatch accepted" || (echo "ERR: dispatch failed"; exit 1)
