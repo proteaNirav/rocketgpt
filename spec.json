@@ -1,0 +1,1 @@
+{"engine":"anthropic","goal":"Add a /api/hello endpoint returning { ok: true } and a unit test","acceptance":["Reproduce and fix the error","Add a unit test to prevent regression","Update README/CHANGELOG if needed"]}
