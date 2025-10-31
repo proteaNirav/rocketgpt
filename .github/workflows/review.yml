@@ -4,25 +4,30 @@ on:
   pull_request:
     branches: [ main, dev ]
 
+permissions:
+  contents: read
+  pull-requests: write   # needed to post a PR review comment
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  # Adjust if you want a different threshold
+  MIN_ACCEPT_SCORE: 75
 
 jobs:
   lint-test-build:
     # Run only if this repo actually has a Node project
     if: ${{ hashFiles('package.json') != '' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'none'          # <<<<<< STOPS the lockfile error
+          cache: 'none'          # avoids lockfile mismatch warnings
 
       - name: Install deps
         run: npm ci
@@ -36,3 +41,116 @@ jobs:
       - name: Test (optional)
         if: ${{ always() }}       # keep green even if no test script
         run: npm test --if-present
+
+  ai-review:
+    name: AI Review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Optional: ensure the runner exists so we fail fast with a clear error
+      - name: Validate runner exists
+        run: |
+          test -f rocketgpt-agents/runners/github_actions.js || \
+            (echo "Missing runner: rocketgpt-agents/runners/github_actions.js"; exit 1)
+
+      - name: Pick model provider (based on available secrets)
+        id: engine
+        uses: actions/github-script@v7
+        env:
+          DEFAULT_ENGINE: openai
+          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+        with:
+          script: |
+            const req = (process.env.DEFAULT_ENGINE || 'openai').toLowerCase();
+            const providers = [
+              { key:'openai',    ok:!!process.env.OPENAI_API_KEY },
+              { key:'anthropic', ok:!!process.env.ANTHROPIC_API_KEY },
+              { key:'google',    ok:!!process.env.GOOGLE_API_KEY },
+              { key:'groq',      ok:!!process.env.GROQ_API_KEY },
+            ];
+            const chosen = providers.some(p=>p.key===req && p.ok)
+              ? req
+              : (providers.find(p=>p.ok)?.key || 'openai');
+            core.info(`Chosen provider: ${chosen}`);
+            core.setOutput('engine', chosen);
+
+      - name: Collect changed files
+        id: files
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const number = context.payload.pull_request.number;
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              { owner, repo, pull_number: number, per_page: 100 }
+            );
+            const summary = files.map(f => `- ${f.filename} (${f.status}) +${f.additions} -${f.deletions}`).join('\n');
+            core.setOutput('files', JSON.stringify(files));
+            core.setOutput('summary', summary);
+
+      # Placeholder “score” — replace with your own scoring later
+      - name: Compute score (placeholder)
+        id: score
+        run: echo "score=60" >> $GITHUB_OUTPUT
+
+      # ✅ SAFE heredoc (<<'JSON') — prevents shell expansion in your JSON
+      - name: Build review_input.json
+        run: |
+          cat > review_input.json <<'JSON'
+          {
+            "pr": {
+              "number": ${{ github.event.pull_request.number }},
+              "title": "${{ github.event.pull_request.title }}",
+              "author": "${{ github.event.pull_request.user.login }}",
+              "base": "${{ github.event.pull_request.base.ref }}",
+              "head": "${{ github.event.pull_request.head.ref }}"
+            },
+            "repo": "${{ github.repository }}",
+            "summary": "${{ steps.files.outputs.summary || '' }}",
+            "files": ${{ steps.files.outputs.files || '[]' }},
+            "score": ${{ steps.score.outputs.score || 60 }},
+            "min_accept_score": ${{ env.MIN_ACCEPT_SCORE || 75 }},
+            "provider_hint": "${{ steps.engine.outputs.engine || 'unknown' }}"
+          }
+          JSON
+          echo "Created review_input.json:"
+          cat review_input.json
+
+      - name: Run AI review (runner -> review_result.json)
+        env:
+          MODEL_PROVIDER: ${{ steps.engine.outputs.engine }}
+        run: |
+          node rocketgpt-agents/runners/github_actions.js review review_input.json
+          test -f review_result.json || (echo "review_result.json missing"; exit 1)
+          echo "AI review produced:"
+          cat review_result.json
+
+      - name: Post review on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const r = JSON.parse(fs.readFileSync('review_result.json','utf8'));
+            const {owner, repo} = context.repo;
+            const pull_number = context.payload.pull_request.number;
+
+            let event = 'COMMENT';
+            if (r.decision === 'approve') event = 'APPROVE';
+            if (r.decision === 'block')   event = 'REQUEST_CHANGES';
+
+            await github.rest.pulls.createReview({
+              owner, repo, pull_number,
+              event,
+              body: `${r.summary_md}\n\n${r.nitpicks_md ? '---\n' + r.nitpicks_md : ''}`
+            });
