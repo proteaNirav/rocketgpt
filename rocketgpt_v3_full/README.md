@@ -56,6 +56,24 @@ Roadmap
 2. UI/UX + API Integration – Completed
 3. Self-Testing & Auto-Upgrades – In Progress
 4. Partner Portal & SaaS APIs – Planned
+
+### JSON shape the pipeline expects
+```json
+{
+  "engine": "openai",
+  "goal": "Add a /api/hello endpoint returning { ok: true }, with a Jest test and README snippet.",
+  "path_targets": [
+    "app/api/hello/route.ts",
+    "tests/api/hello.test.ts",
+    "README.md"
+  ],
+  "acceptance": [
+    "GET /api/hello returns 200 { ok: true }",
+    "Jest test passes locally",
+    "README documents usage"
+  ]
+}
+
 Maintainer
 Nirav Shah
 Software Product Manager & AI Generalist
