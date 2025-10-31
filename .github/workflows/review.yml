@@ -163,38 +163,39 @@ jobs:
           echo "score=$SCORE" | tee -a "$GITHUB_OUTPUT"
 
       # ---- Build review input safely ----
-      - name: Build review_input.json
-        run: |
-          cat > review_input.json <<'JSON'
-          {
-            "pr": {
-              "number": ${{ steps.pr.outputs.number }},
-              "title": "${{ github.event.pull_request.title || '' }}",
-              "author": "${{ github.event.pull_request.user.login || github.actor }}",
-              "base": "${{ github.event.pull_request.base.ref || '' }}",
-              "head": "${{ github.event.pull_request.head.ref || '' }}"
-            },
-            "repo": "${{ github.repository }}",
-            "summary": "${{ steps.files.outputs.summary || '' }}",
-            "files": ${{ steps.files.outputs.files || '[]' }},
-            "score": ${{ steps.score.outputs.score || 60 }},
-            "min_accept_score": ${{ env.MIN_ACCEPT_SCORE || 75 }},
-            "provider_hint": "${{ steps.engine.outputs.engine || 'unknown' }}"
-          }
-          JSON
-          echo "Created review_input.json:" && cat review_input.json
+- name: Build review_input.json (safe; no heredoc)
+  uses: actions/github-script@v7
+  with:
+    script: |
+      const fs = require('fs');
 
-      - name: Run AI review (runner -> review_result.json)
-        env:
-          MODEL_PROVIDER: ${{ steps.engine.outputs.engine }}
-        run: |
-          node rocketgpt-agents/runners/github_actions.js review review_input.json
-          test -f review_result.json || (echo "review_result.json missing"; exit 1)
-          echo "AI review produced:" && cat review_result.json
+      const prNumber = Number(${{
+        steps.pr.outputs.number
+      }});
 
-      - name: Read decision
-        id: rr
-        run: echo "decision=$(jq -r '.decision' review_result.json)" >> $GITHUB_OUTPUT
+      const obj = {
+        pr: {
+          number: prNumber,
+          title: ${{ toJson(github.event.pull_request?.title || '') }},
+          author: ${{ toJson(github.event.pull_request?.user?.login || github.actor) }},
+          base: ${{ toJson(github.event.pull_request?.base?.ref || '') }},
+          head: ${{ toJson(github.event.pull_request?.head?.ref || '') }}
+        },
+        repo: ${{ toJson(github.repository) }},
+        summary: ${{ toJson(steps.files.outputs.summary || '') }},
+        files: ${{ steps.files.outputs.files || '[]' }},
+        score: Number(${{
+          steps.score.outputs.score || 60
+        }}),
+        min_accept_score: Number(${{
+          env.MIN_ACCEPT_SCORE || 75
+        }}),
+        provider_hint: ${{ toJson(steps.engine.outputs.engine || 'unknown') }}
+      };
+
+      fs.writeFileSync('review_input.json', JSON.stringify(obj, null, 2));
+      console.log('Created review_input.json');
+
 
       # --- Post comment (no approval) ---
       - name: Post AI review as PR comment
