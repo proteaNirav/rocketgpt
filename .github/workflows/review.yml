@@ -3,45 +3,21 @@ name: RocketGPT Review Pipeline
 on:
   pull_request:
     branches: [ main, dev ]
+  repository_dispatch:
+    types: [review]  # allows Codegen to explicitly trigger review
 
 permissions:
   contents: read
-  pull-requests: write   # needed to post a PR review comment
+  pull-requests: write   # needed to post a PR review
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  # Adjust if you want a different threshold
   MIN_ACCEPT_SCORE: 75
 
 jobs:
-  lint-test-build:
-    # Run only if this repo actually has a Node project
-    if: ${{ hashFiles('package.json') != '' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'none'          # avoids lockfile mismatch warnings
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint --if-present
-
-      - name: Build
-        run: npm run build --if-present
-
-      - name: Test (optional)
-        if: ${{ always() }}       # keep green even if no test script
-        run: npm test --if-present
-
   ai-review:
     name: AI Review
     runs-on: ubuntu-latest
@@ -54,7 +30,23 @@ jobs:
         with:
           node-version: 20
 
-      # Optional: ensure the runner exists so we fail fast with a clear error
+      - name: Determine PR number
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let prNumber = null;
+            if (context.eventName === 'pull_request') {
+              prNumber = context.payload.pull_request.number;
+            } else if (context.eventName === 'repository_dispatch') {
+              prNumber = context.payload.client_payload?.pr_number ?? null;
+            }
+            if (!prNumber) {
+              core.setFailed('PR number not found in event payload.');
+            } else {
+              core.setOutput('number', prNumber);
+            }
+
       - name: Validate runner exists
         run: |
           test -f rocketgpt-agents/runners/github_actions.js || \
@@ -90,31 +82,30 @@ jobs:
         with:
           script: |
             const {owner, repo} = context.repo;
-            const number = context.payload.pull_request.number;
+            const pull_number = Number('${{ steps.pr.outputs.number }}');
             const files = await github.paginate(
               github.rest.pulls.listFiles,
-              { owner, repo, pull_number: number, per_page: 100 }
+              { owner, repo, pull_number, per_page: 100 }
             );
             const summary = files.map(f => `- ${f.filename} (${f.status}) +${f.additions} -${f.deletions}`).join('\n');
             core.setOutput('files', JSON.stringify(files));
             core.setOutput('summary', summary);
 
-      # Placeholder “score” — replace with your own scoring later
       - name: Compute score (placeholder)
         id: score
         run: echo "score=60" >> $GITHUB_OUTPUT
 
-      # ✅ SAFE heredoc (<<'JSON') — prevents shell expansion in your JSON
+      # ✅ SAFE heredoc (prevents ${} expansion)
       - name: Build review_input.json
         run: |
           cat > review_input.json <<'JSON'
           {
             "pr": {
-              "number": ${{ github.event.pull_request.number }},
-              "title": "${{ github.event.pull_request.title }}",
-              "author": "${{ github.event.pull_request.user.login }}",
-              "base": "${{ github.event.pull_request.base.ref }}",
-              "head": "${{ github.event.pull_request.head.ref }}"
+              "number": ${{ steps.pr.outputs.number }},
+              "title": "${{ github.event.pull_request.title || '' }}",
+              "author": "${{ github.event.pull_request.user.login || github.actor }}",
+              "base": "${{ github.event.pull_request.base.ref || '' }}",
+              "head": "${{ github.event.pull_request.head.ref || '' }}"
             },
             "repo": "${{ github.repository }}",
             "summary": "${{ steps.files.outputs.summary || '' }}",
@@ -136,6 +127,11 @@ jobs:
           echo "AI review produced:"
           cat review_result.json
 
+      - name: Read decision
+        id: rr
+        run: |
+          echo "decision=$(jq -r '.decision' review_result.json)" >> $GITHUB_OUTPUT
+
       - name: Post review on PR
         uses: actions/github-script@v7
         with:
@@ -143,7 +139,7 @@ jobs:
             const fs = require('fs');
             const r = JSON.parse(fs.readFileSync('review_result.json','utf8'));
             const {owner, repo} = context.repo;
-            const pull_number = context.payload.pull_request.number;
+            const pull_number = Number('${{ steps.pr.outputs.number }}');
 
             let event = 'COMMENT';
             if (r.decision === 'approve') event = 'APPROVE';
@@ -154,3 +150,25 @@ jobs:
               event,
               body: `${r.summary_md}\n\n${r.nitpicks_md ? '---\n' + r.nitpicks_md : ''}`
             });
+
+      # ➡ Dispatch merge if approved
+      - name: Trigger Auto-Merge
+        if: ${{ steps.rr.outputs.decision == 'approve' }}
+        env:
+          OWNER:  ${{ github.repository_owner }}
+          REPO:   ${{ github.event.repository.name }}
+          PR:     ${{ steps.pr.outputs.number }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          set -e
+          [ -n "$GH_PAT" ] || { echo "GH_PAT missing"; exit 1; }
+          echo "Dispatching merge for PR #${PR}"
+          STATUS=$(curl -s -o /tmp/resp.json -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: token ${GH_PAT}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${OWNER}/${REPO}/dispatches \
+            -d "{\"event_type\":\"merge\",\"client_payload\":{\"pr_number\":${PR}}}" )
+          echo "Dispatch HTTP ${STATUS}"
+          cat /tmp/resp.json || true
+          test "${STATUS}" = "204" || (echo "ERR: dispatch failed"; exit 1)
