@@ -1,0 +1,25 @@
+{
+  "engine": "openai",
+  "goal": "Add a /api/hello endpoint returning { ok: true }, include a Jest test and a README snippet.",
+  "path_targets": [
+    "app/api/hello/route.ts",
+    "tests/api/hello.test.ts",
+    "README.md"
+  ],
+  "acceptance": [
+    "GET /api/hello returns 200 with body { ok: true }",
+    "Jest test passes locally",
+    "README documents endpoint usage"
+  ],
+  "constraints": {
+    "language": "TypeScript",
+    "framework": "Next.js 14+ App Router",
+    "testing": "Jest",
+    "documentation": "Markdown section in README"
+  },
+  "meta": {
+    "owner": "RocketGPT Smoke Suite",
+    "created_by": "chat intake",
+    "created_at": "2025-10-31T00:00:00Z"
+  }
+}
