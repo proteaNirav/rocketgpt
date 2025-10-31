@@ -39,6 +39,91 @@ async function ensureArtifact(name, content, spec) {
   return out;
 }
 
+// --- Claude helper (Anthropic) ----------------------------------------------
+async function reviewWithClaude(input) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey || !global.fetch) return null;
+
+  const model = process.env.CLAUDE_MODEL || 'claude-3-5-sonnet-latest';
+
+  const summary = String(input.summary || '').slice(0, 4000);
+  const files = Array.isArray(input.files) ? input.files : [];
+  const patches = files
+    .slice(0, 20)
+    .map(f => {
+      const patch = (f.patch || '').slice(0, 4000);
+      return `• ${f.filename} (+${f.additions}/-${f.deletions})\n${patch}`;
+    })
+    .join('\n\n')
+    .slice(0, 20000);
+
+  const systemPrompt =
+    'You are a meticulous senior reviewer for a GitHub Pull Request. ' +
+    'Output STRICT JSON ONLY with keys: decision, summary_md, nitpicks_md. ' +
+    'Valid decisions: "approve", "comment", "block". Keep summary short.';
+
+  const userPrompt = [
+    `Repository: ${input.repo || 'unknown'}`,
+    `PR: #${input?.pr?.number || 'unknown'} — ${input?.pr?.title || ''}`,
+    '',
+    'Changed files summary:',
+    summary || '(none)',
+    '',
+    'Selected patches:',
+    patches || '(omitted)',
+    '',
+    'Scoring hint:',
+    `min_accept_score: ${input.min_accept_score ?? 75}, score: ${input.score ?? 'n/a'}`,
+    '',
+    'Respond with JSON only.'
+  ].join('\n');
+
+  const body = {
+    model,
+    max_tokens: 1200,
+    temperature: 0.2,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userPrompt }],
+    response_format: { type: 'json_object' }
+  };
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!resp.ok) {
+    console.error(`Claude API error: ${resp.status} ${resp.statusText}`);
+    console.error(await resp.text().catch(()=> ''));
+    return null;
+  }
+
+  const data = await resp.json();
+  const txt = data?.content?.[0]?.text || '';
+  let parsed = null;
+  try { parsed = JSON.parse(txt); }
+  catch {
+    const m = txt.match(/\{[\s\S]*\}/);
+    if (m) { try { parsed = JSON.parse(m[0]); } catch {} }
+  }
+  if (!parsed || !parsed.decision) return null;
+
+  const decision = String(parsed.decision || '').toLowerCase();
+  if (!['approve','comment','block'].includes(decision)) return null;
+
+  return {
+    decision,
+    summary_md: String(parsed.summary_md || '').slice(0, 8000),
+    nitpicks_md: String(parsed.nitpicks_md || '').slice(0, 8000)
+  };
+}
+
+
 (async () => {
   const step = (process.argv[2] || '').trim();     // plan|code|test|doc|guard|review
   const arg  = (process.argv[3] || '').trim();     // spec.json OR review_input.json
