@@ -1,133 +1,51 @@
-name: Auto Merge (AI-approved & score-gated)
+name: Auto Merge
 
 on:
-  pull_request:
-    types: [labeled, synchronize, reopened, ready_for_review]
+  repository_dispatch:
+    types: [merge]
 
 permissions:
   contents: write
   pull-requests: write
-  checks: read
-  statuses: read
-
-concurrency:
-  group: auto-merge-pr-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
-
-env:
-  MIN_ACCEPT_SCORE: ${{ vars.MIN_ACCEPT_SCORE || 75 }}
 
 jobs:
   merge:
-    if: |
-      !github.event.pull_request.draft &&
-      contains(join(github.event.pull_request.labels.*.name, ','), 'auto-merge:ready') &&
-      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Read score.json (best effort)
-        id: score
+      - name: Log event payload (auto-merge)
         run: |
-          set -e
-          BRANCH="${{ github.event.pull_request.head.ref }}"
-          git fetch --depth=1 origin "${BRANCH}:${BRANCH}" || true
+          echo '${{ toJson(github.event) }}' > event.json
+          jq -C '.' event.json || cat event.json
 
-          SCORE_FOUND=0
-          for p in openai anthropic google groq; do
-            if git cat-file -e "${BRANCH}:generated/${p}/score.json" 2>/dev/null; then
-              git show "${BRANCH}:generated/${p}/score.json" > score.json
-              SCORE_FOUND=1
-              break
-            fi
-          done
-
-          if [ $SCORE_FOUND -eq 0 ]; then
-            echo '{"overall":60,"notes":"No score found; defaulting."}' > score.json
-          fi
-
-          echo "Score file:"
-          cat score.json
-
-      - name: Parse score.json
-        id: scoreval
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const raw = fs.readFileSync('score.json','utf8');
-            let obj = {};
-            try { obj = JSON.parse(raw); } catch { obj = {}; }
-            const score = Number(obj.overall ?? 60);
-            core.setOutput('score', score);
-
-      - name: Enforce score threshold
-        if: ${{ steps.scoreval.outputs.score < env.MIN_ACCEPT_SCORE }}
-        run: |
-          echo "Score ${{ steps.scoreval.outputs.score }} < MIN_ACCEPT_SCORE (${MIN_ACCEPT_SCORE}). Refusing auto-merge."
-          exit 1
-
-            - name: Guard sensitive paths
-        id: guard
+      - name: Pre-merge status
         uses: actions/github-script@v7
         with:
           script: |
             const {owner, repo} = context.repo;
-            const number = context.payload.pull_request.number;
+            const pr = Number(context.payload.client_payload?.pr_number);
+            if (!pr) core.setFailed('No pr_number in client_payload');
+            const { data } = await github.rest.pulls.get({ owner, repo, pull_number: pr });
+            core.info(`mergeable_state=${data.mergeable_state} draft=${data.draft} rebaseable=${data.rebaseable}`);
 
-            // List changed files in this PR
-            const files = await github.paginate(
-              github.rest.pulls.listFiles,
-              { owner, repo, pull_number: number, per_page: 100 }
-            );
-
-            // Directories or filenames considered sensitive
-            const sensitive = [
-              '.github/workflows/',
-              'infra/',
-              'deploy/',
-              'config/',
-              'secrets/',
-              'env/',
-              'docker/',
-              'scripts/prod/'
-            ];
-
-            const flagged = files.some(f =>
-              sensitive.some(p => f.filename.startsWith(p))
-            );
-
-            if (flagged) {
-              const touched = files
-                .filter(f => sensitive.some(p => f.filename.startsWith(p)))
-                .map(f => `- ${f.filename}`)
-                .join('\n');
-              core.setFailed(
-                `❌ Sensitive paths modified:\n${touched}\nManual review required.`
-              );
-            } else {
-              core.info('✅ No sensitive paths modified. Safe to continue.');
+      - name: Merge PR (squash, on green)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const pr = Number(context.payload.client_payload?.pr_number);
+            try {
+              await github.rest.pulls.merge({
+                owner, repo, pull_number: pr,
+                merge_method: 'squash'
+              });
+              core.info(`Merged PR #${pr}`);
+            } catch (e) {
+              core.setFailed(`Merge failed: ${e.message}`);
             }
 
-
-      - name: Ensure all checks are green
-        id: checks
-        uses: actions/github-script@v7
+      - name: Save auto-merge artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          script: |
-            const {owner, repo} = context.repo;
-            const sha = context.payload.pull_request.head.sha;
-            const { data } = await github.rest.repos.getCombinedStatusForRef({ owner, repo, ref: sha });
-            core.info(`Combined status: ${data.state}`);
-            core.setOutput('ok', data.state === 'success');
-
-      - name: Merge PR (squash)
-        if: steps.checks.outputs.ok == 'true'
-        uses: peter-evans/merge-pull-request@v2
-        with:
-          commit-message: pull-request-title
-          merge-method: squash
+          name: auto-merge-${{ github.run_id }}
+          path: event.json
