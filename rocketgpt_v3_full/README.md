@@ -74,6 +74,20 @@ Roadmap
   ]
 }
 
+
+---
+
+## 3) Ensure required labels exist (self-healing)  
+`/.github/labels.json`
+
+```json
+[
+  { "name": "self-apply",    "color": "0e8a16", "description": "Allow triage → codegen autopath" },
+  { "name": "codegen:ready", "color": "0366d6", "description": "Ready for AI Codegen" },
+  { "name": "ai:unsafe-ok",  "color": "b60205", "description": "Break-glass: allow sensitive paths" },
+  { "name": "ai:reviewed",   "color": "5319e7", "description": "Reviewed by AI pipeline" }
+]
+
 Maintainer
 Nirav Shah
 Software Product Manager & AI Generalist
