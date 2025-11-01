@@ -2,6 +2,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+
 import { onRateLimited } from '@/lib/ratelimitBus'
 
 export default function RateLimitBanner() {
@@ -27,8 +28,7 @@ export default function RateLimitBanner() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-red-600 text-white text-center py-2 text-sm z-50">
-      <b>Rate limit reached.</b>{' '}
-      {eta > 0 && <>Please retry in {eta} seconds.</>} {' '}
+      <b>Rate limit reached.</b> {eta > 0 && <>Please retry in {eta} seconds.</>}{' '}
       {plan && <span className="ml-1">(Your plan: {plan})</span>}
     </div>
   )

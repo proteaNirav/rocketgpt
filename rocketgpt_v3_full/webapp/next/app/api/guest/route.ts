@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
 import * as Sentry from '@sentry/nextjs'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(_req: NextRequest) {
   try {
@@ -34,7 +34,7 @@ export async function POST(_req: NextRequest) {
           remove: () => {},
         },
         global: { headers: { 'x-guest-id': guestId! } },
-      }
+      },
     )
 
     const { error } = await supabase.from('guests').insert({ id: guestId })
@@ -50,5 +50,3 @@ export async function POST(_req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'internal_error' }, { status: 500 })
   }
 }
-
-

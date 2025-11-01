@@ -9,17 +9,18 @@
     "project": null
   },
   "rules": {
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
-    "import/order": ["warn", {
-      "alphabetize": { "order": "asc", "caseInsensitive": true },
-      "newlines-between": "always",
-      "groups": [["builtin", "external"], ["internal"], ["parent", "sibling", "index", "object"]]
-    }]
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ],
+    "import/order": [
+      "warn",
+      {
+        "alphabetize": { "order": "asc", "caseInsensitive": true },
+        "newlines-between": "always",
+        "groups": [["builtin", "external"], ["internal"], ["parent", "sibling", "index", "object"]]
+      }
+    ]
   },
-  "ignorePatterns": [
-    ".next/",
-    "node_modules/",
-    "dist/",
-    "coverage/"
-  ]
+  "ignorePatterns": [".next/", "node_modules/", "dist/", "coverage/"]
 }

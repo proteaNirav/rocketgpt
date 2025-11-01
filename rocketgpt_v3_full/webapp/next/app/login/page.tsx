@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+
 import { getSupabaseBrowserClient } from '@/lib/supabase/browser'
 
 export default function LoginPage() {
@@ -89,5 +90,3 @@ function getCookie(name: string) {
   const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')
   return m ? m.pop() : ''
 }
-
-

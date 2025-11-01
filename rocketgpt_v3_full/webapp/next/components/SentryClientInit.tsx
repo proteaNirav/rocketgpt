@@ -19,11 +19,9 @@ export default function SentryClientInit() {
       enabled: !!process.env.NEXT_PUBLIC_SENTRY_DSN,
     })
 
-    w.Sentry = Sentry          // <-- makes window.Sentry available in DevTools
+    w.Sentry = Sentry // <-- makes window.Sentry available in DevTools
     w.__sentry_inited = true
   }, [])
 
   return null
 }
-
-

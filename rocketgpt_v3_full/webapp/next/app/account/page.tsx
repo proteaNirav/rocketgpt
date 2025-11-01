@@ -1,16 +1,15 @@
-import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 export default async function AccountPage() {
   const supabase = createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
 
   return (
     <div className="mx-auto max-w-2xl p-6 space-y-6">
@@ -19,7 +18,9 @@ export default async function AccountPage() {
       <div className="border rounded p-4 space-y-2">
         <div className="font-medium">{profile?.display_name ?? user.email}</div>
         <div className="text-sm text-gray-500">{user.email}</div>
-        <div className="text-sm">Role: <b>{profile?.role ?? 'user'}</b> Â· Plan: <b>{profile?.plan ?? 'free'}</b></div>
+        <div className="text-sm">
+          Role: <b>{profile?.role ?? 'user'}</b> Â· Plan: <b>{profile?.plan ?? 'free'}</b>
+        </div>
       </div>
 
       <form action={signOutAction}>
@@ -35,5 +36,3 @@ async function signOutAction() {
   await supabase.auth.signOut()
   return (await import('next/navigation')).redirect('/login')
 }
-
-

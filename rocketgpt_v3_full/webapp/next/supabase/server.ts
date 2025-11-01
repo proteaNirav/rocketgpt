@@ -1,5 +1,5 @@
-import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
 /**
  * Server-side Supabase client (Next.js App Router).
@@ -16,13 +16,11 @@ export const createSupabaseServerClient = () => {
       cookies: {
         get: (name: string) => cookieStore.get(name)?.value,
         set: () => {},
-        remove: () => {}
+        remove: () => {},
       },
       global: {
-        headers: { ...(guestId ? { 'x-guest-id': guestId } : {}) }
-      }
-    }
+        headers: { ...(guestId ? { 'x-guest-id': guestId } : {}) },
+      },
+    },
   )
 }
-
-

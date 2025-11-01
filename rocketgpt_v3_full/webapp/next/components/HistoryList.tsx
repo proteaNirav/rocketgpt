@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+
 import { getSupabase } from '@/lib/supabaseClient'
 
 interface HistoryItem {
@@ -45,11 +46,7 @@ export function HistoryList({ onRerun }: { onRerun: (goal: string) => void }) {
         {loading && <span className="text-xs text-muted">Loadingâ€¦</span>}
       </div>
 
-      {error && (
-        <div className="text-sm text-red-500 mb-2">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-sm text-red-500 mb-2">{error}</div>}
 
       {items.length === 0 && !loading ? (
         <div className="text-sm text-muted">No recent prompts yet.</div>
@@ -87,5 +84,3 @@ export function HistoryList({ onRerun }: { onRerun: (goal: string) => void }) {
     </div>
   )
 }
-
-
