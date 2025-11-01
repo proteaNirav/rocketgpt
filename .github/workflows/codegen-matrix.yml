@@ -194,12 +194,13 @@ JSON
           fi
           echo "Score file created:" && cat "${SCORE_FILE}"
 
-      - name: Create Branch, Commit & Push (provider branch)
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PROVIDER: ${{ matrix.provider }}
+- name: Create Branch, Commit & Push (provider branch)
+  env:
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    PROVIDER: ${{ matrix.provider || 'anthropic' }}
         run: |
           ISSUE_NO="${{ github.event.issue.number || github.event.client_payload.issue_number }}"
+          echo ">> Provider detected: ${PROVIDER}"
           BRANCH="ai/codegen/${ISSUE_NO}/${PROVIDER}"
           if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
             git checkout "$BRANCH"
