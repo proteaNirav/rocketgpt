@@ -1,0 +1,121 @@
+name: PS • Chat→Code trigger
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: "Feature/bug title"
+        required: true
+        type: string
+      note:
+        description: "Short note / context"
+        required: false
+        type: string
+      goal:
+        description: "High-level goal/spec"
+        required: true
+        type: string
+      url:
+        description: "Related URL (optional)"
+        required: false
+        type: string
+      engine:
+        description: "LLM engine (openai/anthropic/google/groq)"
+        required: false
+        default: "anthropic"
+        type: string
+      extra_labels:
+        description: "Comma-separated extra labels (optional)"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  fire:
+    runs-on: ubuntu-latest
+    env:
+      REPO_FULL_NAME: ${{ vars.REPO_FULL_NAME }}         # e.g. proteaNirav/rocketgpt
+      GH_PAT:         ${{ secrets.GH_PAT }}              # classic PAT (repo + workflow)
+    steps:
+      - name: Validate inputs & env
+        shell: pwsh
+        run: |
+          if (-not $env:REPO_FULL_NAME) { throw "Missing REPO_FULL_NAME repo variable." }
+          if (-not $env:GH_PAT)         { throw "Missing GH_PAT secret." }
+
+      - name: Create Issue (PowerShell / REST)
+        id: mk
+        shell: pwsh
+        run: |
+          $owner,$repo = $env:REPO_FULL_NAME.Split('/')
+          $title  = "${{ inputs.title }}"
+          $note   = "${{ inputs.note }}"
+          $goal   = "${{ inputs.goal }}"
+          $url    = "${{ inputs.url }}"
+          $engine = "${{ inputs.engine }}"
+          $extra  = "${{ inputs.extra_labels }}"
+
+          $bodyLines = @()
+          if ($note) { $bodyLines += "**Note:** $note" }
+          if ($url)  { $bodyLines += "**URL:** $url" }
+          $bodyLines += ""
+          $bodyLines += "```json"
+          $spec = @{
+            engine = $engine
+            goal   = $goal
+            url    = $url
+            meta   = @{ requestedBy = "${{ github.actor }}"; when = "$(Get-Date -Format s)" }
+          } | ConvertTo-Json -Depth 5
+          $bodyLines += $spec
+          $bodyLines += "```"
+          $body = ($bodyLines -join "`n")
+
+          $headers = @{
+            "Authorization" = "token $($env:GH_PAT)"
+            "Accept"        = "application/vnd.github+json"
+          }
+
+          $issuePayload = @{
+            title = $title
+            body  = $body
+            labels = @("self-apply","codegen:ready")
+          }
+
+          if ($extra) {
+            $extraArr = $extra.Split(',') | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+            $issuePayload.labels += $extraArr
+          }
+
+          $createUri = "https://api.github.com/repos/$owner/$repo/issues"
+          $res = Invoke-RestMethod -Method POST -Uri $createUri -Headers $headers -Body ($issuePayload | ConvertTo-Json -Depth 10)
+          "ISSUE_NUMBER=$($res.number)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "ISSUE_URL=$($res.html_url)"  | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Created issue #$($res.number): $($res.html_url)"
+
+      - name: Dispatch triage (repository_dispatch)
+        shell: pwsh
+        run: |
+          $owner,$repo = $env:REPO_FULL_NAME.Split('/')
+          $issue = "${{ steps.mk.outputs.ISSUE_NUMBER }}"
+          $payload = @{
+            event_type = "codegen"
+            client_payload = @{ issue_number = [int]$issue }
+          } | ConvertTo-Json -Depth 5
+
+          $headers = @{
+            "Authorization" = "token $($env:GH_PAT)"
+            "Accept"        = "application/vnd.github+json"
+          }
+
+          $uri = "https://api.github.com/repos/$owner/$repo/dispatches"
+          $resp = Invoke-WebRequest -Method POST -Uri $uri -Headers $headers -Body $payload
+          Write-Host "Dispatch status: $($resp.StatusCode)"
+
+      - name: Summary
+        shell: pwsh
+        run: |
+          Write-Host "Triggered Chat→Code for issue: ${{ steps.mk.outputs.ISSUE_URL }}"
