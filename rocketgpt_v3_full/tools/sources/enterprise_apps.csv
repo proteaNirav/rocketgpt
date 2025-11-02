@@ -1,3 +1,0 @@
-name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
-AutoCAD,Autodesk,dwg-cad,Architecture,cad,,drafting|dwg,architecture,Paid,1800,https://www.autodesk.com/products/autocad,desktop,"cad|dwg|drafting",0.95,0.98
-Adobe Acrobat Reader,Adobe,pdf-reader,Office,pdf,,view|comment,office,Free,600,https://get.adobe.com/reader/,desktop,"pdf|reader",0.98,0.99
