@@ -1,0 +1,74 @@
+name: AI Codegen
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: codegen-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  codegen:
+    if: contains(github.event.issue.labels.*.name, 'codegen:ready')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate code from issue
+        id: gen
+        run: |
+          echo "## 🤖 AI Codegen Run" >> $GITHUB_STEP_SUMMARY
+          echo "Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}" >> $GITHUB_STEP_SUMMARY
+          echo """" >> plan.md
+          echo "# Plan for: ${{ github.event.issue.title }}" >> plan.md
+          echo "- Labels: ${{ toJson(github.event.issue.labels.*.name) }}" >> plan.md
+          echo "- Body:
+${{ github.event.issue.body }}" >> plan.md
+          echo """" >> plan.md
+
+      - name: Commit plan artifact
+        run: |
+          git config user.name "rocketgpt-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git checkout -b feature/issue-${{ github.event.issue.number }} || true
+          mkdir -p .rocketgpt/ai
+          mv plan.md .rocketgpt/ai/issue-${{ github.event.issue.number }}.md
+          git add .rocketgpt/ai/issue-${{ github.event.issue.number }}.md
+          git commit -m "ci: add AI plan for issue #${{ github.event.issue.number }}" || echo "No changes"
+          git push origin HEAD
+
+      - name: Open PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: feature/issue-${{ github.event.issue.number }}
+          title: "AI Codegen: ${{ github.event.issue.title }}"
+          body: |
+            This PR is auto-created by **AI Codegen** workflow.
+
+            - Source: #${{ github.event.issue.number }}
+            - Labels: ${{ toJson(github.event.issue.labels.*.name) }}
+            - Summary artifact: .rocketgpt/ai/issue-${{ github.event.issue.number }}.md
+          labels: |
+            ai
+            codegen
+            automation
+
+      - name: Comment on Issue
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            ✅ AI Codegen initiated. Opened PR from issue context.
+            Artifact: `.rocketgpt/ai/issue-${{ github.event.issue.number }}.md`
