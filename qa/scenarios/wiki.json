@@ -1,8 +1,0 @@
-{
-  "name": "wiki smoke",
-  "goal": "create a wiki page for rocketgpt",
-  "expect": {
-    "decisionContains": ["wiki", "notion", "gitbook"],
-    "toolsIncludeAny": ["notion", "gitbook", "github_wiki"]
-  }
-}

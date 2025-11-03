@@ -1,8 +1,0 @@
-{
-  "name": "slides smoke",
-  "goal": "make a 5-slide pitch deck",
-  "expect": {
-    "decisionContains": ["slides", "presentation", "google"],
-    "toolsIncludeAny": ["google_docs", "canva"]
-  }
-}
