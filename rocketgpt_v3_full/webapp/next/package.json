@@ -19,7 +19,7 @@
     "@supabase/ssr": "^0.5.0",
     "@supabase/supabase-js": "^2.47.0",
     "clsx": "2.1.0",
-    "framer-motion": "^11.0.0",
+    "framer-motion": "^12.23.24",
     "nodemailer": "^7.0.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",
