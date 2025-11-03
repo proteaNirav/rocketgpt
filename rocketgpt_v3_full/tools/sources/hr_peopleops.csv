@@ -1,0 +1,21 @@
+name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
+Workday,Workday,hris,Enterprise,hr,,payroll|time|benefits,enterprise,Paid,1100,https://www.workday.com,saas,"hr|enterprise",0.97,0.95
+SAP SuccessFactors,SAP,hris,Enterprise,hr,,talent|performance,enterprise,Paid,1100,https://www.sap.com/products/successfactors.html,saas,"sap|hr",0.96,0.92
+BambooHR,BambooHR,hris,Enterprise,hr,,employee-data|time,smb,Paid,1000,https://www.bamboohr.com,saas,"hr|smb",0.94,0.92
+Gusto,Gusto,payroll,Enterprise,hr,Payroll,payroll|benefits,smb,Paid,900,https://gusto.com,saas,"payroll|smb",0.96,0.95
+ADP,ADP,payroll,Enterprise,hr,Payroll,payroll|global,enterprise,Paid,1000,https://www.adp.com,saas,"payroll|enterprise",0.97,0.96
+Paychex,Paychex,payroll,Enterprise,hr,Payroll,payroll|tax,smb,Paid,1000,https://www.paychex.com,saas,"payroll",0.94,0.9
+Rippling,Rippling,hris,Enterprise,hr,,it|devices|payroll,smb/Paid,Paid,1000,https://www.rippling.com,saas,"hr|it",0.94,0.9
+Deel,Deel,global-payroll,Enterprise,hr,Global,contractors|global,remote,Paid,1000,https://www.deel.com,saas,"global|contractors",0.95,0.94
+OysterHR,Oyster,global-payroll,Enterprise,hr,Global,employment|compliance,remote,Paid,1000,https://www.oysterhr.com,saas,"global|eor",0.93,0.88
+Lever,Lever,ats,Enterprise,hr,ATS,recruiting|crm,hr,Paid,900,https://www.lever.co,saas,"ats|recruiting",0.94,0.9
+Greenhouse,Greenhouse,ats,Enterprise,hr,ATS,recruiting|workflows,hr,Paid,900,https://www.greenhouse.io,saas,"ats|greenhouse",0.95,0.93
+iCIMS,iCIMS,ats,Enterprise,hr,ATS,enterprise|recruiting,hr,Paid,900,https://www.icims.com,saas,"ats|enterprise",0.92,0.86
+JazzHR,EMCDev,ats,Enterprise,hr,ATS,smb|recruiting,hr,Paid,900,https://www.jazzhr.com,saas,"ats|smb",0.9,0.84
+Freshteam,Freshworks,ats,Enterprise,hr,ATS,ats|onboarding,hr,Freemium/Paid,900,https://www.freshworks.com/hrms/,saas,"ats|freshworks",0.9,0.85
+Lattice,Lattice,performance,Enterprise,hr,Performance,goals|reviews,hr,Paid,900,https://lattice.com,saas,"performance|goals",0.94,0.92
+15Five,15Five,performance,Enterprise,hr,Engagement,check-ins|okrs,hr,Paid,900,https://www.15five.com,saas,"okrs|engagement",0.92,0.86
+Culture Amp,Culture Amp,engagement,Enterprise,hr,Engagement,feedback|surveys,hr,Paid,900,https://www.cultureamp.com,saas,"engagement|surveys",0.93,0.88
+Calendly,Calendly,scheduling,Enterprise,productivity,Calendar,booking|meetings,/organize,Freemium/Paid,700,https://calendly.com,saas,"calendar|meetings",0.96,0.96
+Slack,Salesforce,messaging,Communication,communication,Chat,channels|apps,ops,Freemium/Paid,800,https://slack.com,saas,"chat|slack",0.97,0.98
+Zoom,Zoom,video-call,Communication,communication,Meet,meetings|webinar,ops,Freemium/Paid,900,https://zoom.us,saas,"video|meetings",0.97,0.98

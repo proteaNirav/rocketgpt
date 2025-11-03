@@ -1,0 +1,25 @@
+name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
+QuickBooks Online,Intuit,accounting,Finance,accounting,,gl|ap|ar,smb,Paid,900,https://quickbooks.intuit.com,saas,"accounting|smb",0.97,0.98
+Xero,Xero,accounting,Finance,accounting,,invoices|bank-feeds,smb,Paid,900,https://www.xero.com,saas,"xero|smb",0.95,0.95
+Zoho Books,Zoho,accounting,Finance,accounting,,invoices|gst,smb,Paid,900,https://www.zoho.com/books,saas,"zoho|books",0.93,0.9
+FreshBooks,FreshBooks,accounting,Finance,accounting,,invoices|time-tracking,freelancers,Paid,900,https://www.freshbooks.com,saas,"invoices|smb",0.92,0.88
+Sage Intacct,Sage,erp,Finance,erp,,financials|multi-entity,mid-market,Paid,1100,https://www.sage.com/en-us/products/sage-intacct/,saas,"erp|sage",0.94,0.9
+NetSuite ERP,Oracle,erp,Finance,erp,,financials|inventory,enterprise,Paid,1100,https://www.netsuite.com,saas,"erp|netsuite",0.96,0.94
+Dynamics 365 Finance,Microsoft,erp,Finance,erp,,finance|operations,enterprise,Paid,1100,https://dynamics.microsoft.com,saas,"d365|finance",0.95,0.92
+Wave Accounting,Wave,accounting,Finance,accounting,,free|invoices,freelancers,Free,800,https://www.waveapps.com,saas,"free|smb",0.9,0.92
+TallyPrime,Tally Solutions,accounting,Finance,accounting,,india|gst,smb,Paid,900,https://tallysolutions.com,desktop,"india|gst",0.92,0.9
+Stripe,Stripe,payments,Finance,payments,,checkout|invoicing,dev,Paid,800,https://stripe.com,api,"payments|api",0.98,0.99
+PayPal,PayPal,payments,Finance,payments,,wallet|checkout,web,Paid,800,https://paypal.com,api,"payments|wallet",0.97,0.98
+Square,Block,payments,Finance,payments,POS,pos|invoicing,retail,Paid,800,https://squareup.com,saas,"pos|payments",0.96,0.95
+Braintree,PayPal,payments,Finance,payments,,gateway|vault,dev,Paid,800,https://www.braintreepayments.com,api,"payments|gateway",0.95,0.94
+Plaid,Plaid,bank-connect,Finance,fintech,,bank-links|data,dev,Paid,800,https://plaid.com,api,"open-banking",0.95,0.93
+Bill.com,BILL,bill-pay,Finance,accounting,AP,ap|approvals,smb/Paid,Paid,900,https://www.bill.com,saas,"ap|bills",0.95,0.93
+Wise,Wise,fx-payments,Finance,fintech,,intl|accounts,global,Paid,900,https://wise.com,saas,"fx|intl",0.95,0.95
+Brex,Brex,corporate-card,Finance,fintech,,cards|rewards,startups,Paid,900,https://www.brex.com,saas,"card|startup",0.93,0.9
+Ramp,Ramp,spend-mgmt,Finance,fintech,,cards|controls,startups,Paid,900,https://www.ramp.com,saas,"spend|controls",0.93,0.9
+Airwallex,Airwallex,global-payments,Finance,fintech,,intl|accounts,global,Paid,900,https://www.airwallex.com,saas,"global|payments",0.92,0.86
+Expensify,Expensify,expenses,Finance,accounting,Expenses,receipts|mobile,ops,Freemium/Paid,900,https://www.expensify.com,saas,"expenses|receipts",0.94,0.92
+SAP Concur,SAP,expenses,Finance,accounting,Expenses,travel|expenses,enterprise,Paid,1100,https://www.concur.com,saas,"travel|expenses",0.95,0.93
+TaxJar,Stripe,tax,Finance,fintech,Tax,sales-tax|api,ecommerce,Paid,900,https://www.taxjar.com,api,"tax|sales",0.93,0.88
+Avalara,Avalara,tax,Finance,fintech,Tax,automation|nexus,enterprise,Paid,1000,https://www.avalara.com,saas,"tax|automation",0.94,0.9
+Bill Spend & Expense,Divvy,spend-mgmt,Finance,fintech,,cards|budgets,smb,Paid,900,https://www.bill.com/products/divvy,saas,"spend|cards",0.9,0.85

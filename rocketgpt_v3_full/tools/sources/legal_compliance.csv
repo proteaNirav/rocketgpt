@@ -1,0 +1,25 @@
+name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
+DocuSign,DocuSign,e-sign,Enterprise,legal,Sign,workflows|esign,contracts,Paid,900,https://www.docusign.com,saas,"esign|legal",0.98,0.98
+Adobe Sign,Adobe,e-sign,Enterprise,legal,Sign,esign|integrations,contracts,Paid,900,https://acrobat.adobe.com,saas,"esign|adobe",0.97,0.96
+HelloSign,Dropbox,e-sign,Enterprise,legal,Sign,simple|api,contracts,Freemium/Paid,900,https://www.hellosign.com,saas,"esign|api",0.95,0.93
+PandaDoc,PandaDoc,contracts,Enterprise,legal,CLM,templates|e-sign,sales,Paid,900,https://www.pandadoc.com,saas,"clm|contracts",0.94,0.92
+Ironclad,Ironclad,contracts,Enterprise,legal,CLM,workflow|repository,enterprise,Paid,1000,https://ironcladapp.com,saas,"clm|enterprise",0.94,0.9
+Juro,Juro,contracts,Enterprise,legal,CLM,collab|clm,smb,Paid,900,https://juro.com,saas,"clm|contracts",0.92,0.86
+Contractbook,Contractbook,contracts,Enterprise,legal,CLM,automation|templates,smb,Paid,900,https://contractbook.com,saas,"clm|automation",0.9,0.85
+Concord,Concord,contracts,Enterprise,legal,CLM,negotiation|esig,smb,Paid,900,https://www.concordnow.com,saas,"contracts|esig",0.9,0.84
+iManage,iManage,dms,Enterprise,legal,DMS,docs|search,law-firms,Paid,1000,https://imanage.com,saas,"dms|legal",0.94,0.88
+Clio,Clio,practice-mgmt,Enterprise,legal,PM,cases|billing,law-firms,Paid,900,https://www.clio.com,saas,"practice|legal",0.95,0.94
+MyCase,AffiniPay,practice-mgmt,Enterprise,legal,PM,cases|billing,law-firms,Paid,900,https://www.mycase.com,saas,"legal|pm",0.92,0.86
+Everlaw,Everlaw,ediscovery,Enterprise,legal,Discovery,review|analysis,litigation,Paid,1100,https://www.everlaw.com,saas,"ediscovery",0.93,0.88
+Relativity,Relativity,ediscovery,Enterprise,legal,Discovery,review|ai,litigation,Paid,1200,https://www.relativity.com,saas,"ediscovery|ai",0.94,0.9
+CaseText,Thomson Reuters,legal-research,Enterprise,legal,Research,ai|citations,research,Paid,1000,https://casetext.com,saas,"ai|legal",0.93,0.9
+Westlaw,Thomson Reuters,legal-research,Enterprise,legal,Research,primary-law|citations,research,Paid,1100,https://legal.thomsonreuters.com/en/westlaw,saas,"research|westlaw",0.97,0.95
+LexisNexis,RELX,legal-research,Enterprise,legal,Research,cases|statutes,research,Paid,1100,https://www.lexisnexis.com,saas,"research|lexis",0.97,0.95
+OneTrust,OneTrust,privacy,Enterprise,compliance,Privacy,datamap|consent,enterprise,Paid,1000,https://www.onetrust.com,saas,"privacy|gdpr",0.94,0.9
+Vanta,Vanta,security,Enterprise,compliance,Audit,soc2|iso,saas,Paid,900,https://www.vanta.com,saas,"soc2|iso",0.95,0.93
+Drata,Drata,security,Enterprise,compliance,Audit,soc2|iso,saas,Paid,900,https://www.drata.com,saas,"soc2|automation",0.95,0.92
+Secureframe,Secureframe,security,Enterprise,compliance,Audit,soc2|hipaa,saas,Paid,900,https://secureframe.com,saas,"compliance|security",0.93,0.88
+Collibra,Collibra,data-governance,Enterprise,compliance,Governance,stewardship|catalog,enterprise,Paid,1100,https://www.collibra.com,saas,"governance|data",0.94,0.88
+BigID,BigID,data-privacy,Enterprise,compliance,Privacy,pii|classification,enterprise,Paid,1100,https://bigid.com,saas,"privacy|classification",0.92,0.86
+Notarize,Notarize,online-notary,Enterprise,legal,Notary,remote|id-verify,contracts,Paid,900,https://www.notarize.com,saas,"notary|remote",0.9,0.86
+NotaryCam,Stewart,online-notary,Enterprise,legal,Notary,remote|e-sign,contracts,Paid,900,https://www.notarycam.com,saas,"notary|remote",0.88,0.82

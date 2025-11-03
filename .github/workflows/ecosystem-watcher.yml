@@ -1,0 +1,43 @@
+name: ecosystem-watcher
+on:
+  schedule: [{ cron: '0 6 * * *' }] # daily 06:00 UTC
+  workflow_dispatch: {}
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch feeds and create digest
+        run: |
+          node - <<'NODE'
+          const https = require('https');
+          const feeds = [
+            'https://openai.com/blog/rss.xml',
+            'https://www.anthropic.com/news/rss.xml',
+            'https://ai.googleblog.com/feeds/posts/default',
+            'https://blogs.microsoft.com/ai/feed/',
+            'https://ai.facebook.com/blog/rss/',
+            'https://github.blog/changelog/feed/',
+            'https://stability.ai/blog/rss.xml',
+            'https://www.canva.com/newsroom/news/feed/'
+          ];
+          function fetch(url){return new Promise((res)=>https.get(url,(r)=>{let d='';r.on('data',c=>d+=c);r.on('end',()=>res({url,body:d.toString()}))}))}
+          (async()=>{
+            const out = [];
+            for (const f of feeds){
+              try{ const r = await fetch(f); out.push(`### ${f}\n\n<details>\n<summary>raw</summary>\n\n${r.body.slice(0,2000)}\n\n</details>\n`);}
+              catch(e){ out.push(`### ${f}\n\n_failed: ${e.message}_\n`) }
+            }
+            require('fs').writeFileSync('ecosystem-digest.md', `# Daily AI Tools Digest\n\n${out.join('\n')}`)
+            console.log('Wrote ecosystem-digest.md')
+          })()
+          NODE
+      - name: Create/Update issue
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: "Daily AI Tools Digest"
+          content-filepath: "ecosystem-digest.md"
+          labels: "research,automation"

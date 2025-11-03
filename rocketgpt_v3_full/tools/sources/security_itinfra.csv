@@ -1,0 +1,35 @@
+name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
+Microsoft Defender,Microsoft,antivirus,Security,security,Endpoint,malware|firewall,enterprise,Free/Paid,800,https://www.microsoft.com/en-us/windows/security,desktop,"av|microsoft",0.97,0.98
+Bitdefender,BITDEFENDER,antivirus,Security,security,Endpoint,protection|firewall,enterprise,Paid,800,https://www.bitdefender.com,desktop,"av|security",0.97,0.96
+Kaspersky Endpoint,Kaspersky,antivirus,Security,security,Endpoint,av|control,enterprise,Paid,800,https://www.kaspersky.com,desktop,"av|endpoint",0.96,0.95
+McAfee Endpoint,McAfee,antivirus,Security,security,Endpoint,av|detection,enterprise,Paid,800,https://www.mcafee.com,desktop,"av|endpoint",0.96,0.95
+ESET Security,ESET,antivirus,Security,security,Endpoint,av|firewall,smb,Paid,800,https://www.eset.com,desktop,"av|eset",0.94,0.9
+CrowdStrike Falcon,CrowdStrike,edr,Security,security,EDR,threat-detect|response,enterprise,Paid,1000,https://www.crowdstrike.com,saas,"edr|soc",0.97,0.96
+SentinelOne,SentinelOne,edr,Security,security,EDR,ml|automation,enterprise,Paid,1000,https://www.sentinelone.com,saas,"edr|automation",0.96,0.94
+Sophos Intercept X,Sophos,edr,Security,security,EDR,defense|av,enterprise,Paid,900,https://www.sophos.com,saas,"edr|av",0.95,0.93
+Okta,Okta,identity,Security,security,IAM,auth|sso,enterprise,Paid,800,https://www.okta.com,saas,"iam|sso",0.97,0.97
+Auth0,Auth0,identity,Security,security,IAM,auth|api,dev,Freemium/Paid,800,https://auth0.com,saas,"auth|api",0.96,0.96
+Azure AD,Microsoft,identity,Security,security,IAM,ad|mfa,enterprise,Paid,800,https://azure.microsoft.com,saas,"azure|ad",0.97,0.96
+Ping Identity,Ping Identity,identity,Security,security,IAM,sso|directory,enterprise,Paid,900,https://www.pingidentity.com,saas,"iam|sso",0.9,0.86
+1Password,AgileBits,passwords,Security,security,Passwords,secrets|vault,personal,Freemium/Paid,700,https://1password.com,saas,"vault|password",0.97,0.97
+LastPass,LastPass,passwords,Security,security,Passwords,password|share,personal,Freemium/Paid,700,https://www.lastpass.com,saas,"password|vault",0.95,0.9
+NordVPN,Nord Security,vpn,Security,security,VPN,encrypt|proxy,personal,Paid,800,https://nordvpn.com,desktop,"vpn|security",0.97,0.97
+ExpressVPN,ExpressVPN,vpn,Security,security,VPN,encrypt|bypass,personal,Paid,800,https://www.expressvpn.com,desktop,"vpn|privacy",0.96,0.95
+Cisco AnyConnect,Cisco,vpn,Security,security,VPN,secure|enterprise,enterprise,Paid,900,https://www.cisco.com,desktop,"vpn|enterprise",0.95,0.9
+FortiGate,Fortinet,firewall,Security,security,Network,ngfw|vpn,enterprise,Paid,1000,https://www.fortinet.com,hardware,"ngfw|firewall",0.97,0.96
+Palo Alto NGFW,Palo Alto Networks,firewall,Security,security,Network,policy|ips,enterprise,Paid,1000,https://www.paloaltonetworks.com,hardware,"firewall|ips",0.97,0.96
+Check Point,Check Point,firewall,Security,security,Network,protection|vpn,enterprise,Paid,1000,https://www.checkpoint.com,hardware,"firewall|vpn",0.95,0.9
+Cisco ASA,Cisco,firewall,Security,security,Network,security|vpn,enterprise,Paid,1000,https://www.cisco.com,hardware,"firewall|asa",0.94,0.9
+Zscaler,Zscaler,cloud-security,Security,security,Proxy,web|zero-trust,enterprise,Paid,900,https://www.zscaler.com,saas,"proxy|cloud",0.95,0.93
+Cloudflare,Cloudflare,cdn-security,Security,security,Network,ddos|waf,web,Freemium/Paid,800,https://www.cloudflare.com,saas,"cdn|waf",0.98,0.99
+AWS CloudTrail,AWS,monitoring,Security,security,Audit,logs|iam,cloud,Paid,800,https://aws.amazon.com/cloudtrail,saas,"aws|audit",0.97,0.96
+Azure Sentinel,Microsoft,siem,Security,security,SIEM,correlation|alerts,enterprise,Paid,900,https://azure.microsoft.com/services/sentinel,saas,"siem|azure",0.97,0.95
+Splunk,Splunk,siem,Security,security,SIEM,search|alerts,enterprise,Paid,1200,https://www.splunk.com,saas,"siem|splunk",0.97,0.96
+IBM QRadar,IBM,siem,Security,security,SIEM,security|analytics,enterprise,Paid,1100,https://www.ibm.com/qradar,saas,"siem|ibm",0.94,0.9
+Elastic Security,Elastic,siem,Security,security,SIEM,open-source|detect,dev,Free,900,https://www.elastic.co/security,server,"siem|elastic",0.9,0.88
+Nagios,Nagios,monitoring,Security,security,Monitoring,uptime|alerts,ops,Free,900,https://www.nagios.org,server,"monitoring|open-source",0.9,0.88
+Zabbix,Zabbix,monitoring,Security,security,Monitoring,infra|metrics,ops,Free,900,https://www.zabbix.com,server,"monitoring|zabbix",0.9,0.88
+SolarWinds,Progress,monitoring,Security,security,Monitoring,network|alerts,ops,Paid,900,https://www.solarwinds.com,server,"monitoring|network",0.9,0.85
+Datadog,Datadog,observability,Security,security,Monitoring,metrics|logs,ops,Paid,1000,https://www.datadoghq.com,saas,"monitoring|logs",0.96,0.95
+Veeam,Veeam,backup,Security,security,Backup,vm|cloud,enterprise,Paid,900,https://www.veeam.com,desktop,"backup|vm",0.96,0.95
+Acronis,Acronis,backup,Security,security,Backup,backup|sync,smb,Paid,900,https://www.acronis.com,desktop,"backup|sync",0.95,0.94
