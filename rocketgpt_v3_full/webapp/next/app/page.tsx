@@ -14,9 +14,11 @@ import ToolRunner from '@/components/ToolRunner'
 import { HistoryList } from '@/components/HistoryList'
 import { getSupabaseBrowserClient } from '@/lib/supabase/browser'
 import QuickResponderButton from '@/components/QuickResponderButton'
-
 import { emitRateLimited } from '@/lib/ratelimitBus'
 import { isRateLimitError } from '@/lib/errors'
+import SuggestWidget from '@/components/SuggestWidget';
+// ...
+<SuggestWidget />
 
 export const dynamic = 'force-dynamic'
 

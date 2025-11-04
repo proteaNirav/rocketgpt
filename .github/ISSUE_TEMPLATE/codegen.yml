@@ -1,0 +1,74 @@
+name: "🚀 Codegen request"
+description: "Describe the feature; attach acceptance, target paths, and provider."
+labels: ["self-apply"]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Short title
+      placeholder: "Add /api/hello with test"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: engine
+    attributes:
+      label: Preferred provider
+      options: ["openai", "anthropic", "google", "groq"]
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal / user story
+      placeholder: |
+        Add a /api/hello endpoint returning { ok: true }.
+        Include a Jest test and README snippet.
+    validations:
+      required: true
+
+  - type: textarea
+    id: targets
+    attributes:
+      label: Path targets (one per line)
+      placeholder: |
+        app/api/hello/route.ts
+        tests/api/hello.test.ts
+        README.md
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria (one per line)
+      placeholder: |
+        GET /api/hello returns 200 { ok: true }
+        Jest test passes
+        README documents usage
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Extra context (optional)
+
+  - type: textarea
+    id: json
+    attributes:
+      label: Generated JSON (auto-filled)
+      description: "This block is consumed by the pipeline."
+      render: json
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        **Tip:** Submit the form and Triage will plan, add `codegen:ready`, and dispatch Codegen automatically.
+
+# Compose the JSON in a hidden script block (client-side not supported here),
+# so include instructions in README for users to copy this JSON manually if needed.

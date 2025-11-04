@@ -1,0 +1,72 @@
+﻿name: RocketGPT Ship Issue
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to ship"
+        required: true
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+jobs:
+  ship:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse input
+        id: inp
+        run: echo "ISSUE=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
+
+      - name: Label issue to trigger codegen
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const iss = parseInt('${{ steps.inp.outputs.ISSUE }}', 10);
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: iss,
+              labels: ['codegen:ready']
+            });
+
+      - name: Wait for PR created by codegen
+        id: wait
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const iss = parseInt('${{ steps.inp.outputs.ISSUE }}', 10);
+            let pr = null;
+            for (let i=0;i<30;i++){
+              const search = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${context.repo.owner}/${context.repo.repo} is:pr in:title ${iss}`,
+                per_page: 5
+              });
+              const open = search.data.items.find(x => x.state === 'open');
+              if (open) { pr = open; break; }
+              await new Promise(r => setTimeout(r, 10000));
+            }
+            if (!pr) core.setFailed('No PR created for this issue yet.');
+            core.setOutput('pr_number', pr.number.toString());
+
+      - name: Add auto-merge label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const n = parseInt('${{ steps.wait.outputs.pr_number }}', 10);
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: n,
+              labels: ['ai:auto-merge']
+            });
+
+      - name: Enable auto-merge (squash)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const n = parseInt('${{ steps.wait.outputs.pr_number }}', 10);
+            const prQ = await github.graphql(
+              `query($o:String!,$n:String!,$num:Int!){repository(owner:$o,name:$n){pullRequest(number:$num){id}}}`,
+              { o: context.repo.owner, n: context.repo.repo, num: n }
+            );
+            await github.graphql(
+              `mutation($pr:ID!){ enablePullRequestAutoMerge(input:{ pullRequestId:$pr, mergeMethod:SQUASH }){ clientMutationId } }`,
+              { pr: prQ.repository.pullRequest.id }
+            );

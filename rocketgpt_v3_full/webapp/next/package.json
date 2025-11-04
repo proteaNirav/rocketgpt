@@ -14,17 +14,20 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@octokit/rest": "^22.0.1",
     "@sentry/nextjs": "^8.27.0",
     "@supabase/ssr": "^0.5.0",
     "@supabase/supabase-js": "^2.47.0",
     "clsx": "2.1.0",
     "framer-motion": "^11.0.0",
+    "nodemailer": "^7.0.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "zustand": "4.5.2"
   },
   "devDependencies": {
-    "@types/node": "20.14.9",
+    "@types/node": "^20.14.9",
+    "@types/nodemailer": "^7.0.3",
     "@types/react": "18.2.66",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
