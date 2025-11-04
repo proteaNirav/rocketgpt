@@ -1,8 +1,13 @@
-name: Auto Codegen (issue -> PR)
+﻿name: AI Codegen
 
 on:
   issues:
-    types: [labeled]
+    types: [opened, edited, labeled, reopened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to process"
+        required: true
 
 permissions:
   contents: write
@@ -10,14 +15,32 @@ permissions:
   issues: read
 
 jobs:
-  codegen:
-    if: contains(github.event.issue.labels.*.name, 'codegen:ready')
+  triage:
+    if: >
+      ${{
+        (github.event_name == 'workflow_dispatch') ||
+        (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'codegen:ready'))
+      }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Resolve issue number
+        id: iss
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "num=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
+          else
+            echo "num=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Sanity log
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Issue #: ${{ steps.iss.outputs.num }}"
+          echo "Labels: ${{ toJson(github.event.issue.labels) }}"
 
       - name: Prep tools
         run: |
@@ -37,91 +60,80 @@ Generate a minimal, production-quality patch for this repository **as a unified 
 REQUIREMENTS:
 - Output ONLY a valid unified diff starting with "diff --git".
 - Keep changes focused; add tests if trivial.
-- If Next.js/TS: respect existing tsconfig, eslint, scripts.
-- Include new files correctly in the diff (with /dev/null in the from-file).
-- No secrets, no .env commits.
-- Keep to free-tier compatible approaches.
-
-REPO CONTEXT (abridged):
-- Stack: Next.js (app router), Supabase Auth, Vercel, GitHub Actions CI.
-- Branch policy: PR into `develop`, squash merge.
-- Codeowners require review.
+- Respect Next.js + TypeScript conventions.
+- Include new files using /dev/null in the from-file.
+- No secrets or .env changes. Free-tier only.
 
 USER STORY (from GitHub issue body):
 PROMPT
-          printf '\n--- ISSUE BODY START ---\n\n' >> .rocket/codegen/prompt.txt
-          jq -r '.issue.body' <(echo '${{ toJson(github.event) }}') >> .rocket/codegen/prompt.txt
-          printf '\n--- ISSUE BODY END ---\n' >> .rocket/codegen/prompt.txt
+          num="${{ steps.iss.outputs.num }}"
+          echo -e "\n--- ISSUE BODY START ---\n" >> .rocket/codegen/prompt.txt
+          gh api repos/${{ github.repository }}/issues/$num --jq .body >> .rocket/codegen/prompt.txt
+          echo -e "\n--- ISSUE BODY END ---" >> .rocket/codegen/prompt.txt
 
       - name: Call Claude to produce a patch
         env:
           ANTHROPIC_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
         run: |
+          set -e
           body=$(jq -Rs --arg model "claude-3-5-sonnet-latest" '{model:$model, max_tokens:2500, messages:[{role:"user", content:.}]}' .rocket/codegen/prompt.txt)
           curl -sS https://api.anthropic.com/v1/messages \
             -H "x-api-key: ${ANTHROPIC_API_KEY}" \
             -H "anthropic-version: 2023-06-01" \
             -H "content-type: application/json" \
-            -d "$body" | tee .rocket/codegen/claude.json | \
-          jq -r 'try .content[0].text catch ""' > .rocket/codegen/patch.txt
-
-          # Extract only the diff (in case the model adds prose)
+            -d "$body" | tee .rocket/codegen/claude.json | jq -r 'try .content[0].text catch ""' > .rocket/codegen/patch.txt
           awk '/^diff --git/{flag=1} flag{print}' .rocket/codegen/patch.txt > .rocket/codegen/patch.diff || true
-          if [ ! -s .rocket/codegen/patch.diff ]; then
-            echo "No diff produced"; exit 1
-          fi
-          head -n 60 .rocket/codegen/patch.diff
+          test -s .rocket/codegen/patch.diff
 
       - name: Apply patch
         run: |
           set -e
-          git checkout -b "ai/autocode/${{ github.event.issue.number }}"
+          num="${{ steps.iss.outputs.num }}"
+          git checkout -b "ai/autocode/${num}"
           git apply --index --reject .rocket/codegen/patch.diff || true
-
-          # If rejects exist, stop and attach artifacts
-          rejects=$(git status --porcelain | wc -l)
-          if [ "$rejects" -eq "0" ]; then
-            echo "Patch applied cleanly."
-          else
-            echo "Patch had conflicts; uploading artifacts and exiting."
-            exit 2
+          rejCount=$(git status --porcelain | wc -l)
+          if [ "$rejCount" -gt 0 ]; then
+            echo "Patch had conflicts ($rejCount files). See artifacts."; exit 2
           fi
 
       - name: Commit & push
         if: ${{ success() }}
         run: |
-          msg="feat: autocode for issue #${{ github.event.issue.number }} - ${{ github.event.issue.title }}"
+          num="${{ steps.iss.outputs.num }}"
+          title=$(gh api repos/${{ github.repository }}/issues/$num --jq .title)
           git add -A
-          git commit -m "$msg"
-          git push -u origin "ai/autocode/${{ github.event.issue.number }}"
+          git commit -m "feat: autocode for issue #$num - $title"
+          git push -u origin "ai/autocode/${num}"
 
       - name: Open PR to develop
         if: ${{ success() }}
         uses: actions/github-script@v7
         with:
           script: |
-            const title = `feat: autocode for #${{ github.event.issue.number }} - ${{ github.event.issue.title }}`;
+            const num = `#${{ steps.iss.outputs.num }}`;
+            const issue = await github.rest.issues.get({ owner: context.repo.owner, repo: context.repo.repo, issue_number: parseInt(${{ steps.iss.outputs.num }}) });
+            const title = `feat: autocode for ${num} - ${issue.data.title}`;
             const body = [
-              "Auto-generated by **Auto Codegen**.",
+              "Auto-generated by **AI Codegen**.",
               "",
-              "**Source issue:** #${{ github.event.issue.number }}",
+              `**Source issue:** ${num}`,
               "",
               "Please review with care. No secrets, small diff policy.",
             ].join("\n");
-            const res = await github.rest.pulls.create({
+            const pr = await github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              head: `ai/autocode/${{ github.event.issue.number }}`,
+              head: `ai/autocode/${{ steps.iss.outputs.num }}`,
               base: "develop",
               title,
               body
             });
-            core.notice(`PR #${res.data.number} opened`);
+            core.notice(`PR #${pr.data.number} opened`);
 
-      - name: Upload artifacts (patch)
+      - name: Upload artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: autocode-artifacts
+          name: ai-autocode-artifacts
           path: .rocket/codegen/
           if-no-files-found: warn
