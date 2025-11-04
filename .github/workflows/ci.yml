@@ -1,0 +1,90 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    env:
+      CORE_API_BASE: https://rocketgpt-core-api.onrender.com
+      NODE_OPTIONS: --max_old_space_size=4096
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --- Debug: confirm paths/lockfile are where we expect ---
+      - name: Show tree (top level + UI folder)
+        run: |
+          ls -la
+          echo '--- UI dir ---'
+          ls -la rocketgpt_v3_full/webapp/next || true
+
+      # --- Node 20 setup with safe caching (only if lockfile exists) ---
+      - name: Setup Node 20 (with cache if lockfile exists)
+        if: ${{ hashFiles('rocketgpt_v3_full/webapp/next/package-lock.json') != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: rocketgpt_v3_full/webapp/next/package-lock.json
+
+      - name: Setup Node 20 (no cache fallback)
+        if: ${{ hashFiles('rocketgpt_v3_full/webapp/next/package-lock.json') == '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # --- UI: install, typecheck, lint, build ---
+      - name: Validate package.json (UI)
+        working-directory: rocketgpt_v3_full/webapp/next
+        run: node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('package.json OK')"
+
+      - name: Install UI deps
+        working-directory: rocketgpt_v3_full/webapp/next
+        run: npm ci || npm i
+
+      - name: Typecheck (UI)
+        working-directory: rocketgpt_v3_full/webapp/next
+        run: npx tsc -v && npx tsc --noEmit
+
+      # Auto-fix lintable issues (mostly import/order)
+      - name: Lint (UI) - autofix
+        working-directory: rocketgpt_v3_full/webapp/next
+        run: npx eslint . --ext .ts,.tsx --fix || true
+
+      - name: Lint (UI) - strict
+        working-directory: rocketgpt_v3_full/webapp/next
+        run: npx eslint . --ext .ts,.tsx --max-warnings=0
+
+      - name: Build (UI)
+        working-directory: rocketgpt_v3_full/webapp/next
+        run: npm run build
+
+      # --- Core API quick hygiene (Python) ---
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ruff
+        run: pipx install ruff
+
+      - name: Lint core-api (non blocking)
+        run: ruff check rocketgpt_v3_full/apps/core-api || true
+
+      - name: Format core-api (non blocking)
+        run: ruff format rocketgpt_v3_full/apps/core-api || true
+
+      # --- QA smoke: run scenarios against live Core API ---
+      - name: Run QA scenarios
+        run: node qa/runner.mjs qa/scenarios/*.json | tee qa-report.json
+
+      - name: Upload QA report
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-report
+          path: qa-report.json

@@ -1,0 +1,26 @@
+name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
+Visual Studio Code,Microsoft,ide,Development,ide,,editor|extensions,code,Free,600,https://code.visualstudio.com,desktop,"vscode|editor",0.98,0.99
+IntelliJ IDEA,JetBrains,ide,Development,ide,Java,refactor|debug,code,Paid,900,https://www.jetbrains.com/idea,desktop,"jetbrains|java",0.97,0.95
+PyCharm,JetBrains,ide,Development,ide,Python,debug|venv,code,Paid,900,https://www.jetbrains.com/pycharm,desktop,"python|jetbrains",0.97,0.94
+WebStorm,JetBrains,ide,Development,ide,JS,js|ts|react,code,Paid,900,https://www.jetbrains.com/webstorm,desktop,"js|ts|react",0.96,0.9
+CLion,JetBrains,ide,Development,ide,C/C++,cmake|debug,code,Paid,900,https://www.jetbrains.com/clion,desktop,"c|cpp|jetbrains",0.95,0.86
+GoLand,JetBrains,ide,Development,ide,Go,go|debug,code,Paid,900,https://www.jetbrains.com/go,desktop,"golang|jetbrains",0.95,0.86
+Rider,JetBrains,ide,Development,ide,.NET,dotnet|unity,code,Paid,900,https://www.jetbrains.com/rider,desktop,"dotnet|unity",0.95,0.86
+Eclipse,The Eclipse Foundation,ide,Development,ide,Java,plugins|open-source,code,Free,1000,https://www.eclipse.org,desktop,"java|open-source",0.9,0.9
+Android Studio,Google,ide,Development,ide,Android,android|emulator,code,Free,900,https://developer.android.com/studio,desktop,"android",0.96,0.95
+Xcode,Apple,ide,Development,ide,iOS,ios|swift,code,Free,900,https://developer.apple.com/xcode,desktop,"ios|swift",0.96,0.95
+GitHub,GitHub,git-hosting,Development,devops,SCM,actions|issues,/organize,Freemium/Paid,800,https://github.com,saas,"scm|ci",0.98,0.99
+GitLab,GitLab,git-hosting,Development,devops,SCM,ci|cd,/organize,Freemium/Paid,800,https://gitlab.com,saas,"scm|ci",0.97,0.94
+Bitbucket,Atlassian,git-hosting,Development,devops,SCM,pipelines|issues,/organize,Freemium/Paid,800,https://bitbucket.org,saas,"scm|ci",0.94,0.88
+Jenkins,Open Source,ci-cd,Development,devops,CI,automation|pipelines,/organize,Free,900,https://www.jenkins.io,server,"ci|open-source",0.95,0.93
+CircleCI,CircleCI,ci-cd,Development,devops,CI,cloud-ci,/organize,Freemium/Paid,900,https://circleci.com,saas,"ci|cloud",0.94,0.9
+Travis CI,Travis CI,ci-cd,Development,devops,CI,ci|open-source,/organize,Freemium/Paid,900,https://www.travis-ci.com,saas,"ci|open-source",0.9,0.85
+Azure DevOps,Microsoft,devops-suite,Development,devops,,repos|pipelines|boards,enterprise,Paid,900,https://azure.microsoft.com/services/devops,saas,"azure|devops",0.96,0.92
+Docker,Docker,containers,Development,devops,,build|run,code,Free,800,https://www.docker.com,desktop,"containers",0.98,0.99
+Kubernetes,CNCF,orchestrator,Development,devops,,deploy|scale,ops,Free,900,https://kubernetes.io,server,"k8s|cncf",0.97,0.96
+Terraform,HashiCorp,iac,Development,devops,,infra|code,ops,Freemium/Paid,900,https://www.terraform.io,cli,"iac|hashicorp",0.96,0.95
+Postman,Postman,api-client,Development,code,API,test|collections,code,Freemium/Paid,700,https://www.postman.com,desktop,"api|testing",0.97,0.97
+Insomnia,Kong,api-client,Development,code,API,http|graphql,code,Freemium/Paid,700,https://insomnia.rest,desktop,"api|graphql",0.94,0.9
+SwaggerHub,SmartBear,api-design,Development,code,API,openapi|design,code,Paid,900,https://swagger.io/tools/swaggerhub,saas,"openapi|design",0.92,0.86
+Sentry,Sentry,monitoring,Development,devops,APM,errors|tracing,ops,Freemium/Paid,900,https://sentry.io,saas,"apm|errors",0.95,0.94
+Datadog,Datadog,observability,Development,devops,APM,metrics|logs|traces,ops,Paid,1000,https://www.datadoghq.com,saas,"observability",0.96,0.95

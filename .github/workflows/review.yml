@@ -1,0 +1,271 @@
+name: RocketGPT Review Pipeline
+
+on:
+  pull_request:
+    branches: [ main, dev ]
+  repository_dispatch:
+    types: [review]  # allow Codegen to trigger a review
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  statuses: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MIN_ACCEPT_SCORE: 75
+
+jobs:
+  ai-review:
+    name: AI Review
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Log event payload (review)
+        run: |
+          echo '${{ toJson(github.event) }}' > event.json
+          (command -v jq >/dev/null && jq -C '.' event.json) || cat event.json
+
+      - name: Determine PR number
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let prNumber = null;
+            if (context.eventName === 'pull_request') {
+              prNumber = context.payload.pull_request.number;
+            } else if (context.eventName === 'repository_dispatch') {
+              prNumber = context.payload.client_payload?.pr_number ?? null;
+            }
+            if (!prNumber) core.setFailed('PR number not found in event payload.');
+            core.setOutput('number', prNumber);
+
+      - name: Validate runner exists
+        run: |
+          test -f rocketgpt-agents/runners/github_actions.js || \
+            (echo "Missing runner: rocketgpt-agents/runners/github_actions.js"; exit 1)
+
+      - name: Pick model provider (prefer Claude)
+        id: engine
+        uses: actions/github-script@v7
+        env:
+          DEFAULT_ENGINE: anthropic
+          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+        with:
+          script: |
+            const req = (process.env.DEFAULT_ENGINE || 'anthropic').toLowerCase();
+            const providers = [
+              { key:'anthropic', ok:!!process.env.ANTHROPIC_API_KEY },
+              { key:'openai',    ok:!!process.env.OPENAI_API_KEY },
+              { key:'google',    ok:!!process.env.GOOGLE_API_KEY },
+              { key:'groq',      ok:!!process.env.GROQ_API_KEY },
+            ];
+            const chosen = providers.some(p=>p.key===req && p.ok)
+              ? req
+              : (providers.find(p=>p.ok)?.key || 'openai');
+            core.info(`Chosen provider: ${chosen}`);
+            core.setOutput('engine', chosen);
+
+      - name: Collect changed files (write files.json here)
+        id: files
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const {owner, repo} = context.repo;
+            const pull_number = Number("${{ steps.pr.outputs.number }}");
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              { owner, repo, pull_number, per_page: 100 }
+            );
+            // Slim view (no patches)
+            const slim = files.map(f => ({
+              sha: f.sha,
+              filename: f.filename,
+              status: f.status,
+              additions: f.additions,
+              deletions: f.deletions,
+              changes: f.changes,
+              blob_url: f.blob_url,
+              raw_url: f.raw_url,
+              contents_url: f.contents_url
+            }));
+            const summary = files.map(f => `- ${f.filename} (${f.status}) +${f.additions} -${f.deletions}`).join('\n');
+            fs.writeFileSync('files.json', JSON.stringify(slim, null, 2));
+            core.setOutput('summary', summary);
+            core.info(`Wrote files.json with ${slim.length} entries`);
+
+      - name: Compute score (policy) without jq
+        id: score
+        uses: actions/github-script@v7
+        env:
+          LABELS_JSON: ${{ toJson(github.event.pull_request.labels || []) }}
+        with:
+          script: |
+            const fs = require('fs');
+            const labels = JSON.parse(process.env.LABELS_JSON || '[]').map(l => (typeof l === 'string'? l : l.name));
+            const allow = labels.includes('ai:unsafe-ok') ? 'yes' : 'no';
+
+            const content = fs.readFileSync('files.json','utf8');
+            const files = JSON.parse(content);
+
+            const BASE = 90;
+            const MINOR_DIFF_CUTOFF = 300;
+            const LARGE_DIFF_CUTOFF = 1000;
+
+            const SENSITIVE_RE = new RegExp(String.raw`^(\.github/workflows/|\.github/actions/|\.github/.*\.yml$|(^|/)\.env(\.|$)|^secrets?/|^Dockerfile$|^docker-compose\.ya?ml$|^render\.ya?ml$|^vercel\.json$|^supabase/migrations/|^supabase/.*\.sql$|\.sql$|^rocketgpt-agents/runners/|^infra/|^deploy/|^k8s/|^helm/)`);
+            const LOCKS_RE     = new RegExp(String.raw`(^|/)(package-lock\.json|pnpm-lock\.yaml|yarn\.lock)$`);
+
+            const totalAdd = files.reduce((a,f)=>a + (f.additions||0), 0);
+            const totalDel = files.reduce((a,f)=>a + (f.deletions||0), 0);
+            const totalChg = totalAdd + totalDel;
+
+            const hasSensitive = files.some(f => SENSITIVE_RE.test(f.filename)) ? 1 : 0;
+            const hasLocks     = files.some(f => LOCKS_RE.test(f.filename)) ? 1 : 0;
+
+            let score = BASE;
+            if (hasSensitive && allow !== 'yes') {
+              score = 0;
+            } else {
+              if (totalChg > LARGE_DIFF_CUTOFF) score -= 40;
+              else if (totalChg > MINOR_DIFF_CUTOFF) score -= 20;
+              if (hasLocks) score -= 10;
+              if (totalDel > (totalAdd * 3)) score -= 15;
+              if (score < 0) score = 0;
+              if (score > 100) score = 100;
+            }
+
+            core.info(`TOTAL_ADD=${totalAdd} TOTAL_DEL=${totalDel} TOTAL_CHG=${totalChg}`);
+            core.info(`HAS_SENSITIVE=${hasSensitive} HAS_LOCKS=${hasLocks} ALLOW=${allow}`);
+            core.setOutput('score', String(score));
+
+      - name: Build review_input.json (Node only; no shell)
+        uses: actions/github-script@v7
+        env:
+          REPO_SLUG: ${{ github.repository }}
+          SUMMARY:   ${{ steps.files.outputs.summary }}
+          SCORE:     ${{ steps.score.outputs.score }}
+          MIN_SCORE: ${{ env.MIN_ACCEPT_SCORE }}
+          PROVIDER:  ${{ steps.engine.outputs.engine }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        with:
+          script: |
+            const fs = require('fs');
+            const files = JSON.parse(fs.readFileSync('files.json','utf8'));
+            const obj = {
+              pr: {
+                number: Number(process.env.PR_NUMBER),
+                title:  context.payload.pull_request?.title || '',
+                author: context.payload.pull_request?.user?.login || context.actor,
+                base:   context.payload.pull_request?.base?.ref || '',
+                head:   context.payload.pull_request?.head?.ref || '',
+              },
+              repo: process.env.REPO_SLUG,
+              summary: process.env.SUMMARY || '',
+              files,
+              score: Number(process.env.SCORE || 60),
+              min_accept_score: Number(process.env.MIN_SCORE || 75),
+              provider_hint: process.env.PROVIDER || 'unknown'
+            };
+            fs.writeFileSync('review_input.json', JSON.stringify(obj, null, 2));
+            core.info('✅ Created review_input.json');
+
+      - name: Run AI review (runner -> review_result.json)
+        env:
+          MODEL_PROVIDER: ${{ steps.engine.outputs.engine }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+        run: |
+          node rocketgpt-agents/runners/github_actions.js review review_input.json
+          test -f review_result.json || (echo "review_result.json missing"; exit 1)
+          echo "AI review produced:" && cat review_result.json
+
+      - name: Read decision (Node; no shell parsing)
+        id: rr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const r = JSON.parse(fs.readFileSync('review_result.json','utf8'));
+            core.setOutput('decision', r.decision || 'comment');
+
+      - name: Post review on PR (approve/request-changes or fallback comment)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const r = JSON.parse(fs.readFileSync('review_result.json','utf8'));
+            const {owner, repo} = context.repo;
+            const pull_number = Number("${{ steps.pr.outputs.number }}");
+
+            let event = 'COMMENT';
+            if (r.decision === 'approve') event = 'APPROVE';
+            if (r.decision === 'block')   event = 'REQUEST_CHANGES';
+
+            const body = `${r.summary_md}\n\n${r.nitpicks_md ? '---\n' + r.nitpicks_md : ''}`;
+
+            try {
+              await github.rest.pulls.createReview({ owner, repo, pull_number, event, body });
+            } catch (e) {
+              // If Actions cannot approve PRs (422), fall back to a regular comment
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: pull_number, body: `*(Fallback comment)*\n\n${body}`
+              });
+            }
+
+      - name: Save review I/O artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-artifacts-${{ github.run_id }}
+          path: |
+            event.json
+            files.json
+            review_input.json
+            review_result.json
+
+      - name: Trigger Auto-Merge (only if approve + Claude)
+        if: ${{ steps.rr.outputs.decision == 'approve' && steps.engine.outputs.engine == 'anthropic' }}
+        env:
+          OWNER:  ${{ github.repository_owner }}
+          REPO:   ${{ github.event.repository.name }}
+          PR:     ${{ steps.pr.outputs.number }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          set -euo pipefail
+          [ -n "$GH_PAT" ] || { echo "GH_PAT missing"; exit 1; }
+          echo "::group::Dispatch Merge Request"
+          PAYLOAD=$(jq -n --argjson n "$PR" '{event_type:"merge", client_payload:{pr_number:$n}}')
+          echo "$PAYLOAD" | jq -C .
+          echo "$PAYLOAD" > dispatch.merge.req.json
+          echo "::endgroup::"
+
+          STATUS=$(curl -s -o dispatch.merge.resp.json -w "%{http_code}" \
+            -X POST -H "Authorization: token ${GH_PAT}" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${OWNER}/${REPO}/dispatches" \
+            -d "$PAYLOAD")
+
+          echo "::group::Dispatch Merge Response"
+          echo "HTTP: $STATUS"
+          (command -v jq >/dev/null && jq -C '.' dispatch.merge.resp.json) || cat dispatch.merge.resp.json
+          echo "::endgroup::"
+          test "$STATUS" = "204" || (echo "ERR: merge dispatch failed"; exit 1)

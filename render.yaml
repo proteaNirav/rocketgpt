@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: rocketgpt-ui
+    runtime: node
+    plan: free
+    rootDir: rocketgpt_v3_full/webapp/next
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: NEXT_PUBLIC_CORE_API_BASE
+        value: https://rocketgpt-core-api.onrender.com
+    buildCommand: npm install && npm run build
+    startCommand: npm start -- -p $PORT
+    autoDeploy: true

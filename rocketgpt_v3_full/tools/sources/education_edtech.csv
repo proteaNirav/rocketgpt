@@ -1,0 +1,28 @@
+name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
+Google Classroom,Google,lms,Education,education,LMS,class|assignments,schools,Free,800,https://classroom.google.com,web,"lms|education",0.98,0.98
+Moodle,Moodle HQ,lms,Education,education,LMS,open-source|courses,schools,Free,900,https://moodle.org,server,"lms|open-source",0.95,0.96
+Canvas LMS,Instructure,lms,Education,education,LMS,courses|grades,schools,Paid,900,https://www.instructure.com/canvas,saas,"lms|canvas",0.96,0.96
+Blackboard Learn,Anthology,lms,Education,education,LMS,courses|assessment,universities,Paid,1000,https://www.anthology.com/products/blackboard-learn,saas,"lms|blackboard",0.95,0.94
+Schoology,PowerSchool,lms,Education,education,LMS,k12|assignments,schools,Paid,900,https://www.schoology.com,saas,"k12|lms",0.9,0.88
+Brightspace,D2L,lms,Education,education,LMS,learning|analytics,universities,Paid,950,https://www.d2l.com/brightspace,saas,"lms|d2l",0.92,0.9
+Khan Academy,Khan Academy,elearning,Education,education,MOOC,free|students,schools,Free,800,https://www.khanacademy.org,web,"free|learning",0.98,0.98
+Coursera,Coursera,elearning,Education,education,MOOC,video|certificates,students,Freemium/Paid,900,https://www.coursera.org,web,"mooc|certificates",0.98,0.98
+edX,2U,elearning,Education,education,MOOC,university|online,students,Free/Paid,900,https://www.edx.org,web,"mooc|university",0.97,0.97
+Udemy,Udemy,elearning,Education,education,MOOC,video|courses,professionals,Freemium/Paid,900,https://www.udemy.com,web,"learning|skills",0.97,0.98
+LinkedIn Learning,LinkedIn,elearning,Education,education,Professional,career|certs,professionals,Paid,900,https://www.linkedin.com/learning,web,"career|learning",0.96,0.96
+Skillshare,Skillshare,elearning,Education,education,Creative,video|creative,creative,Paid,900,https://www.skillshare.com,web,"creative|learning",0.94,0.94
+MasterClass,MasterClass,elearning,Education,education,Creative,celebrity|video,general,Paid,900,https://www.masterclass.com,web,"masterclass|video",0.93,0.9
+Teachable,Teachable,course-builder,Education,education,Authoring,courses|sales,trainers,Paid,900,https://teachable.com,saas,"courses|sales",0.93,0.9
+Thinkific,Thinkific,course-builder,Education,education,Authoring,courses|memberships,trainers,Paid,900,https://www.thinkific.com,saas,"courses|memberships",0.93,0.9
+TalentLMS,Epignosis,lms,Education,education,LMS,training|corporate,enterprise,Paid,900,https://www.talentlms.com,saas,"corporate|lms",0.94,0.9
+Articulate 360,Articulate,authoring,Education,education,Authoring,elearning|slides,corporate,Paid,900,https://articulate.com,desktop,"authoring|elearning",0.95,0.9
+Captivate,Adobe,authoring,Education,education,Authoring,elearning|simulation,corporate,Paid,900,https://www.adobe.com/products/captivate.html,desktop,"elearning|authoring",0.94,0.9
+Nearpod,Nearpod,interactive,Education,education,Engagement,quiz|slides,schools,Paid,900,https://nearpod.com,web,"quiz|interactive",0.93,0.9
+Kahoot!,Kahoot!,gamification,Education,education,Engagement,quiz|games,schools,Freemium/Paid,850,https://kahoot.com,web,"quiz|engagement",0.96,0.97
+Quizlet,Quizlet,flashcards,Education,education,Study,memorizations|sets,students,Freemium/Paid,800,https://quizlet.com,web,"study|flashcards",0.96,0.97
+Duolingo,Duolingo,language,Education,education,Language,gamified|courses,students,Freemium/Paid,800,https://www.duolingo.com,web,"language|mobile",0.97,0.98
+Rosetta Stone,IXL Learning,language,Education,education,Language,speech|immersion,students,Paid,900,https://www.rosettastone.com,web,"language|immersion",0.94,0.9
+Desmos,Desmos,math,Education,education,STEM,graphing|calculator,schools,Free,700,https://www.desmos.com,web,"math|graph",0.95,0.95
+Wolfram Alpha,Wolfram,computational,Education,education,STEM,math|symbolic,students,Free/Paid,900,https://www.wolframalpha.com,web,"math|compute",0.96,0.96
+Notion,Notion,knowledge-base,Education,productivity,Wiki,notes|db,/organize,Freemium/Paid,900,https://www.notion.so,saas,"notes|wiki",0.95,0.96
+Miro,Miro,whiteboard,Education,productivity,Collab,canvas|workshop,/organize,Freemium/Paid,900,https://miro.com,saas,"whiteboard|edu",0.95,0.95

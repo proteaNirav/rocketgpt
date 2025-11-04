@@ -1,0 +1,21 @@
+name,vendor,role,domain,category,sub_category,strengths,best_for,pricing,latency_ms_est,access_url,integration_type,tags,reliability_score,popularity_score
+SAP S/4HANA Logistics,SAP,erp,Logistics,erp,SupplyChain,procure|manufacture,enterprise,Paid,1100,https://www.sap.com/products/s4hana,saas,"sap|logistics",0.97,0.95
+Oracle SCM Cloud,Oracle,scm,Logistics,erp,SupplyChain,planning|fulfillment,enterprise,Paid,1100,https://www.oracle.com/scm,saas,"oracle|scm",0.96,0.94
+Microsoft Dynamics 365 SCM,Microsoft,scm,Logistics,erp,SupplyChain,warehouse|transport,enterprise,Paid,1100,https://dynamics.microsoft.com,saas,"d365|scm",0.95,0.93
+Blue Yonder (JDA),Blue Yonder,scm,Logistics,planning,Planning,forecast|optimize,enterprise,Paid,1100,https://blueyonder.com,saas,"planning|supply",0.94,0.9
+Kinaxis RapidResponse,Kinaxis,scm,Logistics,planning,Planning,s&op|what-if,enterprise,Paid,1100,https://www.kinaxis.com,saas,"s&op|planning",0.94,0.88
+Infor Nexus,Infor,network,Logistics,visibility,Network,suppliers|tracking,enterprise,Paid,1000,https://www.infor.com/products/nexus,saas,"visibility|network",0.92,0.86
+ShipBob,ShipBob,3pl,Logistics,fulfillment,3PL,fulfillment|ecom,smb/Paid,Paid,1000,https://www.shipbob.com,saas,"3pl|ecommerce",0.93,0.9
+Shippo,Shippo,shipping,Logistics,transport,Parcel,labels|rates,ecommerce,Freemium/Paid,900,https://goshippo.com,api,"shipping|labels",0.94,0.92
+EasyPost,EasyPost,shipping,Logistics,transport,Parcel,api|rates,ecommerce,Freemium/Paid,900,https://www.easypost.com,api,"shipping|api",0.93,0.9
+Flexport,Flexport,freight,Logistics,transport,Freight,ocean|air,global,Paid,1000,https://www.flexport.com,saas,"freight|global",0.92,0.88
+Project44,Project44,visibility,Logistics,visibility,Tracking,eta|carrier,enterprise,Paid,1000,https://www.project44.com,saas,"visibility|eta",0.93,0.89
+FourKites,FourKites,visibility,Logistics,visibility,Tracking,tracking|predict,enterprise,Paid,1000,https://www.fourkites.com,saas,"tracking|predict",0.92,0.88
+Odoo Inventory,Odoo,wms,Logistics,warehouse,WMS,inventory|barcode,smb,Freemium/Paid,950,https://www.odoo.com,saas,"wms|smb",0.9,0.88
+Fishbowl Inventory,Fishbowl,wms,Logistics,warehouse,WMS,manufacturing|inventory,smb,Paid,950,https://www.fishbowlinventory.com,desktop,"wms|manufacturing",0.88,0.82
+Zoho Inventory,Zoho,wms,Logistics,warehouse,WMS,orders|stock,ecommerce,Freemium/Paid,900,https://www.zoho.com/inventory,saas,"inventory|zoho",0.9,0.88
+SAP TM,SAP,transport,Logistics,transport,TMS,planning|execution,enterprise,Paid,1100,https://www.sap.com/products/transportation-management,saas,"tms|sap",0.93,0.88
+Oracle OTM,Oracle,transport,Logistics,transport,TMS,planning|tenders,enterprise,Paid,1100,https://www.oracle.com/scm/transportation,saas,"tms|otm",0.93,0.88
+Bringg,Bringg,last-mile,Logistics,delivery,LastMile,dispatch|track,delivery,Paid,900,https://www.bringg.com,saas,"lastmile|dispatch",0.9,0.85
+Onfleet,Onfleet,last-mile,Logistics,delivery,LastMile,drivers|route,delivery,Paid,900,https://onfleet.com,saas,"lastmile|routing",0.9,0.85
+Route4Me,Route4Me,routing,Logistics,delivery,Routing,optimization|maps,delivery,Freemium/Paid,900,https://www.route4me.com,saas,"routing|maps",0.9,0.85
