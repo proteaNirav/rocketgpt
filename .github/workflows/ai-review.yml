@@ -1,0 +1,97 @@
+﻿name: AI Review (Claude)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    # Run only if PR has label ai:review
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'ai:review') && (github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (shallow)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Build diff (PR against base)
+        id: diff
+        run: |
+          set -e
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          git --no-pager diff --unified=0 origin/"${{ github.base_ref }}"...HEAD > full.diff || true
+          head -n 4000 full.diff > pr.diff
+          echo "path=pr.diff" >> $GITHUB_OUTPUT
+          echo "lines=$(wc -l < pr.diff)" >> $GITHUB_OUTPUT
+
+      - name: Call Claude for code review
+        id: claude
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+        run: |
+          set -e
+          cat > prompt.txt <<'PROMPT'
+You are an expert code reviewer. Given a unified diff, produce an actionable review for a GitHub Pull Request:
+
+- Summarize the intent of changes.
+- List critical risks [SECURITY], then quality issues [BUG]/[PERF], then [STYLE]/[DOCS].
+- Suggest minimal diffs to fix issues (small code blocks).
+- If diff appears truncated, say so.
+PROMPT
+          echo "\n```diff" >> prompt.txt
+          cat pr.diff >> prompt.txt
+          echo "```\n" >> prompt.txt
+
+          body=$(jq -Rs --arg model "claude-3-5-sonnet-latest" '{model:$model, max_tokens:2000, messages:[{role:"user", content:.}]}' prompt.txt)
+          curl -sS https://api.anthropic.com/v1/messages \
+            -H "x-api-key: ${ANTHROPIC_API_KEY}" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "content-type: application/json" \
+            -d "$body" > claude.json
+
+          jq -r '
+            if .content and (.content|length>0) and .content[0].type=="text"
+            then .content[0].text
+            else "Claude response parsing error:\n" + (tostring)
+            end
+          ' claude.json > ai_review.md
+          head -c 250000 ai_review.md > ai_review_trunc.md
+
+      - name: Post AI review comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const text = fs.readFileSync('ai_review_trunc.md','utf8');
+            const header = [
+              "### ðŸ¤– Claude AI Review",
+              "",
+              "- Model: `claude-3-5-sonnet-latest`",
+              "- Diff lines analyzed: " + (process.env.DIFF_LINES || "n/a"),
+              "",
+            ].join("\n");
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: header + "\n" + text
+            });
+        env:
+          DIFF_LINES: ${{ steps.diff.outputs.lines }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-review-artifacts
+          path: |
+            pr.diff
+            prompt.txt
+            claude.json
+            ai_review.md
+            ai_review_trunc.md
+          if-no-files-found: ignore

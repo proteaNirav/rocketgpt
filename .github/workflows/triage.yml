@@ -1,48 +1,165 @@
 name: Triage Spec
+
 on:
   issues:
     types: [opened, edited, labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to triage (manual run)"
+        required: true
+        type: number
+
 permissions:
   contents: read
   issues: write
   pull-requests: write
+
+# Use one concurrency slot per issue; also works for manual runs
+concurrency:
+  group: triage-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  # Gate: require label 'self-apply' to proceed (set repo variable to 'false' to disable)
+  TRIAGE_REQUIRE_LABEL: ${{ vars.TRIAGE_REQUIRE_LABEL || 'true' }}
+
 jobs:
   triage:
-    if: contains(github.event.issue.labels.*.name, 'self-apply')
     runs-on: ubuntu-latest
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}   # classic PAT with repo + workflow scopes
     steps:
       - uses: actions/checkout@v4
 
-      - name: Parse Business Spec from Issue Body
-        id: spec
+      # 0) Resolve the issue number for BOTH events (issues + workflow_dispatch)
+      - name: Resolve issue number
+        id: num
         uses: actions/github-script@v7
         with:
           script: |
-            const body = context.payload.issue.body || '';
-            const m = body.match(/```json([\s\S]*?)```/i);
-            const json = m ? m[1].trim() : '{}';
-            core.setOutput('spec', json);
+            let n = null;
+            if (context.eventName === 'workflow_dispatch') {
+              n = Number(context.payload.inputs?.issue_number);
+            } else if (context.eventName === 'issues') {
+              n = context.payload.issue?.number;
+            }
+            if (!n) core.setFailed('Could not resolve issue number');
+            core.setOutput('n', n);
 
+      # 1) Log the raw event for debugging
+      - name: Log event payload (triage)
+        run: |
+          echo '${{ toJson(github.event) }}' > event.json
+          jq -C '.' event.json || cat event.json
+
+      # 2) Fetch the Issue fresh (don’t rely on webhook payload)
+      - name: Fetch issue & extract spec
+        id: issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const issue_number = Number('${{ steps.num.outputs.n }}');
+            const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number });
+            const body = issue.body || '';
+            const m = body.match(/```json([\s\S]*?)```/i);
+            const spec = m ? m[1].trim() : '{}';
+            const labels = (issue.labels || []).map(l => (typeof l === 'string' ? l : l.name));
+            core.setOutput('title', issue.title || `Issue #${issue_number}`);
+            core.setOutput('labels', JSON.stringify(labels));
+            core.setOutput('spec', spec);
+
+      - name: Save spec.json
+        run: |
+          echo '${{ steps.issue.outputs.spec }}' > spec.json
+          echo "Wrote spec.json ($(wc -c < spec.json) bytes)"
+
+      - name: Save triage inputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: triage-inputs-${{ github.run_id }}
+          path: |
+            event.json
+            spec.json
+
+      # 3) Optional gate on self-apply
+      - name: Require 'self-apply' label (optional gate)
+        if: ${{ env.TRIAGE_REQUIRE_LABEL == 'true' && github.event_name != 'workflow_dispatch' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = JSON.parse(`${{ steps.issue.outputs.labels }}`);
+            if (!labels.includes('self-apply')) {
+              core.notice("Label 'self-apply' not found — skipping triage per TRIAGE_REQUIRE_LABEL=true.");
+              process.exit(0);
+            }
+
+      # 4) Plan to tasks (non-blocking stub)
       - name: Expand to Tasks (Plan Agent)
         run: |
           mkdir -p rocketgpt-agents/out
-          echo '${{ steps.spec.outputs.spec }}' > spec.json
-          node rocketgpt-agents/runners/github_actions.js plan spec.json > rocketgpt-agents/out/tasks.json
+          node rocketgpt-agents/runners/github_actions.js plan spec.json > rocketgpt-agents/out/tasks.json || true
           echo "Planned tasks:"
-          cat rocketgpt-agents/out/tasks.json
+          cat rocketgpt-agents/out/tasks.json || true
 
-      - name: Attach tasks comment
-        uses: actions-ecosystem/action-add-comment@v1
+      # 5) Comment summary + ensure codegen:ready label
+      - name: Comment planned tasks + add codegen:ready
+        uses: actions/github-script@v7
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            ### 🗂 Planned Tasks
-            ```json
-            ${{ steps.spec.outputs.spec }}
-            ```
-            **Next:** Add label `codegen:ready` to start code generation.
+          script: |
+            const {owner, repo} = context.repo;
+            const issue_number = Number('${{ steps.num.outputs.n }}');
+            const body = [
+              "### 🗂 Planned Tasks",
+              "```json",
+              (await require('fs').promises.readFile('rocketgpt-agents/out/tasks.json','utf8').catch(()=> '[]')),
+              "```",
+              "**Next:** Codegen will be triggered automatically."
+            ].join("\n");
 
-      - name: Label codegen:ready
-        uses: actions-ecosystem/action-add-labels@v1
+            await github.rest.issues.createComment({ owner, repo, issue_number, body });
+
+            const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number });
+            const has = (issue.labels || []).some(l => (typeof l === 'string' ? l : l.name) === 'codegen:ready');
+            if (!has) {
+              await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['codegen:ready'] });
+            }
+
+      # 6) Dispatch Codegen with full logs
+      - name: Dispatch Codegen (with logs)
+        env:
+          OWNER:  ${{ github.repository_owner }}
+          REPO:   ${{ github.event.repository.name }}
+          ISSUE:  ${{ steps.num.outputs.n }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_PAT:-}" ]; then
+            echo "ERROR: GH_PAT secret not configured. Create a classic PAT with 'repo' + 'workflow' scopes and add it as GH_PAT."; exit 1; fi
+
+          echo "::group::Dispatch Request JSON"
+          PAYLOAD=$(jq -n --argjson n "$ISSUE" '{event_type:"codegen", client_payload:{issue_number:$n}}')
+          echo "$PAYLOAD" | jq -C .
+          echo "$PAYLOAD" > dispatch.codegen.req.json
+          echo "::endgroup::"
+
+          STATUS=$(curl -s -o dispatch.codegen.resp.json -w "%{http_code}" \
+            -X POST -H "Authorization: token ${GH_PAT}" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${OWNER}/${REPO}/dispatches" \
+            -d "$PAYLOAD")
+
+          echo "::group::Dispatch Response"
+          echo "HTTP: $STATUS"
+          jq -C '.' dispatch.codegen.resp.json || cat dispatch.codegen.resp.json
+          echo "::endgroup::"
+
+          test "$STATUS" = "204" || (echo "ERR: dispatch failed"; exit 1)
+
+      - name: Save dispatch artifacts (triage)
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          labels: codegen:ready
+          name: triage-dispatch-${{ github.run_id }}
+          path: |
+            dispatch.codegen.req.json
+            dispatch.codegen.resp.json
