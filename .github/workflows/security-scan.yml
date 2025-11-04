@@ -1,11 +1,14 @@
 ﻿name: Security Scan (deps + secrets)
+
 on:
   pull_request:
   push:
     branches: [main, develop]
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   deps:
     name: npm audit
@@ -24,8 +27,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Write gitleaks config
+        run: |
+          cat > .gitleaks.toml <<'EOF'
+          title = "RocketGPT Baseline"
+
+          [allowlist]
+          description = "Allow common placeholders and example tokens; keep real keys failing."
+          regexes = [
+            '''(?i)(example|sample|dummy|test|placeholder)[-_]?(key|token|secret)''',
+            '''(?i)(OPENAI_API_KEY|CLAUDE_API_KEY|GITHUB_TOKEN)\s*(?:#.*)?$''',
+            '''(?i)(OPENAI_API_KEY|CLAUDE_API_KEY|GITHUB_TOKEN)\s*[:=]\s*["']?(example|sample|dummy|test|placeholder|xxxx?)["']?''',
+          ]
+          paths = [
+            '''^docs/''',
+            '''^\.github/ISSUE_TEMPLATE/''',
+          ]
+          EOF
+
       - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITLEAKS_LICENSE: ""
         with:
-          args: detect --no-git -v --redact
+          args: detect --config=.gitleaks.toml --no-git --redact
