@@ -1,12 +1,9 @@
-version: 2
+﻿version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/rocketgpt_v3_full/webapp/next"
-    schedule: { interval: "daily" }
-    open-pull-requests-limit: 5
-    labels: ["dependencies"]
-  - package-ecosystem: "pip"
-    directory: "/rocketgpt_v3_full/apps/core-api"
+    directory: "/"
     schedule: { interval: "weekly" }
-    open-pull-requests-limit: 3
-    labels: ["dependencies"]
+    open-pull-requests-limit: 5
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule: { interval: "weekly" }

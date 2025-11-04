@@ -1,5 +1,3 @@
-# Require at least one approval on PRs touching these paths
-/LicenseManager.Admin/*  @proteaNirav
-/rocketgpt-agents/*      @proteaNirav
-/rocketgpt-prompts/*     @proteaNirav
-
+﻿* @proteaNirav @rocketgpt-core
+.github/** @proteaNirav @rocketgpt-core
+.rocket/** @proteaNirav @rocketgpt-core

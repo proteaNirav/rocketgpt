@@ -1,0 +1,9 @@
+﻿ai:generated:
+  - changed-files:
+      - any-glob-to-any-file: ["**/*"]
+security:check:
+  - changed-files:
+      - any-glob-to-any-file: [".github/workflows/**", "SECURITY.md"]
+docs:update:
+  - changed-files:
+      - any-glob-to-any-file: ["**/*.md", "docs/**"]
