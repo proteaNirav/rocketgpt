@@ -1,0 +1,91 @@
+﻿name: RocketGPT Ship Issue
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to ship"
+        required: true
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+jobs:
+  ship:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse input
+        id: inp
+        run: echo "ISSUE=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
+
+      - name: Label issue to trigger codegen
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const iss = parseInt('${{ steps.inp.outputs.ISSUE }}', 10);
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: iss,
+              labels: ['codegen:ready']
+            });
+
+      - name: Wait for PR created by codegen
+        id: wait
+        uses: actions/github-script@v7
+        with:
+          script: |
+          const iss = parseInt(`${{ steps.inp.outputs.ISSUE }}`, 10);
+          const owner = context.repo.owner;
+          const repo  = context.repo.repo;
+
+          async function findPR() {
+            // 1) Prefer PRs from github-actions[bot] that mention #<iss> in body
+            const prs = await github.rest.pulls.list({ owner, repo, state: "open", per_page: 50 });
+            const byBody = prs.data.find(p => (p.user?.login === "github-actions[bot]") && (p.body ?? "").includes(`#${iss}`));
+            if (byBody) return byBody;
+
+            // 2) Any open PR that mentions #<iss> in body
+            const anyBody = prs.data.find(p => (p.body ?? "").includes(`#${iss}`));
+            if (anyBody) return anyBody;
+
+            // 3) Fallback to title search (what we used to do)
+            const titled = prs.data.find(p => (p.title ?? "").includes(`${iss}`));
+            if (titled) return titled;
+
+            return null;
+          }
+
+          let pr = null;
+          for (let i = 0; i < 30; i++) {
+            pr = await findPR();
+            if (pr) break;
+            await new Promise(r => setTimeout(r, 10_000));
+          }
+
+          if (!pr) core.setFailed("No PR created for this issue yet.");
+          core.setOutput("pr_number", String(pr.number));
+
+
+      - name: Add auto-merge label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const n = parseInt('${{ steps.wait.outputs.pr_number }}', 10);
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: n,
+              labels: ['ai:auto-merge']
+            });
+
+      - name: Enable auto-merge (squash)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const n = parseInt('${{ steps.wait.outputs.pr_number }}', 10);
+            const prQ = await github.graphql(
+              `query($o:String!,$n:String!,$num:Int!){repository(owner:$o,name:$n){pullRequest(number:$num){id}}}`,
+              { o: context.repo.owner, n: context.repo.repo, num: n }
+            );
+            await github.graphql(
+              `mutation($pr:ID!){ enablePullRequestAutoMerge(input:{ pullRequestId:$pr, mergeMethod:SQUASH }){ clientMutationId } }`,
+              { pr: prQ.repository.pullRequest.id }
+            );
+
