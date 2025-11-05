@@ -1,0 +1,67 @@
+﻿name: Policy Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+jobs:
+  check-policy:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Evaluate policy
+        id: gate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const yaml = require('js-yaml');
+            const {owner, repo} = context.repo;
+
+            const policyText = fs.readFileSync('.github/auto-ops.yml', 'utf8');
+            const policy = yaml.load(policyText);
+
+            const pr = context.payload.pull_request;
+            const headRef = pr.head.ref;
+            const labels = pr.labels.map(l => l.name);
+
+            const denyPaths = policy.deny_paths || [];
+            const allowWorkflows = policy.allow_workflows || [];
+            const branchAllow = (policy.branch_allowlist || []).map(p => new RegExp(p));
+
+            const branchOk = branchAllow.some(rx => rx.test(headRef));
+            if (!branchOk) {
+              core.setFailed(`Branch '${headRef}' not in allowlist.`);
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner, repo, pull_number: pr.number, per_page: 100
+            });
+
+            const denyHit = files.some(f => denyPaths.some(p => new RegExp(p).test(f.filename)));
+            if (denyHit && !labels.includes('safe:override')) {
+              core.setFailed(`PR touches denied paths without 'safe:override' label.`);
+            }
+
+            const wfChanges = files.filter(f => f.filename.startsWith('.github/workflows/'));
+            const badWf = wfChanges.some(f => !allowWorkflows.some(p => new RegExp(p).test(f.filename.split('/').slice(-1)[0])));
+            if (wfChanges.length && badWf && !labels.includes('safe:workflow-edit')) {
+              core.setFailed('Workflow edits must be allowlisted or labeled safe:workflow-edit.');
+            }
+
+      - name: Comment on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: "⛔ Policy Gate blocked this PR. See failed job logs for details."
+            });

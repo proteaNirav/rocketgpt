@@ -1,0 +1,16 @@
+﻿# Safety Locks for auto ops
+allowed_labels:
+  - safe:auto-pr
+  - safe:auto-merge
+branch_allowlist:
+  - '^ai/.*'
+  - '^v4-core-ai$'
+deny_paths:
+  - '^supabase/migrations/.*'
+  - '^infra/terraform/.*'
+  - '^.github/workflows/.*'   # gate will allowlist below
+allow_workflows:
+  - '^self_improve.yml$'
+  - '^watchdog.yml$'
+  - '^policy_gate.yml$'
+  - '^v4_ship_placeholder.yml$'
