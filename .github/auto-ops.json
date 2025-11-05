@@ -1,0 +1,14 @@
+﻿{
+  "allowed_labels": ["safe:auto-pr", "safe:auto-merge", "safe:workflow-edit", "safe:override"],
+  "branch_allowlist": ["^ai/.*", "^v4-core-ai$"],
+  "deny_paths": [
+    "^supabase/migrations/.*",
+    "^infra/terraform/.*"
+  ],
+  "allow_workflows": [
+    "^self_improve.yml$",
+    "^watchdog.yml$",
+    "^policy_gate.yml$",
+    "^v4_ship_placeholder.yml$"
+  ]
+}

@@ -1,48 +1,51 @@
-Param(
+# install_self_improve.ps1
+# RocketGPT v4: Self-Improve + Watchdog + Safety Locks (branch: v4-core-ai)
+
+[CmdletBinding()]
+param(
   [int]$Issue = 110,
   [string]$Branch = "v4-core-ai"
 )
 
-Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+$PSNativeCommandUseErrorActionPreference = $false  # (ignored on Windows PowerShell 5.1, harmless on PS7+)
+
 
 Write-Host "== AUTH ==" -ForegroundColor Cyan
 gh auth status | Out-Host
 
-# Detect repo
-$Repo = gh repo view --json nameWithOwner -q .nameWithOwner
-if (-not $Repo) { throw "Not in a GitHub repo directory. cd into your repo first." }
-
 Write-Host "`n== REPO ==" -ForegroundColor Cyan
+$Repo = gh repo view --json nameWithOwner -q .nameWithOwner
+if (-not $Repo) { throw "Not in a GitHub repo folder. cd into the repo first." }
 Write-Host "Using repo: $Repo"
 
-# == CHECKOUT BRANCH ==
 Write-Host "`n== CHECKOUT BRANCH == $Branch" -ForegroundColor Cyan
-git fetch origin --prune 2>$null | Out-Null
+git fetch origin --prune | Out-Null
 
-# Try to switch to local branch, else create from remote or main
-if ((git rev-parse --verify "refs/heads/$Branch" 2>$null) -ne $null) {
-  git switch $Branch 2>$null | Out-Null
-  if ((git rev-parse --verify "refs/remotes/origin/$Branch" 2>$null) -ne $null) {
-    git pull --ff-only origin $Branch | Out-Null
+# What branch are we on?
+$current = (git symbolic-ref --short -q HEAD).Trim()
+
+if ($current -ne $Branch) {
+  if (git show-ref --verify --quiet "refs/remotes/origin/$Branch") {
+    # Remote branch exists – track it
+    git switch -c $Branch --track "origin/$Branch" 1>$null 2>$null
   } else {
-    git pull --ff-only origin main | Out-Null
+    # Create from main
+    git switch -c $Branch --track "origin/main" 1>$null 2>$null
   }
 } else {
-  if ((git rev-parse --verify "refs/remotes/origin/$Branch" 2>$null) -ne $null) {
-    git switch -c $Branch --track "origin/$Branch" | Out-Null
-  } else {
-    git switch -c $Branch --track origin/main | Out-Null
-  }
+  Write-Host "Already on $Branch" -ForegroundColor DarkGray
 }
 
-# ---------- FILE CONTENTS (single-quoted here-strings to avoid interpolation) ----------
 
+# --- File paths ---
 $SelfImprovePath = ".github/workflows/self_improve.yml"
 $WatchdogPath    = ".github/workflows/watchdog.yml"
-$PolicyPath      = ".github/auto-ops.yml"
+$PolicyPath      = ".github/auto-ops.json"
 $PolicyGatePath  = ".github/workflows/policy_gate.yml"
 
+# --- File contents (single-quoted here-strings to preserve ${{ }} ) ---
 $SelfImproveYml = @'
 name: Self Improve
 
@@ -53,7 +56,7 @@ on:
         description: Why this run
         required: false
   schedule:
-    - cron: "*/15 * * * *"   # every 15 minutes
+    - cron: "*/15 * * * *"
 
 jobs:
   plan-and-nudge:
@@ -65,17 +68,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Read safety policy
-        id: policy
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const path = '.github/auto-ops.yml';
-            core.info('Reading policy: ' + path);
-            const yml = fs.existsSync(path) ? fs.readFileSync(path, 'utf8') : '';
-            return yml;
 
       - name: Find stalled issues (label=codegen:ready, no open PR)
         id: stalled
@@ -96,27 +88,26 @@ jobs:
             }
             core.setOutput('issue_list', JSON.stringify(candidates));
 
-      - name: Nudge codegen / ship for each stalled issue
+      - name: Nudge AI Codegen for stalled issues
         if: ${{ steps.stalled.outputs.issue_list != '' && steps.stalled.outputs.issue_list != '[]' }}
         uses: actions/github-script@v7
         with:
           script: |
-            const issues = JSON.parse(core.getInput('issue_list', {required:true}));
+            const issues = JSON.parse(`${{ steps.stalled.outputs.issue_list }}`);
             for (const iss of issues) {
-              core.info(`Dispatching AI Codegen for issue #${iss}`);
+              core.info(`Dispatching AI Codegen for #${iss}`);
               await github.rest.actions.createWorkflowDispatch({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 workflow_id: "codegen.yml",
                 ref: "main",
-                inputs: { issue_number: iss.toString() }
+                inputs: { issue_number: String(iss) }
               }).catch(e => core.warning(e.message));
-
-              core.info(`Re-adding label codegen:ready to #${iss}`);
+              // Nudge label to re-trigger label-based automations
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: iss,
+                issue_number: Number(iss),
                 labels: ["codegen:ready"]
               }).catch(e => core.warning(e.message));
             }
@@ -138,51 +129,49 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-      - name: Gate by safety policy (dry check)
+      - name: Observe
         uses: actions/github-script@v7
         with:
           script: |
-            core.info('Watchdog observing run: ' + context.workflow);
+            core.info('Observed run: ' + context.payload.workflow_run.name);
             core.info('Conclusion: ' + context.payload.workflow_run.conclusion);
 
-      - name: On failure — auto redispatch limited
-        if: ${{ github.event.workflow_run.conclusion == 'failure' || github.event.workflow_run.conclusion == 'cancelled' || github.event.workflow_run.conclusion == 'timed_out' }}
+      - name: On failure — minimal redispatch
+        if: ${{ contains(fromJson('["failure","cancelled","timed_out"]'), github.event.workflow_run.conclusion) }}
         uses: actions/github-script@v7
         with:
           script: |
-            const run = context.payload.workflow_run;
-            const wfName = run.name;
-            core.info(`Workflow '${wfName}' failed; scheduling a single redispatch of AI Codegen as a nudge.`);
+            const defaultIssue = process.env.DEFAULT_ISSUE || "110";
             try {
               await github.rest.actions.createWorkflowDispatch({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 workflow_id: "codegen.yml",
                 ref: "main",
-                inputs: { issue_number: "110" }
+                inputs: { issue_number: String(defaultIssue) }
               });
+              core.info('Redispatched AI Codegen for #' + defaultIssue);
             } catch (e) {
               core.warning('Redispatch failed: ' + e.message);
             }
 '@
 
-$PolicyYml = @'
-# Safety Locks for auto ops
-allowed_labels:
-  - safe:auto-pr
-  - safe:auto-merge
-branch_allowlist:
-  - '^ai/.*'
-  - '^v4-core-ai$'
-deny_paths:
-  - '^supabase/migrations/.*'
-  - '^infra/terraform/.*'
-  - '^.github/workflows/.*'   # except the ones we are adding; gate will allowlisted below
-allow_workflows:
-  - '^self_improve.yml$'
-  - '^watchdog.yml$'
-  - '^policy_gate.yml$'
-  - '^v4_ship_placeholder.yml$'
+# Using JSON policy so we can parse without extra deps
+$PolicyJson = @'
+{
+  "allowed_labels": ["safe:auto-pr", "safe:auto-merge", "safe:workflow-edit", "safe:override"],
+  "branch_allowlist": ["^ai/.*", "^v4-core-ai$"],
+  "deny_paths": [
+    "^supabase/migrations/.*",
+    "^infra/terraform/.*"
+  ],
+  "allow_workflows": [
+    "^self_improve.yml$",
+    "^watchdog.yml$",
+    "^policy_gate.yml$",
+    "^v4_ship_placeholder.yml$"
+  ]
+}
 '@
 
 $PolicyGateYml = @'
@@ -208,25 +197,20 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const yaml = require('js-yaml');
+            const policy = JSON.parse(fs.readFileSync('.github/auto-ops.json','utf8'));
             const {owner, repo} = context.repo;
-
-            const policyText = fs.readFileSync('.github/auto-ops.yml', 'utf8');
-            const policy = yaml.load(policyText);
-
             const pr = context.payload.pull_request;
             const headRef = pr.head.ref;
             const labels = pr.labels.map(l => l.name);
-
             const denyPaths = policy.deny_paths || [];
             const allowWorkflows = policy.allow_workflows || [];
             const branchAllow = (policy.branch_allowlist || []).map(p => new RegExp(p));
 
+            // Branch allow
             const branchOk = branchAllow.some(rx => rx.test(headRef));
-            if (!branchOk) {
-              core.setFailed(`Branch '${headRef}' not in allowlist.`);
-            }
+            if (!branchOk) core.setFailed(`Branch '${headRef}' not in allowlist.`);
 
+            // Files changed
             const files = await github.paginate(github.rest.pulls.listFiles, {
               owner, repo, pull_number: pr.number, per_page: 100
             });
@@ -236,8 +220,9 @@ jobs:
               core.setFailed(`PR touches denied paths without 'safe:override' label.`);
             }
 
+            // Workflow file allowlist (if workflows changed)
             const wfChanges = files.filter(f => f.filename.startsWith('.github/workflows/'));
-            const badWf = wfChanges.some(f => !allowWorkflows.some(p => new RegExp(p).test(f.filename.split('/').slice(-1)[0])));
+            const badWf = wfChanges.some(f => !allowWorkflows.some(p => new RegExp(p).test(f.filename.split('/').pop())));
             if (wfChanges.length && badWf && !labels.includes('safe:workflow-edit')) {
               core.setFailed('Workflow edits must be allowlisted or labeled safe:workflow-edit.');
             }
@@ -255,15 +240,14 @@ jobs:
             });
 '@
 
-# ---------- WRITE FILES ----------
-$map = @{
-  $SelfImprovePath = $SelfImproveYml
-  $WatchdogPath    = $WatchdogYml
-  $PolicyPath      = $PolicyYml
-  $PolicyGatePath  = $PolicyGateYml
-}
+# --- Write files ---
+$files = @{}
+$files[$SelfImprovePath] = $SelfImproveYml
+$files[$WatchdogPath]    = $WatchdogYml
+$files[$PolicyPath]      = $PolicyJson
+$files[$PolicyGatePath]  = $PolicyGateYml
 
-foreach ($kv in $map.GetEnumerator()) {
+foreach ($kv in $files.GetEnumerator()) {
   $path = $kv.Key
   $content = $kv.Value
   $dir = Split-Path $path -Parent
@@ -272,28 +256,28 @@ foreach ($kv in $map.GetEnumerator()) {
   Write-Host "Wrote $path"
 }
 
-# ---------- COMMIT & PUSH ----------
+# --- Commit & push ---
 git add -A
-git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "v4: add self_improve + watchdog + policy gate (safety locks)" 2>$null | Out-Null
+git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" `
+  commit -m "v4: add self_improve + watchdog + policy gate (safety locks)" 2>$null | Out-Null
+
 git push -u origin $Branch
 
-# ---------- ENSURE PR EXISTS & AUTO-MERGE ----------
-$prNum = gh pr list --state open --json number,headRefName -q ".[] | select(.headRefName==`"$Branch`") | .number" | Select-Object -First 1
-if (-not $prNum) {
-  $prUrl = gh pr create --fill --head $Branch --base main
-  Write-Host "`nPR: $prUrl"
-  $prNum = gh pr list --state open --json number,headRefName -q ".[] | select(.headRefName==`"$Branch`") | .number" | Select-Object -First 1
-} else {
-  Write-Host "`nPR already open: #$prNum"
-}
+# --- Make sure PR #125 will close #$Issue on merge ---
+try {
+  $body = gh pr view 125 --json body -q .
+  if ($body -notmatch "Closes #$Issue") {
+    gh pr edit 125 --body "$body`r`n`r`nCloses #$Issue" | Out-Null
+  }
+} catch {}
 
-# Add closure keyword (for driving issue)
-$body = gh pr view $prNum --json body -q .
-if ($body -notmatch "Closes #$Issue") {
-  gh pr edit $prNum --body "$body`r`n`r`nCloses #$Issue" | Out-Null
-}
+# --- Enable auto-merge (squash) ---
+try { gh pr merge 125 --auto --squash | Out-Null } catch {}
 
-# Enable auto-merge (squash)
-gh pr merge $prNum --auto --squash | Out-Null
+Write-Host "`n== Smoke run on branch (note: default-branch runs won't see new workflows yet) ==" -ForegroundColor Cyan
+# Run workflows on THIS branch (not default) so they exist
+gh workflow run self_improve.yml --ref $Branch -f reason="smoke run from $Branch"
+Start-Sleep -Seconds 3
+gh run list --workflow "Self Improve" --limit 1 | Out-Host
 
-Write-Host "`nDONE: self-improve, watchdog and safety locks staged on $Branch (PR #$prNum)." -ForegroundColor Green
+Write-Host "`nAll set. Self-Improve + Watchdog + Policy Gate are on '$Branch'.`n" -ForegroundColor Green
