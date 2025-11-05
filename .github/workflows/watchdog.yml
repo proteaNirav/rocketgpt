@@ -1,0 +1,40 @@
+﻿name: Watchdog
+
+on:
+  workflow_run:
+    workflows: ["AI Codegen", "RocketGPT Ship Issue", "v4_ship_placeholder"]
+    types: [completed]
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Observe
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.info('Observed run: ' + context.payload.workflow_run.name);
+            core.info('Conclusion: ' + context.payload.workflow_run.conclusion);
+
+      - name: On failure â€” minimal redispatch
+        if: ${{ contains(fromJson('["failure","cancelled","timed_out"]'), github.event.workflow_run.conclusion) }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const defaultIssue = process.env.DEFAULT_ISSUE || "110";
+            try {
+              await github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: "codegen.yml",
+                ref: "main",
+                inputs: { issue_number: String(defaultIssue) }
+              });
+              core.info('Redispatched AI Codegen for #' + defaultIssue);
+            } catch (e) {
+              core.warning('Redispatch failed: ' + e.message);
+            }
