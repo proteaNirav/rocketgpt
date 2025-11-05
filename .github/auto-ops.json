@@ -9,6 +9,9 @@
     "^self_improve.yml$",
     "^watchdog.yml$",
     "^policy_gate.yml$",
-    "^v4_ship_placeholder.yml$"
+    "^v4_ship_placeholder.yml$",
+     "^self_heal.yml$",
+    "^ai-feedback.yml$",
+    "^ai-review.yml$"
   ]
 }
