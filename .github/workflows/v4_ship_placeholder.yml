@@ -1,0 +1,10 @@
+﻿name: v4 Ship (placeholder)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Define ship logic for v4 here.'
