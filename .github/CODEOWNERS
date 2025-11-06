@@ -1,5 +1,13 @@
-# Require at least one approval on PRs touching these paths
-/LicenseManager.Admin/*  @proteaNirav
-/rocketgpt-agents/*      @proteaNirav
-/rocketgpt-prompts/*     @proteaNirav
+﻿# CODEOWNERS — RocketGPT (critical paths)
+# Only @proteaNirav can approve changes to these areas.
 
+# GitHub Actions & security controls
+/.github/workflows/**   @proteaNirav
+/.github/SECURITY.md    @proteaNirav
+/.github/CODEOWNERS     @proteaNirav
+
+# Self-healing / safety rules & diagnostics
+/.rocketgpt/**          @proteaNirav
+
+# Database & edge functions
+/supabase/**            @proteaNirav
