@@ -1,0 +1,11 @@
+name: TEMP Bad Workflow
+on:
+  push:
+    branches: [ temp/test-bad ]
+
+jobs:
+  badjob:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout        # intentionally unpinned
+      - run: echo ""Trigger Policy Gate + Auto-Fix""
