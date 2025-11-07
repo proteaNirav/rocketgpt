@@ -1,0 +1,30 @@
+{
+    "version":  1,
+    "allowed_ops":  [
+                        "workflow-edit",
+                        "auto-merge"
+                    ],
+    "paths":  {
+                  "protected":  [
+                                    ".github/workflows/**",
+                                    "supabase/**"
+                                ]
+              },
+    "labels":  {
+                   "required_for_workflow_edit":  [
+                                                      "safe:workflow-edit"
+                                                  ],
+                   "required_for_merge":  [
+                                              "safe:auto-merge"
+                                          ]
+               },
+    "ai_guard":  {
+                     "require_test_plan":  true,
+                     "block_if_secrets_changed":  true,
+                     "block_if_files_outside_allowlist":  true,
+                     "require_change_summary":  true
+                 },
+    "audit":  {
+                  "log_file":  ".rocketgpt/safety/audit_log.json"
+              }
+}
