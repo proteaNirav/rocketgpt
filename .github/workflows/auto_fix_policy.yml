@@ -1,37 +1,105 @@
-name: Self-Improve
+﻿name: Auto Fix Policy
 
 on:
-  issues:
-    types: [labeled]
   workflow_dispatch:
     inputs:
-      reason:
-        description: Why run self-improve?
+      pr_number:
+        description: Optional PR number to push fixes to (branch of that PR)
         required: false
-        default: bootstrap
+  repository_dispatch:
+    types: [auto_fix_policy_requested]
 
 permissions:
   contents: write
   pull-requests: write
-  issues: write
 
 jobs:
-  route:
-    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'self-improve') }}
+  fix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout (fetch full history for branch ops)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Decide next action (pwsh)
-        id: plan
+      - name: Setup Node (for YAML tooling)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install YAML tools
+        run: |
+          npm i -g yaml
+
+      - name: Identify target branch (pwsh)
+        id: target
         shell: pwsh
         run: |
-          # For now, always trigger auto-fix policy workflow via workflow_run API comment
-          Write-Host "plan=auto_fix_policy" >> $env:GITHUB_OUTPUT
+          $pr = "${{ github.event.inputs.pr_number }}"
+          if (-not [string]::IsNullOrWhiteSpace($pr)) {
+            echo "branch=$(gh pr view $pr --json headRefName -q .headRefName)" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "branch=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
 
-      - name: Trigger auto_fix_policy via repository_dispatch
-        if: steps.plan.outputs.plan == 'auto_fix_policy'
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          event-type: auto_fix_policy_requested
-          client-payload: '{"source":"self_improve"}'
+      - name: Ensure workflow_dispatch & pin actions (pwsh)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $files = Get-ChildItem ".github/workflows" -Filter "*.yml" -Recurse
+          $changed = $false
+
+          foreach ($f in $files) {
+            $raw = Get-Content $f.FullName -Raw
+
+            # 1) Add workflow_dispatch under 'on:' if missing
+            if ($raw -match "(?ms)^\s*on:\s*(?<block>(\n|\r\n).+?)$") {
+              if ($raw -notmatch "(?ms)^\s*on:\s*(?:\n|\r\n).*workflow_dispatch:") {
+                $raw = $raw -replace "(?ms)^\s*on:\s*(\n|\r\n)", "on:`n  workflow_dispatch:`n"
+                Write-Host "::notice file=$($f.FullName)::Added 'workflow_dispatch:'"
+                $changed = $true
+              }
+            } else {
+              # no 'on:' at all — add a safe one
+              $raw = "on:`n  workflow_dispatch:`n`n" + $raw
+              Write-Host "::notice file=$($f.FullName)::Inserted 'on:' with 'workflow_dispatch:'"
+              $changed = $true
+            }
+
+            # 2) Pin unpinned uses: (quick heuristic)
+            $raw2 = ($raw -split "`n") | ForEach-Object {
+              if ($_ -match "^\s*uses:\s+([^@\s]+)\s*$") {
+                $_ + "@v4"
+              } else { $_ }
+            } | Out-String
+
+            if ($raw2 -ne $raw) {
+              $raw = $raw2
+              Write-Host "::notice file=$($f.FullName)::Pinned unpinned 'uses:' to '@v4' (heuristic)"
+              $changed = $true
+            }
+
+            if ($changed) {
+              Set-Content -Path $f.FullName -Value $raw -NoNewline
+            }
+          }
+
+          if ($changed) {
+            Write-Host "CHANGES_MADE=1" >> $env:GITHUB_ENV
+
+      - name: Commit & push
+        if: env.CHANGES_MADE == '1'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "${{ steps.target.outputs.branch }}"
+          git add .github/workflows/*.yml
+          git commit -m "chore(policy): auto-fix workflow_dispatch and pin actions"
+          git push origin "${{ steps.target.outputs.branch }}"
+
+      - name: Summary
+        run: |
+          if [ "${CHANGES_MADE}" = "1" ]; then
+            echo "Auto-fixes applied ✅"
+          else:
+            echo "No changes required ✅"
+          fi
