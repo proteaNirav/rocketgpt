@@ -1,49 +1,37 @@
-﻿name: Auto Fix Policy and Merge
+name: Self-Improve
 
 on:
+  issues:
+    types: [labeled]
   workflow_dispatch:
+    inputs:
+      reason:
+        description: Why run self-improve?
+        required: false
+        default: bootstrap
 
 permissions:
   contents: write
   pull-requests: write
   issues: write
-  actions: write
 
 jobs:
-  fix:
+  route:
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'self-improve') }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Ensure labels and apply + retrigger + merge + smoke
-        env:
-          GH_TOKEN: ${{ secrets.ROCKET_BOT_TOKEN }}
+      - name: Decide next action (pwsh)
+        id: plan
+        shell: pwsh
         run: |
-          set -e
-          echo "ðŸ”§ Ensuring safety labels exist..."
-          gh label create "safe:workflow-edit" -c "#0E8A16" -d "Allow editing workflow files in PRs" || true
-          gh label create "safe:auto-merge" -c "#1D76DB" -d "Allow auto-merge when checks pass" || true
-          gh label create "safe:override" -c "#B60205" -d "Override policy gate for denied paths" || true
+          # For now, always trigger auto-fix policy workflow via workflow_run API comment
+          Write-Host "plan=auto_fix_policy" >> $env:GITHUB_OUTPUT
 
-          PR=${{ github.event.inputs.pr_number || '125' }}
-          echo "ðŸ·ï¸  Applying labels to PR #$PR"
-          gh pr edit "$PR" --add-label "safe:workflow-edit" --add-label "safe:auto-merge" || true
-
-          echo "ðŸ” Re-triggering CI by pushing empty commit on branch of PR"
-          BR=$(gh pr view "$PR" --json headRefName -q .headRefName)
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin "$BR"
-          git checkout "$BR"
-          git commit --allow-empty -m "chore: retrigger checks (auto-fix)" || true
-          git push origin "$BR" || true
-
-          echo "â³ Waiting for checks to (re)run..."
-          sleep 30
-
-          echo "ðŸ§© Enable auto-merge (squash) if not set"
-          gh pr merge "$PR" --auto --squash || true
-
-          echo "ðŸš€ Try to run the self_improve workflow (if on default branch)"
-          gh workflow run self_improve.yml -f reason="auto_fix_policy smoke" || true
+      - name: Trigger auto_fix_policy via repository_dispatch
+        if: steps.plan.outputs.plan == 'auto_fix_policy'
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: auto_fix_policy_requested
+          client-payload: '{"source":"self_improve"}'
