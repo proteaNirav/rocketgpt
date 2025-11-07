@@ -1,0 +1,28 @@
+﻿name: Self-Heal Hooks
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/tools/**"
+      - ".github/workflows/self_heal_hooks.yml"
+
+jobs:
+  hello:
+    name: Probe self-heal tooling
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show tools readme
+        run: |
+          if (Test-Path ".github/tools/README.md") {
+            Get-Content ".github/tools/README.md" | Select-Object -First 20
+          } else {
+            Write-Host "No tools readme found (scripts will arrive in next PRs)."
+          }
+
+      - name: Summarize
+        shell: pwsh
+        run: |
+          Write-Host "✅ Self-Heal wiring workflow present and guarded by Policy Gate."
