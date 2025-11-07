@@ -1,0 +1,42 @@
+{
+    "workingDir":  "D:/Projects/RocketGPT/rocketgpt",
+    "git":  {
+                "protectedBranches":  [
+                                          "main",
+                                          "staging",
+                                          "dev"
+                                      ],
+                "defaultBase":  "main",
+                "botName":  "rgpt-bot",
+                "botEmail":  "rgpt-bot@users.noreply.github.com"
+            },
+    "policy":  {
+                   "allowedCommands":  [
+                                           "pwsh ./.github/tools/toggle-protection.ps1",
+                                           "gh pr checks",
+                                           "gh pr merge",
+                                           "npm ci",
+                                           "npm run lint",
+                                           "npm run typecheck",
+                                           "npm test -- --ci",
+                                           "\"C:\\Program Files\\PowerShell\\7\\pwsh.exe\" -File ./.github/tools/toggle-protection.ps1",
+                                           "\"C:\\Program Files\\PowerShell\\7\\pwsh.exe\" -File ./.github/tools/rgpt-touch-sandbox.ps1"
+                                       ],
+                   "maxRuntimeSeconds":  600,
+                   "allowedPaths":  [
+                                        ".",
+                                        ".github",
+                                        "app",
+                                        "components",
+                                        "scripts",
+                                        "supabase"
+                                    ]
+               },
+    "pr":  {
+               "autoLabels":  [
+                                  "safe:auto-merge"
+                              ],
+               "targetBase":  "main",
+               "titlePrefix":  "[RGPT] "
+           }
+}
