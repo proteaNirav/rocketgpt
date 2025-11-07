@@ -22,11 +22,13 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
+@v4
         with:
           node-version: '20'
 
@@ -249,3 +251,4 @@ JS
             } catch(e) {
               core.warning(`Failed to comment: ${e.message}`);
             }
+

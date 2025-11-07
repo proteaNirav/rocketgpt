@@ -1,4 +1,4 @@
-﻿name: Auto Fix Policy
+name: Auto Fix Policy
 
 on:
   workflow_dispatch:
@@ -19,11 +19,13 @@ jobs:
     steps:
       - name: Checkout (fetch full history for branch ops)
         uses: actions/checkout@v4
+@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node (for YAML tooling)
         uses: actions/setup-node@v4
+@v4
         with:
           node-version: '20'
 
@@ -59,7 +61,7 @@ jobs:
                 $changed = $true
               }
             } else {
-              # no 'on:' at all — add a safe one
+              # no 'on:' at all � add a safe one
               $raw = "on:`n  workflow_dispatch:`n`n" + $raw
               Write-Host "::notice file=$($f.FullName)::Inserted 'on:' with 'workflow_dispatch:'"
               $changed = $true
@@ -99,7 +101,8 @@ jobs:
       - name: Summary
         run: |
           if [ "${CHANGES_MADE}" = "1" ]; then
-            echo "Auto-fixes applied ✅"
+            echo "Auto-fixes applied ?"
           else:
-            echo "No changes required ✅"
+            echo "No changes required ?"
           fi
+

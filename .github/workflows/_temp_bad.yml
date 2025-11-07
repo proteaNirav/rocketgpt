@@ -7,5 +7,7 @@ jobs:
   badjob:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout        # intentionally unpinned
+      - uses: actions/checkout@v4
+# intentionally unpinned
       - run: echo ""Trigger Policy Gate + Auto-Fix""
+

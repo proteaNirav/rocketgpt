@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+@v4
 
       - name: Decide next action (pwsh)
         id: plan
@@ -35,3 +36,4 @@ jobs:
         with:
           event-type: auto_fix_policy_requested
           client-payload: '{"source":"self_improve"}'
+

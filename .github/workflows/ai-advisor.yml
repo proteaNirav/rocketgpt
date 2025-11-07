@@ -1,4 +1,4 @@
-﻿name: AI CI-Failure Advisor
+name: AI CI-Failure Advisor
 
 on:
   workflow_run:
@@ -114,7 +114,7 @@ EOF
             const number = parseInt('${{ steps.pr.outputs.number }}', 10);
             const text = fs.readFileSync('advice.md', 'utf8');
             const header = [
-              "### ðŸ› ï¸ CI Failure Advisor",
+              "### 🛠️ CI Failure Advisor",
               "",
               "- Workflow: `" + context.payload.workflow_run.name + "`",
               "- Conclusion: `" + context.payload.workflow_run.conclusion + "`",
@@ -131,6 +131,7 @@ EOF
       - name: Upload artifacts
         if: steps.gate.outputs.allowed == 'true'
         uses: actions/upload-artifact@v4
+@v4
         with:
           name: ai-ci-advisor-artifacts
           path: |
@@ -139,3 +140,4 @@ EOF
             claude.json
             advice.md
           if-no-files-found: ignore
+

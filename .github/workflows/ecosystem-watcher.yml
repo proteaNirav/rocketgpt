@@ -10,6 +10,7 @@ jobs:
       issues: write
     steps:
       - uses: actions/checkout@v4
+@v4
       - name: Fetch feeds and create digest
         run: |
           node - <<'NODE'
@@ -41,3 +42,4 @@ jobs:
           title: "Daily AI Tools Digest"
           content-filepath: "ecosystem-digest.md"
           labels: "research,automation"
+

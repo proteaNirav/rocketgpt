@@ -46,11 +46,13 @@ jobs:
           echo "ISSUE_NO=${ISSUE_NO}"
 
       - uses: actions/checkout@v4
+@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
+@v4
         with:
           node-version: '20'
 
@@ -244,3 +246,4 @@ jobs:
               issue_number,
               body: `✅ Codegen executed.\n\n- Engine: \`${{ steps.engine.outputs.engine }}\`\n- PR: ${pr}`
             });
+

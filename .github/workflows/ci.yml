@@ -13,6 +13,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+@v4
         with:
           fetch-depth: 0
 
@@ -27,6 +28,7 @@ jobs:
       - name: Setup Node 20 (with cache if lockfile exists)
         if: ${{ hashFiles('rocketgpt_v3_full/webapp/next/package-lock.json') != '' }}
         uses: actions/setup-node@v4
+@v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -35,6 +37,7 @@ jobs:
       - name: Setup Node 20 (no cache fallback)
         if: ${{ hashFiles('rocketgpt_v3_full/webapp/next/package-lock.json') == '' }}
         uses: actions/setup-node@v4
+@v4
         with:
           node-version: '20'
 
@@ -66,7 +69,8 @@ jobs:
 
       # --- Core API quick hygiene (Python) ---
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
+@v5
         with:
           python-version: '3.11'
 
@@ -85,6 +89,8 @@ jobs:
 
       - name: Upload QA report
         uses: actions/upload-artifact@v4
+@v4
         with:
           name: qa-report
           path: qa-report.json
+

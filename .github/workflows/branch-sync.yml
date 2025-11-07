@@ -1,4 +1,4 @@
-﻿name: Branch Sync (main to develop)
+name: Branch Sync (main to develop)
 on:
   push:
     branches: [ "main" ]
@@ -22,9 +22,9 @@ jobs:
             const existing = await github.paginate(github.rest.pulls.list, {
               owner, repo, state: "open", base: "develop", per_page: 100
             });
-            const found = existing.find(p => p.title.includes("chore: sync main â†’ develop"));
+            const found = existing.find(p => p.title.includes("chore: sync main → develop"));
             if (found) { core.notice(`Sync PR already open: #${found.number}`); return; }
-            const title = "chore: sync main â†’ develop";
+            const title = "chore: sync main → develop";
             const body  = "Automated sync: bring main-only commits into develop.";
             const { data: pr } = await github.rest.pulls.create({
               owner, repo, title, head: "main", base: "develop", body, maintainer_can_modify: true, draft: false
@@ -43,3 +43,4 @@ jobs:
             } catch (e) {
               core.warning(`Opened PR #${pr.number}, but auto-merge not enabled: ${e.message}`);
             }
+

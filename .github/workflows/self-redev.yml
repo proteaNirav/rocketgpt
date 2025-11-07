@@ -10,9 +10,11 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
+@v4
         with: { fetch-depth: 0 }
 
       - uses: actions/setup-node@v4
+@v4
         with: { node-version: '20' }
 
       - name: Auto-fix UI (eslint/format)
@@ -37,3 +39,4 @@ jobs:
           body: |
             Automated refactor: ESLint/Prettier/ruff. Safe, mechanical changes only.
           labels: chore, automation
+
