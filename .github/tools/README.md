@@ -5,3 +5,7 @@
 - `install_auto_fix_policy.ps1`: sets up auto-fix policy scaffolding.
 
 > Note: No workflows are modified in this PR. Next PR will wire these tools into CI behind Policy Gate.
+# Toggle protection
+.\.github\tools\toggle-protection.ps1 show
+.\.github\tools\toggle-protection.ps1 dev
+.\.github\tools\toggle-protection.ps1 secure -RequiredApprovals 1
