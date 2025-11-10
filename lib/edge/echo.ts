@@ -1,35 +1,27 @@
-﻿import type { NextRequest } from "next/server";
-
-/**
- * Echoes back useful request bits for quick diagnostics:
- * - query: URLSearchParams as a plain object
- * - method: HTTP method
- * - json: parsed JSON body (POST/PUT/PATCH), if any
- * - headers: a few selected headers
- */
-export default async function echo(req: NextRequest) {
-  const url = new URL(req.url);
-
-  // Query params -> plain object
-  const query: Record<string, string> = {};
-  url.searchParams.forEach((v, k) => (query[k] = v));
-
-  // Try parse JSON body (ignore errors for GET)
-  let json: unknown = null;
-  if (req.method !== "GET" && req.headers.get("content-type")?.includes("application/json")) {
-    try { json = await req.json(); } catch { /* ignore */ }
+﻿export async function echo(req: Request): Promise<Response> {
+  let incoming: unknown = null;
+  try {
+    if (req.method === "POST") {
+      incoming = await req.json();
+    }
+  } catch {
+    incoming = { _error: "Invalid or empty JSON body" };
   }
 
-  // Select a few headers for visibility
-  const headers: Record<string, string | null> = {
-    "content-type": req.headers.get("content-type"),
-    "user-agent": req.headers.get("user-agent"),
+  const body = {
+    ok: true,
+    method: req.method,
+    url: req.url,
+    incoming,
+    time: new Date().toISOString(),
   };
 
-  return {
-    method: req.method,
-    query,
-    json,
-    headers,
-  };
+  const headers = new Headers();
+  headers.set("Content-Type", "application/json; charset=utf-8");
+  headers.set("Cache-Control", "no-store");
+  headers.set("Access-Control-Allow-Origin", "*");
+  headers.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  return new Response(JSON.stringify(body), { status: 200, headers });
 }
