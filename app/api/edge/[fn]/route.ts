@@ -3,6 +3,7 @@
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const dynamicParams = false; // prevent static param analysis for [fn]
 
 const ORIGIN = process.env.ALLOWED_ORIGIN ?? "http://localhost:5173";
 
@@ -32,19 +33,19 @@ async function readFn(ctx: RouteCtx): Promise<string> {
   }
 }
 
-export async function OPTIONS(_req: NextRequest) {
+export async function OPTIONS() {
   return new Response(null, { status: 204, headers: cors() });
 }
 
 export async function GET(_req: NextRequest, ctx: RouteCtx) {
   const fn = await readFn(ctx);
-
-  if (fn === "ping")  return json({ status: "ok", ts: Date.now() });
-  if (fn === "hello") return json({ greeting: "Hello from RocketGPT Edge" });
-  if (fn === "test")  return json({ ok: true });
-  if (fn === "echo")  return json({ message: "RocketGPT Edge Test OK (GET)" });
-
-  return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: cors() });
+  switch (fn) {
+    case "ping":  return json({ status: "ok", ts: Date.now() });
+    case "hello": return json({ greeting: "Hello from RocketGPT Edge" });
+    case "test":  return json({ ok: true });
+    case "echo":  return json({ message: "RocketGPT Edge Test OK (GET)" });
+    default:      return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: cors() });
+  }
 }
 
 export async function POST(req: NextRequest, ctx: RouteCtx) {
