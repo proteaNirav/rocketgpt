@@ -1,4 +1,5 @@
-﻿import { existsSync, readFileSync } from 'node:fs';
+﻿import { describe, it, expect } from 'vitest';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 describe('Edge route contract – presence & export markers (loader-agnostic)', () => {
@@ -28,3 +29,4 @@ describe('Edge route contract – presence & export markers (loader-agnostic)', 
     }
   });
 });
+
