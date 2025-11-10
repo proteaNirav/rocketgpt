@@ -1,0 +1,62 @@
+﻿name: unit-tests
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ test/edge-contracts-61 ]
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm (if used)
+        if: ${{ hashFiles('pnpm-lock.yaml') != '' }}
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install deps
+        shell: bash
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile
+          elif [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm i
+          fi
+
+      - name: Run unit tests (vitest)
+        shell: bash
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm test
+          elif [ -f package-lock.json ]; then
+            npm test
+          else
+            npm test
+          fi
+
+      - name: Upload vitest artifacts (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-artifacts
+          path: |
+            coverage
+            .vitest/**
+          if-no-files-found: ignore
+
