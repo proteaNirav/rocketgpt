@@ -1,4 +1,6 @@
-﻿export const runtime = "edge";
+﻿import type { NextRequest } from "next/server";
+
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -19,19 +21,23 @@ function json(data: unknown, init: ResponseInit = {}) {
   return new Response(JSON.stringify(data), { status: 200, headers: cors(), ...init });
 }
 
-type Ctx = { params?: { fn?: string } } | undefined;
+type RouteCtx = { params: Promise<{ fn: string }> };
 
-function readFn(ctx: Ctx): string {
-  const raw = (ctx?.params?.fn ?? "").toString();
-  try { return raw.toLowerCase(); } catch { return ""; }
+async function readFn(ctx: RouteCtx): Promise<string> {
+  try {
+    const p = await ctx.params;
+    return (p?.fn ?? "").toLowerCase();
+  } catch {
+    return "";
+  }
 }
 
-export async function OPTIONS() {
+export async function OPTIONS(_req: NextRequest) {
   return new Response(null, { status: 204, headers: cors() });
 }
 
-export async function GET(_req: Request, ctx?: Ctx) {
-  const fn = readFn(ctx);
+export async function GET(_req: NextRequest, ctx: RouteCtx) {
+  const fn = await readFn(ctx);
 
   if (fn === "ping")  return json({ status: "ok", ts: Date.now() });
   if (fn === "hello") return json({ greeting: "Hello from RocketGPT Edge" });
@@ -41,8 +47,8 @@ export async function GET(_req: Request, ctx?: Ctx) {
   return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: cors() });
 }
 
-export async function POST(req: Request, ctx?: Ctx) {
-  const fn = readFn(ctx);
+export async function POST(req: NextRequest, ctx: RouteCtx) {
+  const fn = await readFn(ctx);
   if (fn !== "echo") {
     return new Response(JSON.stringify({ error: "POST not allowed" }), {
       status: 405,
