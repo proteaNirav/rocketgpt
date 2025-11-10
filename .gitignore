@@ -1,3 +1,5 @@
 
 # RGPT local agent (keep out of main)
 .rgpt/
+node_modules/
+.next/
