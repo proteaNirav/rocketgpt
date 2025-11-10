@@ -12,7 +12,6 @@ jobs:
   edge-test:
     runs-on: ubuntu-latest
     env:
-      # Match your local origin; adjust if your app uses another port in CI
       ALLOWED_ORIGIN: http://localhost:5173
       PORT: 3000
 
@@ -43,16 +42,10 @@ jobs:
             fi
             sleep 1
           done
-          # Final assert (will fail the job if still not up)
+          # Final assert
           curl -sSf "http://localhost:${PORT}/api/edge/ping" > /dev/null
 
       - name: Run Edge tester (pwsh)
         shell: pwsh
         run: |
-          Write-Host "Running test-edge.ps1..."
           ./test-edge.ps1 -BaseUrl "http://localhost:${env:PORT}/api/edge" -Origin "${env:ALLOWED_ORIGIN}"
-        shell: pwsh
-        run: |
-          Write-Host "Running test-edge.ps1..."
-          ./test-edge.ps1 -BaseUrl "http://localhost:${env:PORT}/api/edge" -Origin "${env:ALLOWED_ORIGIN}"
-
