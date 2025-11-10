@@ -1,0 +1,44 @@
+﻿name: Policy Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure ruleset exists
+        run: |
+          set -e
+          FILE=".rocketgpt/safety/ruleset.json"
+          if [ ! -f "$FILE" ]; then
+            echo "::error file=$FILE::Safety ruleset missing."; exit 1;
+          fi
+
+      - name: Strip BOM and validate JSON schema
+        run: |
+          set -e
+          FILE=".rocketgpt/safety/ruleset.json"
+          # strip UTF-8 BOM if present
+          sed -e '1s/^\xEF\xBB\xBF//' "$FILE" > /tmp/ruleset.json
+          # ensure jq is available and file parses
+          jq -e '.' /tmp/ruleset.json > /dev/null
+          # minimal schema checks (keys exist)
+          for key in allowed_ops paths labels ai_guard audit; do
+            jq -e "has(\"$key\")" /tmp/ruleset.json > /dev/null || { echo "::error::Missing key: $key"; exit 1; }
+          done
+          echo "✅ Policy ruleset JSON looks good."
+
+      - name: Append audit entry
+        run: |
+          set -e
+          mkdir -p .rocketgpt/safety
+          echo "$(date -u +\"%Y-%m-%dT%H:%M:%SZ\") PR #${{github.event.number}} verified by Policy Gate" >> .rocketgpt/safety/audit_log.json

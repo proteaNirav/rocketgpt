@@ -1,0 +1,63 @@
+﻿name: Self-Heal Controller
+
+on:
+  # Manual kick or on failures elsewhere (extend later)
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Why run self-heal?"
+        required: false
+        default: "manual"
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+jobs:
+  plan-and-open-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute heal plan
+        id: plan
+        run: |
+          echo "PLAN=TODO: analyze recent failures, propose fix steps." >> 
+
+      - name: Open/append issue for tracking
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueTitle = "Self-Heal: automated diagnostics";
+            const body = [
+              "### Plan", 
+              "`\n" + process.env.PLAN + "\n`",
+              "",
+              "- [ ] Apply fix",
+              "- [ ] Re-run CI",
+              "- [ ] Close when green"
+            ].join("\n");
+            const { data: existing } = await github.rest.search.issuesAndPullRequests({
+              q: epo:/ is:issue in:title "" state:open,
+            });
+            if (existing.items.length) {
+              const id = existing.items[0].number;
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: id,
+                body
+              });
+              core.setOutput("issue_number", id.toString());
+            } else {
+              const { data: created } = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body
+              });
+              core.setOutput("issue_number", created.number.toString());
+            }
+        env:
+         PLAN: "${{ steps.plan.outputs.PLAN }}"
+
