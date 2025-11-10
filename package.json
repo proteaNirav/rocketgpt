@@ -1,0 +1,9 @@
+﻿{
+    "devDependencies":  {
+                            "@vitest/coverage-v8":  "^4.0.8",
+                            "vitest":  "^4.0.8"
+                        },
+    "scripts":  {
+                    "test":  "vitest run --reporter=dot"
+                }
+}
