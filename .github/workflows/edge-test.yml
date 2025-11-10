@@ -36,17 +36,23 @@ jobs:
         run: |
           nohup npx next start -p $PORT > .next-run.log 2>&1 &
           echo "Server starting on port $PORT..."
-          for i in {1..30}; do
-            if curl -sSf "http://localhost:${PORT}/" > /dev/null; then
-              echo "Server is up."
+          for i in {1..60}; do
+            if curl -sSf "http://localhost:${PORT}/api/edge/ping" > /dev/null; then
+              echo "Edge route is up."
               break
             fi
             sleep 1
           done
-          curl -sSf "http://localhost:${PORT}/" > /dev/null
+          # Final assert (will fail the job if still not up)
+          curl -sSf "http://localhost:${PORT}/api/edge/ping" > /dev/null
 
       - name: Run Edge tester (pwsh)
         shell: pwsh
         run: |
           Write-Host "Running test-edge.ps1..."
           ./test-edge.ps1 -BaseUrl "http://localhost:${env:PORT}/api/edge" -Origin "${env:ALLOWED_ORIGIN}"
+        shell: pwsh
+        run: |
+          Write-Host "Running test-edge.ps1..."
+          ./test-edge.ps1 -BaseUrl "http://localhost:${env:PORT}/api/edge" -Origin "${env:ALLOWED_ORIGIN}"
+
