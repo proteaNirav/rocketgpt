@@ -1,53 +1,57 @@
-﻿import type { NextRequest } from "next/server";
-import { ping } from "../../../../lib/edge/ping";
-import { echo } from "../../../../lib/edge/echo";
-import { hello } from "../../../../lib/edge/hello";
-import { test } from "../../../../lib/edge/test";
+﻿export const runtime = "edge";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-// Next.js 16: params is a Promise now
-type Ctx = { params: Promise<{ fn: string }> };
+const ORIGIN = process.env.ALLOWED_ORIGIN ?? "http://localhost:5173";
 
-export const runtime = "edge";
-export const preferredRegion = ["bom1", "sin1"];
-
-/** Minimal CORS for placeholder responses */
-function withCors(init: ResponseInit = {}): ResponseInit {
-  const headers = new Headers(init.headers);
-  headers.set("Access-Control-Allow-Origin", "*");
-  headers.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  headers.set("Content-Type", "application/json; charset=utf-8");
-  return { ...init, headers };
-}
-
-function placeholder(fn: string) {
+function cors(extra: Record<string, string> = {}) {
   return {
-    ok: true,
-    message: "Edge handler online. /ping, /echo, /hello, /test are live in Step 2.4.",
-    requested: fn,
-    time: new Date().toISOString(),
-    runtime: "edge",
+    "Access-Control-Allow-Origin": ORIGIN || "*",
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Vary": "Origin",
+    "Content-Type": "application/json; charset=utf-8",
+    ...extra,
   };
 }
 
-async function dispatch(req: NextRequest, fn: string): Promise<Response> {
-  if (fn === "ping") return ping(req);
-  if (fn === "echo") return echo(req as unknown as Request);
-  if (fn === "hello") return hello(req as unknown as Request);
-  if (fn === "test") return test(req as unknown as Request);
-  return new Response(JSON.stringify(placeholder(fn)), withCors({ status: 200 }));
+function json(data: unknown, init: ResponseInit = {}) {
+  return new Response(JSON.stringify(data), { status: 200, headers: cors(), ...init });
 }
 
-export async function GET(req: NextRequest, ctx: Ctx) {
-  const { fn } = await ctx.params;
-  return dispatch(req, fn);
-}
+type Ctx = { params?: { fn?: string } } | undefined;
 
-export async function POST(req: NextRequest, ctx: Ctx) {
-  const { fn } = await ctx.params;
-  return dispatch(req, fn);
+function readFn(ctx: Ctx): string {
+  const raw = (ctx?.params?.fn ?? "").toString();
+  try { return raw.toLowerCase(); } catch { return ""; }
 }
 
 export async function OPTIONS() {
-  return new Response(null, withCors({ status: 204 }));
+  return new Response(null, { status: 204, headers: cors() });
+}
+
+export async function GET(_req: Request, ctx?: Ctx) {
+  const fn = readFn(ctx);
+
+  if (fn === "ping")  return json({ status: "ok", ts: Date.now() });
+  if (fn === "hello") return json({ greeting: "Hello from RocketGPT Edge" });
+  if (fn === "test")  return json({ ok: true });
+  if (fn === "echo")  return json({ message: "RocketGPT Edge Test OK (GET)" });
+
+  return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: cors() });
+}
+
+export async function POST(req: Request, ctx?: Ctx) {
+  const fn = readFn(ctx);
+  if (fn !== "echo") {
+    return new Response(JSON.stringify({ error: "POST not allowed" }), {
+      status: 405,
+      headers: cors({ Allow: "GET,OPTIONS" }),
+    });
+  }
+
+  let body: any = {};
+  try { body = await req.json(); } catch {}
+
+  return json({ message: body?.message ?? null, data: body });
 }
