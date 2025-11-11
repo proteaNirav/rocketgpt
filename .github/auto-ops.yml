@@ -1,4 +1,4 @@
-﻿allowed_labels:
+allowed_labels:
   - safe:auto-pr
   - safe:auto-merge
   - safe:workflow-edit

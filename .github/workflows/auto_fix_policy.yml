@@ -1,4 +1,4 @@
-﻿name: Auto Fix Policy and Merge
+name: Auto Fix Policy and Merge
 
 on:
   workflow_dispatch:

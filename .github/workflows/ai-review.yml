@@ -1,4 +1,4 @@
-﻿name: AI Review (Claude)
+name: AI Review (Claude)
 
 on:
   pull_request:

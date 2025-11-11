@@ -1,4 +1,4 @@
-﻿name: Branch Sync (main to develop)
+name: Branch Sync (main to develop)
 on:
   push:
     branches: [ "main" ]

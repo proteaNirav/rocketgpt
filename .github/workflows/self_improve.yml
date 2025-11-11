@@ -1,4 +1,4 @@
-﻿name: Self Improve
+name: Self Improve
 
 on:
   workflow_dispatch:

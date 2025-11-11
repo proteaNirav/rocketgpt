@@ -1,4 +1,4 @@
-﻿name: Self-Heal Controller
+name: Self-Heal Controller
 
 on:
   # Manual kick or on failures elsewhere (extend later)
