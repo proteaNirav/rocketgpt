@@ -1,0 +1,76 @@
+name: text-guard
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main, "**" ]
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute tracked text files (exclude node_modules)
+        id: files
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=$(git ls-files \
+            "*.yml" "*.yaml" "*.ts" "*.tsx" "*.js" "*.jsx" "*.css" "*.md" "*.json" "*.sql" "*.ps1" \
+            | grep -Ev '^node_modules/|/node_modules/')
+          printf "%s\n" "$files" > .textguard_files
+          echo "count=$(wc -l < .textguard_files | tr -d ' ')" >> $GITHUB_OUTPUT
+          echo "Listed files:"
+          wc -l .textguard_files
+          head -n 50 .textguard_files || true
+
+      - name: Fail if any file contains UTF-8 BOM
+        if: steps.files.outputs.count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          bad=""
+          while IFS= read -r f; do
+            [ -f "$f" ] || continue
+            sig=$(head -c 3 "$f" | hexdump -v -e '/1 "%02x"')
+            if [ "$sig" = "efbbbf" ]; then
+              bad="${bad}\n${f}"
+            fi
+          done < .textguard_files
+          if [ -n "$bad" ]; then
+            echo "ERROR: UTF-8 BOM found in:"
+            printf "%b\n" "$bad"
+            exit 1
+          fi
+
+      - name: Fail if any tracked text file contains CRLF
+        if: steps.files.outputs.count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          bad=$(xargs -r -n1 grep -Il $'\r' < .textguard_files || true)
+          if [ -n "$bad" ]; then
+            echo "ERROR: CRLF line endings found (showing first 50):"
+            echo "$bad" | head -n 50
+            echo
+            echo "Tip (after merging .gitattributes):"
+            echo "  git add --renormalize ."
+            exit 1
+          fi
+      - name: Debug: dump file list and CRLF scan
+        if: always()
+        run: |
+          echo "---- .textguard_files (count) ----"
+          wc -l .textguard_files || true
+          echo "---- first 200 entries ----"
+          head -n 200 .textguard_files || true
+          echo "---- CRLF candidates (filenames) ----"
+          xargs -r -n1 grep -Il $'\r' < .textguard_files || true
+          echo "---- Show first 120 lines of each hit ----"
+          for f in $(xargs -r -n1 grep -Il $'\r' < .textguard_files); do
+            echo "== $f =="
+            nl -ba "$f" | sed -n '1,120p'
+            echo
+          done || true
