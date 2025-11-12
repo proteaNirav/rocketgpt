@@ -1,1 +1,2 @@
-﻿.rocketgpt/safety/ruleset.json text eol=lf
+# Enforce LF endings for GitHub workflow files
+.github/workflows/* text eol=lf

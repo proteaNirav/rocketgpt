@@ -1,4 +1,4 @@
-﻿name: Policy Gate
+name: Policy Gate
 
 on:
   pull_request:
