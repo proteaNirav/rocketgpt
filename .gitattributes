@@ -1,2 +1,23 @@
-# Enforce LF endings for GitHub workflow files
-.github/workflows/* text eol=lf
+# Enforce LF for all text files
+* text=auto eol=lf
+
+# Treat common binaries as binary (no EOL conversion)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.7z binary
+*.gz binary
+*.tgz binary
+*.mp3 binary
+*.mp4 binary
+*.mov binary
+*.wav binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
