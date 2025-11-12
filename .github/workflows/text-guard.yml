@@ -59,3 +59,18 @@ jobs:
             echo "  git add --renormalize ."
             exit 1
           fi
+      - name: Debug: dump file list and CRLF scan
+        if: always()
+        run: |
+          echo "---- .textguard_files (count) ----"
+          wc -l .textguard_files || true
+          echo "---- first 200 entries ----"
+          head -n 200 .textguard_files || true
+          echo "---- CRLF candidates (filenames) ----"
+          xargs -r -n1 grep -Il $'\r' < .textguard_files || true
+          echo "---- Show first 120 lines of each hit ----"
+          for f in $(xargs -r -n1 grep -Il $'\r' < .textguard_files); do
+            echo "== $f =="
+            nl -ba "$f" | sed -n '1,120p'
+            echo
+          done || true
