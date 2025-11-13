@@ -17,7 +17,6 @@ jobs:
 
       - name: Show Phase-2 flag
         run: |
-<<<<<<< HEAD
           echo "🛡 Text-Guard Phase-2 preview"
           echo "Config path: $TEXTGUARD_PHASE2_CONFIG"
           if [ -f "$TEXTGUARD_PHASE2_CONFIG" ]; then
@@ -29,12 +28,5 @@ jobs:
 
           echo "Smoke OK"
           echo "sha="
-
 # phase2-preview marker: 2025-11-12T21:19:37.5322797+05:30
-=======
-          echo "Smoke OK"
-          echo "sha="
-# phase2-preview marker: 2025-11-12T21:19:37.5322797+05:30
-
->>>>>>> origin/main
 # ensure-diff: 2025-11-13T00:45:06.0638518+05:30
