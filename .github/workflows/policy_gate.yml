@@ -1,44 +1,54 @@
-﻿name: Policy Gate
+name: Policy Gate/check-policy
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+  push:
+    branches: [ main ]
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
-  check-policy:
+  policy_gate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+@v4
 
-      - name: Ensure ruleset exists
+      - name: Run Policy Checks (pwsh)
+        shell: pwsh
         run: |
-          set -e
-          FILE=".rocketgpt/safety/ruleset.json"
-          if [ ! -f "$FILE" ]; then
-            echo "::error file=$FILE::Safety ruleset missing."; exit 1;
-          fi
+          $ErrorActionPreference = "Stop"
+          $files = Get-ChildItem -Path ".github/workflows" -Filter "*.yml" -Recurse
+          if (-not $files) {
+            Write-Host "::warning file=.github/workflows::No workflows found"
+            exit 0
+          }
 
-      - name: Strip BOM and validate JSON schema
-        run: |
-          set -e
-          FILE=".rocketgpt/safety/ruleset.json"
-          # strip UTF-8 BOM if present
-          sed -e '1s/^\xEF\xBB\xBF//' "$FILE" > /tmp/ruleset.json
-          # ensure jq is available and file parses
-          jq -e '.' /tmp/ruleset.json > /dev/null
-          # minimal schema checks (keys exist)
-          for key in allowed_ops paths labels ai_guard audit; do
-            jq -e "has(\"$key\")" /tmp/ruleset.json > /dev/null || { echo "::error::Missing key: $key"; exit 1; }
-          done
-          echo "✅ Policy ruleset JSON looks good."
+          $fail = $false
 
-      - name: Append audit entry
-        run: |
-          set -e
-          mkdir -p .rocketgpt/safety
-          echo "$(date -u +\"%Y-%m-%dT%H:%M:%SZ\") PR #${{github.event.number}} verified by Policy Gate" >> .rocketgpt/safety/audit_log.json
+          foreach ($f in $files) {
+            $content = Get-Content $f.FullName -Raw
+
+            # 1) Workflow must have "name:"
+            if ($content -notmatch "(?m)^\s*name:\s*.+") {
+              Write-Host "::error file=$($f.FullName),line=1::Missing 'name:' at top-level"
+              $fail = $true
+            }
+
+            # 2) Strongly recommend workflow_dispatch present for manual runs
+            if ($content -notmatch "(?ms)^\s*on:\s*(?:\n|\r\n).*workflow_dispatch:") {
+              Write-Host "::warning file=$($f.FullName),line=1::Add 'on: workflow_dispatch:' to enable manual runs"
+            }
+
+            # 3) For security: deny unpinned external actions (must have @vX)
+            $badRefs = Select-String -InputObject $content -Pattern "uses:\s+[^\s@]+(?!@)"
+            if ($badRefs) {
+              Write-Host "::error file=$($f.FullName)::Pin external actions with a version tag (e.g., actions/checkout@v4)"
+              $fail = $true
+            }
+          }
+
+          if ($fail) { exit 1 }
+

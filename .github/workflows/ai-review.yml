@@ -1,4 +1,4 @@
-﻿name: AI Review (Claude)
+name: AI Review (Claude)
 
 on:
   pull_request:
@@ -16,6 +16,7 @@ jobs:
     steps:
       - name: Checkout (shallow)
         uses: actions/checkout@v4
+@v4
         with:
           fetch-depth: 2
 
@@ -69,7 +70,7 @@ PROMPT
             const fs = require('fs');
             const text = fs.readFileSync('ai_review_trunc.md','utf8');
             const header = [
-              "### ðŸ¤– Claude AI Review",
+              "### 🤖 Claude AI Review",
               "",
               "- Model: `claude-3-5-sonnet-latest`",
               "- Diff lines analyzed: " + (process.env.DIFF_LINES || "n/a"),
@@ -86,6 +87,7 @@ PROMPT
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
+@v4
         with:
           name: ai-review-artifacts
           path: |
@@ -95,3 +97,4 @@ PROMPT
             ai_review.md
             ai_review_trunc.md
           if-no-files-found: ignore
+

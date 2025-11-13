@@ -31,6 +31,7 @@ jobs:
       GH_PAT: ${{ secrets.GH_PAT }}   # classic PAT with repo + workflow scopes
     steps:
       - uses: actions/checkout@v4
+@v4
 
       # 0) Resolve the issue number for BOTH events (issues + workflow_dispatch)
       - name: Resolve issue number
@@ -77,6 +78,7 @@ jobs:
 
       - name: Save triage inputs
         uses: actions/upload-artifact@v4
+@v4
         with:
           name: triage-inputs-${{ github.run_id }}
           path: |
@@ -158,8 +160,10 @@ jobs:
       - name: Save dispatch artifacts (triage)
         if: always()
         uses: actions/upload-artifact@v4
+@v4
         with:
           name: triage-dispatch-${{ github.run_id }}
           path: |
             dispatch.codegen.req.json
             dispatch.codegen.resp.json
+

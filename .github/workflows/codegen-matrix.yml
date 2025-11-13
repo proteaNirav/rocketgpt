@@ -32,6 +32,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+@v4
 
       # Parse JSON spec from the issue body (or from repository_dispatch payload)
       - name: Pull Spec (issue body or dispatch)
@@ -112,11 +113,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
+@v4
         with:
           node-version: '20'
 
@@ -220,6 +223,7 @@ JSON
 
     steps:
       - uses: actions/checkout@v4
+@v4
         with:
           fetch-depth: 0
 
@@ -320,3 +324,4 @@ JSON
               const { data: pr } = await github.rest.pulls.create({ owner, repo, head, base, title, body });
               core.info(`Opened PR #${pr.number}`);
             }
+

@@ -27,11 +27,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+@v4
         with:
           fetch-depth: 2
 
       - name: Setup Node
         uses: actions/setup-node@v4
+@v4
         with:
           node-version: 20
 
@@ -235,6 +237,7 @@ jobs:
       - name: Save review I/O artifacts
         if: always()
         uses: actions/upload-artifact@v4
+@v4
         with:
           name: review-artifacts-${{ github.run_id }}
           path: |
@@ -269,3 +272,4 @@ jobs:
           (command -v jq >/dev/null && jq -C '.' dispatch.merge.resp.json) || cat dispatch.merge.resp.json
           echo "::endgroup::"
           test "$STATUS" = "204" || (echo "ERR: merge dispatch failed"; exit 1)
+

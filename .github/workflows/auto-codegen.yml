@@ -16,6 +16,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+@v4
         with:
           fetch-depth: 0
 
@@ -121,7 +122,9 @@ PROMPT
       - name: Upload artifacts (patch)
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
+@v4
         with:
           name: autocode-artifacts
           path: .rocket/codegen/
           if-no-files-found: warn
+

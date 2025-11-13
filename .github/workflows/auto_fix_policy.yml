@@ -1,49 +1,108 @@
-﻿name: Auto Fix Policy and Merge
+name: Auto Fix Policy
 
 on:
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Optional PR number to push fixes to (branch of that PR)
+        required: false
+  repository_dispatch:
+    types: [auto_fix_policy_requested]
 
 permissions:
   contents: write
   pull-requests: write
-  issues: write
-  actions: write
 
 jobs:
   fix:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout (fetch full history for branch ops)
         uses: actions/checkout@v4
+@v4
+        with:
+          fetch-depth: 0
 
-      - name: Ensure labels and apply + retrigger + merge + smoke
-        env:
-          GH_TOKEN: ${{ secrets.ROCKET_BOT_TOKEN }}
+      - name: Setup Node (for YAML tooling)
+        uses: actions/setup-node@v4
+@v4
+        with:
+          node-version: '20'
+
+      - name: Install YAML tools
         run: |
-          set -e
-          echo "ðŸ”§ Ensuring safety labels exist..."
-          gh label create "safe:workflow-edit" -c "#0E8A16" -d "Allow editing workflow files in PRs" || true
-          gh label create "safe:auto-merge" -c "#1D76DB" -d "Allow auto-merge when checks pass" || true
-          gh label create "safe:override" -c "#B60205" -d "Override policy gate for denied paths" || true
+          npm i -g yaml
 
-          PR=${{ github.event.inputs.pr_number || '125' }}
-          echo "ðŸ·ï¸  Applying labels to PR #$PR"
-          gh pr edit "$PR" --add-label "safe:workflow-edit" --add-label "safe:auto-merge" || true
+      - name: Identify target branch (pwsh)
+        id: target
+        shell: pwsh
+        run: |
+          $pr = "${{ github.event.inputs.pr_number }}"
+          if (-not [string]::IsNullOrWhiteSpace($pr)) {
+            echo "branch=$(gh pr view $pr --json headRefName -q .headRefName)" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "branch=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
 
-          echo "ðŸ” Re-triggering CI by pushing empty commit on branch of PR"
-          BR=$(gh pr view "$PR" --json headRefName -q .headRefName)
+      - name: Ensure workflow_dispatch & pin actions (pwsh)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $files = Get-ChildItem ".github/workflows" -Filter "*.yml" -Recurse
+          $changed = $false
+
+          foreach ($f in $files) {
+            $raw = Get-Content $f.FullName -Raw
+
+            # 1) Add workflow_dispatch under 'on:' if missing
+            if ($raw -match "(?ms)^\s*on:\s*(?<block>(\n|\r\n).+?)$") {
+              if ($raw -notmatch "(?ms)^\s*on:\s*(?:\n|\r\n).*workflow_dispatch:") {
+                $raw = $raw -replace "(?ms)^\s*on:\s*(\n|\r\n)", "on:`n  workflow_dispatch:`n"
+                Write-Host "::notice file=$($f.FullName)::Added 'workflow_dispatch:'"
+                $changed = $true
+              }
+            } else {
+              # no 'on:' at all � add a safe one
+              $raw = "on:`n  workflow_dispatch:`n`n" + $raw
+              Write-Host "::notice file=$($f.FullName)::Inserted 'on:' with 'workflow_dispatch:'"
+              $changed = $true
+            }
+
+            # 2) Pin unpinned uses: (quick heuristic)
+            $raw2 = ($raw -split "`n") | ForEach-Object {
+              if ($_ -match "^\s*uses:\s+([^@\s]+)\s*$") {
+                $_ + "@v4"
+              } else { $_ }
+            } | Out-String
+
+            if ($raw2 -ne $raw) {
+              $raw = $raw2
+              Write-Host "::notice file=$($f.FullName)::Pinned unpinned 'uses:' to '@v4' (heuristic)"
+              $changed = $true
+            }
+
+            if ($changed) {
+              Set-Content -Path $f.FullName -Value $raw -NoNewline
+            }
+          }
+
+          if ($changed) {
+            Write-Host "CHANGES_MADE=1" >> $env:GITHUB_ENV
+
+      - name: Commit & push
+        if: env.CHANGES_MADE == '1'
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin "$BR"
-          git checkout "$BR"
-          git commit --allow-empty -m "chore: retrigger checks (auto-fix)" || true
-          git push origin "$BR" || true
+          git checkout -B "${{ steps.target.outputs.branch }}"
+          git add .github/workflows/*.yml
+          git commit -m "chore(policy): auto-fix workflow_dispatch and pin actions"
+          git push origin "${{ steps.target.outputs.branch }}"
 
-          echo "â³ Waiting for checks to (re)run..."
-          sleep 30
+      - name: Summary
+        run: |
+          if [ "${CHANGES_MADE}" = "1" ]; then
+            echo "Auto-fixes applied ?"
+          else:
+            echo "No changes required ?"
+          fi
 
-          echo "ðŸ§© Enable auto-merge (squash) if not set"
-          gh pr merge "$PR" --auto --squash || true
-
-          echo "ðŸš€ Try to run the self_improve workflow (if on default branch)"
-          gh workflow run self_improve.yml -f reason="auto_fix_policy smoke" || true

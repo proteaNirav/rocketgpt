@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+@v4
 
       - uses: actions/setup-dotnet@v4
         with: { dotnet-version: '9.0.x' }
@@ -31,6 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+@v4
 
       - uses: actions/setup-dotnet@v4
         with: { dotnet-version: '9.0.x' }
@@ -49,6 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+@v4
 
       # github_actions.js 'guard' expects a spec path; give it an empty one
       - name: Prepare empty spec
@@ -56,3 +59,4 @@ jobs:
 
       - name: Run guard scan
         run: node rocketgpt-agents/runners/github_actions.js guard spec.json
+

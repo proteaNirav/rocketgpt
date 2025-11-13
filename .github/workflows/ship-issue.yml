@@ -1,4 +1,4 @@
-﻿name: RocketGPT Ship Issue
+name: RocketGPT Ship Issue
 on:
   workflow_dispatch:
     inputs:
@@ -70,3 +70,4 @@ jobs:
               `mutation($pr:ID!){ enablePullRequestAutoMerge(input:{ pullRequestId:$pr, mergeMethod:SQUASH }){ clientMutationId } }`,
               { pr: prQ.repository.pullRequest.id }
             );
+

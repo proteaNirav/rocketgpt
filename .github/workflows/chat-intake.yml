@@ -59,3 +59,4 @@ jobs:
             });
 
             core.info(`Opened issue #${issue.number}: ${issue.html_url}`);
+

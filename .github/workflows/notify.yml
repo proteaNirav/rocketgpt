@@ -36,3 +36,4 @@ jobs:
           curl -sS -X POST -H 'Content-type: application/json' \
           --data "{\"text\":\"${{ steps.msg.outputs.text }}\"}" \
           "${{ secrets.TEAMS_WEBHOOK_URL }}"
+
