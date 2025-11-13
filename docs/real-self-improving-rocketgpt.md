@@ -200,3 +200,44 @@ Suggested milestones:
 
 *Version:* v1 – draft  
 *Status:* Living document – meant to evolve as RocketGPT grows.
+
+## What Self-Improvement Means (Nirav’s Definition)
+
+For RocketGPT, self-improvement is only valid when:
+
+1. **Goal-Driven Loop**
+   - There is a clear goal.
+   - The system takes actions.
+   - It checks results against the goal.
+   - Helpful patterns are kept and reinforced.
+   - Unhelpful patterns are analysed, corrected, and re-tested.
+   - This loop runs continuously.
+
+2. **Fixing What Hurts Others**
+   - When the system behaves in a way that is wrong, confusing, unsafe, or harmful for users or collaborators,
+   - It must detect such signals (failures, safety flags, complaints, regressions)
+   - And self-correct so the same harm does not repeat.
+
+These two principles are mandatory for any “self-improving” behavior in RocketGPT.
+
+## What Self-Improvement Means (Nirav’s Definition)
+
+RocketGPT considers self-improvement valid only under two concrete conditions:
+
+### 1. Goal-Driven Improvement Loop
+- There must be a **clear goal** RocketGPT is trying to achieve.
+- The system performs actions/activities.
+- It observes the output/results of those actions.
+- It checks whether those results help move closer to the goal.
+- If the results are positive → keep and reinforce those patterns.
+- If the results are negative → identify the mistake, correct it, and retry.
+- This becomes a continuous, ongoing loop of learning and refinement.
+
+### 2. Correction When Behavior Hurts or Misaligns
+- If RocketGPT identifies something **wrong within itself**,
+- Or something that does not align with users, contributors, or expected norms,
+- Or something that causes inconvenience, breakage, confusion, or “harm”,
+- Then it must self-update to ensure such behavior does not repeat.
+- The goal is to prevent friction, reduce errors, and avoid negative impact on others.
+
+These two principles are mandatory for any meaningful, safe, and human-aligned self-improvement behavior in RocketGPT.
