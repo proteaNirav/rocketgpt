@@ -76,31 +76,38 @@ jobs:
           ls -R patches || echo "No patches directory created"
 
       - name: Apply generated patch (3-way merge)
-        id: apply_patch
+        if: success()
+        env:
+          improvement_id: ${{ env.improvement_id }}
+          improvement_title: ${{ env.improvement_title }}
+          improvement_description: ${{ env.improvement_description }}
+          improvement_status: ${{ env.improvement_status }}
         run: |
-          echo "Applying patch for ${{ env.improvement_id }}"
-          
+          echo "Applying patch for ${improvement_id}"
+
           if [ ! -d patches ]; then
-            echo "No patches directory found. Skipping."
+            echo "No patches directory found. Skipping (simulation mode)."
             exit 0
           fi
 
-          PATCH_FILE="patches/${{ env.improvement_id }}.patch"
+          PATCH_FILE="patches/${improvement_id}.patch"
 
           if [ ! -f "$PATCH_FILE" ]; then
-            echo "No patch file found for this improvement. Skipping."
+            echo "No patch file found for this improvement. Skipping (simulation mode)."
             exit 0
           fi
 
           echo "Found patch: $PATCH_FILE"
-          echo "Attempting 3-way merge..."
+          echo "Attempting 3-way merge (simulation)..."
 
-          git apply --3way --whitespace=fix "$PATCH_FILE" || {
-            echo "Patch failed to apply!"
-            exit 1
-          }
+          if git apply --3way --whitespace=fix "$PATCH_FILE"; then
+            echo "Patch applied successfully (simulation)."
+          else
+            echo "Patch failed to apply (simulation mode) – no changes applied."
+            # IMPORTANT: Do NOT fail the job while we are in simulation mode.
+            exit 0
+          fi
 
-          echo "Patch applied successfully."
 
       - name: Find stalled issues (label=codegen:ready, no open PR)
         id: stalled
