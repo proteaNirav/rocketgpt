@@ -1,17 +1,21 @@
-// components/Header.tsx
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 export default async function Header() {
-  const supabase = createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const supabase = await createSupabaseServerClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   async function signOutAction() {
     'use server'
-    const supa = (await import('@/lib/supabase/server')).createSupabaseServerClient()
-    await supa.auth.signOut()
-    return (await import('next/navigation')).redirect('/login')
+    const supabase = await createSupabaseServerClient()
+    await supabase.auth.signOut()
   }
+
+  // ...rest of your Header JSX...
+
 
   return (
     <header className="w-full border-b bg-white/70 backdrop-blur">

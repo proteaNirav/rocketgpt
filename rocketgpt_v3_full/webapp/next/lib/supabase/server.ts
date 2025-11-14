@@ -1,30 +1,27 @@
-// For server-side use in Next.js (App Router)
-import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
+'use server'
 
-export function getSupabaseServerClient() {
-  const cookieStore = cookies();
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
 
-  return createServerClient(
+export async function createSupabaseServerClient() {
+  // This will run only on the server
+  const cookieStore = cookies()
+
+  const client = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
+        getAll() {
+          return cookieStore.getAll()
         },
-        set(name: string, value: string, options: any) {
-          cookieStore.set({ name, value, ...options });
-        },
-        remove(name: string, options: any) {
-          cookieStore.set({ name, value: "", expires: new Date(0), ...options });
+        // No-op to avoid Next.js cookie write restrictions in the app router
+        async setAll(_cookiesToSet) {
+          // intentionally left blank
         },
       },
     }
-  );
+  )
+
+  return client
 }
-
-// Backward-compat export (if your code calls createSupabaseServerClient)
-export const createSupabaseServerClient = getSupabaseServerClient;
-
-
