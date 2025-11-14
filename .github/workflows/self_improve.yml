@@ -71,6 +71,14 @@ jobs:
         run: |
           node scripts/self-improve/execute.js
 
+      - name: Generate patch for improvement (placeholder)
+        id: generate_patch
+        run: |
+          node scripts/self-improve/patcher.js
+          echo "Generated patches directory content:"
+          ls -R patches || echo "No patches directory created"
+
+
 
       - name: Find stalled issues (label=codegen:ready, no open PR)
         id: stalled
