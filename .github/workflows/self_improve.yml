@@ -45,6 +45,19 @@ jobs:
         run: |
           node scripts/self-improve/select_next.js > selected.json
           echo "selected=$(cat selected.json)" >> $GITHUB_OUTPUT
+      
+      - name: Parse selected improvement
+        id: parse_selected
+        run: |
+          echo "${{ steps.select_next.outputs.selected }}" > selected_full.json
+          node -e "const fs=require('fs'); const j=JSON.parse(fs.readFileSync('selected_full.json','utf8')); const s=j.selected; console.log('ID=' + s.id); console.log('TITLE=' + s.title); console.log('DESC=' + s.description); console.log('STATUS=' + s.status);" > parsed.txt
+
+          # Export ENV variables for next steps
+          echo "improvement_id=$(grep '^ID=' parsed.txt | sed 's/ID=//')" >> $GITHUB_ENV
+          echo "improvement_title=$(grep '^TITLE=' parsed.txt | sed 's/TITLE=//')" >> $GITHUB_ENV
+          echo "improvement_description=$(grep '^DESC=' parsed.txt | sed 's/DESC=//')" >> $GITHUB_ENV
+          echo "improvement_status=$(grep '^STATUS=' parsed.txt | sed 's/STATUS=//')" >> $GITHUB_ENV
+
 
       - name: Find stalled issues (label=codegen:ready, no open PR)
         id: stalled
