@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useChat } from '@/lib/store'
 import { plan as apiPlan, recommend as apiRecommend } from '@/lib/api'
 import PromptBar from '@/components/PromptBar'
@@ -92,7 +92,7 @@ export default function Page() {
           <div className="font-semibold mb-2">Estimates</div>
           {decision?.estimates ? (
             <div className="text-sm">
-              <div>Cost: â‚¹ {Math.round(decision.estimates.costINR)}</div>
+              <div>Cost: Ã¢"šÂ¹ {Math.round(decision.estimates.costINR)}</div>
               <div>ETA: {decision.estimates.minutes} minutes</div>
               <div>Steps: {decision.estimates.steps}</div>
             </div>

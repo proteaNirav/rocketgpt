@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { completeManualReviewAndApply } from "./selfApply";
@@ -37,7 +37,7 @@ export function ManualReviewButton({
         }`}
         title="Marks manual review as passed and triggers final apply"
       >
-        {loading ? "Processingâ€¦" : done ? "Applied âœ…" : "Pass Manual Review"}
+        {loading ? "ProcessingÃ¢â‚¬Â¦" : done ? "Applied Ã¢Å“..." : "Pass Manual Review"}
       </button>
       {error && <span className="text-red-500 text-xs">{error}</span>}
     </div>

@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useEffect } from "react";
 
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }, reset: () => void }) {
   useEffect(() => {
-    // fire-and-forget – best effort
+    // fire-and-forget "“ best effort
     fetch("/api/report-error", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -23,7 +23,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
     <html>
       <body style={{ padding: 24 }}>
         <h2>Something went wrong.</h2>
-        <p>We’ve notified our system. You can try again.</p>
+        <p>We"™ve notified our system. You can try again.</p>
         <button onClick={() => reset()}>Retry</button>
       </body>
     </html>
