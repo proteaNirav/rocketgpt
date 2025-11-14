@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const engine = (body.engine || process.env.DEFAULT_ENGINE || 'openai').toLowerCase();
 
     const lines: string[] = [];
-    lines.push('## 💡 Anonymous Feature Suggestion');
+    lines.push('## ðŸ’¡ Anonymous Feature Suggestion');
     if (body.description) lines.push(body.description);
     lines.push('');
     lines.push('---');
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
         await transporter.sendMail({
           from: process.env.SMTP_USER || 'noreply@rocketgpt',
           to: process.env.NOTIFY_TO,
-          subject: `New suggestion: #${issue.number} — ${title}`,
+          subject: `New suggestion: #${issue.number} "” ${title}`,
           text: `A new suggestion is awaiting review:\n${issue.html_url}\n\n${body.description || ''}`,
         });
       } catch { /* ignore */ }

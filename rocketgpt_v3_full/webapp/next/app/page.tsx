@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useState } from 'react'
 import { useChat } from '@/lib/store'
@@ -57,7 +57,7 @@ export default function Page() {
     addMsg({ id: userMsgId, role: 'user', text })
 
     const thinkingId = crypto.randomUUID()
-    addMsg({ id: thinkingId, role: 'assistant', text: 'Okayâ€”give me a moment to think this throughâ€¦' })
+    addMsg({ id: thinkingId, role: 'assistant', text: 'OkayÃ¢â‚¬"give me a moment to think this throughÃ¢â‚¬Â¦' })
 
     const controller = new AbortController()
     setController(controller)
@@ -70,7 +70,7 @@ export default function Page() {
 
       // replace thinking message with summary
       useChat.getState().updateMsg(thinkingId, {
-        text: p.decision?.summary || 'Hereâ€™s a quick plan you can follow:',
+        text: p.decision?.summary || 'HereÃ¢â‚¬â„¢s a quick plan you can follow:',
       })
 
       // ---------- SAVE TO SUPABASE (browser) ----------
@@ -97,7 +97,7 @@ export default function Page() {
             addMsg({
               id: crypto.randomUUID(),
               role: 'assistant',
-              text: `You could also try **${item.title}** â€” ${item.why}`,
+              text: `You could also try **${item.title}** Ã¢â‚¬" ${item.why}`,
             })
             chatter++
           }
@@ -107,14 +107,14 @@ export default function Page() {
         if (isRateLimitError(err)) {
           // Show banner + inline message
           emitRateLimited({
-            message: "Youâ€™ve hit your planâ€™s rate limit while fetching recommendations.",
+            message: "YouÃ¢â‚¬â„¢ve hit your planÃ¢â‚¬â„¢s rate limit while fetching recommendations.",
             retryAfter: err.retryAfter ?? err.rl?.retry_after_seconds,
             plan: err.rl?.limits?.plan_code,
           })
           addMsg({
             id: crypto.randomUUID(),
             role: 'assistant',
-            text: 'I drafted the plan, but youâ€™re currently rate-limited. Please retry shortly or upgrade your plan.',
+            text: 'I drafted the plan, but youÃ¢â‚¬â„¢re currently rate-limited. Please retry shortly or upgrade your plan.',
           })
           return
         }
@@ -128,16 +128,16 @@ export default function Page() {
     } catch (err: unknown) {
       if (isRateLimitError(err)) {
         emitRateLimited({
-          message: "Youâ€™ve hit your planâ€™s rate limit while planning.",
+          message: "YouÃ¢â‚¬â„¢ve hit your planÃ¢â‚¬â„¢s rate limit while planning.",
           retryAfter: err.retryAfter ?? err.rl?.retry_after_seconds,
           plan: err.rl?.limits?.plan_code,
         })
         useChat.getState().updateMsg(thinkingId, {
-          text: 'Iâ€™m currently rate-limited. Please retry shortly or consider upgrading your plan.',
+          text: 'IÃ¢â‚¬â„¢m currently rate-limited. Please retry shortly or consider upgrading your plan.',
         })
       } else {
         useChat.getState().updateMsg(thinkingId, {
-          text: 'Hmmâ€¦ something went wrong while planning. Try rephrasing and Iâ€™ll rethink it.',
+          text: 'HmmÃ¢â‚¬Â¦ something went wrong while planning. Try rephrasing and IÃ¢â‚¬â„¢ll rethink it.',
         })
         console.error('plan error', err)
       }
@@ -149,20 +149,20 @@ export default function Page() {
 
   return (
     <div className="container py-6 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
-      {/* ðŸ‘‹ Welcome banner */}
+      {/* Ã°Å¸"˜"¹ Welcome banner */}
       <div className="col-span-full rounded-md border bg-white p-4 mb-4">
         {userEmail ? (
           <div className="text-lg font-medium text-gray-800">
-            Welcome <span className="font-semibold text-black">{userEmail}</span> â€” to <b>RocketGPT</b>, your AI Orchestrator.
+            Welcome <span className="font-semibold text-black">{userEmail}</span> Ã¢â‚¬" to <b>RocketGPT</b>, your AI Orchestrator.
           </div>
         ) : (
           <div className="text-lg font-medium text-gray-600">
-            Welcome to <b>RocketGPT</b> â€” please <a href="/login" className="underline">sign in</a> to unlock full features.
+            Welcome to <b>RocketGPT</b> Ã¢â‚¬" please <a href="/login" className="underline">sign in</a> to unlock full features.
           </div>
         )}
       </div>
 
-      {/* ðŸ’¬ Left: Conversation */}
+      {/* Ã°Å¸"™Â¬ Left: Conversation */}
       <div className="space-y-4">
         {/* Prompt + Quick test button (Edge Function) */}
         <div className="flex items-center gap-3">
@@ -185,7 +185,7 @@ export default function Page() {
           <DecisionBanner summary={decision.summary} estimates={decision.estimates} />
         ) : null}
 
-        {/* ðŸ›  Recommendations */}
+        {/* Ã°Å¸"ºÂ  Recommendations */}
         <div className="space-y-3">
           {loading && recs.length === 0 ? (
             <>
@@ -207,7 +207,7 @@ export default function Page() {
         </div>
       </div>
 
-      {/* ðŸ§© Right: Plan + Estimates + History */}
+      {/* Ã°Å¸Â§Â© Right: Plan + Estimates + History */}
       <div className="space-y-4">
         {loading && plan.length === 0 ? <Skeleton className="h-48" /> : <PlanPanel plan={plan} />}
 
@@ -215,7 +215,7 @@ export default function Page() {
           <div className="font-semibold mb-2">Estimates</div>
           {decision?.estimates ? (
             <div className="text-sm">
-              <div>Cost: â‚¹ {Math.round(decision.estimates.costINR)}</div>
+              <div>Cost: Ã¢"šÂ¹ {Math.round(decision.estimates.costINR)}</div>
               <div>ETA: {decision.estimates.minutes} minutes</div>
               <div>Steps: {decision.estimates.steps}</div>
             </div>
@@ -226,7 +226,7 @@ export default function Page() {
           )}
         </div>
 
-        {/* ðŸ•“ History list (live updates + re-run) */}
+        {/* Ã°Å¸"¢"œ History list (live updates + re-run) */}
         <HistoryList onRerun={(goal: string) => onSend(goal)} />
 
         <button className="btn w-full" onClick={() => reset()}>
@@ -238,7 +238,7 @@ export default function Page() {
         </div>
       </div>
 
-      {/* âš™ï¸ Runner modal */}
+      {/* Ã¢Å¡â„¢Ã¯Â¸Â Runner modal */}
       <ToolRunner />
     </div>
   )
