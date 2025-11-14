@@ -1,23 +1,5 @@
 ﻿name: Self Improve (v4 Core AI)
 
-# RocketGPT v4 Core AI – Self-Improvement Loop
-# Foundation docs:
-# - docs/self-improvement-charter.md
-# - docs/real-self-improving-rocketgpt.md
-# - docs/roadmap/v4-core-ai.md
-#
-# Philosophy (Nirav’s Definition):
-# 1) There must be a clear goal. The system takes actions, checks results vs that goal,
-#    keeps what helps and corrects what does not. This is an ongoing loop.
-# 2) When behavior is wrong, misaligned, or causes problems for others, the system must
-#    self-correct so that the same harm/friction does not repeat.
-#
-# This workflow is a LOW-RISK self-improvement driver:
-# - Goal: avoid “stalled” AI codegen issues that never move forward.
-# - Actions: periodically scan for open issues with label `codegen:ready` and no open PR.
-# - Result check: if such issues exist, nudge `codegen.yml` to act on them.
-# - No direct code changes; only triggers other guarded workflows.
-
 on:
   workflow_dispatch:
     inputs:
@@ -25,7 +7,6 @@ on:
         description: Why this run (manual self-improvement session)
         required: false
   schedule:
-    # v4 note: still frequent, but logic is minimal and safe. Can be tuned later.
     - cron: "*/15 * * * *"
 
 jobs:
@@ -49,12 +30,10 @@ jobs:
         id: parse_selected
         run: |
           node scripts/self-improve/parse_selected.js > parsed_env.txt
-
-          # Append KEY=VALUE lines to GITHUB_ENV
           while IFS= read -r line; do
             echo "$line" >> "$GITHUB_ENV"
           done < parsed_env.txt
-    
+
       - name: Log selected improvement
         run: |
           echo "Selected Improvement:"
@@ -84,30 +63,23 @@ jobs:
           improvement_status: ${{ env.improvement_status }}
         run: |
           echo "Applying patch for ${improvement_id}"
-
           if [ ! -d patches ]; then
             echo "No patches directory found. Skipping (simulation mode)."
             exit 0
           fi
-
           PATCH_FILE="patches/${improvement_id}.patch"
-
           if [ ! -f "$PATCH_FILE" ]; then
             echo "No patch file found for this improvement. Skipping (simulation mode)."
             exit 0
           fi
-
           echo "Found patch: $PATCH_FILE"
           echo "Attempting 3-way merge (simulation)..."
-
           if git apply --3way --whitespace=fix "$PATCH_FILE"; then
             echo "Patch applied successfully (simulation)."
           else
             echo "Patch failed to apply (simulation mode) – no changes applied."
-            # IMPORTANT: Do NOT fail the job while we are in simulation mode.
             exit 0
           fi
-
 
       - name: Find stalled issues (label=codegen:ready, no open PR)
         id: stalled
@@ -122,7 +94,6 @@ jobs:
 
             const candidates = [];
             for (const it of resIssues.data.items) {
-              // Check if there is any open PR referencing this issue number
               const q = `repo:${owner}/${repo} is:pr is:open ${it.number}`;
               const resPr = await github.rest.search.issuesAndPullRequests({ q, per_page: 5 });
               const hasOpenPr = resPr.data.items?.some(x => x.state === "open");
@@ -137,9 +108,6 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            // v4 alignment:
-            // - Goal: Unblock stalled, ready-for-codegen issues.
-            // - No direct merge or workflow edits; only safe workflow dispatches and labels.
             const issues = JSON.parse(`${{ steps.stalled.outputs.issue_list }}`);
             for (const iss of issues) {
               core.info(`Dispatching AI Codegen for #${iss}`);
@@ -150,12 +118,20 @@ jobs:
                 ref: "main",
                 inputs: { issue_number: String(iss) }
               }).catch(e => core.warning(e.message));
-
-              // Nudge label to re-trigger label-based automations, if any.
-              await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: Number(iss),
-                labels: ["codegen:ready"]
-              }).catch(e => core.warning(e.message));
             }
+
+      - name: Self-Improve · Record status
+        if: always()
+        run: node scripts/self-improve/write_status.js
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+          SELF_IMPROVE_PHASE: "plan+simulate"
+          SELF_IMPROVE_STATUS: "completed"
+          SELF_IMPROVE_TITLE: "Self-Improve (plan+simulate)"
+          SELF_IMPROVE_SUMMARY: "Finished plan+simulate for ${{ github.sha }}"
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
