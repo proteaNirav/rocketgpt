@@ -40,6 +40,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Select next improvement
+        id: select_next
+        run: |
+          node scripts/self-improve/select_next.js > selected.json
+          echo "selected=$(cat selected.json)" >> $GITHUB_OUTPUT
+
       - name: Find stalled issues (label=codegen:ready, no open PR)
         id: stalled
         uses: actions/github-script@v7
