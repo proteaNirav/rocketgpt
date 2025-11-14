@@ -1,4 +1,4 @@
-# RocketGPT UI — Phase 2 (Sprint 1)
+﻿# RocketGPT UI "” Phase 2 (Sprint 1)
 Claude/Emergent-style chat shell wired to the live Core API.
 
 ## Quickstart
@@ -11,7 +11,7 @@ npm run dev
 # open http://localhost:3000
 ```
 
-## What’s included
+## What"™s included
 - Next.js (app router) + Tailwind
 - PromptBar, DecisionBanner, Toolcard, EstimateBadge, PlanPanel
 - API client using `NEXT_PUBLIC_CORE_API_BASE`
