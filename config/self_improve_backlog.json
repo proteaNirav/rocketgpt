@@ -1,12 +1,13 @@
-﻿{
-    "backlog":  [
-                    {
-                        "id":  "IMP-0001",
-                        "description":  "Analyze the main dashboard layout and refactor components to work better on mobile and tablet viewports.",
-                        "created_at":  "2025-11-14T18:17:55.0247199+05:30",
-                        "priority":  "medium",
-                        "title":  "Improve dashboard responsiveness",
-                        "status":  "pending"
-                    }
-                ]
-}
+{
+  "backlog": [
+    {
+      "id": "IMP-0001",
+      "description": "Analyze the main dashboard layout and refactor components to work better on mobile and tablet viewports.",
+      "created_at": "2025-11-14T18:17:55.0247199+05:30",
+      "priority": "medium",
+      "title": "Improve dashboard responsiveness",
+      "status": "in_progress",
+      "started_at": "2025-11-14T13:37:01.833Z"
+    }
+  ]
+}\n
