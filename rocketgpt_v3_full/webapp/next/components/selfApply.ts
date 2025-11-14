@@ -2,7 +2,7 @@
 import { getSupabase } from "../lib/supabase";
 
 /**
- * âœ… Step 1 â€” Mark manual review as PASSED via RPC
+ * Ã¢Å“... Step 1 Ã¢â‚¬" Mark manual review as PASSED via RPC
  * Calls the pass_manual_review(p_job_id, p_actor) function in Supabase.
  */
 export async function passManualReview(jobId: string, actor = "superuser") {
@@ -16,7 +16,7 @@ export async function passManualReview(jobId: string, actor = "superuser") {
 }
 
 /**
- * âœ… Step 2 â€” Invoke the Edge Function for Self-Apply (DIRECT mode)
+ * Ã¢Å“... Step 2 Ã¢â‚¬" Invoke the Edge Function for Self-Apply (DIRECT mode)
  * After manual review is passed, this triggers the next step of apply automatically.
  */
 export async function runSelfApplyDirect(proposalId: string, idempotencyKey?: string) {
@@ -51,7 +51,7 @@ export async function runSelfApplyDirect(proposalId: string, idempotencyKey?: st
 }
 
 /**
- * âœ… Step 3 â€” (Optional helper)
+ * Ã¢Å“... Step 3 Ã¢â‚¬" (Optional helper)
  * If you want to chain both steps together after a manual review pass:
  * 1) passManualReview(jobId)
  * 2) runSelfApplyDirect(proposalId)
