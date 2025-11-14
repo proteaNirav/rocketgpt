@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
-  // 1ï¸âƒ£ Ensure guest_id cookie
+  // 1Ã¯Â¸ÂÃ¢Æ’Â£ Ensure guest_id cookie
   const hasGuest = req.cookies.get("guest_id")?.value;
   if (!hasGuest) {
     const res = NextResponse.next();
@@ -17,7 +17,7 @@ export function middleware(req: NextRequest) {
     return res; // early return
   }
 
-  // 2ï¸âƒ£ Protect /account (redirect to /login if not signed in)
+  // 2Ã¯Â¸ÂÃ¢Æ’Â£ Protect /account (redirect to /login if not signed in)
   if (req.nextUrl.pathname.startsWith("/account")) {
     const hasSession =
       req.cookies.get("sb-access-token") || req.cookies.get("sb-refresh-token");
@@ -32,7 +32,7 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// ðŸ”„ Apply middleware everywhere except Next internals & API routes
+// Ã°Å¸""ž Apply middleware everywhere except Next internals & API routes
 export const config = {
   matcher: [
     "/((?!_next|favicon.ico|robots.txt|sitemap.xml|images|public|api).*)",
