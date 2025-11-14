@@ -83,7 +83,7 @@ function main() {
     selected.started_at = new Date().toISOString();
   }
 
-  fs.writeFileSync(backlogPath, JSON.stringify(data, null, 2) + "\\n", "utf8");
+  fs.writeFileSync(backlogPath, JSON.stringify(data, null, 2) + "\n", "utf8");
 
   const result = {
     ok: true,
