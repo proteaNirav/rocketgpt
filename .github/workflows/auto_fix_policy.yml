@@ -1,7 +1,12 @@
-﻿name: Auto Fix Policy and Merge
+name: Auto Fix Policy and Merge
 
 on:
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Pull request number to fix"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -12,25 +17,35 @@ permissions:
 jobs:
   fix:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.ROCKET_BOT_TOKEN }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Ensure labels and apply + retrigger + merge + smoke
-        env:
-          GH_TOKEN: ${{ secrets.ROCKET_BOT_TOKEN }}
+      - name: Ensure labels, retrigger checks, auto-merge, and smoke
         run: |
-          set -e
-          echo "ðŸ”§ Ensuring safety labels exist..."
+          set -euo pipefail
+
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "GH_TOKEN / secrets.ROCKET_BOT_TOKEN is not set"; exit 1;
+          fi
+
+          PR="${{ github.event.inputs.pr_number }}"
+          echo "Operating on PR #$PR"
+
+          echo "::group::Ensure safety labels exist"
           gh label create "safe:workflow-edit" -c "#0E8A16" -d "Allow editing workflow files in PRs" || true
           gh label create "safe:auto-merge" -c "#1D76DB" -d "Allow auto-merge when checks pass" || true
           gh label create "safe:override" -c "#B60205" -d "Override policy gate for denied paths" || true
+          echo "::endgroup::"
 
-          PR=${{ github.event.inputs.pr_number || '125' }}
-          echo "ðŸ·ï¸  Applying labels to PR #$PR"
+          echo "::group::Apply labels to PR"
           gh pr edit "$PR" --add-label "safe:workflow-edit" --add-label "safe:auto-merge" || true
+          echo "::endgroup::"
 
-          echo "ðŸ” Re-triggering CI by pushing empty commit on branch of PR"
+          echo "::group::Retrigger CI by pushing empty commit"
           BR=$(gh pr view "$PR" --json headRefName -q .headRefName)
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -38,12 +53,12 @@ jobs:
           git checkout "$BR"
           git commit --allow-empty -m "chore: retrigger checks (auto-fix)" || true
           git push origin "$BR" || true
+          echo "::endgroup::"
 
-          echo "â³ Waiting for checks to (re)run..."
-          sleep 30
-
-          echo "ðŸ§© Enable auto-merge (squash) if not set"
+          echo "::group::Enable auto-merge (squash) if possible"
           gh pr merge "$PR" --auto --squash || true
+          echo "::endgroup::"
 
-          echo "ðŸš€ Try to run the self_improve workflow (if on default branch)"
+          echo "::group::Run self_improve.yml as smoke"
           gh workflow run self_improve.yml -f reason="auto_fix_policy smoke" || true
+          echo "::endgroup::"
