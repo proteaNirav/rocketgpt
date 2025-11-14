@@ -57,7 +57,14 @@ jobs:
           echo "improvement_title=$(grep '^TITLE=' parsed.txt | sed 's/TITLE=//')" >> $GITHUB_ENV
           echo "improvement_description=$(grep '^DESC=' parsed.txt | sed 's/DESC=//')" >> $GITHUB_ENV
           echo "improvement_status=$(grep '^STATUS=' parsed.txt | sed 's/STATUS=//')" >> $GITHUB_ENV
-
+    
+      - name: Log selected improvement
+        run: |
+          echo "Selected Improvement:"
+          echo "ID:      ${{ env.improvement_id }}"
+          echo "Title:   ${{ env.improvement_title }}"
+          echo "Status:  ${{ env.improvement_status }}"
+          echo "Desc:    ${{ env.improvement_description }}"
 
       - name: Find stalled issues (label=codegen:ready, no open PR)
         id: stalled
