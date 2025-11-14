@@ -78,7 +78,32 @@ jobs:
           echo "Generated patches directory content:"
           ls -R patches || echo "No patches directory created"
 
+      - name: Apply generated patch (3-way merge)
+        id: apply_patch
+        run: |
+          echo "Applying patch for ${{ env.improvement_id }}"
+          
+          if [ ! -d patches ]; then
+            echo "No patches directory found. Skipping."
+            exit 0
+          fi
 
+          PATCH_FILE="patches/${{ env.improvement_id }}.patch"
+
+          if [ ! -f "$PATCH_FILE" ]; then
+            echo "No patch file found for this improvement. Skipping."
+            exit 0
+          fi
+
+          echo "Found patch: $PATCH_FILE"
+          echo "Attempting 3-way merge..."
+
+          git apply --3way --whitespace=fix "$PATCH_FILE" || {
+            echo "Patch failed to apply!"
+            exit 1
+          }
+
+          echo "Patch applied successfully."
 
       - name: Find stalled issues (label=codegen:ready, no open PR)
         id: stalled
