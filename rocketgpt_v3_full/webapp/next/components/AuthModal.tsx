@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useState } from 'react'
 import { getSupabase } from '@/lib/supabaseClient'
 
@@ -18,14 +18,14 @@ export default function AuthModal({
     e?.preventDefault()
     const sb = getSupabase()
     if (!sb) {
-      setMsg('Auth temporarily unavailable â€” missing Supabase config.')
+      setMsg('Auth temporarily unavailable Ã¢â‚¬" missing Supabase config.')
       return
     }
     const { error } = await sb.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined },
     })
-    setMsg(error ? error.message : 'Magic link sent â€” check your inbox.')
+    setMsg(error ? error.message : 'Magic link sent Ã¢â‚¬" check your inbox.')
   }
 
   return (

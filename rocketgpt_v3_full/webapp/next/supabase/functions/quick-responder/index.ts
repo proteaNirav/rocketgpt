@@ -7,7 +7,7 @@ const ENDPOINT_KEY = "quick_responder";
 
 serve(async (req: Request) => {
   try {
-    // ⛔ guests blocked — only real users
+    // â›” guests blocked "” only real users
     const userId = getAuthUserId(req) || req.headers.get("x-user-id");
     if (!userId) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {

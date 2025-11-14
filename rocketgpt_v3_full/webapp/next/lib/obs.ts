@@ -1,5 +1,5 @@
 // rocketgpt_v3_full/webapp/next/lib/obs.ts
-// Minimal observation logger (UI-side) â€” safe, non-blocking.
+// Minimal observation logger (UI-side) Ã¢â‚¬" safe, non-blocking.
 
 import { supabase } from '@/lib/supabaseClient'
 
