@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useMemo, useState } from 'react';
 
 type UsageRow = {
@@ -74,14 +74,14 @@ export default function LimitsPage() {
       body: JSON.stringify({ user_id: uid, plan_code }),
     });
     if (!res.ok) {
-      // rollback on failure â€” coerce to string fallback to avoid TS errors
+      // rollback on failure Ã¢â‚¬" coerce to string fallback to avoid TS errors
       setUserPlan((p) => ({ ...p, [uid]: prev ?? "BRONZE" }));
       const j = await res.json().catch(() => ({}));
       alert(`Update failed: ${j?.error || res.statusText}`);
     }
   }
 
-  if (loading) return <main className="p-6">Loading limitsâ€¦</main>;
+  if (loading) return <main className="p-6">Loading limitsÃ¢â‚¬Â¦</main>;
 
   return (
     <main className="p-6 space-y-4">
