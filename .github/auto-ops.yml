@@ -1,15 +1,59 @@
 ﻿allowed_labels:
+  # Existing labels
   - safe:auto-pr
   - safe:auto-merge
   - safe:workflow-edit
+
+  # New v4 Core AI safety labels
+  - safe:regen
+  - safe:self-improve
+  - safe:agent-edit
+  - safe:policy-fix
+
 branch_allowlist:
+  # Existing rules
   - '^ai/.*'
   - '^v4-core-ai$'
+
+  # Allow ephemeral AI-generated branches
+  - '^auto/.+$'
+  - '^rgpt/.+$'
+
 deny_paths:
+  # Existing rules
   - '^supabase/migrations/.*'
   - '^infra/terraform/.*'
+
+  # Extra safety
+  - '^.github/permissions/.*'
+  - '^.rgpt/secure/.*'
+
 allow_workflows:
+  # Existing
   - '^self_improve.yml$'
   - '^watchdog.yml$'
   - '^policy_gate.yml$'
   - '^v4_ship_placeholder.yml$'
+
+  # Core AI v4 required workflows
+  - '^auto_fix_policy.yml$'
+  - '^self_heal.yml$'
+  - '^ai-review.yml$'
+  - '^ai-advisor.yml$'
+
+auto_patch:
+  workflow_allowlist:
+    enabled: true
+    message: "Auto-ops: update allowlist for AI-generated workflow"
+    restricted_to_labels:
+      - safe:workflow-edit
+      - safe:policy-fix
+    protect_main: true
+
+generate_safety_labels:
+  enabled: true
+  labels:
+    - safe:self-improve
+    - safe:auto-merge
+    - safe:workflow-edit
+    - safe:policy-fix
