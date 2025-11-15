@@ -1,5 +1,6 @@
 ﻿const fs = require("fs");
 const path = require("path");
+const { readChatIntents } = require("./read_chat_intents");
 
 function loadBacklog() {
   const backlogPath = path.join(__dirname, "..", "..", "config", "self_improve_backlog.json");
@@ -66,13 +67,21 @@ function main() {
   const { data, backlogPath } = loadBacklog();
   const backlog = data.backlog;
 
+  // 🔍 New: read chat intents as an input signal (for now only summarized)
+  const chatIntents = readChatIntents();
+  const latestIntent = chatIntents.length > 0 ? chatIntents[chatIntents.length - 1] : null;
+
   const selected = selectNext(backlog);
 
   if (!selected) {
     const result = {
       ok: false,
       reason: "no_pending_items",
-      message: "No pending improvements in backlog"
+      message: "No pending improvements in backlog",
+      chat_intents_summary: {
+        count: chatIntents.length,
+        latest: latestIntent
+      }
     };
     console.log(JSON.stringify(result, null, 2));
     return;
@@ -87,7 +96,11 @@ function main() {
 
   const result = {
     ok: true,
-    selected
+    selected,
+    chat_intents_summary: {
+      count: chatIntents.length,
+      latest: latestIntent
+    }
   };
 
   console.log(JSON.stringify(result, null, 2));
