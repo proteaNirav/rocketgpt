@@ -1,2 +1,3 @@
 ﻿# Chat→RocketGPT intent inbox (JSONL, one object per line)
 {"from":"Nirav","timestamp":"2025-11-15T00:13:09+05:30","intent":"Enable RocketGPT to read config/self-improve/chat_intents.jsonl and use my chat feedback as primary input for self-improvement tasks (plan, code, tests, docs)."}
+{"from":"Nirav","timestamp":"2025-11-15T08:03:04+05:30","intent":"Prioritise improvements that make RocketGPT easier for me to operate from PowerShell (better logs, clearer statuses, and simple health commands)."}
