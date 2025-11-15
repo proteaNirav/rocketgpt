@@ -3,3 +3,22 @@
 .rgpt/
 
 .vercel
+# Python venvs
+.venv/
+.venv-*/
+**/.venv/
+**/.venv-*/
+
+# Node / Next builds
+.next/
+out/
+
+# Vercel local
+.vercel/
+.vercel/*.local
+.vercel/.env.*.local
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+.vscode/
