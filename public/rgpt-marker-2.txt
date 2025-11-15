@@ -1,0 +1,4 @@
+﻿RocketGPT Marker
+index=2
+root=D:\Projects\RocketGPT\rocketgpt
+stamp=2025-11-15T12:59:15+05:30
