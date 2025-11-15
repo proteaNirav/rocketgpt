@@ -24,13 +24,3 @@ export function noContent(origin: string | null) {
     headers: corsHeaders(origin)
   });
 }
-
-export function methodNotAllowed(origin: string | null) {
-  return new Response(JSON.stringify({ ok: false, error: "Method Not Allowed" }), {
-    status: 405,
-    headers: {
-      "Content-Type": "application/json",
-      ...corsHeaders(origin)
-    }
-  });
-}
