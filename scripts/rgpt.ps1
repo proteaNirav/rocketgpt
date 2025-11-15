@@ -12,8 +12,9 @@ function Parse-LogsArgs {
     )
 
     $result = [ordered]@{
-        RunId = $null
-        Limit = 1
+        RunId      = $null
+        Limit      = 1
+        LastFailed = $false
     }
 
     for ($i = 0; $i -lt $Args.Count; $i++) {
@@ -33,6 +34,9 @@ function Parse-LogsArgs {
                     $i++
                 }
             }
+            "--last-failed" {
+                $result.LastFailed = $true
+            }
         }
     }
 
@@ -50,11 +54,38 @@ switch ($Command.ToLower()) {
         ./scripts/self-improve/self_improve_current.ps1
     }
     "runs" {
-        # Show recent Self-Improve runs in a table
         ./scripts/self-improve/self_improve_runs.ps1 -Limit 10
     }
     "logs" {
         $opts = Parse-LogsArgs -Args $Args
+
+        if ($opts.LastFailed) {
+            # Find the most recent failed/completed!=success run (look back up to 25 runs)
+            $runs = gh run list --repo "proteaNirav/rocketgpt" `
+                --workflow "self_improve.yml" `
+                --limit 25 `
+                --json databaseId,displayTitle,conclusion,status,updatedAt |
+                ConvertFrom-Json
+
+            if (-not $runs) {
+                Write-Host "No runs found." -ForegroundColor Yellow
+                exit 1
+            }
+            if ($runs -isnot [array]) { $runs = @($runs) }
+
+            $failed = $runs |
+              Sort-Object updatedAt -Descending |
+              Where-Object { $_.status -eq "completed" -and $_.conclusion -ne "success" } |
+              Select-Object -First 1
+
+            if (-not $failed) {
+                Write-Host "No failed runs found in the recent 25 runs." -ForegroundColor Green
+                exit 0
+            }
+
+            ./scripts/self-improve/self_improve_logs.ps1 -RunId $failed.databaseId
+            break
+        }
 
         if ($opts.RunId) {
             ./scripts/self-improve/self_improve_logs.ps1 -RunId $opts.RunId
@@ -66,13 +97,14 @@ switch ($Command.ToLower()) {
     "help" {
         Write-Host "`nRocketGPT CLI (rgpt.ps1)`n" -ForegroundColor Cyan
         Write-Host "Usage:" -ForegroundColor Yellow
-        Write-Host "  ./scripts/rgpt.ps1 health                 # Show overall RocketGPT self-improve health snapshot"
-        Write-Host "  ./scripts/rgpt.ps1 self-status            # Show recent Self-Improve runs (compact view)"
-        Write-Host "  ./scripts/rgpt.ps1 self-current           # Show active improvement + latest intent"
-        Write-Host "  ./scripts/rgpt.ps1 runs                   # Show recent Self-Improve runs (detailed table)"
-        Write-Host "  ./scripts/rgpt.ps1 logs                   # Show logs for the latest Self-Improve run"
-        Write-Host "  ./scripts/rgpt.ps1 logs --run <RunId>     # Show logs for a specific Self-Improve run"
-        Write-Host "  ./scripts/rgpt.ps1 logs --limit <number>  # Show logs for the last N Self-Improve runs"
+        Write-Host "  ./scripts/rgpt.ps1 health                   # Health snapshot"
+        Write-Host "  ./scripts/rgpt.ps1 self-status              # Recent runs (compact)"
+        Write-Host "  ./scripts/rgpt.ps1 self-current             # Active improvement + latest intent"
+        Write-Host "  ./scripts/rgpt.ps1 runs                     # Recent runs (table)"
+        Write-Host "  ./scripts/rgpt.ps1 logs                     # Logs for latest run"
+        Write-Host "  ./scripts/rgpt.ps1 logs --run <RunId>       # Logs for a specific run"
+        Write-Host "  ./scripts/rgpt.ps1 logs --limit <number>    # Logs for last N runs"
+        Write-Host "  ./scripts/rgpt.ps1 logs --last-failed       # Logs for most recent failed run"
         Write-Host ""
         return
     }
