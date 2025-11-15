@@ -1,30 +1,31 @@
-﻿"use server";
+﻿"use server"
 
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
 /**
- * Canonical server-side Supabase client factory (App Router).
- * Must be async in a `"use server"` file.
+ * Server-side Supabase client factory (App Router safe).
+ * Always dynamic (no static export), cookies are read-only.
  */
 export async function getSupabaseServerClient() {
   const cookieStore = cookies();
   const url  = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
-  return createServerClient(url, anon, {
+  const client = createServerClient(url, anon, {
     cookies: {
-      // @supabase/ssr reads getAll() for cookie forwarding
       getAll() {
-        return cookieStore.getAll();
+        // Next.js App Router: only read cookies server-side
+        try { return cookieStore.getAll(); } catch { return []; }
       },
-      // No-ops to avoid header mutation in App Router
-      setAll(_cookies) { /* no-op */ },
+      // No-ops to avoid writes during server actions
+      setAll(_cookies) { /* noop */ },
     },
   });
+
+  return client;
 }
 
-/** Backward compatible alias for older imports */
-export async function createSupabaseServerClient() {
-  return getSupabaseServerClient();
-}
+// Hard-disable any prerendering attempts for imported modules
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";

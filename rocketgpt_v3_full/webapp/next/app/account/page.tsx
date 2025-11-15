@@ -1,42 +1,30 @@
 ﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
-import { createSupabaseServerClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+
+import React from "react";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function AccountPage() {
-  const supabase = createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  const supabase = await getSupabaseServerClient();
+  let user = null;
+  try {
+    const result = await supabase.auth.getUser();
+    user = result?.data?.user ?? null;
+  } catch {
+    user = null;
+  }
 
   return (
-    <div className="mx-auto max-w-2xl p-6 space-y-6">
-      <h1 className="text-2xl font-semibold">Account</h1>
-
-      <div className="border rounded p-4 space-y-2">
-        <div className="font-medium">{profile?.display_name ?? user.email}</div>
-        <div className="text-sm text-gray-500">{user.email}</div>
-        <div className="text-sm">Role: <b>{profile?.role ?? 'user'}</b> Ã‚Â· Plan: <b>{profile?.plan ?? 'free'}</b></div>
-      </div>
-
-      <form action={signOutAction}>
-        <button className="rounded bg-black text-white px-4 py-2">Sign out</button>
-      </form>
-    </div>
-  )
+    <main className="p-6">
+      <h1 className="text-2xl font-semibold mb-2">Account</h1>
+      {user ? (
+        <div className="space-y-1">
+          <div><span className="font-medium">User ID:</span> {user.id}</div>
+          <div><span className="font-medium">Email:</span> {user.email ?? "—"}</div>
+        </div>
+      ) : (
+        <p>You're not signed in.</p>
+      )}
+    </main>
+  );
 }
-
-async function signOutAction() {
-  'use server'
-  const supabase = (await import('@/lib/supabase/server')).createSupabaseServerClient()
-  await supabase.auth.signOut()
-  return (await import('next/navigation')).redirect('/login')
-}
-
-
-
