@@ -1,0 +1,12 @@
+﻿{
+    "ok":  true,
+    "selected":  {
+                     "id":  "IMP-0002",
+                     "title":  "Use chat feedback as primary input for self-improvement",
+                     "description":  "Wire RocketGPT self-improve pipeline to read config/self-improve/chat_intents.jsonl and prioritize improvements based on latest chat intents from Nirav.",
+                     "created_at":  "2025-11-15T00:21:30.7418909+05:30",
+                     "priority":  "high",
+                     "status":  "in_progress",
+                     "started_at":  "2025-11-14T18:52:34.899Z"
+                 }
+}
