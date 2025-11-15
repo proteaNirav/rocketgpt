@@ -1,0 +1,63 @@
+name: Vercel Throttled Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  gatekeeper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Find latest successful Vercel deployment run
+        id: last
+        run: |
+          echo "querying..."
+          recent=$(gh run list --workflow "Vercel" --branch main --limit 1 --json startedAt,conclusion | jq -r ".[0].startedAt")
+          echo "last_timestamp=$recent" >> $GITHUB_OUTPUT
+
+      - name: Decide if deploy allowed
+        id: decide
+        run: |
+          last="${{ steps.last.outputs.last_timestamp }}"
+          now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          if [ -z "$last" ]; then
+            echo "allowed=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          last_epoch=$(date -d "$last" +%s)
+          now_epoch=$(date -d "$now" +%s)
+          diff=$(( now_epoch - last_epoch ))
+
+          echo "Time since last deploy: $diff seconds"
+
+          # 30 minutes = 1800 seconds
+          if [ $diff -lt 1800 ]; then
+            echo "allowed=false" >> $GITHUB_OUTPUT
+            exit 0
+          else
+            echo "allowed=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+      - name: Trigger Vercel Deployment
+        if: steps.decide.outputs.allowed == 'true'
+        run: |
+          echo "Deploying to Vercel..."
+          curl -X POST "https://api.vercel.com/v1/integrations/deploy/$VERCEL_DEPLOY_HOOK" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}"
+
+      - name: Skip notice
+        if: steps.decide.outputs.allowed == 'false'
+        run: |
+          echo "Skipping deploy: last deploy was within 30 minutes"
