@@ -1,3 +1,5 @@
+﻿export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 // webapp/next/app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
@@ -23,5 +25,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
 
 
