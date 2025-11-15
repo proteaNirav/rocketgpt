@@ -1,22 +1,15 @@
-# Chat-Driven Improvement Plan (Active)
+# Chat-Intent-Driven Improvement Plan
 
-- **Improvement ID:** IMP-0003
-- **Title:** Make RocketGPT easier to operate from PowerShell
+- **Improvement ID:** IMP-0002
+- **Title:** Use chat feedback as primary input for self-improvement
 - **Priority:** high
-- **Status:** in_progress
-- **Started at:** 2025-11-15T08:30:00+05:30
-- **Plan generated at:** 2025-11-15T08:30:00+05:30
-
+- **Status:** completed
+- **Started at:** 2025-11-14T18:52:34.899Z
+- **Plan generated at:** 2025-11-15T02:43:15.700Z
 
 ## Description
 
-Use my chat intent stream to guide improvements that make RocketGPT easier to operate entirely from PowerShell. Focus on:
-
-- Quick health snapshots for Self-Improve and key workflows.
-- Easy access to recent runs, statuses, and outcomes.
-- Simple ways to view detailed logs from the terminal.
-- A small `rgpt.ps1` CLI that acts as the operator surface for RocketGPT on my machine.
-
+Wire RocketGPT self-improve pipeline to read config/self-improve/chat_intents.jsonl and prioritize improvements based on latest chat intents from Nirav.
 
 ## Latest Chat Intent
 
