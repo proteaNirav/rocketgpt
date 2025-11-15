@@ -76,7 +76,6 @@ switch ($Command.ToLower()) {
         Write-Host "Triggering throttled deploy..." -ForegroundColor Cyan
         gh workflow run "Vercel Throttled Deploy" | Out-Null
 
-        # Fetch the latest run id
         Start-Sleep -Seconds 3
         $r = gh run list --workflow "Vercel Throttled Deploy" --limit 1 --json databaseId,updatedAt | ConvertFrom-Json
         if (-not $r) { Write-Host "No run found — check GitHub." -ForegroundColor Yellow; break }
@@ -85,15 +84,31 @@ switch ($Command.ToLower()) {
 
         if (-not $opts.Wait) { break }
 
-        # Wait mode: poll until completed and print gate decision (no ?? or ?: used)
+        # Wait mode: poll until completed and print gate decision
         do {
           $j = gh run view $runId --json status,conclusion | ConvertFrom-Json
           $resultText = "(n/a)"
-          if ($j -and $j.PSObject.Properties.Match("conclusion").Count -gt 0 -and $j.conclusion) {
-            $resultText = $j.conclusion
-          }
+          if ($j -and $j.PSObject.Properties.Match("conclusion").Count -gt 0 -and $j.conclusion) { $resultText = $j.conclusion }
           Write-Host ("Status: {0}  Result: {1}" -f $j.status, $resultText)
           Start-Sleep -Seconds $opts.Poll
+        } while ($j.status -ne "completed")
+
+        Write-Host "`n--- Gate decision ---`n"
+        gh run view $runId --log | Select-String -Pattern "Decide if deploy allowed", "Over 30 minutes", "Under 30 minutes", "Deploying to Vercel", "Skipping deploy"
+    }
+    "deploy-status" {
+        if ($Args.Count -lt 1) {
+            Write-Host "Usage: ./scripts/rgpt.ps1 deploy-status <RunId>" -ForegroundColor Yellow
+            break
+        }
+        $runId = $Args[0]
+        # wait until completed, then show decision lines
+        do {
+          $j = gh run view $runId --json status,conclusion | ConvertFrom-Json
+          $resultText = "(n/a)"
+          if ($j -and $j.PSObject.Properties.Match("conclusion").Count -gt 0 -and $j.conclusion) { $resultText = $j.conclusion }
+          Write-Host ("Status: {0}  Result: {1}" -f $j.status, $resultText)
+          if ($j.status -ne "completed") { Start-Sleep -Seconds 5 }
         } while ($j.status -ne "completed")
 
         Write-Host "`n--- Gate decision ---`n"
@@ -110,6 +125,7 @@ switch ($Command.ToLower()) {
         Write-Host "  ./scripts/rgpt.ps1 logs --limit N         # Logs for last N runs"
         Write-Host "  ./scripts/rgpt.ps1 logs --last-failed     # Logs for most recent failed run"
         Write-Host "  ./scripts/rgpt.ps1 deploy [--wait]        # Trigger throttled Vercel deploy (with 30m gate)"
+        Write-Host "  ./scripts/rgpt.ps1 deploy-status <RunId>  # Wait + print gate decision for a throttled deploy run"
         return
     }
     default {
