@@ -1,0 +1,45 @@
+{
+  "sorted_middleware": [
+    "/api/edge/[fn]/route"
+  ],
+  "middleware": {},
+  "instrumentation": null,
+  "functions": {
+    "/api/edge/[fn]/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/edge/[fn]/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_api_edge_[fn]_route_actions_aa0f1f85.js",
+        "server/edge/chunks/node_modules_next_dist_esm_ff4e8651._.js",
+        "server/edge/chunks/node_modules_next_dist_compiled_0f29deea._.js",
+        "server/edge/chunks/node_modules_next_dist_7bea040f._.js",
+        "server/edge/chunks/edge-wrapper_6b314ef6.js",
+        "server/edge/chunks/[root-of-the-server]__6e17ff9f._.js",
+        "server/edge/chunks/turbopack-edge-wrapper_4dda5fd4.js"
+      ],
+      "name": "app/api/edge/[fn]/route",
+      "page": "/api/edge/[fn]/route",
+      "matchers": [
+        {
+          "regexp": "^/api/edge/(?P<nxtPfn>[^/]+?)(?:/)?$",
+          "originalSource": "/api/edge/[fn]"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "regions": [
+        "bom1",
+        "sin1"
+      ],
+      "env": {
+        "__NEXT_BUILD_ID": "development",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "6SCYHUwraY3ojoIdH1AcK5j2K7Dga10LdmkwML9cThI=",
+        "__NEXT_PREVIEW_MODE_ID": "35f6d480b003cce5ac98f75459193124",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "be2a48dbc215dff47e65a9a447742417475ced5af29e9fb5417d309bc7079252",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "783e4e63ce7db481eb72aa0426a16920f1a5a751aad2233e0d2801cdc7cd3dae"
+      }
+    }
+  }
+}

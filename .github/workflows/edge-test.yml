@@ -1,0 +1,51 @@
+﻿name: Edge Routes Test
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  edge-test:
+    runs-on: ubuntu-latest
+    env:
+      ALLOWED_ORIGIN: http://localhost:5173
+      PORT: 3000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Start Next (background)
+        run: |
+          nohup npx next start -p $PORT > .next-run.log 2>&1 &
+          echo "Server starting on port $PORT..."
+          for i in {1..60}; do
+            if curl -sSf "http://localhost:${PORT}/api/edge/ping" > /dev/null; then
+              echo "Edge route is up."
+              break
+            fi
+            sleep 1
+          done
+          # Final assert
+          curl -sSf "http://localhost:${PORT}/api/edge/ping" > /dev/null
+
+      - name: Run Edge tester (pwsh)
+        shell: pwsh
+        run: |
+          ./test-edge.ps1 -BaseUrl "http://localhost:${env:PORT}/api/edge" -Origin "${env:ALLOWED_ORIGIN}"
