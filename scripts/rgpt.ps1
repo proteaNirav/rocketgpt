@@ -13,12 +13,17 @@ switch ($Command.ToLower()) {
     "self-current" {
         ./scripts/self-improve/self_improve_current.ps1
     }
+    "logs" {
+        # Show logs for the latest Self-Improve run
+        ./scripts/self-improve/self_improve_logs.ps1 -Limit 1
+    }
     "help" {
         Write-Host "`nRocketGPT CLI (rgpt.ps1)`n" -ForegroundColor Cyan
         Write-Host "Usage:" -ForegroundColor Yellow
         Write-Host "  ./scripts/rgpt.ps1 health        # Show overall RocketGPT self-improve health snapshot"
         Write-Host "  ./scripts/rgpt.ps1 self-status   # Show recent Self-Improve runs"
         Write-Host "  ./scripts/rgpt.ps1 self-current  # Show active improvement + latest intent"
+        Write-Host "  ./scripts/rgpt.ps1 logs          # Show logs for the latest Self-Improve run"
         Write-Host ""
         return
     }
