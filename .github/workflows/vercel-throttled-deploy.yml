@@ -12,52 +12,60 @@ permissions:
 jobs:
   gatekeeper:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Find latest successful Vercel deployment run
-        id: last
-        run: |
-          echo "querying..."
-          recent=$(gh run list --workflow "Vercel" --branch main --limit 1 --json startedAt,conclusion | jq -r ".[0].startedAt")
-          echo "last_timestamp=$recent" >> $GITHUB_OUTPUT
-
-      - name: Decide if deploy allowed
+      - name: Decide if deploy allowed (30 min gate)
         id: decide
-        run: |
-          last="${{ steps.last.outputs.last_timestamp }}"
-          now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const THROTTLE_SECONDS = 1800; // 30 min
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
 
-          if [ -z "$last" ]; then
-            echo "allowed=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
+            // Find THIS workflow's id by name (GITHUB_WORKFLOW)
+            const { data: { workflows } } = await github.rest.actions.listRepoWorkflows({ owner, repo });
+            const wf = workflows.find(w => w.name === process.env.GITHUB_WORKFLOW);
+            if (!wf) {
+              core.setOutput('allowed', 'true'); // be permissive if we can't find it
+              core.info('Workflow id not found, allowing deploy.');
+              return;
+            }
 
-          last_epoch=$(date -d "$last" +%s)
-          now_epoch=$(date -d "$now" +%s)
-          diff=$(( now_epoch - last_epoch ))
+            // Get recent completed runs for this workflow
+            const { data: { workflow_runs } } = await github.rest.actions.listWorkflowRuns({
+              owner, repo, workflow_id: wf.id, per_page: 10, status: 'completed'
+            });
 
-          echo "Time since last deploy: $diff seconds"
+            // Find most recent SUCCESS
+            const lastSuccess = workflow_runs.find(r => r.conclusion === 'success');
+            if (!lastSuccess) {
+              core.setOutput('allowed', 'true');
+              core.info('No successful runs found yet — allowing deploy.');
+              return;
+            }
 
-          # 30 minutes = 1800 seconds
-          if [ $diff -lt 1800 ]; then
-            echo "allowed=false" >> $GITHUB_OUTPUT
-            exit 0
-          else
-            echo "allowed=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
+            const last = Date.parse(lastSuccess.updated_at);
+            const now  = Date.now();
+            const diffSeconds = Math.floor((now - last) / 1000);
 
-      - name: Trigger Vercel Deployment
+            core.info(`Time since last successful deploy: ${diffSeconds}s`);
+
+            if (diffSeconds < THROTTLE_SECONDS) {
+              core.setOutput('allowed', 'false');
+              core.setOutput('last_updated', lastSuccess.updated_at);
+              core.info('Under 30 minutes — skip deploy.');
+            } else {
+              core.setOutput('allowed', 'true');
+              core.info('Over 30 minutes — allow deploy.');
+            }
+
+      - name: Trigger Vercel Deployment via Deploy Hook
         if: steps.decide.outputs.allowed == 'true'
         run: |
-          echo "Deploying to Vercel..."
-          curl -X POST "https://api.vercel.com/v1/integrations/deploy/$VERCEL_DEPLOY_HOOK" \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}"
-
+          echo "Deploying to Vercel via deploy hook..."
+          curl -sS -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
+          echo "Triggered."
       - name: Skip notice
-        if: steps.decide.outputs.allowed == 'false'
+        if: steps.decide.outputs.allowed != 'true'
         run: |
-          echo "Skipping deploy: last deploy was within 30 minutes"
+          echo "Skipping deploy: last successful deploy was within 30 minutes."
