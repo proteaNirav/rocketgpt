@@ -1,11 +1,11 @@
-﻿"use server"
+﻿"use server";
 
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
 /**
  * Server-side Supabase client factory (App Router safe).
- * Always dynamic (no static export), cookies are read-only.
+ * NOTE: In a "use server" file, only async functions may be exported.
  */
 export async function getSupabaseServerClient() {
   const cookieStore = cookies();
@@ -15,7 +15,6 @@ export async function getSupabaseServerClient() {
   const client = createServerClient(url, anon, {
     cookies: {
       getAll() {
-        // Next.js App Router: only read cookies server-side
         try { return cookieStore.getAll(); } catch { return []; }
       },
       // No-ops to avoid writes during server actions
@@ -25,7 +24,3 @@ export async function getSupabaseServerClient() {
 
   return client;
 }
-
-// Hard-disable any prerendering attempts for imported modules
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
