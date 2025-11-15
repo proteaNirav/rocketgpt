@@ -1,0 +1,30 @@
+param(
+    [Parameter(Position=0)]
+    [string]$Command = "help"
+)
+
+switch ($Command.ToLower()) {
+    "health" {
+        ./scripts/rgpt_health.ps1
+    }
+    "self-status" {
+        ./scripts/self-improve/self_improve_status.ps1
+    }
+    "self-current" {
+        ./scripts/self-improve/self_improve_current.ps1
+    }
+    "help" {
+        Write-Host "`nRocketGPT CLI (rgpt.ps1)`n" -ForegroundColor Cyan
+        Write-Host "Usage:" -ForegroundColor Yellow
+        Write-Host "  ./scripts/rgpt.ps1 health        # Show overall RocketGPT self-improve health snapshot"
+        Write-Host "  ./scripts/rgpt.ps1 self-status   # Show recent Self-Improve runs"
+        Write-Host "  ./scripts/rgpt.ps1 self-current  # Show active improvement + latest intent"
+        Write-Host ""
+        return
+    }
+    default {
+        Write-Host "Unknown command: $Command" -ForegroundColor Red
+        Write-Host "Try: ./scripts/rgpt.ps1 help"
+        exit 1
+    }
+}
