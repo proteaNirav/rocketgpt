@@ -1,4 +1,4 @@
-/** @type {import('next').NextConfig} */
+﻿/** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
     // Re-enable lint failures on production builds
@@ -9,3 +9,4 @@ const nextConfig = {
 }
 
 module.exports = nextConfig
+
