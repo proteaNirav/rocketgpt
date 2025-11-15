@@ -1,3 +1,5 @@
+﻿export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 // webapp/next/app/api/debug-auth/route.ts
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
@@ -20,5 +22,6 @@ export async function GET() {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || null,
   });
 }
+
 
 

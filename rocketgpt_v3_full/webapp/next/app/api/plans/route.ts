@@ -1,3 +1,5 @@
+﻿export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -15,5 +17,6 @@ export async function POST(req: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
+
 
 
