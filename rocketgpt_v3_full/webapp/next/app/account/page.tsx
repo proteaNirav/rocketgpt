@@ -1,25 +1,19 @@
-﻿export const dynamic = "force-dynamic";
+﻿import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-import { redirect } from "next/navigation";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
-
 export default async function AccountPage() {
-  const supabase = await getSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
+  const { data: { user }} = await supabase.auth.getUser();
 
-  // Guard: tolerate SSR environments without crashing
-  const { data, error } = await supabase.auth.getUser().catch(() => ({ data: { user: null }, error: null }));
-  const user = data?.user ?? null;
-
-  // If not logged in, send to login (adjust if you prefer a 200 with a message)
-  if (!user) {
-    redirect("/login");
-  }
+  console.log("ACCOUNT USER:", user);
 
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-semibold mb-2">Account</h1>
-      <p className="opacity-80">Signed in as <b>{user.email}</b></p>
-    </main>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold">Account</h1>
+      <p className="mt-2">Welcome {user?.email}</p>
+    </div>
   );
 }

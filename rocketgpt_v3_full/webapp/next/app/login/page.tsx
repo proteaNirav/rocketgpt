@@ -14,7 +14,7 @@ export default function LoginPage() {
   async function sendOtp() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${location.origin}/account` },
+      options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/account` },
     })
     if (error) alert(error.message)
     else setOtpSent(true)
@@ -33,7 +33,7 @@ export default function LoginPage() {
   async function oauth(provider: 'google' | 'azure') {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${location.origin}/account` },
+      options: { redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/account` },
     })
     if (error) alert(error.message)
   }

@@ -1,42 +1,79 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
-export function middleware(req: NextRequest) {
-  // 1Ã¯Â¸ÂÃ¢Æ’Â£ Ensure guest_id cookie
-  const hasGuest = req.cookies.get("guest_id")?.value;
-  if (!hasGuest) {
-    const res = NextResponse.next();
-    const id = crypto.randomUUID();
-    console.log("guest_id created:", id);
-    res.cookies.set("guest_id", id, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 365, // 1 year
-    });
-    return res; // early return
-  }
-
-  // 2Ã¯Â¸ÂÃ¢Æ’Â£ Protect /account (redirect to /login if not signed in)
-  if (req.nextUrl.pathname.startsWith("/account")) {
-    const hasSession =
-      req.cookies.get("sb-access-token") || req.cookies.get("sb-refresh-token");
-    if (!hasSession) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/login";
-      url.searchParams.set("redirectedFrom", req.nextUrl.pathname);
-      return NextResponse.redirect(url);
-    }
-  }
-
-  return NextResponse.next();
-}
-
-// Ã°Å¸""ž Apply middleware everywhere except Next internals & API routes
 export const config = {
   matcher: [
-    "/((?!_next|favicon.ico|robots.txt|sitemap.xml|images|public|api).*)",
-  ],
+    // Protected routes
+    "/account/:path*",
+    "/profile/:path*",
+    "/admin/:path*",
+    "/super/:path*",
+    // Auth routes
+    "/auth/callback",
+    "/login",
+  ]
 };
 
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+  const url = req.nextUrl.clone();
+  
+  // Create Supabase client with cookie handling for middleware
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return req.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options) {
+          // Set cookie on both request and response
+          req.cookies.set({ name, value, ...options });
+          res.cookies.set({ name, value, ...options });
+        },
+        remove(name: string, options) {
+          // Remove cookie from both request and response
+          req.cookies.set({ name, value: '', ...options, maxAge: 0 });
+          res.cookies.set({ name, value: '', ...options, maxAge: 0 });
+        },
+      },
+    }
+  );
 
+  // Refresh session if it exists (handles token refresh)
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  // Protected routes check
+  const isProtectedRoute = 
+    url.pathname.startsWith('/account') || 
+    url.pathname.startsWith('/profile') ||
+    url.pathname.startsWith('/admin') ||
+    url.pathname.startsWith('/super');
+
+  const isAuthRoute = 
+    url.pathname.startsWith('/login') || 
+    url.pathname.startsWith('/auth');
+
+  // Redirect unauthenticated users from protected routes
+  if (isProtectedRoute && (!user || error)) {
+    console.log('[middleware] Redirecting unauthenticated user from:', url.pathname);
+    url.pathname = '/login';
+    url.searchParams.set('redirectedFrom', req.nextUrl.pathname);
+    return NextResponse.redirect(url);
+  }
+
+  // Redirect authenticated users away from login
+  if (isAuthRoute && user && !error && url.pathname === '/login') {
+    // Check if there's a redirect target
+    const redirectedFrom = url.searchParams.get('redirectedFrom');
+    const next = url.searchParams.get('next');
+    const redirectTo = redirectedFrom || next || '/account';
+    
+    console.log('[middleware] Redirecting authenticated user to:', redirectTo);
+    return NextResponse.redirect(new URL(redirectTo, url));
+  }
+
+  return res;
+}
