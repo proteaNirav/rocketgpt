@@ -25,15 +25,13 @@ export async function GET() {
   const ts = new Date().toISOString();
   const build = process.env.VERCEL_GIT_COMMIT_SHA || "dev";
 
-  // Build a base URL for self-calls (works on Vercel; falls back to relative)
-  const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "";
-  const base = vercelUrl || "";
+  // Always use RELATIVE paths to guarantee same-host requests.
+  const base = ""; // '' + '/api/...'
 
-  // Best-effort fan-out (non-blocking style, all with timeouts)
   const [health, version, limits] = await Promise.all([
     getJson(`${base}/api/health`),
     getJson(`${base}/api/version`),
-    getJson(`${base}/api/limits`) // optional; ignore failures
+    getJson(`${base}/api/limits`)
   ]);
 
   const status = {
@@ -49,6 +47,9 @@ export async function GET() {
     plans: {
       ok: limits?.ok ?? false,
       count: Array.isArray(limits?.data?.plans) ? limits.data.plans.length : 0
+    },
+    diag: {
+      base_used: "relative"
     }
   };
 
