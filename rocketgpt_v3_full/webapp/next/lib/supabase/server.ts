@@ -1,26 +1,36 @@
-﻿"use server";
-
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
 /**
- * Server-side Supabase client factory (App Router safe).
- * NOTE: In a "use server" file, only async functions may be exported.
+ * Server-side Supabase client.
+ * Read cookies normally; swallow cookie writes when we're not in a Server Action/Route Handler
+ * to avoid: "Cookies can only be modified in a Server Action or Route Handler".
  */
-export async function getSupabaseServerClient() {
+export function createSupabaseServerClient() {
   const cookieStore = cookies();
-  const url  = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
-  const client = createServerClient(url, anon, {
-    cookies: {
-      getAll() {
-        try { return cookieStore.getAll(); } catch { return []; }
+  const safeSet = (name: string, value: string, options: any) => {
+    try { cookieStore.set({ name, value, ...options }); } catch { /* no-op outside actions/handlers */ }
+  };
+  const safeRemove = (name: string, options: any) => {
+    try { cookieStore.set({ name, value: "", ...options, maxAge: 0 }); } catch { /* no-op */ }
+  };
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+        set: safeSet,
+        remove: safeRemove,
       },
-      // No-ops to avoid writes during server actions
-      setAll(_cookies) { /* noop */ },
-    },
-  });
-
-  return client;
+    }
+  );
 }
+
+export default createSupabaseServerClient;
+// Legacy alias for older imports
+export { createSupabaseServerClient as getSupabaseServerClient };
