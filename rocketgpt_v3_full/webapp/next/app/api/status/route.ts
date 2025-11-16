@@ -1,4 +1,5 @@
 ﻿import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -14,8 +15,9 @@ async function getJson(url: string, timeoutMs = 6000) {
     const { signal, cancel } = controllerTimeout(timeoutMs);
     const res = await fetch(url, { method: "GET", cache: "no-store", signal });
     cancel();
-    if (!res.ok) return { ok: false, status: res.status };
-    return { ok: true, data: await res.json() };
+    const status = res.status;
+    if (!res.ok) return { ok: false, status };
+    return { ok: true, status, data: await res.json() };
   } catch (e) {
     return { ok: false, error: (e as any)?.name || "fetch_error" };
   }
@@ -25,8 +27,11 @@ export async function GET() {
   const ts = new Date().toISOString();
   const build = process.env.VERCEL_GIT_COMMIT_SHA || "dev";
 
-  // Always use RELATIVE paths to guarantee same-host requests.
-  const base = ""; // '' + '/api/...'
+  // Build exact origin from request headers to avoid alias/host mismatch
+  const h = headers();
+  const proto = h.get("x-forwarded-proto") || "https";
+  const host  = h.get("x-forwarded-host") || h.get("host") || "";
+  const base  = `${proto}://${host}`;
 
   const [health, version, limits] = await Promise.all([
     getJson(`${base}/api/health`),
@@ -40,16 +45,20 @@ export async function GET() {
     build,
     version: version?.data?.version ?? build,
     health: {
-      ok: health?.data?.ok ?? false,
+      fetch_ok: health?.ok ?? false,
+      http:    health?.status ?? null,
+      ok:      health?.data?.ok ?? false,
       supabase_ok: health?.data?.supabase_ok ?? false,
-      error: health?.data?.error ?? null
+      error:   health?.data?.error ?? null
     },
     plans: {
-      ok: limits?.ok ?? false,
+      fetch_ok: limits?.ok ?? false,
+      http:     limits?.status ?? null,
       count: Array.isArray(limits?.data?.plans) ? limits.data.plans.length : 0
     },
     diag: {
-      base_used: "relative"
+      base_used: "headers-origin",
+      host
     }
   };
 
