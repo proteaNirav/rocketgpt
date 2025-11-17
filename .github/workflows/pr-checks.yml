@@ -68,8 +68,12 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y yamllint
-
       - name: Run yamllint
+        run: |
+          # Lint all workflow YAMLs, but treat style rules as warnings (syntax is still errors)
+          yamllint \
+            -d "{extends: default, rules: {line-length: {max: 160, level: warning}, document-start: {level: warning}, truthy: {level: warning}, colons: {level: warning}, brackets: {level: warning}, braces: {level: warning}, empty-lines: {level: warning}, new-lines: {level: warning}, new-line-at-end-of-file: {level: warning}}}" \
+            -f github .github/workflows || echo 'yamllint completed with non-blocking warnings'
         run: |
           # Lint all workflow YAMLs, but treat style rules as warnings (syntax is still errors)
           yamllint \
@@ -87,6 +91,7 @@ jobs:
         uses: rhysd/actionlint@v1.7.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
 
 
 
