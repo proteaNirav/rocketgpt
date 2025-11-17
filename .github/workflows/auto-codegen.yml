@@ -1,4 +1,4 @@
-﻿name: Auto Codegen (issue -> PR)
+name: Auto Codegen (issue -> PR)
 
 on:
   issues:
@@ -37,6 +37,7 @@ jobs:
           cat > .rocket/codegen/prompt.txt << 'PROMPT'
 You are RocketGPT's senior full-stack engineer.
 Generate a minimal, production-quality patch for this repository **as a unified git diff**.
+PROMPT
 
 REQUIREMENTS:
 - Output ONLY a valid unified diff starting with "diff --git".
@@ -51,8 +52,6 @@ REPO CONTEXT (abridged):
 - Branch policy: PR into `develop`, squash merge.
 - Codeowners require review.
 
-PROMPT
-PROMPT
           printf '\n--- ISSUE BODY START ---\n\n' >> .rocket/codegen/prompt.txt
           printf '%s\n' "$ISSUE_BODY" >> .rocket/codegen/prompt.txt
           printf '\n--- ISSUE BODY END ---\n' >> .rocket/codegen/prompt.txt
