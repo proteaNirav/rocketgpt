@@ -81,15 +81,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install actionlint
-        run: |
-          curl -sSL https://github.com/rhysd/actionlint/releases/latest/download/actionlint_linux_amd64.tar.gz -o actionlint.tar.gz
-          tar -xzf actionlint.tar.gz
-          sudo mv actionlint /usr/local/bin/
-
       - name: Run actionlint
-        run: |
-          # Validate all workflows
-          actionlint -color
+        uses: rhysd/actionlint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
