@@ -1,4 +1,4 @@
-name: Auto Codegen (issue -> PR)
+﻿name: Auto Codegen (issue -> PR)
 
 on:
   issues:
@@ -51,7 +51,7 @@ REPO CONTEXT (abridged):
 - Branch policy: PR into `develop`, squash merge.
 - Codeowners require review.
 
-USER STORY (from GitHub issue body):
+PROMPT
 PROMPT
           printf '\n--- ISSUE BODY START ---\n\n' >> .rocket/codegen/prompt.txt
           printf '%s\n' "$ISSUE_BODY" >> .rocket/codegen/prompt.txt
