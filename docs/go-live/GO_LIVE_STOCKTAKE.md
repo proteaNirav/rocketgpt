@@ -34,8 +34,8 @@
 
 - [x] **/api/limits** (GET)
   - Status: 200
-  - Body (current): {"usage": [], "plans": [], "user_plans": []}
-  - Note: Plan catalog is currently empty → to be addressed before or after Go-Live as a data-seeding task.
+  - Body (current): {"usage": [], "plans": [BRONZE, SILVER, GOLD], "user_plans": []}
+  - Note: Plan catalog now seeded in Supabase (BRONZE, SILVER, GOLD); further pricing/limits can evolve over time.
 
 ---
 
