@@ -1,3 +1,4 @@
+---
 name: AI Feedback Analyzer (post-merge)
 
 on:
@@ -36,35 +37,36 @@ jobs:
       - name: Add analyzer script (if missing)
         run: |
           if [ ! -f rocketgpt-agents/feedback/analyzer.js ]; then
-            cat > rocketgpt-agents/feedback/analyzer.js <<'JS'
-/**
- * analyzer.js
- * Reads score.json from the MERGE commit (generated/<provider>/score.json),
- * updates generated/metrics/engine_metrics.json aggregate, and prints a summary.
- *
- * Usage (env):
- *   MERGE_SHA: merge commit SHA (required on pull_request closed)
- *   PR_NUMBER: PR number
- *   PROVIDERS: csv list to check: "openai,anthropic,google,groq"
- *   REPO:      "owner/repo"
- */
+      cat > rocketgpt-agents/feedback/analyzer.js <<'JS'
+      /**
+       * analyzer.js
+       * Reads score.json from the MERGE commit …
+       *
+       * Usage (env):
+       *   MERGE_SHA: merge commit SHA (required on pull_request closed)
+       *   PR_NUMBER: PR number
+       *   PROVIDERS: csv list to check: "openai,anthropic,google,groq"
+       *   REPO:      "owner/repo"
+       */
+      const { execSync } = require('child_process');
+      const fs = require('fs');
+      const path = require('path');
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+      function sh(cmd, opts={}) {
+        return execSync(cmd, { encoding: 'utf8', stdio: ['pipe','pipe','pipe'], ...opts }).trim();
+      }
 
-function sh(cmd, opts={}) {
-  return execSync(cmd, { encoding: 'utf8', stdio: ['pipe','pipe','pipe'], ...opts }).trim();
-}
+      function tryReadFromMerge(mergeSha, provider, filePath) {
+        try {
+          const showPath = `git show ${mergeSha}:${filePath}`;
+          return sh(showPath);
+        } catch {
+          return null;
+        }
+      }
+      … (rest of file, all indented exactly 6 spaces)
+JS
 
-function tryReadFromMerge(mergeSha, provider, filePath) {
-  try {
-    const showPath = `git show ${mergeSha}:${filePath}`;
-    return sh(showPath);
-  } catch {
-    return null;
-  }
-}
 
 function loadJSONSafe(fp, fallback=null) {
   try {
