@@ -1,0 +1,486 @@
+
+  YAML Lint	Set up job	2025-11-17T14:05:27.1046800Z ##[debug]Copied action archive 
+'/opt/actionarchivecache/actions_checkout/08eba0b27e820071cde6df949e0beb9ba4906955.tar.gz' to '/home/
+runner/work/_actions/_temp_ffbfca81-d0e5-47f2-aabd-0062d619d146/fab8e8cc-fc26-4620-841a-9cd39b51d800.
+tar.gz'
+  YAML Lint	Set up job	2025-11-17T14:05:27.1957468Z ##[debug]Unwrap 'actions-checkout-08eba0b' to 
+'/home/runner/work/_actions/actions/checkout/v4'
+  YAML Lint	Set up job	2025-11-17T14:05:27.2156053Z ##[debug]Archive '/home/runner/work/_actions/_tem
+p_ffbfca81-d0e5-47f2-aabd-0062d619d146/fab8e8cc-fc26-4620-841a-9cd39b51d800.tar.gz' has been 
+unzipped into '/home/runner/work/_actions/actions/checkout/v4'.
+  YAML Lint	Set up job	2025-11-17T14:05:27.2328343Z ##[debug]action.yml for action: 
+'/home/runner/work/_actions/actions/checkout/v4/action.yml'.
+  YAML Lint	Set up job	2025-11-17T14:05:27.4916487Z ##[debug]Set step '__actions_checkout' display 
+name to: 'Checkout'
+> YAML Lint	Set up job	2025-11-17T14:05:27.4919704Z ##[debug]Set step '__run' display name to: 
+'Install yamllint'
+> YAML Lint	Set up job	2025-11-17T14:05:27.4921343Z ##[debug]Set step '__run_2' display name to: 
+'Run yamllint'
+  YAML Lint	Set up job	2025-11-17T14:05:27.4922127Z Complete job name: YAML Lint
+  YAML Lint	Set up job	2025-11-17T14:05:27.4940652Z ##[debug]Collect running processes for tracking 
+orphan processes.
+  YAML Lint	Set up job	2025-11-17T14:05:27.5151379Z ##[debug]Finishing: Set up job
+  YAML Lint	Checkout	n++2025-11-17T14:05:27.5263940Z ##[debug]Evaluating condition for step: 
+'Checkout'
+  YAML Lint	Checkout	2025-11-17T14:05:27.5302320Z ##[debug]Evaluating: success()
+  YAML Lint	Checkout	2025-11-17T14:05:27.5307318Z ##[debug]Evaluating success:
+  YAML Lint	Checkout	2025-11-17T14:05:27.5322705Z ##[debug]=> true
+  YAML Lint	Checkout	2025-11-17T14:05:27.5328969Z ##[debug]Result: true
+  YAML Lint	Checkout	2025-11-17T14:05:27.5351918Z ##[debug]Starting: Checkout
+  YAML Lint	Checkout	2025-11-17T14:05:27.5419761Z ##[debug]Register post job cleanup for action: 
+actions/checkout@v4
+  YAML Lint	Checkout	2025-11-17T14:05:27.5500705Z ##[debug]Loading inputs
+  YAML Lint	Checkout	2025-11-17T14:05:27.5508479Z ##[debug]Evaluating: github.repository
+  YAML Lint	Checkout	2025-11-17T14:05:27.5509725Z ##[debug]Evaluating Index:
+  YAML Lint	Checkout	2025-11-17T14:05:27.5511674Z ##[debug]..Evaluating github:
+  YAML Lint	Checkout	2025-11-17T14:05:27.5512865Z ##[debug]..=> Object
+  YAML Lint	Checkout	2025-11-17T14:05:27.5519259Z ##[debug]..Evaluating String:
+  YAML Lint	Checkout	2025-11-17T14:05:27.5520165Z ##[debug]..=> 'repository'
+  YAML Lint	Checkout	2025-11-17T14:05:27.5524182Z ##[debug]=> 'proteaNirav/rocketgpt'
+  YAML Lint	Checkout	2025-11-17T14:05:27.5526012Z ##[debug]Result: 'proteaNirav/rocketgpt'
+  YAML Lint	Checkout	2025-11-17T14:05:27.5529074Z ##[debug]Evaluating: github.token
+  YAML Lint	Checkout	2025-11-17T14:05:28.1301844Z ##[debug]Save intra-action state setSafeDirectory 
+= true
+  YAML Lint	Checkout	2025-11-17T14:05:28.1302992Z ##[debug]Save intra-action state repositoryPath = 
+/home/runner/work/rocketgpt/rocketgpt
+  YAML Lint	Checkout	2025-11-17T14:05:28.1307978Z ##[debug]Set output commit = 
+ae12b4ad7ab30e29b7af185207901e93d6137247
+  YAML Lint	Checkout	2025-11-17T14:05:28.1309319Z ##[debug]Set output ref = refs/pull/173/merge
+  YAML Lint	Checkout	2025-11-17T14:05:28.1315432Z ##[debug]Finishing: Checkout
+> YAML Lint	Install yamllint	n++2025-11-17T14:05:28.1332930Z ##[debug]Evaluating condition for step: 
+'Install yamllint'
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1336003Z ##[debug]Evaluating: success()
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1336798Z ##[debug]Evaluating success:
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1337572Z ##[debug]=> true
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1338249Z ##[debug]Result: true
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1339381Z ##[debug]Starting: Install yamllint
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1359013Z ##[debug]Loading inputs
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1373755Z ##[debug]Loading env
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1391954Z ##[group]Run sudo apt-get update -y
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1392703Z [36;1msudo apt-get update -y[0m
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1393358Z [36;1msudo apt-get install -y yamllint[0m
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1431244Z shell: /usr/bin/bash -e {0}
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1431894Z ##[endgroup]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.1485883Z ##[debug]/usr/bin/bash -e 
+/home/runner/work/_temp/85635002-e9e2-41f9-a8c9-95405ad89ca2.sh
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.2308437Z Get:1 file:/etc/apt/apt-mirrors.txt 
+Mirrorlist [144 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.2675019Z Hit:2 
+http://azure.archive.ubuntu.com/ubuntu noble InRelease
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.2687622Z Hit:6 
+https://packages.microsoft.com/repos/azure-cli noble InRelease
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.2690274Z Get:7 
+https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.2695924Z Get:3 
+http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.2737662Z Get:4 
+http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.2767101Z Get:5 
+http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.4401201Z Get:8 
+https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [50.3 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.4502476Z Get:9 
+https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [67.8 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.4542152Z Get:10 
+https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [11.2 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.4877500Z Get:11 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1585 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.4967120Z Get:12 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [175 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.4987867Z Get:13 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 c-n-f Metadata [15.7 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.4994749Z Get:14 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1499 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.5094117Z Get:15 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [303 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.5123978Z Get:16 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [378 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.5152261Z Get:17 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 c-n-f Metadata [31.4 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.5161927Z Get:18 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.5171396Z Get:19 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [5808 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.5178483Z Get:20 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.5989213Z Get:21 
+http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7140 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.5998655Z Get:22 
+http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [11.0 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6007186Z Get:23 
+http://azure.archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [216 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6013875Z Get:24 
+http://azure.archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6024823Z Get:25 
+http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1309 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6089047Z Get:26 
+http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [215 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6104235Z Get:27 
+http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [21.6 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6112604Z Get:28 
+http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 c-n-f Metadata [9416 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6123179Z Get:29 
+http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [908 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6167252Z Get:30 
+http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [204 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6182110Z Get:31 
+http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [52.2 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6191973Z Get:32 
+http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 c-n-f Metadata [19.4 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6200898Z Get:33 
+http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:28.6208299Z Get:34 
+http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [212 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:36.8159017Z Fetched 7264 kB in 1s (7431 kB/s)
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.5801065Z Reading package lists...
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.6179556Z Reading package lists...
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.7997749Z Building dependency tree...
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.8004991Z Reading state information...
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.9518616Z The following additional packages will be 
+installed:
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.9686499Z   python3-pathspec
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.9687407Z The following NEW packages will be 
+installed:
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.9688480Z   python3-pathspec yamllint
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.9869179Z 0 upgraded, 2 newly installed, 0 to remove 
+and 28 not upgraded.
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.9869979Z Need to get 71.6 kB of archives.
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.9870725Z After this operation, 321 kB of additional 
+disk space will be used.
+> YAML Lint	Install yamllint	2025-11-17T14:05:37.9871677Z Get:1 file:/etc/apt/apt-mirrors.txt 
+Mirrorlist [144 B]
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.0095686Z Get:2 
+http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 python3-pathspec all 0.12.1-1 [24.5 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.0117862Z Get:3 
+http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 yamllint all 1.33.0-1 [47.2 kB]
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.2954769Z Fetched 71.6 kB in 0s (1964 kB/s)
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3201574Z Selecting previously unselected package 
+python3-pathspec.
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3478050Z (Reading database ... 
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3478843Z (Reading database ... 5%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3479504Z (Reading database ... 10%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3480280Z (Reading database ... 15%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3481112Z (Reading database ... 20%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3481891Z (Reading database ... 25%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3482658Z (Reading database ... 30%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3483424Z (Reading database ... 35%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3484201Z (Reading database ... 40%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3485131Z (Reading database ... 45%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3485836Z (Reading database ... 50%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.3573819Z (Reading database ... 55%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.5039707Z (Reading database ... 60%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.6159995Z (Reading database ... 65%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.6900855Z (Reading database ... 70%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.7456041Z (Reading database ... 75%
+> YAML Lint	Install yamllint	2025-11-17T14:05:38.9378780Z (Reading database ... 80%
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.0961056Z (Reading database ... 85%
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.2705312Z (Reading database ... 90%
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.4506674Z (Reading database ... 95%
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.4507599Z (Reading database ... 100%
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.4508809Z (Reading database ... 216225 files and 
+directories currently installed.)
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.4566971Z Preparing to unpack 
+.../python3-pathspec_0.12.1-1_all.deb ...
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.4598133Z Unpacking python3-pathspec (0.12.1-1) ...
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.4878675Z Selecting previously unselected package 
+yamllint.
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.5056201Z Preparing to unpack 
+.../yamllint_1.33.0-1_all.deb ...
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.5067534Z Unpacking yamllint (1.33.0-1) ...
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.5593786Z Setting up python3-pathspec (0.12.1-1) ...
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.6719282Z Setting up yamllint (1.33.0-1) ...
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.7945282Z Processing triggers for man-db 
+(2.12.0-4build2) ...
+> YAML Lint	Install yamllint	2025-11-17T14:05:39.7980640Z Not building database; man-db/auto-update 
+is not 'true'.
+> YAML Lint	Install yamllint	2025-11-17T14:05:40.4796352Z 
+> YAML Lint	Install yamllint	2025-11-17T14:05:40.4797399Z Running kernel seems to be up-to-date.
+> YAML Lint	Install yamllint	2025-11-17T14:05:40.4797785Z 
+> YAML Lint	Install yamllint	2025-11-17T14:05:40.4797958Z No services need to be restarted.
+> YAML Lint	Install yamllint	2025-11-17T14:05:40.4798242Z 
+> YAML Lint	Install yamllint	2025-11-17T14:05:40.4798396Z No containers need to be restarted.
+> YAML Lint	Install yamllint	2025-11-17T14:05:40.4798681Z 
+> YAML Lint	Install yamllint	2025-11-17T14:05:40.4798892Z No user sessions are running outdated 
+binaries.
+> YAML Lint	Install yamllint	2025-11-17T14:05:40.4799243Z 
+> YAML Lint	Install yamllint	2025-11-17T14:05:40.4799540Z No VM guests are running outdated 
+hypervisor (qemu) binaries on this host.
+> YAML Lint	Install yamllint	2025-11-17T14:05:41.4478732Z ##[debug]Finishing: Install yamllint
+> YAML Lint	Run yamllint	n++2025-11-17T14:05:41.4490041Z ##[debug]Evaluating condition for step: 
+'Run yamllint'
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4492671Z ##[debug]Evaluating: success()
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4493240Z ##[debug]Evaluating success:
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4493826Z ##[debug]=> true
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4494915Z ##[debug]Result: true
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4495759Z ##[debug]Starting: Run yamllint
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4515257Z ##[debug]Loading inputs
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4516705Z ##[debug]Loading env
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4522378Z ##[group]Run # Lint all workflow YAMLs, but 
+treat style rules as warnings (syntax is still errors)
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4523267Z [36;1m# Lint all workflow YAMLs, but treat 
+style rules as warnings (syntax is still errors)[0m
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4523819Z [36;1myamllint \[0m
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4525204Z [36;1m  -d "{extends: default, rules: 
+{line-length: {max: 160, level: warning}, document-start: {level: warning}, truthy: {level: 
+warning}, colons: {level: warning}, brackets: {level: warning}, braces: {level: warning}, 
+empty-lines: {level: warning}}}" \[0m
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4526504Z [36;1m  -f github .github/workflows[0m
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4561686Z shell: /usr/bin/bash -e {0}
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4562030Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.4595833Z ##[debug]/usr/bin/bash -e 
+/home/runner/work/_temp/20cb17e4-5a4f-453c-9d9b-0f8070469edb.sh
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.9994856Z Traceback (most recent call last):
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.9996933Z ::group::.github/workflows/text-guard.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.9997886Z ##[group].github/workflows/text-guard.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:41.9999192Z   File "/opt/pipx_bin/yamllint", line 7, in 
+<module>
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0000350Z     sys.exit(run())
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0001075Z              ^^^^^
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0002644Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yamllint/cli.py", line 227, in run
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0027302Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0035532Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0037157Z ##[warning]6:16 [brackets] too many spaces 
+inside brackets
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0038663Z ##[warning]6:21 [brackets] too many spaces 
+inside brackets
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0039758Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0039997Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0040141Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0040445Z ::group::.github/workflows/pr-checks.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0040832Z ##[group].github/workflows/pr-checks.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0041783Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0044062Z ##[error]1:16 [new-lines] wrong new line 
+character: expected \n
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0045978Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0047423Z ##[warning]5:16 [brackets] too many spaces 
+inside brackets
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0048764Z ##[warning]5:21 [brackets] too many spaces 
+inside brackets
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0050102Z ##[warning]18:16 [braces] too many spaces 
+inside braces
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0051472Z ##[warning]18:40 [braces] too many spaces 
+inside braces
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0052933Z ##[warning]36:16 [braces] too many spaces 
+inside braces
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0054287Z ##[warning]36:40 [braces] too many spaces 
+inside braces
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0055960Z ##[warning]76:161 [line-length] line too long 
+(258 > 160 characters)
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0057402Z ##[warning]92:1 [empty-lines] too many blank 
+lines (3 > 0)
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0058732Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0058940Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0059074Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0059362Z ::group::.github/workflows/codegen.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0059689Z ##[group].github/workflows/codegen.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0060580Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0062051Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0063457Z ##[warning]110:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0064936Z ##[warning]111:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0066291Z ##[warning]112:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0067902Z ##[warning]113:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0069209Z ##[warning]114:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0070534Z ##[warning]132:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0071861Z ##[warning]133:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0073211Z ##[warning]134:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0074452Z ##[warning]135:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0076091Z ##[warning]136:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0077318Z ##[warning]137:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0078533Z ##[warning]138:30 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0079851Z ##[warning]182:161 [line-length] line too long 
+(162 > 160 characters)
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0081134Z ##[warning]214:18 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0082349Z ##[warning]215:18 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0083581Z ##[warning]216:18 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0084483Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0084812Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0084934Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0085180Z ::group::.github/workflows/triage.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0085476Z ##[group].github/workflows/triage.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0086258Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0087619Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0088893Z ##[warning]132:18 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0090118Z ##[warning]133:18 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0091325Z ##[warning]134:18 [colons] too many spaces 
+after colon
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0092225Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0092421Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0092533Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0092798Z ::group::.github/workflows/ai-feedback.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0093112Z ##[group].github/workflows/ai-feedback.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0093988Z ##[error]1:4 [new-lines] wrong new line 
+character: expected \n
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0095490Z ##[warning]4:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0096819Z ##[error]41:7 syntax error: could not find 
+expected ':' (syntax)
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0097778Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0097965Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0098090Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0098354Z 
+::group::.github/workflows/nightly-self-eval.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0098706Z 
+##[group].github/workflows/nightly-self-eval.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0099505Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0100851Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0101808Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0102005Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0102117Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0102366Z ::group::.github/workflows/ship-issue.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0102674Z ##[group].github/workflows/ship-issue.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0103478Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0104917Z ##[warning]2:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0105908Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0106103Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0106216Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0106487Z 
+::group::.github/workflows/v4_ship_placeholder.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0107015Z 
+##[group].github/workflows/v4_ship_placeholder.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0107848Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0109214Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0110227Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0110414Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0110530Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0110762Z ::group::.github/workflows/ci.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0111065Z ##[group].github/workflows/ci.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0111811Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0113133Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0114222Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0114408Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0114689Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0114928Z ::group::.github/workflows/watchdog.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0115204Z ##[group].github/workflows/watchdog.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0115949Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0117228Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0118579Z ##[error]40:14 [new-line-at-end-of-file] no 
+new line character at the end of file
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0119531Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0119710Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0119813Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0120033Z ::group::.github/workflows/notify.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0120319Z ##[group].github/workflows/notify.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0121034Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0122301Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0123224Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0123401Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0123513Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0123742Z ::group::.github/workflows/auto-codegen.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0124047Z ##[group].github/workflows/auto-codegen.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0124895Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0126159Z ##[error]1:33 [new-lines] wrong new line 
+character: expected \n
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0127407Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0128672Z ##[error]39:1 syntax error: could not find 
+expected ':' (syntax)
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0129587Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0129764Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0129873Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0130107Z ::group::.github/workflows/auto_fix_policy.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0130419Z ##[group].github/workflows/auto_fix_policy.yml
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0131176Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0132460Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0133385Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0133558Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0133670Z 
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0133858Z     prob_level = show_problems(problems, file, 
+args_format=args.format,
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0134230Z                  
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0134883Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yamllint/cli.py", line 102, in show_problems
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0135424Z     for problem in problems:
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0135875Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yamllint/linter.py", line 199, in _run
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0136382Z     syntax_error = get_syntax_error(buffer)
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0136643Z                    ^^^^^^^^^^^^^^^^^^^^^^^^
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0137169Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yamllint/linter.py", line 178, in 
+get_syntax_error
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0137760Z     list(yaml.parse(buffer, 
+Loader=yaml.BaseLoader))
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0138276Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yaml/__init__.py", line 44, in parse
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0369804Z     loader = Loader(stream)
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0370298Z              ^^^^^^^^^^^^^^
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0371060Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yaml/loader.py", line 14, in __init__
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0412031Z     Reader.__init__(self, stream)
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0413660Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yaml/reader.py", line 74, in __init__
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0450276Z     self.check_printable(stream)
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0451614Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yaml/reader.py", line 143, in check_printable
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0452699Z     raise ReaderError(self.name, position, 
+ord(character),
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0453650Z yaml.reader.ReaderError: unacceptable 
+character #x008f: special characters are not allowed
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0454863Z   in "<unicode string>", position 4335
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0565639Z ##[error]Process completed with exit code 1.
+> YAML Lint	Run yamllint	2025-11-17T14:05:42.0572968Z ##[debug]Finishing: Run yamllint
+  YAML Lint	Post Checkout	n++2025-11-17T14:05:42.0596646Z ##[debug]Evaluating condition for step: 
+'Post Checkout'
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0599630Z ##[debug]Evaluating: always()
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0600085Z ##[debug]Evaluating always:
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0601006Z ##[debug]=> true
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0601444Z ##[debug]Result: true
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0602130Z ##[debug]Starting: Post Checkout
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0651737Z ##[debug]Loading inputs
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0652803Z ##[debug]Evaluating: github.repository
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0653184Z ##[debug]Evaluating Index:
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0653469Z ##[debug]..Evaluating github:
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0653780Z ##[debug]..=> Object
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0654052Z ##[debug]..Evaluating String:
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0654342Z ##[debug]..=> 'repository'
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0654911Z ##[debug]=> 'proteaNirav/rocketgpt'
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0655263Z ##[debug]Result: 'proteaNirav/rocketgpt'
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0657147Z ##[debug]Evaluating: github.token
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0657468Z ##[debug]Evaluating Index:
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0657764Z ##[debug]..Evaluating github:
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0658102Z ##[debug]..=> Object
+  YAML Lint	Post Checkout	2025-11-17T14:05:42.0658367Z ##[debug]..Evaluating String:
+
+
+
