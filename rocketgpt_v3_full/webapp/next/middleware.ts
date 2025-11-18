@@ -28,15 +28,13 @@ export async function middleware(req: NextRequest) {
         get(name: string) {
           return req.cookies.get(name)?.value;
         },
-        set(name: string, value: string, options) {
-          // Set cookie on both request and response
-          req.cookies.set({ name, value, ...options });
-          res.cookies.set({ name, value, ...options });
+        set(name: string, value: string, options?: any) {
+          // Set cookie on the response (Next.js middleware-safe)
+          res.cookies.set(name, value, options);
         },
-        remove(name: string, options) {
-          // Remove cookie from both request and response
-          req.cookies.set({ name, value: '', ...options, maxAge: 0 });
-          res.cookies.set({ name, value: '', ...options, maxAge: 0 });
+        remove(name: string, options?: any) {
+          // Remove cookie on the response
+          res.cookies.set(name, "", { ...options, maxAge: 0 });
         },
       },
     }
@@ -77,3 +75,4 @@ export async function middleware(req: NextRequest) {
 
   return res;
 }
+

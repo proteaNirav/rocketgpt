@@ -98,7 +98,7 @@ export default function SuperProposalsPage() {
   return (
     <div className="p-5">
       <div className="mb-5">
-        <h1 className="text-2xl font-semibold">Superuser Ã¢â‚¬" Proposals</h1>
+                <h1 className="text-2xl font-semibold">Superuser - Proposals</h1>
         <p className="text-sm text-gray-600">
           Approve proposals to enqueue Self-Apply. Manual Review button appears when a job is created.
         </p>
@@ -111,7 +111,8 @@ export default function SuperProposalsPage() {
       )}
 
       {loading ? (
-        <div className="text-sm text-gray-600">Loading proposalsÃ¢â‚¬Â¦</div>
+                <div className="text-sm text-gray-600">Loading Proposals…</div>
+
       ) : proposals.length === 0 ? (
         <div className="text-sm text-gray-600">No proposals yet.</div>
       ) : (
@@ -132,7 +133,7 @@ export default function SuperProposalsPage() {
                       </span>
                       {p.last_self_apply_job_id && (
                         <span className="ml-2 inline-flex items-center rounded bg-blue-50 px-2 py-0.5 text-blue-700">
-                          Job: {p.last_self_apply_job_id.slice(0, 8)}Ã¢â‚¬Â¦
+                           Job: {p.last_self_apply_job_id.slice(0, 8)}…
                         </span>
                       )}
                     </div>
