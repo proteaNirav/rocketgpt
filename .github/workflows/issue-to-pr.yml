@@ -119,7 +119,7 @@ jobs:
           import { makeSpecFromThread } from './tools/formulator-adapter.mjs';
 
           const openaiKey = process.env.OPENAI_API_KEY;
-          const token = process.env.GITHUB_TOKEN;
+          const ***REMOVED***
           const [owner, repo] = process.env.REPO.split('/');
           const issueNumber = Number(process.env.ISSUE_NUMBER);
 

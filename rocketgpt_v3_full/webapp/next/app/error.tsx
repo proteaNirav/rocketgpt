@@ -23,7 +23,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
     <html>
       <body style={{ padding: 24 }}>
         <h2>Something went wrong.</h2>
-        <p>We"™ve notified our system. You can try again.</p>
+        <p>We&apos;ve notified our system. You can try again.</p>
         <button onClick={() => reset()}>Retry</button>
       </body>
     </html>
