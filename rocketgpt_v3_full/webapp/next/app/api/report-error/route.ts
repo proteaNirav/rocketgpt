@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const OWNER  = process.env.GITHUB_OWNER!;
 const REPO   = process.env.GITHUB_REPO!;
-const ***REMOVED*** // classic PAT with repo + workflow
+const GH_PAT = process.env.GH_PAT!;  // injected PAT
 
 export async function POST(req: NextRequest) {
   try {
