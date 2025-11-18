@@ -28,12 +28,12 @@ export async function middleware(req: NextRequest) {
         get(name: string) {
           return req.cookies.get(name)?.value;
         },
-        set(name: string, value: string, options: any) {
-          // Set cookie on response (Supabase expects this signature)
+        set(name: string, value: string, options?: any) {
+          // Set cookie on the response (Next.js middleware-safe)
           res.cookies.set(name, value, options);
         },
-        remove(name: string, options: any) {
-          // Remove cookie from response
+        remove(name: string, options?: any) {
+          // Remove cookie on the response
           res.cookies.set(name, "", { ...options, maxAge: 0 });
         },
       },
