@@ -33,7 +33,7 @@ async function main() {
   const prNumber = getArg("--pr");
 
   const OPENAI_API_KEY = getEnv("OPENAI_API_KEY", false);
-  const ***REMOVED***"GITHUB_TOKEN", false);
+  const GITHUB_TOKEN = getEnv("GITHUB_TOKEN", false);
   const GITHUB_REPOSITORY = getEnv("GITHUB_REPOSITORY", false);
 
   if (!prNumber) {
