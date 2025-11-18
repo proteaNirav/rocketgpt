@@ -1,0 +1,202 @@
+﻿param(
+  [string]$Repo = "proteaNirav/rocketgpt",
+  [int]$DaysBack = 21,
+  [int]$PrLimit = 60,
+  [int]$IssueLimit = 60
+)
+
+function Get-IsoSince([int]$days) {
+  (Get-Date).ToUniversalTime().AddDays(-$days).ToString("yyyy-MM-ddTHH:mm:ssZ")
+}
+
+$since = Get-IsoSince -days $DaysBack
+$now   = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+$reportPath = "reports/claude_feedback_shortlist.md"
+
+Write-Host "Collecting feedback since $since (UTC) ..." -ForegroundColor Cyan
+
+# Heuristic keywords that usually mark actionable feedback
+$keywords = @(
+  'claude','ai review','suggestion','recommendation','nit:',
+  'fix','improve','bug','regression','security','rls','policy','limits','perf','optimize'
+)
+
+# ---------------------------
+# 1) Gather PRs & Issues meta
+# ---------------------------
+$prs = gh pr list --repo $Repo --state all --limit $PrLimit --json number,title,author,createdAt,mergedAt,closedAt |
+  ConvertFrom-Json
+
+$issues = gh issue list --repo $Repo --state all --limit $IssueLimit --json number,title,author,createdAt,closedAt,labels |
+  ConvertFrom-Json
+
+# ---------------------------
+# 2) Pull PR reviews & comments
+# ---------------------------
+$feedback = New-Object System.Collections.Generic.List[object]
+
+foreach ($pr in $prs) {
+  $n = $pr.number
+
+  # PR Reviews
+  try {
+    $reviews = gh api "repos/$Repo/pulls/$n/reviews" | ConvertFrom-Json
+  } catch { $reviews = @() }
+
+  foreach ($rv in $reviews) {
+    $txt = ($rv.body | Out-String)
+    if ([string]::IsNullOrWhiteSpace($txt)) { continue }
+    if ($keywords | Where-Object { $txt -match $_ }) {
+      $feedback.Add([pscustomobject]@{
+        Source   = "PR Review"
+        Ref      = "#$n"
+        Title    = $pr.title
+        Author   = $rv.user.login
+        When     = $rv.submitted_at
+        Excerpt  = ($txt -replace '\s+', ' ').Trim()
+        URL      = "https://github.com/$Repo/pull/$n#pullrequestreview-$($rv.id)"
+      })
+    }
+  }
+
+  # PR Comments (issue comments API)
+  try {
+    $comments = gh api "repos/$Repo/issues/$n/comments" | ConvertFrom-Json
+  } catch { $comments = @() }
+
+  foreach ($cm in $comments) {
+    $txt = ($cm.body | Out-String)
+    if ([string]::IsNullOrWhiteSpace($txt)) { continue }
+    if ($keywords | Where-Object { $txt -match $_ }) {
+      $feedback.Add([pscustomobject]@{
+        Source   = "PR Comment"
+        Ref      = "#$n"
+        Title    = $pr.title
+        Author   = $cm.user.login
+        When     = $cm.created_at
+        Excerpt  = ($txt -replace '\s+', ' ').Trim()
+        URL      = $cm.html_url
+      })
+    }
+  }
+}
+
+# ---------------------------
+# 3) Issue comments (discussion on tickets)
+# ---------------------------
+foreach ($iss in $issues) {
+  $n = $iss.number
+  try {
+    $comments = gh api "repos/$Repo/issues/$n/comments" | ConvertFrom-Json
+  } catch { $comments = @() }
+
+  foreach ($cm in $comments) {
+    $txt = ($cm.body | Out-String)
+    if ([string]::IsNullOrWhiteSpace($txt)) { continue }
+    if ($keywords | Where-Object { $txt -match $_ }) {
+      $feedback.Add([pscustomobject]@{
+        Source   = "Issue Comment"
+        Ref      = "#$n"
+        Title    = $iss.title
+        Author   = $cm.user.login
+        When     = $cm.created_at
+        Excerpt  = ($txt -replace '\s+', ' ').Trim()
+        URL      = $cm.html_url
+      })
+    }
+  }
+}
+
+# ---------------------------
+# 4) In-repo notes (git grep)
+# ---------------------------
+$grepHits = git grep -n -i "claude" 2>$null
+foreach ($line in $grepHits) {
+  if (-not $line) { continue }
+  $parts = $line -split ":",3
+  if ($parts.Count -lt 3) { continue }
+  $file = $parts[0]; $lineno = $parts[1]; $txt = $parts[2]
+  $feedback.Add([pscustomobject]@{
+    Source  = "Repo Note"
+    Ref      = "$($file):$lineno"
+    Title   = "Code Note"
+    Author  = "n/a"
+    When    = $now
+    Excerpt = ($txt -replace '\s+', ' ').Trim()
+    URL     = "https://github.com/$Repo/blob/main/$($file)#L$lineno"
+  })
+}
+
+# ---------------------------
+# 5) Normalize, rank, de-dup
+# ---------------------------
+# Simple ranking: Critical if mentions security/RLS/limits/fail/build; Important if fix/improve/bug; else Nice
+function Rank-Item($txt) {
+  $t = $txt.ToLower()
+  if ($t -match 'security|rls|rate limit|limits|secret|token|auth|fail(ed|ure)|block(er)') { return 'P1-Critical' }
+  if ($t -match 'bug|fix|improve|optimi[sz]e|regression|broken|incorrect|perf') { return 'P2-Important' }
+  return 'P3-Nice'
+}
+
+# De-dup on (Title+Excerpt hash)
+$seen = @{}
+$ranked = foreach ($f in ($feedback | Sort-Object When -Descending)) {
+  $key = "{0}::{1}" -f $f.Title, ($f.Excerpt.Substring(0, [Math]::Min(140, $f.Excerpt.Length)))
+  if ($seen.ContainsKey($key)) { continue }
+  $seen[$key] = $true
+  $prio = Rank-Item $f.Excerpt
+  [pscustomobject]@{
+    Priority = $prio
+    Source   = $f.Source
+    Ref      = $f.Ref
+    Title    = $f.Title
+    Author   = $f.Author
+    When     = $f.When
+    URL      = $f.URL
+    Excerpt  = $f.Excerpt
+  }
+}
+
+# Group by priority for the shortlist
+$groups = $ranked | Group-Object Priority
+
+# ---------------------------
+# 6) Write markdown report
+# ---------------------------
+$header = @"
+# Claude Feedback — Shortlist for Go-Live
+Repo: $Repo  
+Collected: $now  
+Window: Since $since
+
+Priorities:
+- P1-Critical: blocks or risks Go-Live (security/RLS/limits/build failures)
+- P2-Important: required for reliability/UX/functionality
+- P3-Nice: optional polish
+
+"@
+
+$body = foreach ($g in ($groups | Sort-Object Name)) {
+  "## " + $g.Name + "`n" + ($g.Group | Select-Object -First 25 | ForEach-Object {
+@"
+- **[$($_.Ref)] $($_.Title)** — $($_.Source) by `$($_.Author)` on $([DateTime]$_.When)
+  - $($_.Excerpt)
+  - Link: $($_.URL)
+"@
+  }) -join "`n"
+}
+
+$footer = @"
+
+---
+### Next:
+1) Approve P1 items to apply immediately.
+2) Approve P2 items for this Go-Live window.
+3) Defer P3 to post-Go-Live backlog.
+
+"@
+
+$full = $header + ($body -join "`n`n") + $footer
+Set-Content -Path $reportPath -Value $full -Encoding UTF8
+
+Write-Host "`nShortlist written to: $reportPath" -ForegroundColor Green

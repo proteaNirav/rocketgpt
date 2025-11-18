@@ -42,9 +42,17 @@ async function main() {
   }
 
   // 1) Collect diff for UI-related files in v3_full
-  const diff = run(
-    `git diff ${base} ${head} -- rocketgpt_v3_full/webapp/next`
-  );
+  let diff = "";
+  try {
+    diff = run(`git diff ${base} ${head} -- rocketgpt_v3_full/webapp/next`);
+  } catch (err) {
+    console.error(
+      "UI Healer: git diff failed (likely shallow clone or missing base commit). " +
+      "Treating as no UI changes. Details:",
+      err && err.message ? err.message : err
+    );
+    return; // exit gracefully, do NOT fail the job
+  }
 
   if (!diff) {
     console.log("No UI diff to heal. Exiting.");

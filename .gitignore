@@ -22,3 +22,11 @@ out/
 .DS_Store
 Thumbs.db
 .vscode/
+# === Go-Live: ignore accidental large artifacts ===
+rocketgpt_v3_full/webapp/next.zip
+.ops/backups/
+*.tar.gz
+# --- security: ignore env and backups ---
+.ops/.env*
+*.env
+.vercel/*.env*

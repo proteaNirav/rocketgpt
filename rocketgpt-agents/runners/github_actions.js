@@ -42,7 +42,7 @@ async function ensureArtifact(name, content, spec) {
 // -------------------- Claude helper (Anthropic) ------------------------------
 async function reviewWithClaude(input) {
   const fetchFn = global.fetch;
-  const apiKey  = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
   if (!apiKey || !fetchFn) return null;
 
   const model = process.env.CLAUDE_MODEL || 'claude-3-5-sonnet-latest';

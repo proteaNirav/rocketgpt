@@ -1,0 +1,1210 @@
+
+> YAML Lint	Set up job	n++2025-11-17T11:13:55.7412581Z ##[debug]Starting: Set up job
+> YAML Lint	Set up job	2025-11-17T11:13:55.7413734Z Current runner version: '2.329.0'
+> YAML Lint	Set up job	2025-11-17T11:13:55.7437774Z ##[group]Runner Image Provisioner
+> YAML Lint	Set up job	2025-11-17T11:13:55.7438650Z Hosted Compute Agent
+> YAML Lint	Set up job	2025-11-17T11:13:55.7439286Z Version: 20251016.436
+> YAML Lint	Set up job	2025-11-17T11:13:55.7439867Z Commit: 8ab8ac8bfd662a3739dab9fe09456aba92132568
+> YAML Lint	Set up job	2025-11-17T11:13:55.7440614Z Build Date: 2025-10-15T20:44:12Z
+> YAML Lint	Set up job	2025-11-17T11:13:55.7441226Z ##[endgroup]
+> YAML Lint	Set up job	2025-11-17T11:13:55.7441788Z ##[group]Operating System
+> YAML Lint	Set up job	2025-11-17T11:13:55.7442289Z Ubuntu
+> YAML Lint	Set up job	2025-11-17T11:13:55.7442819Z 24.04.3
+> YAML Lint	Set up job	2025-11-17T11:13:55.7443246Z LTS
+> YAML Lint	Set up job	2025-11-17T11:13:55.7443694Z ##[endgroup]
+> YAML Lint	Set up job	2025-11-17T11:13:55.7444213Z ##[group]Runner Image
+> YAML Lint	Set up job	2025-11-17T11:13:55.7444789Z Image: ubuntu-24.04
+> YAML Lint	Set up job	2025-11-17T11:13:55.7445283Z Version: 20251112.124.1
+> YAML Lint	Set up job	2025-11-17T11:13:55.7446354Z Included Software: https://github.com/actions/run
+ner-images/blob/ubuntu24/20251112.124/images/ubuntu/Ubuntu2404-Readme.md
+> YAML Lint	Set up job	2025-11-17T11:13:55.7448122Z Image Release: 
+https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251112.124
+> YAML Lint	Set up job	2025-11-17T11:13:55.7449248Z ##[endgroup]
+> YAML Lint	Set up job	2025-11-17T11:13:55.7450241Z ##[group]GITHUB_TOKEN Permissions
+> YAML Lint	Set up job	2025-11-17T11:13:55.7452183Z Contents: read
+> YAML Lint	Set up job	2025-11-17T11:13:55.7452715Z Metadata: read
+> YAML Lint	Set up job	2025-11-17T11:13:55.7453212Z ##[endgroup]
+> YAML Lint	Set up job	2025-11-17T11:13:55.7455397Z Secret source: Actions
+> YAML Lint	Set up job	2025-11-17T11:13:55.7456257Z ##[debug]Primary repository: 
+proteaNirav/rocketgpt
+> YAML Lint	Set up job	2025-11-17T11:13:55.7457124Z Prepare workflow directory
+> YAML Lint	Set up job	2025-11-17T11:13:55.7532917Z ##[debug]Creating pipeline directory: 
+'/home/runner/work/rocketgpt'
+> YAML Lint	Set up job	2025-11-17T11:13:55.7536273Z ##[debug]Creating workspace directory: 
+'/home/runner/work/rocketgpt/rocketgpt'
+> YAML Lint	Set up job	2025-11-17T11:13:55.7537985Z ##[debug]Update context data
+> YAML Lint	Set up job	2025-11-17T11:13:55.7541516Z ##[debug]Evaluating job-level environment 
+variables
+> YAML Lint	Set up job	2025-11-17T11:13:55.7766227Z ##[debug]Evaluating job container
+> YAML Lint	Set up job	2025-11-17T11:13:55.7771338Z ##[debug]Evaluating job service containers
+> YAML Lint	Set up job	2025-11-17T11:13:55.7774324Z ##[debug]Evaluating job defaults
+> YAML Lint	Set up job	2025-11-17T11:13:55.7802345Z Prepare all required actions
+> YAML Lint	Set up job	2025-11-17T11:13:55.7844177Z Getting action download info
+> YAML Lint	Set up job	2025-11-17T11:13:56.1932512Z Download action repository 'actions/checkout@v4' 
+(SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
+> YAML Lint	Set up job	2025-11-17T11:13:56.1967605Z ##[debug]Copied action archive 
+'/opt/actionarchivecache/actions_checkout/08eba0b27e820071cde6df949e0beb9ba4906955.tar.gz' to '/home/
+runner/work/_actions/_temp_4b630f85-0662-4739-8ecc-55769737c095/435fd054-0f77-4baf-8341-aab8bc81fa54.
+tar.gz'
+> YAML Lint	Set up job	2025-11-17T11:13:56.2709666Z ##[debug]Unwrap 'actions-checkout-08eba0b' to 
+'/home/runner/work/_actions/actions/checkout/v4'
+> YAML Lint	Set up job	2025-11-17T11:13:56.2838160Z ##[debug]Archive '/home/runner/work/_actions/_tem
+p_4b630f85-0662-4739-8ecc-55769737c095/435fd054-0f77-4baf-8341-aab8bc81fa54.tar.gz' has been 
+unzipped into '/home/runner/work/_actions/actions/checkout/v4'.
+> YAML Lint	Set up job	2025-11-17T11:13:56.2955385Z ##[debug]action.yml for action: 
+'/home/runner/work/_actions/actions/checkout/v4/action.yml'.
+> YAML Lint	Set up job	2025-11-17T11:13:56.3708643Z ##[debug]Set step '__actions_checkout' display 
+name to: 'Checkout'
+> YAML Lint	Set up job	2025-11-17T11:13:56.3711651Z ##[debug]Set step '__run' display name to: 
+'Install yamllint'
+> YAML Lint	Set up job	2025-11-17T11:13:56.3713163Z ##[debug]Set step '__run_2' display name to: 
+'Run yamllint'
+> YAML Lint	Set up job	2025-11-17T11:13:56.3713832Z Complete job name: YAML Lint
+> YAML Lint	Set up job	2025-11-17T11:13:56.3735853Z ##[debug]Collect running processes for tracking 
+orphan processes.
+> YAML Lint	Set up job	2025-11-17T11:13:56.3952372Z ##[debug]Finishing: Set up job
+> YAML Lint	Checkout	n++2025-11-17T11:13:56.4072365Z ##[debug]Evaluating condition for step: 
+'Checkout'
+> YAML Lint	Checkout	2025-11-17T11:13:56.4111631Z ##[debug]Evaluating: success()
+> YAML Lint	Checkout	2025-11-17T11:13:56.4116405Z ##[debug]Evaluating success:
+> YAML Lint	Checkout	2025-11-17T11:13:56.4132938Z ##[debug]=> true
+> YAML Lint	Checkout	2025-11-17T11:13:56.4138992Z ##[debug]Result: true
+> YAML Lint	Checkout	2025-11-17T11:13:56.4162363Z ##[debug]Starting: Checkout
+> YAML Lint	Checkout	2025-11-17T11:13:56.4232363Z ##[debug]Register post job cleanup for action: 
+actions/checkout@v4
+> YAML Lint	Checkout	2025-11-17T11:13:56.4318651Z ##[debug]Loading inputs
+> YAML Lint	Checkout	2025-11-17T11:13:56.4328717Z ##[debug]Evaluating: github.repository
+> YAML Lint	Checkout	2025-11-17T11:13:56.4329907Z ##[debug]Evaluating Index:
+> YAML Lint	Checkout	2025-11-17T11:13:56.4331877Z ##[debug]..Evaluating github:
+> YAML Lint	Checkout	2025-11-17T11:13:56.4333127Z ##[debug]..=> Object
+> YAML Lint	Checkout	2025-11-17T11:13:56.4339239Z ##[debug]..Evaluating String:
+> YAML Lint	Checkout	2025-11-17T11:13:56.4340134Z ##[debug]..=> 'repository'
+> YAML Lint	Checkout	2025-11-17T11:13:56.4344620Z ##[debug]=> 'proteaNirav/rocketgpt'
+> YAML Lint	Checkout	2025-11-17T11:13:56.4346226Z ##[debug]Result: 'proteaNirav/rocketgpt'
+> YAML Lint	Checkout	2025-11-17T11:13:56.4350027Z ##[debug]Evaluating: github.token
+> YAML Lint	Checkout	2025-11-17T11:13:56.4350620Z ##[debug]Evaluating Index:
+> YAML Lint	Checkout	2025-11-17T11:13:56.4351114Z ##[debug]..Evaluating github:
+> YAML Lint	Checkout	2025-11-17T11:13:56.4351604Z ##[debug]..=> Object
+> YAML Lint	Checkout	2025-11-17T11:13:56.4352042Z ##[debug]..Evaluating String:
+> YAML Lint	Checkout	2025-11-17T11:13:56.4352510Z ##[debug]..=> 'token'
+> YAML Lint	Checkout	2025-11-17T11:13:56.4353292Z ##[debug]=> '***'
+> YAML Lint	Checkout	2025-11-17T11:13:56.4353878Z ##[debug]Result: '***'
+> YAML Lint	Checkout	2025-11-17T11:13:56.4367984Z ##[debug]Loading env
+> YAML Lint	Checkout	2025-11-17T11:13:56.4438157Z ##[group]Run actions/checkout@v4
+> YAML Lint	Checkout	2025-11-17T11:13:56.4438908Z with:
+> YAML Lint	Checkout	2025-11-17T11:13:56.4439335Z   repository: proteaNirav/rocketgpt
+> YAML Lint	Checkout	2025-11-17T11:13:56.4440086Z   token: ***
+> YAML Lint	Checkout	2025-11-17T11:13:56.4440477Z   ssh-strict: true
+> YAML Lint	Checkout	2025-11-17T11:13:56.4440918Z   ssh-user: git
+> YAML Lint	Checkout	2025-11-17T11:13:56.4441403Z   persist-credentials: true
+> YAML Lint	Checkout	2025-11-17T11:13:56.4441978Z   clean: true
+> YAML Lint	Checkout	2025-11-17T11:13:56.4442676Z   sparse-checkout-cone-mode: true
+> YAML Lint	Checkout	2025-11-17T11:13:56.4443182Z   fetch-depth: 1
+> YAML Lint	Checkout	2025-11-17T11:13:56.4443575Z   fetch-tags: false
+> YAML Lint	Checkout	2025-11-17T11:13:56.4443985Z   show-progress: true
+> YAML Lint	Checkout	2025-11-17T11:13:56.4444417Z   lfs: false
+> YAML Lint	Checkout	2025-11-17T11:13:56.4444790Z   submodules: false
+> YAML Lint	Checkout	2025-11-17T11:13:56.4445187Z   set-safe-directory: true
+> YAML Lint	Checkout	2025-11-17T11:13:56.4445938Z ##[endgroup]
+> YAML Lint	Checkout	2025-11-17T11:13:56.5492991Z ##[debug]GITHUB_WORKSPACE = 
+'/home/runner/work/rocketgpt/rocketgpt'
+> YAML Lint	Checkout	2025-11-17T11:13:56.5495502Z ##[debug]qualified repository = 
+'proteaNirav/rocketgpt'
+> YAML Lint	Checkout	2025-11-17T11:13:56.5497327Z ##[debug]ref = 'refs/pull/173/merge'
+> YAML Lint	Checkout	2025-11-17T11:13:56.5498938Z ##[debug]commit = 
+'e8c2b71ecbd4f933666320fb1fdd98f029c2cef9'
+> YAML Lint	Checkout	2025-11-17T11:13:56.5500551Z ##[debug]clean = true
+> YAML Lint	Checkout	2025-11-17T11:13:56.5501786Z ##[debug]filter = undefined
+> YAML Lint	Checkout	2025-11-17T11:13:56.5503104Z ##[debug]fetch depth = 1
+> YAML Lint	Checkout	2025-11-17T11:13:56.5504379Z ##[debug]fetch tags = false
+> YAML Lint	Checkout	2025-11-17T11:13:56.5505659Z ##[debug]show progress = true
+> YAML Lint	Checkout	2025-11-17T11:13:56.5507252Z ##[debug]lfs = false
+> YAML Lint	Checkout	2025-11-17T11:13:56.5508479Z ##[debug]submodules = false
+> YAML Lint	Checkout	2025-11-17T11:13:56.5509797Z ##[debug]recursive submodules = false
+> YAML Lint	Checkout	2025-11-17T11:13:56.5511192Z ##[debug]GitHub Host URL = 
+> YAML Lint	Checkout	2025-11-17T11:13:56.5513561Z 
+::add-matcher::/home/runner/work/_actions/actions/checkout/v4/dist/problem-matcher.json
+> YAML Lint	Checkout	2025-11-17T11:13:56.5618334Z ##[debug]Added matchers: 'checkout-git'. Problem 
+matchers scan action output for known warning or error strings and report these inline.
+> YAML Lint	Checkout	2025-11-17T11:13:56.5625805Z Syncing repository: proteaNirav/rocketgpt
+> YAML Lint	Checkout	2025-11-17T11:13:56.5628166Z ::group::Getting Git version info
+> YAML Lint	Checkout	2025-11-17T11:13:56.5630589Z ##[group]Getting Git version info
+> YAML Lint	Checkout	2025-11-17T11:13:56.5631911Z Working directory is 
+'/home/runner/work/rocketgpt/rocketgpt'
+> YAML Lint	Checkout	2025-11-17T11:13:56.5633142Z ##[debug]Getting git version
+> YAML Lint	Checkout	2025-11-17T11:13:56.5633664Z [command]/usr/bin/git version
+> YAML Lint	Checkout	2025-11-17T11:13:56.5693353Z git version 2.51.2
+> YAML Lint	Checkout	2025-11-17T11:13:56.5717854Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:56.5719050Z ##[debug]git version 2.51.2
+> YAML Lint	Checkout	2025-11-17T11:13:56.5719881Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:56.5721387Z ##[debug]Set git useragent to: git/2.51.2 
+(github-actions-checkout)
+> YAML Lint	Checkout	2025-11-17T11:13:56.5723154Z ::endgroup::
+> YAML Lint	Checkout	2025-11-17T11:13:56.5724549Z ##[endgroup]
+> YAML Lint	Checkout	2025-11-17T11:13:56.5731387Z ::add-mask::***
+> YAML Lint	Checkout	2025-11-17T11:13:56.5739563Z Temporarily overriding 
+HOME='/home/runner/work/_temp/f5fc32f4-9645-4d7a-8dfd-a17be4c0727b' before making global git config 
+changes
+> YAML Lint	Checkout	2025-11-17T11:13:56.5741921Z Adding repository directory to the temporary git 
+global config as a safe directory
+> YAML Lint	Checkout	2025-11-17T11:13:56.5746494Z [command]/usr/bin/git config --global --add 
+safe.directory /home/runner/work/rocketgpt/rocketgpt
+> YAML Lint	Checkout	2025-11-17T11:13:56.5781548Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:56.5782774Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:56.5787952Z Deleting the contents of 
+'/home/runner/work/rocketgpt/rocketgpt'
+> YAML Lint	Checkout	2025-11-17T11:13:56.5792196Z ::group::Initializing the repository
+> YAML Lint	Checkout	2025-11-17T11:13:56.5793196Z ##[group]Initializing the repository
+> YAML Lint	Checkout	2025-11-17T11:13:56.5797533Z [command]/usr/bin/git init 
+/home/runner/work/rocketgpt/rocketgpt
+> YAML Lint	Checkout	2025-11-17T11:13:56.5928218Z hint: Using 'master' as the name for the initial 
+branch. This default branch name
+> YAML Lint	Checkout	2025-11-17T11:13:56.5929941Z hint: is subject to change. To configure the 
+initial branch name to use in all
+> YAML Lint	Checkout	2025-11-17T11:13:56.5931437Z hint: of your new repositories, which will 
+suppress this warning, call:
+> YAML Lint	Checkout	2025-11-17T11:13:56.5932424Z hint:
+> YAML Lint	Checkout	2025-11-17T11:13:56.5933425Z hint: 	git config --global init.defaultBranch 
+<name>
+> YAML Lint	Checkout	2025-11-17T11:13:56.5934536Z hint:
+> YAML Lint	Checkout	2025-11-17T11:13:56.5935572Z hint: Names commonly chosen instead of 'master' 
+are 'main', 'trunk' and
+> YAML Lint	Checkout	2025-11-17T11:13:56.5937537Z hint: 'development'. The just-created branch can 
+be renamed via this command:
+> YAML Lint	Checkout	2025-11-17T11:13:56.5938761Z hint:
+> YAML Lint	Checkout	2025-11-17T11:13:56.5939424Z hint: 	git branch -m <name>
+> YAML Lint	Checkout	2025-11-17T11:13:56.5940143Z hint:
+> YAML Lint	Checkout	2025-11-17T11:13:56.5940967Z hint: Disable this message with "git config set 
+advice.defaultBranchName false"
+> YAML Lint	Checkout	2025-11-17T11:13:56.5942005Z Initialized empty Git repository in 
+/home/runner/work/rocketgpt/rocketgpt/.git/
+> YAML Lint	Checkout	2025-11-17T11:13:56.5943215Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:56.5944279Z ##[debug]Initialized empty Git repository in 
+/home/runner/work/rocketgpt/rocketgpt/.git/
+> YAML Lint	Checkout	2025-11-17T11:13:56.5945106Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:56.5946091Z [command]/usr/bin/git remote add origin 
+https://github.com/proteaNirav/rocketgpt
+> YAML Lint	Checkout	2025-11-17T11:13:56.5985122Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:56.5985881Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:56.5986684Z ::endgroup::
+> YAML Lint	Checkout	2025-11-17T11:13:56.5987364Z ##[endgroup]
+> YAML Lint	Checkout	2025-11-17T11:13:56.5988072Z ::group::Disabling automatic garbage collection
+> YAML Lint	Checkout	2025-11-17T11:13:56.5988896Z ##[group]Disabling automatic garbage collection
+> YAML Lint	Checkout	2025-11-17T11:13:56.5990380Z [command]/usr/bin/git config --local gc.auto 0
+> YAML Lint	Checkout	2025-11-17T11:13:56.6021711Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:56.6022471Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:56.6023089Z ::endgroup::
+> YAML Lint	Checkout	2025-11-17T11:13:56.6023470Z ##[endgroup]
+> YAML Lint	Checkout	2025-11-17T11:13:56.6024100Z ::group::Setting up auth
+> YAML Lint	Checkout	2025-11-17T11:13:56.6024548Z ##[group]Setting up auth
+> YAML Lint	Checkout	2025-11-17T11:13:56.6029968Z [command]/usr/bin/git config --local --name-only 
+--get-regexp core\.sshCommand
+> YAML Lint	Checkout	2025-11-17T11:13:56.6056694Z ##[debug]1
+> YAML Lint	Checkout	2025-11-17T11:13:56.6057851Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:56.6062812Z [command]/usr/bin/git submodule foreach 
+--recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config 
+--local --unset-all 'core.sshCommand' || :"
+> YAML Lint	Checkout	2025-11-17T11:13:56.6404248Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:56.6405137Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:56.6409609Z [command]/usr/bin/git config --local --name-only 
+--get-regexp http\.https\:\/\/github\.com\/\.extraheader
+> YAML Lint	Checkout	2025-11-17T11:13:56.6437172Z ##[debug]1
+> YAML Lint	Checkout	2025-11-17T11:13:56.6438006Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:56.6442129Z [command]/usr/bin/git submodule foreach 
+--recursive sh -c "git config --local --name-only --get-regexp 
+'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 
+'http.https://github.com/.extraheader' || :"
+> YAML Lint	Checkout	2025-11-17T11:13:56.6668932Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:56.6669970Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:56.6677686Z [command]/usr/bin/git config --local 
+http.https://github.com/.extraheader AUTHORIZATION: basic ***
+> YAML Lint	Checkout	2025-11-17T11:13:56.6715725Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:56.6717270Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:56.6724526Z ::endgroup::
+> YAML Lint	Checkout	2025-11-17T11:13:56.6725075Z ##[endgroup]
+> YAML Lint	Checkout	2025-11-17T11:13:56.6725837Z ::group::Fetching the repository
+> YAML Lint	Checkout	2025-11-17T11:13:56.6726455Z ##[group]Fetching the repository
+> YAML Lint	Checkout	2025-11-17T11:13:56.6733826Z [command]/usr/bin/git -c protocol.version=2 fetch 
+--no-tags --prune --no-recurse-submodules --depth=1 origin 
++e8c2b71ecbd4f933666320fb1fdd98f029c2cef9:refs/remotes/pull/173/merge
+> YAML Lint	Checkout	2025-11-17T11:13:57.1539672Z From https://github.com/proteaNirav/rocketgpt
+> YAML Lint	Checkout	2025-11-17T11:13:57.1541271Z  * [new ref]         
+e8c2b71ecbd4f933666320fb1fdd98f029c2cef9 -> pull/173/merge
+> YAML Lint	Checkout	2025-11-17T11:13:57.1578712Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:57.1579999Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:57.1580728Z ::endgroup::
+> YAML Lint	Checkout	2025-11-17T11:13:57.1581409Z ##[endgroup]
+> YAML Lint	Checkout	2025-11-17T11:13:57.1582445Z ::group::Determining the checkout info
+> YAML Lint	Checkout	2025-11-17T11:13:57.1583038Z ##[group]Determining the checkout info
+> YAML Lint	Checkout	2025-11-17T11:13:57.1583871Z ::endgroup::
+> YAML Lint	Checkout	2025-11-17T11:13:57.1584252Z ##[endgroup]
+> YAML Lint	Checkout	2025-11-17T11:13:57.1587181Z [command]/usr/bin/git sparse-checkout disable
+> YAML Lint	Checkout	2025-11-17T11:13:57.1626295Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:57.1627745Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:57.1631100Z [command]/usr/bin/git config --local --unset-all 
+extensions.worktreeConfig
+> YAML Lint	Checkout	2025-11-17T11:13:57.1660944Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:57.1662215Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:57.1663394Z ::group::Checking out the ref
+> YAML Lint	Checkout	2025-11-17T11:13:57.1663958Z ##[group]Checking out the ref
+> YAML Lint	Checkout	2025-11-17T11:13:57.1665280Z [command]/usr/bin/git checkout --progress --force 
+refs/remotes/pull/173/merge
+> YAML Lint	Checkout	2025-11-17T11:13:57.1966057Z Note: switching to 'refs/remotes/pull/173/merge'.
+> YAML Lint	Checkout	2025-11-17T11:13:57.1967245Z 
+> YAML Lint	Checkout	2025-11-17T11:13:57.1967859Z You are in 'detached HEAD' state. You can look 
+around, make experimental
+> YAML Lint	Checkout	2025-11-17T11:13:57.1969385Z changes and commit them, and you can discard any 
+commits you make in this
+> YAML Lint	Checkout	2025-11-17T11:13:57.1970374Z state without impacting any branches by switching 
+back to a branch.
+> YAML Lint	Checkout	2025-11-17T11:13:57.1970924Z 
+> YAML Lint	Checkout	2025-11-17T11:13:57.1971285Z If you want to create a new branch to retain 
+commits you create, you may
+> YAML Lint	Checkout	2025-11-17T11:13:57.1972189Z do so (now or later) by using -c with the switch 
+command. Example:
+> YAML Lint	Checkout	2025-11-17T11:13:57.1972814Z 
+> YAML Lint	Checkout	2025-11-17T11:13:57.1973183Z   git switch -c <new-branch-name>
+> YAML Lint	Checkout	2025-11-17T11:13:57.1973801Z 
+> YAML Lint	Checkout	2025-11-17T11:13:57.1974059Z Or undo this operation with:
+> YAML Lint	Checkout	2025-11-17T11:13:57.1974398Z 
+> YAML Lint	Checkout	2025-11-17T11:13:57.1974645Z   git switch -
+> YAML Lint	Checkout	2025-11-17T11:13:57.1974940Z 
+> YAML Lint	Checkout	2025-11-17T11:13:57.1975411Z Turn off this advice by setting config variable 
+advice.detachedHead to false
+> YAML Lint	Checkout	2025-11-17T11:13:57.1975991Z 
+> YAML Lint	Checkout	2025-11-17T11:13:57.1976645Z HEAD is now at e8c2b71 Merge 
+f2bf0936b9e12e2276a1e5a0c941435040fb271c into 2b74c708c84197cb98c5ccf77d92d11921b953bb
+> YAML Lint	Checkout	2025-11-17T11:13:57.1978768Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:57.1979549Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:57.1980209Z ::endgroup::
+> YAML Lint	Checkout	2025-11-17T11:13:57.1980602Z ##[endgroup]
+> YAML Lint	Checkout	2025-11-17T11:13:57.2010712Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:57.2011709Z ##[debug]commit 
+e8c2b71ecbd4f933666320fb1fdd98f029c2cef9
+> YAML Lint	Checkout	2025-11-17T11:13:57.2012578Z ##[debug]Author: Nirav Shah 
+<29773482+proteaNirav@users.noreply.github.com>
+> YAML Lint	Checkout	2025-11-17T11:13:57.2013337Z ##[debug]Date:   Mon Nov 17 09:55:35 2025 +0000
+> YAML Lint	Checkout	2025-11-17T11:13:57.2014130Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:57.2015489Z ##[debug]    Merge 
+f2bf0936b9e12e2276a1e5a0c941435040fb271c into 2b74c708c84197cb98c5ccf77d92d11921b953bb
+> YAML Lint	Checkout	2025-11-17T11:13:57.2017296Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:57.2017859Z [command]/usr/bin/git log -1 --format=%H
+> YAML Lint	Checkout	2025-11-17T11:13:57.2038128Z e8c2b71ecbd4f933666320fb1fdd98f029c2cef9
+> YAML Lint	Checkout	2025-11-17T11:13:57.2043726Z ##[debug]0
+> YAML Lint	Checkout	2025-11-17T11:13:57.2044594Z ##[debug]e8c2b71ecbd4f933666320fb1fdd98f029c2cef9
+> YAML Lint	Checkout	2025-11-17T11:13:57.2045172Z ##[debug]
+> YAML Lint	Checkout	2025-11-17T11:13:57.2049862Z ##[debug]Unsetting HOME override
+> YAML Lint	Checkout	2025-11-17T11:13:57.2058507Z ::remove-matcher owner=checkout-git::
+> YAML Lint	Checkout	2025-11-17T11:13:57.2074154Z ##[debug]Removed matchers: 'checkout-git'
+> YAML Lint	Checkout	2025-11-17T11:13:57.2131815Z ##[debug]Node Action run completed with exit code 0
+> YAML Lint	Checkout	2025-11-17T11:13:57.2167617Z ##[debug]Save intra-action state isPost = true
+> YAML Lint	Checkout	2025-11-17T11:13:57.2168819Z ##[debug]Save intra-action state setSafeDirectory 
+= true
+> YAML Lint	Checkout	2025-11-17T11:13:57.2169734Z ##[debug]Save intra-action state repositoryPath = 
+/home/runner/work/rocketgpt/rocketgpt
+> YAML Lint	Checkout	2025-11-17T11:13:57.2173730Z ##[debug]Set output commit = 
+e8c2b71ecbd4f933666320fb1fdd98f029c2cef9
+> YAML Lint	Checkout	2025-11-17T11:13:57.2174955Z ##[debug]Set output ref = refs/pull/173/merge
+> YAML Lint	Checkout	2025-11-17T11:13:57.2182258Z ##[debug]Finishing: Checkout
+> YAML Lint	Install yamllint	n++2025-11-17T11:13:57.2198489Z ##[debug]Evaluating condition for step: 
+'Install yamllint'
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2201482Z ##[debug]Evaluating: success()
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2202231Z ##[debug]Evaluating success:
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2202977Z ##[debug]=> true
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2203684Z ##[debug]Result: true
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2204716Z ##[debug]Starting: Install yamllint
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2224035Z ##[debug]Loading inputs
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2239375Z ##[debug]Loading env
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2257325Z ##[group]Run sudo apt-get update -y
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2258031Z [36;1msudo apt-get update -y[0m
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2258599Z [36;1msudo apt-get install -y yamllint[0m
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2297032Z shell: /usr/bin/bash -e {0}
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2297699Z ##[endgroup]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.2355786Z ##[debug]/usr/bin/bash -e 
+/home/runner/work/_temp/b3f237ca-1fb7-448e-aa71-df232ffcb4ad.sh
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.3231788Z Get:1 file:/etc/apt/apt-mirrors.txt 
+Mirrorlist [144 B]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.3591142Z Hit:6 
+https://packages.microsoft.com/repos/azure-cli noble InRelease
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.3593188Z Hit:2 
+http://azure.archive.ubuntu.com/ubuntu noble InRelease
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.3594967Z Get:7 
+https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.3684644Z Get:3 
+http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.3724381Z Get:4 
+http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.3766258Z Get:5 
+http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.5431027Z Get:8 
+https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [67.8 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.5526197Z Get:9 
+https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [11.2 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.5544125Z Get:10 
+https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [50.3 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.5970072Z Get:11 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1585 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.6068234Z Get:12 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [175 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.6088539Z Get:13 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 c-n-f Metadata [15.7 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.6101658Z Get:14 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1499 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.6207115Z Get:15 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [303 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.6236205Z Get:16 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [378 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.6275290Z Get:17 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 c-n-f Metadata [31.4 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.6289749Z Get:18 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.6301937Z Get:19 
+http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.6552173Z Get:20 
+http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7140 B]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7003728Z Get:21 
+http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [11.0 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7014693Z Get:22 
+http://azure.archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [216 B]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7024719Z Get:23 
+http://azure.archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7135712Z Get:24 
+http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1309 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7213386Z Get:25 
+http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [215 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7238711Z Get:26 
+http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [21.6 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7252713Z Get:27 
+http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 c-n-f Metadata [9416 B]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7269194Z Get:28 
+http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [908 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7323952Z Get:29 
+http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [204 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7346363Z Get:30 
+http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [52.2 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7363190Z Get:31 
+http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 c-n-f Metadata [19.4 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7377327Z Get:32 
+http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
+> YAML Lint	Install yamllint	2025-11-17T11:13:57.7388608Z Get:33 
+http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [212 B]
+> YAML Lint	Install yamllint	2025-11-17T11:14:06.4362573Z Fetched 7257 kB in 1s (7226 kB/s)
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.2877429Z Reading package lists...
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.3228198Z Reading package lists...
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.5614456Z Building dependency tree...
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.5622838Z Reading state information...
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.8608138Z The following additional packages will be 
+installed:
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.8609223Z   python3-pathspec
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.8850552Z The following NEW packages will be 
+installed:
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.8851364Z   python3-pathspec yamllint
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.9095754Z 0 upgraded, 2 newly installed, 0 to remove 
+and 28 not upgraded.
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.9096612Z Need to get 71.6 kB of archives.
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.9097985Z After this operation, 321 kB of additional 
+disk space will be used.
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.9098929Z Get:1 file:/etc/apt/apt-mirrors.txt 
+Mirrorlist [144 B]
+> YAML Lint	Install yamllint	2025-11-17T11:14:07.9962790Z Get:2 
+http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 python3-pathspec all 0.12.1-1 [24.5 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.0663510Z Get:3 
+http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 yamllint all 1.33.0-1 [47.2 kB]
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.3595746Z Fetched 71.6 kB in 0s (423 kB/s)
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.3845489Z Selecting previously unselected package 
+python3-pathspec.
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4116066Z (Reading database ... 
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4116729Z (Reading database ... 5%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4117309Z (Reading database ... 10%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4117584Z (Reading database ... 15%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4118068Z (Reading database ... 20%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4118427Z (Reading database ... 25%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4118776Z (Reading database ... 30%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4119040Z (Reading database ... 35%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4119269Z (Reading database ... 40%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4119469Z (Reading database ... 45%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4119676Z (Reading database ... 50%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.4210664Z (Reading database ... 55%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.5791705Z (Reading database ... 60%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.6627202Z (Reading database ... 65%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.7301391Z (Reading database ... 70%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.7933622Z (Reading database ... 75%
+> YAML Lint	Install yamllint	2025-11-17T11:14:08.9827744Z (Reading database ... 80%
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.1759550Z (Reading database ... 85%
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.3800791Z (Reading database ... 90%
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.5424702Z (Reading database ... 95%
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.5425298Z (Reading database ... 100%
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.5425920Z (Reading database ... 216225 files and 
+directories currently installed.)
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.5474357Z Preparing to unpack 
+.../python3-pathspec_0.12.1-1_all.deb ...
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.5510822Z Unpacking python3-pathspec (0.12.1-1) ...
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.5782836Z Selecting previously unselected package 
+yamllint.
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.5925819Z Preparing to unpack 
+.../yamllint_1.33.0-1_all.deb ...
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.5937462Z Unpacking yamllint (1.33.0-1) ...
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.6432892Z Setting up python3-pathspec (0.12.1-1) ...
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.7717445Z Setting up yamllint (1.33.0-1) ...
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.8971569Z Processing triggers for man-db 
+(2.12.0-4build2) ...
+> YAML Lint	Install yamllint	2025-11-17T11:14:09.8998685Z Not building database; man-db/auto-update 
+is not 'true'.
+> YAML Lint	Install yamllint	2025-11-17T11:14:10.6387911Z 
+> YAML Lint	Install yamllint	2025-11-17T11:14:10.6388623Z Running kernel seems to be up-to-date.
+> YAML Lint	Install yamllint	2025-11-17T11:14:10.6389572Z 
+> YAML Lint	Install yamllint	2025-11-17T11:14:10.6389699Z No services need to be restarted.
+> YAML Lint	Install yamllint	2025-11-17T11:14:10.6390107Z 
+> YAML Lint	Install yamllint	2025-11-17T11:14:10.6390222Z No containers need to be restarted.
+> YAML Lint	Install yamllint	2025-11-17T11:14:10.6390447Z 
+> YAML Lint	Install yamllint	2025-11-17T11:14:10.6390591Z No user sessions are running outdated 
+binaries.
+> YAML Lint	Install yamllint	2025-11-17T11:14:10.6390866Z 
+> YAML Lint	Install yamllint	2025-11-17T11:14:10.6391113Z No VM guests are running outdated 
+hypervisor (qemu) binaries on this host.
+> YAML Lint	Install yamllint	2025-11-17T11:14:11.9363095Z ##[debug]Finishing: Install yamllint
+> YAML Lint	Run yamllint	n++2025-11-17T11:14:11.9371498Z ##[debug]Evaluating condition for step: 
+'Run yamllint'
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9374324Z ##[debug]Evaluating: success()
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9374725Z ##[debug]Evaluating success:
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9375159Z ##[debug]=> true
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9375556Z ##[debug]Result: true
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9376083Z ##[debug]Starting: Run yamllint
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9391196Z ##[debug]Loading inputs
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9392696Z ##[debug]Loading env
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9396599Z ##[group]Run # Lint only our workflow YAMLs 
+(you can change to "." if you want)
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9397508Z [36;1m# Lint only our workflow YAMLs (you can 
+change to "." if you want)[0m
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9398076Z [36;1myamllint -f github .github/workflows[0m
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9432528Z shell: /usr/bin/bash -e {0}
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9432762Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:11.9469173Z ##[debug]/usr/bin/bash -e 
+/home/runner/work/_temp/8cecae1b-e95b-4750-9ce3-779f72edefc9.sh
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2089033Z ::group::.github/workflows/text-guard.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2089895Z ##[group].github/workflows/text-guard.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2113198Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2122413Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2124635Z ##[error]6:16 [brackets] too many spaces 
+inside brackets
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2126022Z ##[error]6:21 [brackets] too many spaces 
+inside brackets
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2126964Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2127150Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2127271Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2127519Z ::group::.github/workflows/pr-checks.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2127783Z ##[group].github/workflows/pr-checks.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2128505Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2129687Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2130812Z ##[error]5:16 [brackets] too many spaces 
+inside brackets
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2131925Z ##[error]5:21 [brackets] too many spaces 
+inside brackets
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2133024Z ##[error]18:16 [braces] too many spaces inside 
+braces
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2134110Z ##[error]18:40 [braces] too many spaces inside 
+braces
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2135210Z ##[error]36:16 [braces] too many spaces inside 
+braces
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2136311Z ##[error]36:40 [braces] too many spaces inside 
+braces
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2137770Z ##[error]41:81 [line-length] line too long (91 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2138996Z ##[error]89:1 [empty-lines] too many blank 
+lines (2 > 0)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2139844Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2140014Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2140117Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2140331Z ::group::.github/workflows/codegen.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2140584Z ##[group].github/workflows/codegen.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2141280Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2142486Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2143692Z ##[error]24:81 [line-length] line too long 
+(133 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2144868Z ##[error]37:81 [line-length] line too long 
+(115 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2146018Z ##[error]45:81 [line-length] line too long (84 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2147604Z ##[error]65:81 [line-length] line too long (89 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2149089Z ##[error]70:81 [line-length] line too long 
+(117 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2150306Z ##[error]80:81 [line-length] line too long (96 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2151952Z ##[error]81:81 [line-length] line too long 
+(113 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2153203Z ##[error]82:81 [line-length] line too long 
+(115 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2154369Z ##[error]94:81 [line-length] line too long (96 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2155575Z ##[error]99:81 [line-length] line too long (87 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2157051Z ##[error]100:81 [line-length] line too long 
+(114 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2158243Z ##[error]110:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2159717Z ##[error]111:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2160822Z ##[error]112:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2161911Z ##[error]113:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2162988Z ##[error]114:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2164120Z ##[error]117:81 [line-length] line too long 
+(111 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2165280Z ##[error]124:81 [line-length] line too long 
+(91 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2166432Z ##[error]127:81 [line-length] line too long 
+(91 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2167792Z ##[error]132:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2168900Z ##[error]133:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2169982Z ##[error]134:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2171066Z ##[error]135:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2172152Z ##[error]136:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2173242Z ##[error]137:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2174329Z ##[error]138:30 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2175473Z ##[error]147:81 [line-length] line too long 
+(138 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2176647Z ##[error]160:81 [line-length] line too long 
+(91 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2178197Z ##[error]168:81 [line-length] line too long 
+(87 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2179366Z ##[error]176:81 [line-length] line too long 
+(86 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2180567Z ##[error]182:81 [line-length] line too long 
+(162 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2181771Z ##[error]192:81 [line-length] line too long 
+(129 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2182944Z ##[error]198:81 [line-length] line too long 
+(81 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2184078Z ##[error]214:18 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2185178Z ##[error]215:18 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2186306Z ##[error]216:18 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2187832Z ##[error]229:81 [line-length] line too long 
+(87 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2189076Z ##[error]245:81 [line-length] line too long 
+(106 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2189945Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2190119Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2190213Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2190428Z ::group::.github/workflows/triage.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2190674Z ##[group].github/workflows/triage.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2191379Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2192621Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2193837Z ##[error]20:81 [line-length] line too long 
+(101 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2195022Z ##[error]24:81 [line-length] line too long (89 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2196196Z ##[error]64:81 [line-length] line too long (96 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2197647Z ##[error]68:81 [line-length] line too long (95 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2198889Z ##[error]88:81 [line-length] line too long (97 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2200099Z ##[error]94:81 [line-length] line too long 
+(107 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2201313Z ##[error]102:81 [line-length] line too long 
+(114 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2202516Z ##[error]116:81 [line-length] line too long 
+(113 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2203702Z ##[error]121:81 [line-length] line too long 
+(88 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2205154Z ##[error]123:81 [line-length] line too long 
+(96 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2206340Z ##[error]124:81 [line-length] line too long 
+(113 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2207690Z ##[error]126:81 [line-length] line too long 
+(107 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2208837Z ##[error]132:18 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2209948Z ##[error]133:18 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2211063Z ##[error]134:18 [colons] too many spaces after 
+colon
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2575582Z Traceback (most recent call last):
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2578089Z ##[error]138:81 [line-length] line too long 
+(142 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2580147Z   File "/opt/pipx_bin/yamllint", line 7, in 
+<module>
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2580775Z     sys.exit(run())
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2581017Z              ^^^^^
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2581541Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yamllint/cli.py", line 227, in run
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2582370Z     prob_level = show_problems(problems, file, 
+args_format=args.format,
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2582954Z                  
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2583739Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yamllint/cli.py", line 102, in show_problems
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2585344Z ##[error]141:81 [line-length] line too long 
+(106 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2587360Z ##[error]147:81 [line-length] line too long 
+(98 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2588682Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2588923Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2589065Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2589418Z ::group::.github/workflows/ai-feedback.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2589800Z ##[group].github/workflows/ai-feedback.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2590882Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2592257Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2593537Z ##[error]19:81 [line-length] line too long 
+(101 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2594788Z ##[error]43:81 [line-length] line too long (81 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2596017Z ##[error]45:15 syntax error: could not find 
+expected ':' (syntax)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2597400Z ##[error]131:81 [line-length] line too long 
+(94 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2598683Z ##[error]132:81 [line-length] line too long 
+(94 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2599928Z ##[error]133:81 [line-length] line too long 
+(94 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2601180Z ##[error]134:81 [line-length] line too long 
+(94 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2602410Z ##[error]135:81 [line-length] line too long 
+(93 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2603746Z ##[error]149:81 [line-length] line too long 
+(103 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2604978Z ##[error]185:81 [line-length] line too long 
+(85 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2606197Z ##[error]200:81 [line-length] line too long 
+(94 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2607553Z ##[error]201:81 [line-length] line too long 
+(139 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2608829Z ##[error]221:81 [line-length] line too long 
+(103 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2610104Z ##[error]222:81 [line-length] line too long 
+(83 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2611340Z ##[error]224:81 [line-length] line too long 
+(91 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2612559Z ##[error]226:81 [line-length] line too long 
+(87 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2613784Z ##[error]248:81 [line-length] line too long 
+(99 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2614698Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2614866Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2614961Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2615200Z 
+::group::.github/workflows/nightly-self-eval.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2615490Z 
+##[group].github/workflows/nightly-self-eval.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2616191Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2617657Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2618926Z ##[error]6:81 [line-length] line too long (96 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2620502Z ##[error]19:81 [line-length] line too long (92 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2621443Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2621614Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2621725Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2621945Z ::group::.github/workflows/ship-issue.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2622315Z ##[group].github/workflows/ship-issue.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2623010Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2624309Z ##[warning]2:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2625812Z ##[error]19:81 [line-length] line too long (83 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2627199Z ##[error]27:81 [line-length] line too long (84 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2628474Z ##[error]40:81 [line-length] line too long (91 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2629738Z ##[error]56:81 [line-length] line too long (82 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2630986Z ##[error]70:81 [line-length] line too long 
+(133 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2631929Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2632097Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2632194Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2632427Z 
+::group::.github/workflows/v4_ship_placeholder.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2632726Z 
+##[group].github/workflows/v4_ship_placeholder.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2633421Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2634718Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2635713Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2635895Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2635995Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2636201Z ::group::.github/workflows/ci.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2636435Z ##[group].github/workflows/ci.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2637211Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2638548Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2639825Z ##[error]28:81 [line-length] line too long (85 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2641079Z ##[error]36:81 [line-length] line too long (85 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2642343Z ##[error]44:81 [line-length] line too long 
+(116 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2643281Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2643440Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2643540Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2643746Z ::group::.github/workflows/watchdog.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2643994Z ##[group].github/workflows/watchdog.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2644653Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2645936Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2647330Z ##[error]24:81 [line-length] line too long 
+(114 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2648713Z ##[error]40:14 [new-line-at-end-of-file] no 
+new line character at the end of file
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2649707Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2649870Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2649966Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2650177Z ::group::.github/workflows/notify.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2650414Z ##[group].github/workflows/notify.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2651089Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2652368Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2653324Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2653488Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2653580Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2653795Z ::group::.github/workflows/auto-codegen.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2654061Z ##[group].github/workflows/auto-codegen.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2654745Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2656052Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2657474Z ##[error]39:1 syntax error: could not find 
+expected ':' (syntax)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2658772Z ##[error]69:81 [line-length] line too long 
+(161 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2660031Z ##[error]79:81 [line-length] line too long 
+(112 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2661284Z ##[error]96:81 [line-length] line too long (94 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2662763Z ##[error]103:81 [line-length] line too long 
+(108 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2663705Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2663870Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2663965Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2664196Z ::group::.github/workflows/auto_fix_policy.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2664481Z ##[group].github/workflows/auto_fix_policy.yml
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2665172Z ##[warning]1:1 [document-start] missing 
+document start "---"
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2666457Z ##[warning]3:1 [truthy] truthy value should be 
+one of [false, true]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2668117Z ##[error]39:81 [line-length] line too long 
+(108 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2669385Z ##[error]40:81 [line-length] line too long 
+(103 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2670634Z ##[error]41:81 [line-length] line too long 
+(105 > 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2671890Z ##[error]45:81 [line-length] line too long (97 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2673147Z ##[error]51:81 [line-length] line too long (87 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2674416Z ##[error]54:81 [line-length] line too long (82 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2675656Z ##[error]63:81 [line-length] line too long (84 
+> 80 characters)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2676596Z ::endgroup::
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2676754Z ##[endgroup]
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2676963Z 
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2677063Z     for problem in problems:
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2677494Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yamllint/linter.py", line 199, in _run
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2677955Z     syntax_error = get_syntax_error(buffer)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2678210Z                    ^^^^^^^^^^^^^^^^^^^^^^^^
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2678670Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yamllint/linter.py", line 178, in 
+get_syntax_error
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2679185Z     list(yaml.parse(buffer, 
+Loader=yaml.BaseLoader))
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2679639Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yaml/__init__.py", line 44, in parse
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2740297Z     loader = Loader(stream)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2740585Z              ^^^^^^^^^^^^^^
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2741090Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yaml/loader.py", line 14, in __init__
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2773951Z     Reader.__init__(self, stream)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2774607Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yaml/reader.py", line 74, in __init__
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2816769Z     self.check_printable(stream)
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2817599Z   File 
+"/opt/pipx/venvs/yamllint/lib/python3.12/site-packages/yaml/reader.py", line 143, in check_printable
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2818399Z     raise ReaderError(self.name, position, 
+ord(character),
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2818887Z yaml.reader.ReaderError: unacceptable 
+character #x008f: special characters are not allowed
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2819322Z   in "<unicode string>", position 4335
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2925393Z ##[error]Process completed with exit code 1.
+> YAML Lint	Run yamllint	2025-11-17T11:14:12.2932247Z ##[debug]Finishing: Run yamllint
+> YAML Lint	Post Checkout	n++2025-11-17T11:14:12.2953206Z ##[debug]Evaluating condition for step: 
+'Post Checkout'
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.2955778Z ##[debug]Evaluating: always()
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.2956152Z ##[debug]Evaluating always:
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.2957156Z ##[debug]=> true
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.2957566Z ##[debug]Result: true
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.2958233Z ##[debug]Starting: Post Checkout
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3007654Z ##[debug]Loading inputs
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3009266Z ##[debug]Evaluating: github.repository
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3009604Z ##[debug]Evaluating Index:
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3009848Z ##[debug]..Evaluating github:
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3010110Z ##[debug]..=> Object
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3010349Z ##[debug]..Evaluating String:
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3010581Z ##[debug]..=> 'repository'
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3010877Z ##[debug]=> 'proteaNirav/rocketgpt'
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3011154Z ##[debug]Result: 'proteaNirav/rocketgpt'
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3013150Z ##[debug]Evaluating: github.token
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3013410Z ##[debug]Evaluating Index:
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3013633Z ##[debug]..Evaluating github:
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3014114Z ##[debug]..=> Object
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3014325Z ##[debug]..Evaluating String:
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3014547Z ##[debug]..=> 'token'
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3015117Z ##[debug]=> '***'
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3015433Z ##[debug]Result: '***'
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3025156Z ##[debug]Loading env
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3030350Z Post job cleanup.
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.3998527Z ##[debug]Getting git version
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4013285Z [command]/usr/bin/git version
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4053030Z git version 2.51.2
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4077427Z ##[debug]0
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4077974Z ##[debug]git version 2.51.2
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4078269Z ##[debug]
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4079307Z ##[debug]Set git useragent to: git/2.51.2 
+(github-actions-checkout)
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4082691Z ::add-mask::***
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4106161Z Temporarily overriding 
+HOME='/home/runner/work/_temp/3c34c444-86b5-446b-b91c-2103a3e52450' before making global git config 
+changes
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4107738Z Adding repository directory to the temporary 
+git global config as a safe directory
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4111942Z [command]/usr/bin/git config --global --add 
+safe.directory /home/runner/work/rocketgpt/rocketgpt
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4142328Z ##[debug]0
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4142701Z ##[debug]
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4150089Z [command]/usr/bin/git config --local 
+--name-only --get-regexp core\.sshCommand
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4178283Z ##[debug]1
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4178634Z ##[debug]
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4184173Z [command]/usr/bin/git submodule foreach 
+--recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config 
+--local --unset-all 'core.sshCommand' || :"
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4417838Z ##[debug]0
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4418521Z ##[debug]
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4426172Z [command]/usr/bin/git config --local 
+--name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4454098Z http.https://github.com/.extraheader
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4461124Z ##[debug]0
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4461786Z ##[debug]http.https://github.com/.extraheader
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4462271Z ##[debug]
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4468001Z [command]/usr/bin/git config --local 
+--unset-all http.https://github.com/.extraheader
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4497785Z ##[debug]0
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4498343Z ##[debug]
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4504426Z [command]/usr/bin/git submodule foreach 
+--recursive sh -c "git config --local --name-only --get-regexp 
+'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 
+'http.https://github.com/.extraheader' || :"
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4754863Z ##[debug]0
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4755487Z ##[debug]
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4756071Z ##[debug]Unsetting HOME override
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4835013Z ##[debug]Node Action run completed with exit 
+code 0
+> YAML Lint	Post Checkout	2025-11-17T11:14:12.4838035Z ##[debug]Finishing: Post Checkout
+> YAML Lint	Complete job	n++2025-11-17T11:14:12.4880205Z ##[debug]Starting: Complete job
+> YAML Lint	Complete job	2025-11-17T11:14:12.4915906Z Cleaning up orphan processes
+> YAML Lint	Complete job	2025-11-17T11:14:12.5227821Z ##[debug]Finishing: Complete job
+  build	Set up job	n++2025-11-17T11:13:56.4142013Z ##[debug]Starting: Set up job
+  build	Set up job	2025-11-17T11:13:56.4143135Z Current runner version: '2.329.0'
+  build	Set up job	2025-11-17T11:13:56.4163092Z ##[group]Runner Image Provisioner
+  build	Set up job	2025-11-17T11:13:56.4163969Z Hosted Compute Agent
+  build	Set up job	2025-11-17T11:13:56.4164510Z Version: 20251016.436
+  build	Set up job	2025-11-17T11:13:56.4165055Z Commit: 8ab8ac8bfd662a3739dab9fe09456aba92132568
+  build	Set up job	2025-11-17T11:13:56.4165868Z Build Date: 2025-10-15T20:44:12Z
+  build	Set up job	2025-11-17T11:13:56.4166424Z ##[endgroup]
+  build	Set up job	2025-11-17T11:13:56.4166916Z ##[group]Operating System
+  build	Set up job	2025-11-17T11:13:56.4167519Z Ubuntu
+  build	Set up job	2025-11-17T11:13:56.4168140Z 24.04.3
+  build	Set up job	2025-11-17T11:13:56.4168578Z LTS
+  build	Set up job	2025-11-17T11:13:56.4169093Z ##[endgroup]
+  build	Set up job	2025-11-17T11:13:56.4169577Z ##[group]Runner Image
+  build	Set up job	2025-11-17T11:13:56.4170071Z Image: ubuntu-24.04
+  build	Set up job	2025-11-17T11:13:56.4170640Z Version: 20251112.124.1
+  build	Set up job	2025-11-17T11:13:56.4171622Z Included Software: https://github.com/actions/runner-
+images/blob/ubuntu24/20251112.124/images/ubuntu/Ubuntu2404-Readme.md
+  build	Set up job	2025-11-17T11:13:56.4173305Z Image Release: 
+https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251112.124
+  build	Set up job	2025-11-17T11:13:56.4174286Z ##[endgroup]
+  build	Set up job	2025-11-17T11:13:56.4175300Z ##[group]GITHUB_TOKEN Permissions
+  build	Set up job	2025-11-17T11:13:56.4177171Z Contents: read
+  build	Set up job	2025-11-17T11:13:56.4177696Z Metadata: read
+  build	Set up job	2025-11-17T11:13:56.4178488Z ##[endgroup]
+  build	Set up job	2025-11-17T11:13:56.4180526Z Secret source: Actions
+  build	Set up job	2025-11-17T11:13:56.4181251Z ##[debug]Primary repository: proteaNirav/rocketgpt
+  build	Set up job	2025-11-17T11:13:56.4182065Z Prepare workflow directory
+  build	Set up job	2025-11-17T11:13:56.4248914Z ##[debug]Creating pipeline directory: 
+'/home/runner/work/rocketgpt'
+  build	Set up job	2025-11-17T11:13:56.4252183Z ##[debug]Creating workspace directory: 
+'/home/runner/work/rocketgpt/rocketgpt'
+  build	Set up job	2025-11-17T11:13:56.4253908Z ##[debug]Update context data
+  build	Set up job	2025-11-17T11:13:56.4257344Z ##[debug]Evaluating job-level environment variables
+  build	Set up job	2025-11-17T11:13:56.4480521Z ##[debug]Evaluating job container
+  build	Set up job	2025-11-17T11:13:56.4485651Z ##[debug]Evaluating job service containers
+  build	Set up job	2025-11-17T11:13:56.4489455Z ##[debug]Evaluating job defaults
+  build	Set up job	2025-11-17T11:13:56.4524627Z Prepare all required actions
+  build	Set up job	2025-11-17T11:13:56.4582802Z Getting action download info
+  build	Set up job	2025-11-17T11:13:56.9110159Z Download action repository 'actions/checkout@v4' 
+(SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
+  build	Set up job	2025-11-17T11:13:56.9153390Z ##[debug]Copied action archive 
+'/opt/actionarchivecache/actions_checkout/08eba0b27e820071cde6df949e0beb9ba4906955.tar.gz' to '/home/
+runner/work/_actions/_temp_d860dcc3-c5da-4d15-b541-8bfc031f3edd/0e4519c0-77b4-4555-aabb-8eedf8c903e4.
+tar.gz'
+  build	Set up job	2025-11-17T11:13:56.9845283Z ##[debug]Unwrap 'actions-checkout-08eba0b' to 
+'/home/runner/work/_actions/actions/checkout/v4'
+  build	Set up job	2025-11-17T11:13:56.9972851Z ##[debug]Archive '/home/runner/work/_actions/_temp_d8
+60dcc3-c5da-4d15-b541-8bfc031f3edd/0e4519c0-77b4-4555-aabb-8eedf8c903e4.tar.gz' has been unzipped 
+into '/home/runner/work/_actions/actions/checkout/v4'.
+  build	Set up job	2025-11-17T11:13:57.0071867Z Download action repository 'actions/setup-dotnet@v4' 
+(SHA:67a3573c9a986a3f9c594539f4ab511d57bb3ce9)
+  build	Set up job	2025-11-17T11:13:57.4648076Z ##[debug]Download 
+'https://api.github.com/repos/actions/setup-dotnet/tarball/67a3573c9a986a3f9c594539f4ab511d57bb3ce9' 
+to '/home/runner/work/_actions/_temp_2218a356-8b84-4726-ae2a-bd6b0b2dcd80/f8e4880d-0c86-4ce5-a067-339
+4d489902f.tar.gz'
+  build	Set up job	2025-11-17T11:13:57.5156928Z ##[debug]Unwrap 'actions-setup-dotnet-67a3573' to 
+'/home/runner/work/_actions/actions/setup-dotnet/v4'
+  build	Set up job	2025-11-17T11:13:57.5374593Z ##[debug]Archive '/home/runner/work/_actions/_temp_22
+18a356-8b84-4726-ae2a-bd6b0b2dcd80/f8e4880d-0c86-4ce5-a067-3394d489902f.tar.gz' has been unzipped 
+into '/home/runner/work/_actions/actions/setup-dotnet/v4'.
+  build	Set up job	2025-11-17T11:13:57.5438050Z ##[debug]action.yml for action: 
+'/home/runner/work/_actions/actions/checkout/v4/action.yml'.
+  build	Set up job	2025-11-17T11:13:57.6084331Z ##[debug]action.yml for action: 
+'/home/runner/work/_actions/actions/setup-dotnet/v4/action.yml'.
+  build	Set up job	2025-11-17T11:13:57.6195699Z ##[debug]Set step '__actions_checkout' display name 
+to: 'Run actions/checkout@v4'
+  build	Set up job	2025-11-17T11:13:57.6199522Z ##[debug]Set step '__actions_setup-dotnet' display 
+name to: 'Run actions/setup-dotnet@v4'
+  build	Set up job	2025-11-17T11:13:57.6201758Z ##[debug]Set step '__run' display name to: 'Build 
+(if .sln exists)'
+  build	Set up job	2025-11-17T11:13:57.6202530Z Complete job name: build
+  build	Set up job	2025-11-17T11:13:57.6221386Z ##[debug]Collect running processes for tracking 
+orphan processes.
+  build	Set up job	2025-11-17T11:13:57.6436381Z ##[debug]Finishing: Set up job
+  build	Run actions/checkout@v4	n++2025-11-17T11:13:57.6550390Z ##[debug]Evaluating condition for 
+step: 'Run actions/checkout@v4'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6585990Z ##[debug]Evaluating: success()
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6591397Z ##[debug]Evaluating success:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6606444Z ##[debug]=> true
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6613799Z ##[debug]Result: true
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6637028Z ##[debug]Starting: Run 
+actions/checkout@v4
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6705357Z ##[debug]Register post job cleanup for 
+action: actions/checkout@v4
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6787100Z ##[debug]Loading inputs
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6794804Z ##[debug]Evaluating: github.repository
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6796372Z ##[debug]Evaluating Index:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6798551Z ##[debug]..Evaluating github:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6799789Z ##[debug]..=> Object
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6805364Z ##[debug]..Evaluating String:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6806304Z ##[debug]..=> 'repository'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6811173Z ##[debug]=> 'proteaNirav/rocketgpt'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6812795Z ##[debug]Result: 'proteaNirav/rocketgpt'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6816112Z ##[debug]Evaluating: github.token
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6816747Z ##[debug]Evaluating Index:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6817249Z ##[debug]..Evaluating github:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6818038Z ##[debug]..=> Object
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6818619Z ##[debug]..Evaluating String:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6819118Z ##[debug]..=> 'token'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6819908Z ##[debug]=> '***'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6820620Z ##[debug]Result: '***'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6837681Z ##[debug]Loading env
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6906462Z ##[group]Run actions/checkout@v4
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6907488Z with:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6908169Z   repository: proteaNirav/rocketgpt
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6908882Z   token: ***
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6909317Z   ssh-strict: true
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6909744Z   ssh-user: git
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6910186Z   persist-credentials: true
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6910656Z   clean: true
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6911093Z   sparse-checkout-cone-mode: true
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6911609Z   fetch-depth: 1
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6912027Z   fetch-tags: false
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6912471Z   show-progress: true
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6912898Z   lfs: false
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6913291Z   submodules: false
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6913718Z   set-safe-directory: true
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.6914465Z ##[endgroup]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7896111Z ##[debug]GITHUB_WORKSPACE = 
+'/home/runner/work/rocketgpt/rocketgpt'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7898298Z ##[debug]qualified repository = 
+'proteaNirav/rocketgpt'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7899297Z ##[debug]ref = 'refs/pull/173/merge'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7900222Z ##[debug]commit = 
+'e8c2b71ecbd4f933666320fb1fdd98f029c2cef9'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7901321Z ##[debug]clean = true
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7902509Z ##[debug]filter = undefined
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7903294Z ##[debug]fetch depth = 1
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7904038Z ##[debug]fetch tags = false
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7904776Z ##[debug]show progress = true
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7905511Z ##[debug]lfs = false
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7906227Z ##[debug]submodules = false
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7906993Z ##[debug]recursive submodules = false
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7908033Z ##[debug]GitHub Host URL = 
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7909612Z 
+::add-matcher::/home/runner/work/_actions/actions/checkout/v4/dist/problem-matcher.json
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7985017Z ##[debug]Added matchers: 
+'checkout-git'. Problem matchers scan action output for known warning or error strings and report 
+these inline.
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7990229Z Syncing repository: 
+proteaNirav/rocketgpt
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7991511Z ::group::Getting Git version info
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7992723Z ##[group]Getting Git version info
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7993729Z Working directory is 
+'/home/runner/work/rocketgpt/rocketgpt'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7994742Z ##[debug]Getting git version
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.7995258Z [command]/usr/bin/git version
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8068757Z git version 2.51.2
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8098973Z ##[debug]0
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8101234Z ##[debug]git version 2.51.2
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8101773Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8102632Z ##[debug]Set git useragent to: 
+git/2.51.2 (github-actions-checkout)
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8104232Z ::endgroup::
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8104698Z ##[endgroup]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8108802Z ::add-mask::***
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8116311Z Temporarily overriding 
+HOME='/home/runner/work/_temp/7fc106f4-58b1-40e5-be2b-edb17dfa2a25' before making global git config 
+changes
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8117942Z Adding repository directory to the 
+temporary git global config as a safe directory
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8121822Z [command]/usr/bin/git config --global 
+--add safe.directory /home/runner/work/rocketgpt/rocketgpt
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8152471Z ##[debug]0
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8153351Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8157144Z Deleting the contents of 
+'/home/runner/work/rocketgpt/rocketgpt'
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8160761Z ::group::Initializing the repository
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8161422Z ##[group]Initializing the repository
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8164619Z [command]/usr/bin/git init 
+/home/runner/work/rocketgpt/rocketgpt
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8291373Z hint: Using 'master' as the name for 
+the initial branch. This default branch name
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8292980Z hint: is subject to change. To 
+configure the initial branch name to use in all
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8294083Z hint: of your new repositories, which 
+will suppress this warning, call:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8295057Z hint:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8296130Z hint: 	git config --global 
+init.defaultBranch <name>
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8296926Z hint:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8298257Z hint: Names commonly chosen instead of 
+'master' are 'main', 'trunk' and
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8300509Z hint: 'development'. The just-created 
+branch can be renamed via this command:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8302237Z hint:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8303126Z hint: 	git branch -m <name>
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8304074Z hint:
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8305239Z hint: Disable this message with "git 
+config set advice.defaultBranchName false"
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8307213Z Initialized empty Git repository in 
+/home/runner/work/rocketgpt/rocketgpt/.git/
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8309625Z ##[debug]0
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8311597Z ##[debug]Initialized empty Git 
+repository in /home/runner/work/rocketgpt/rocketgpt/.git/
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8313198Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8314416Z [command]/usr/bin/git remote add origin 
+https://github.com/proteaNirav/rocketgpt
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8344637Z ##[debug]0
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8345930Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8347206Z ::endgroup::
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8348228Z ##[endgroup]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8349770Z ::group::Disabling automatic garbage 
+collection
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8351066Z ##[group]Disabling automatic garbage 
+collection
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8352395Z [command]/usr/bin/git config --local 
+gc.auto 0
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8378288Z ##[debug]0
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8379665Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8380983Z ::endgroup::
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8381879Z ##[endgroup]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8383170Z ::group::Setting up auth
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8384015Z ##[group]Setting up auth
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8388123Z [command]/usr/bin/git config --local 
+--name-only --get-regexp core\.sshCommand
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8412082Z ##[debug]1
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8413379Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8419315Z [command]/usr/bin/git submodule foreach 
+--recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config 
+--local --unset-all 'core.sshCommand' || :"
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8778962Z ##[debug]0
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8780620Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8784851Z [command]/usr/bin/git config --local 
+--name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8809193Z ##[debug]1
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8810861Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.8815925Z [command]/usr/bin/git submodule foreach 
+--recursive sh -c "git config --local --name-only --get-regexp 
+'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 
+'http.https://github.com/.extraheader' || :"
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.9026871Z ##[debug]0
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.9028666Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.9036344Z [command]/usr/bin/git config --local 
+http.https://github.com/.extraheader AUTHORIZATION: basic ***
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.9074237Z ##[debug]0
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.9076064Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.9082763Z ::endgroup::
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.9083668Z ##[endgroup]
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.9085135Z ::group::Fetching the repository
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.9086208Z ##[group]Fetching the repository
+  build	Run actions/checkout@v4	2025-11-17T11:13:57.9093719Z [command]/usr/bin/git -c 
+protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 
++e8c2b71ecbd4f933666320fb1fdd98f029c2cef9:refs/remotes/pull/173/merge
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3761092Z From 
+https://github.com/proteaNirav/rocketgpt
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3762520Z  * [new ref]         
+e8c2b71ecbd4f933666320fb1fdd98f029c2cef9 -> pull/173/merge
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3792954Z ##[debug]0
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3794753Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3796591Z ::endgroup::
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3797555Z ##[endgroup]
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3799569Z ::group::Determining the checkout info
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3800946Z ##[group]Determining the checkout info
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3803150Z ::endgroup::
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3804274Z ##[endgroup]
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3805601Z [command]/usr/bin/git sparse-checkout 
+disable
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3845779Z ##[debug]0
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3848336Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3850894Z [command]/usr/bin/git config --local 
+--unset-all extensions.worktreeConfig
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3879442Z ##[debug]0
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3881542Z ##[debug]
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3883950Z ::group::Checking out the ref
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3885990Z ##[group]Checking out the ref
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.3888655Z [command]/usr/bin/git checkout 
+--progress --force refs/remotes/pull/173/merge
+  build	Run actions/checkout@v4	2025-11-17T11:13:58.4181424Z Note: switching to 
+'refs/remotes/pull/173/merge'.
+
+
+
