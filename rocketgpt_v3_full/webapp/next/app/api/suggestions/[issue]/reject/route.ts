@@ -31,3 +31,4 @@ export async function POST(req: NextRequest, { params }: { params: { issue: stri
 
   return NextResponse.json({ ok: true });
 }
+

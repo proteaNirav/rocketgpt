@@ -1,0 +1,10 @@
+gh : failed to get job: HTTP 404: Not Found 
+(https://api.github.com/repos/proteaNirav/rocketgpt/actions/jobs/YAML%20Lint)
+At line:1 char:1
++ gh run view $runId --job "YAML Lint" --log 2>&1 | Out-String | Set-Co ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (failed to get j...bs/YAML%20Lint):String) [], RemoteExc 
+   eption
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+

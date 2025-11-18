@@ -54,7 +54,7 @@ namespace ${component}.Pages
         {
             if(!_captcha.Verify(CaptchaToken)) { ModelState.AddModelError("", "CAPTCHA failed."); return Page(); }
             if(!_otp.Validate(Email, Otp)) { ModelState.AddModelError("", "Invalid/expired OTP."); return Page(); }
-            var token = _tokens.IssueOneTimeToken(Email);
+            var ***REMOVED***
             // TODO: redirect to activation endpoint with encrypted token
             TempData["msg"] = "Activation token issued.";
             return RedirectToPage("/Index");
