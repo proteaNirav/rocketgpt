@@ -82,7 +82,8 @@
 ## 4. Supabase RLS Baseline (SQL)
 
 - [x] Baseline file added:
-  - ocketgpt_v3_full/webapp/next/supabase/rls_rocketgpt_baseline.sql
+  - 
+ocketgpt_v3_full/webapp/next/supabase/rls_rocketgpt_baseline.sql
 
 - Scope:
   - public.guests
@@ -96,15 +97,19 @@
     - guests_select_authenticated: authenticated users may select guest rows.
   - **public.rl_plans**
     - RLS enabled.
-    - l_plans_read_all: authenticated users can read all pricing/catalog rows.
+    - 
+l_plans_read_all: authenticated users can read all pricing/catalog rows.
   - **public.rl_user_plans**
     - RLS enabled.
-    - l_user_plans_select_own: users can select only rows where user_id = auth.uid()::text.
-    - l_user_plans_insert_own: users can insert only rows with user_id = auth.uid()::text.
-    - l_user_plans_update_own: users can update only their own rows (user_id = auth.uid()::text).
+    - 
+l_user_plans_select_own: users can select only rows where user_id = auth.uid()::text.
+    - 
+l_user_plans_insert_own: users can insert only rows with user_id = auth.uid()::text.
+    - 
+l_user_plans_update_own: users can update only their own rows (user_id = auth.uid()::text).
 
 - Status:
-  - [ ] Confirmed executed on Supabase (manual step via SQL editor).
+  - [x] Confirmed executed on Supabase (manual step via SQL editor).
   - [ ] Old/conflicting policies cleaned up (if any).
   - Note: This script is **defensive and non-relaxing** – it tightens access to per-user data.
 
@@ -151,7 +156,8 @@ These sections are placeholders for the next steps in the stock-take:
 
 - [ ] **Docs & Operational Runbook**
   - Quickstart for you (Nirav) to operate RocketGPT from PowerShell.
-  - Health/diagnostic commands (gpt-health, key probes).
+  - Health/diagnostic commands (
+gpt-health, key probes).
   - Process for re-deploy, rollback, and RLS tweaks.
 
 ---
@@ -164,6 +170,8 @@ These sections are placeholders for the next steps in the stock-take:
 - Core CI is green; some AI-related GitHub workflows are failing for configuration reasons but are **non-blocking** for public Go-Live.
 
 Next steps:
-- Execute the RLS baseline on Supabase (once) and confirm policies.
-- Decide on plan seeding for l_plans and mapping for l_user_plans.
+- RLS baseline executed on Supabase; visually confirm policies in Supabase UI when convenient.
+- Decide on plan seeding for 
+l_plans and mapping for 
+l_user_plans.
 - Complete checks for Auth, Text-Guard, UX, and Ops runbook.
