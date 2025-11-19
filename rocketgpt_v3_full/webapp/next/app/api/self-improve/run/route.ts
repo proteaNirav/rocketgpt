@@ -2,67 +2,44 @@
 
 export const dynamic = "force-dynamic";
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+function isTruthyEnv(value: string | undefined): boolean {
+  if (!value) return false;
+  const v = value.trim().toLowerCase();
+  return v === "1" || v === "true" || v === "yes";
+}
 
-export async function GET(): Promise<Response> {
-  const now = new Date().toISOString();
+export async function POST(req: Request) {
+  let body: unknown = null;
+  try {
+    body = await req.json();
+  } catch {
+    // ignore parse errors; body stays null
+  }
 
-  // Fallback placeholder run
-  const placeholder = {
+  const writeEnabled = isTruthyEnv(process.env.SELF_IMPROVE_WRITE);
+
+  const payload = {
     ok: true,
-    source: "placeholder",
+    accepted: true,
+    writeEnabled,
     message:
-      "Supabase not configured or returned no results. Showing placeholder data.",
-    runs: [
-      {
-        run_id: null,
-        run_number: null,
-        repository: "proteaNirav/rocketgpt",
-        sha: null,
-        ref: null,
-        phase: "plan+simulate",
-        status: "completed",
-        title: "Self-Improve (plan+simulate)",
-        summary:
-          "Placeholder data: Self-Improve visibility API is wired. Supabase history not yet connected.",
-        created_at: now,
-      },
-    ],
+      "Self-improve run trigger stub – executor wiring is pending. " +
+      "This endpoint currently only acknowledges the request.",
+    received: body,
+    timestamp: new Date().toISOString(),
   };
 
-  // If Supabase config missing → fallback
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return NextResponse.json(placeholder);
-  }
+  // 202 Accepted – work would normally be queued for async execution
+  return NextResponse.json(payload, { status: 202 });
+}
 
-  try {
-    const res = await fetch(
-      `${supabaseUrl}/rest/v1/self_improve_runs?select=*&order=created_at.desc&limit=20`,
-      {
-        headers: {
-          apikey: supabaseAnonKey,
-          Authorization: `Bearer ${supabaseAnonKey}`,
-        },
-      }
-    );
-
-    if (!res.ok) {
-      return NextResponse.json(placeholder);
-    }
-
-    const data = await res.json();
-
-    if (!Array.isArray(data) || data.length === 0) {
-      return NextResponse.json(placeholder);
-    }
-
-    return NextResponse.json({
-      ok: true,
-      source: "supabase",
-      runs: data,
-    });
-  } catch (err) {
-    return NextResponse.json(placeholder);
-  }
+// Optional: reject GET explicitly for /api/self-improve/run
+export async function GET() {
+  return NextResponse.json(
+    {
+      ok: false,
+      error: "Method not allowed. Use POST to trigger self-improve run.",
+    },
+    { status: 405 }
+  );
 }
