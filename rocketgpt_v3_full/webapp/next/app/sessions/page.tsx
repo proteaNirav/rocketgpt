@@ -1,21 +1,16 @@
-﻿const demoSessions = [
-  {
-    id: "sess_12345",
-    model: "gpt-5.1",
-    created: "2025-11-19 10:32",
-    lastActive: "2025-11-19 10:45",
-    status: "Active",
-  },
-  {
-    id: "sess_67890",
-    model: "claude-3-opus",
-    created: "2025-11-18 17:05",
-    lastActive: "2025-11-18 17:40",
-    status: "Expired",
-  },
-];
+﻿import { headers } from "next/headers";
 
-const statusClassName = (status: string) => {
+type SessionStatus = "Active" | "Expired";
+
+interface SessionSummary {
+  id: string;
+  model: string;
+  createdAt: string;
+  lastActiveAt: string;
+  status: SessionStatus;
+}
+
+const statusClassName = (status: SessionStatus) => {
   switch (status) {
     case "Active":
       return "inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs font-medium";
@@ -26,7 +21,31 @@ const statusClassName = (status: string) => {
   }
 };
 
-export default function SessionsPage() {
+export default async function SessionsPage() {
+  const hdrs = headers();
+  const protocol = hdrs.get("x-forwarded-proto") ?? "http";
+  const host =
+    hdrs.get("x-forwarded-host") ?? hdrs.get("host") ?? "localhost:3000";
+  const base = `${protocol}://${host}`;
+
+  let sessions: SessionSummary[] = [];
+  let error: string | null = null;
+
+  try {
+    const res = await fetch(`${base}/api/sessions`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      error = `Failed to load sessions (HTTP ${res.status})`;
+    } else {
+      const data = (await res.json()) as { sessions?: SessionSummary[] };
+      sessions = data.sessions ?? [];
+    }
+  } catch (e) {
+    error = "Unable to load sessions. Please try again.";
+  }
+
   return (
     <div className="p-4 space-y-4">
       <header className="flex items-center justify-between">
@@ -53,6 +72,12 @@ export default function SessionsPage() {
           </select>
         </div>
 
+        {error && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+            {error}
+          </div>
+        )}
+
         <div className="border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-muted">
@@ -66,7 +91,16 @@ export default function SessionsPage() {
               </tr>
             </thead>
             <tbody>
-              {demoSessions.length === 0 ? (
+              {error ? (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="p-6 text-center text-sm text-muted-foreground"
+                  >
+                    Unable to load sessions data.
+                  </td>
+                </tr>
+              ) : sessions.length === 0 ? (
                 <tr>
                   <td
                     colSpan={6}
@@ -77,7 +111,7 @@ export default function SessionsPage() {
                   </td>
                 </tr>
               ) : (
-                demoSessions.map((session) => (
+                sessions.map((session) => (
                   <tr
                     key={session.id}
                     className="border-t hover:bg-muted/60 transition-colors"
@@ -85,10 +119,10 @@ export default function SessionsPage() {
                     <td className="p-3 font-mono text-xs">{session.id}</td>
                     <td className="p-3">{session.model}</td>
                     <td className="p-3 text-xs text-muted-foreground">
-                      {session.created}
+                      {session.createdAt}
                     </td>
                     <td className="p-3 text-xs text-muted-foreground">
-                      {session.lastActive}
+                      {session.lastActiveAt}
                     </td>
                     <td className="p-3">
                       <span className={statusClassName(session.status)}>
