@@ -142,9 +142,9 @@ These sections are placeholders for the next steps in the stock-take:
 
 - [ ] **Auth & Session Flows**
   - [x] Guest bootstrap (/api/guest) and public limits (/api/limits) as guest return 200.
-  - Guest → Authenticated user mapping
-  - Token / cookie behavior
-  - Rate limiting per plan
+  - Guest → Authenticated user mapping (deferred: requires UI login; to be validated with real Supabase session cookies).
+  - Token / cookie behavior (deferred: cannot be tested from PowerShell; validate via browser devtools).
+  - Rate limiting per plan (future phase; not required for initial Go-Live).
 
 - [ ] **Text-Guard / Safety Layer** (runtime behavior not yet verified; no /api/textguard/status endpoint in prod, to be tested via app-level prompts later).
   - Whether requests are going through text-guard pipeline.
