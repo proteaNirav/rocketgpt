@@ -1,13 +1,24 @@
-﻿export async function getJSON<T>(
+﻿import { headers } from "next/headers";
+
+function absoluteUrl(path: string) {
+  const h = headers();
+  const host = h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  return `${proto}://${host}${path}`;
+}
+
+export async function getJSON<T>(
   url: string,
   init?: RequestInit,
   timeoutMs = 4000
 ): Promise<{ ok: boolean; data?: T; error?: string }> {
-  // Always use the URL as given.
-  // - On the client: this will be a normal relative fetch (`/api/...`).
-  // - On the server (App Router): Next.js will internally resolve `/api/...`
-  //   against the same deployment without needing an absolute base URL.
-  const finalUrl = url;
+
+  let finalUrl = url;
+
+  // Server Component: build absolute URL based on incoming request
+  if (typeof window === "undefined" && url.startsWith("/")) {
+    finalUrl = absoluteUrl(url);
+  }
 
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
