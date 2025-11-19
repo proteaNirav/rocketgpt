@@ -145,7 +145,7 @@ These sections are placeholders for the next steps in the stock-take:
   - Token / cookie behavior
   - Rate limiting per plan
 
-- [ ] **Text-Guard / Safety Layer**
+- [ ] **Text-Guard / Safety Layer** (runtime behavior not yet verified; no /api/textguard/status endpoint in prod, to be tested via app-level prompts later).
   - Whether requests are going through text-guard pipeline.
   - Logging and observability.
 
