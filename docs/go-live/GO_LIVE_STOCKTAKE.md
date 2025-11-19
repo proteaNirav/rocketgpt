@@ -141,6 +141,7 @@ l_user_plans_update_own: users can update only their own rows (user_id = auth.ui
 These sections are placeholders for the next steps in the stock-take:
 
 - [ ] **Auth & Session Flows**
+  - [x] Guest bootstrap (/api/guest) and public limits (/api/limits) as guest return 200.
   - Guest → Authenticated user mapping
   - Token / cookie behavior
   - Rate limiting per plan
