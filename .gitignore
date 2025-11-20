@@ -32,3 +32,10 @@ rocketgpt_v3_full/webapp/next.zip
 .vercel/*.env*
 
 local_patches/
+
+# Local UI backup folder
+_ui_backups/
+
+# UI backup files
+*.bak*
+
