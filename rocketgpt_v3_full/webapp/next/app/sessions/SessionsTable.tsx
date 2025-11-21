@@ -15,9 +15,9 @@ interface SessionSummary {
 const statusClassName = (status: SessionStatus) => {
   switch (status) {
     case "Active":
-      return "inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs font-medium";
+      return "inline-flex items-center rounded-full bg-emerald-500/15 text-emerald-300 px-2 py-0.5 text-xs font-medium border border-emerald-500/50";
     case "Expired":
-      return "inline-flex items-center rounded-full bg-rose-100 text-rose-700 px-2 py-0.5 text-xs font-medium";
+      return "inline-flex items-center rounded-full bg-rose-500/15 text-rose-300 px-2 py-0.5 text-xs font-medium border border-rose-500/50";
     default:
       return "inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2 py-0.5 text-xs font-medium";
   }
@@ -152,3 +152,4 @@ export function SessionsTable({ sessions, error }: SessionsTableProps) {
     </section>
   );
 }
+
