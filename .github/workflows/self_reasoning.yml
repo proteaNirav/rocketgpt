@@ -1,0 +1,53 @@
+﻿name: Self Reasoning (Plans Only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  self-reasoning:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure directories
+        run: |
+          mkdir -p data/self_reasoning/task_plans
+          mkdir -p docs/self_reasoning
+
+      - name: Create placeholder task plan
+        run: |
+          TS="$(date -u +"%Y%m%dT%H%M%SZ")"
+          PLAN_FILE="data/self_reasoning/task_plans/plan_${TS}.json"
+
+          cat << EOF > "$PLAN_FILE"
+          {
+            "id": "PLAN-${TS}",
+            "generated_at_utc": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "mode": "placeholder",
+            "goal": "Example self-reasoning task plan (to be replaced with real AI-generated plans).",
+            "steps": [
+              "Analyse recent code changes and open issues.",
+              "Propose a structured plan for a small improvement.",
+              "Validate plan with tests and lint (future)."
+            ]
+          }
+          EOF
+
+      - name: Commit placeholder plan (optional)
+        run: |
+          git config user.name "rocketgpt-bot"
+          git config user.email "rocketgpt-bot@users.noreply.github.com"
+
+          git add data/self_reasoning/task_plans/plan_*.json || true
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(self-reasoning): add placeholder task plan"
+            git push || echo "Push skipped (no permissions in this context)."
+          fi

@@ -1,0 +1,47 @@
+﻿name: Self Research (Log Only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  self-research:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure directories
+        run: |
+          mkdir -p data/self_research
+          mkdir -p docs/self_research
+
+      - name: Append placeholder research log
+        run: |
+          LOG_FILE="data/self_research/research_log.jsonl"
+          TS="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+          echo "{
+            \"timestamp_utc\": \"$TS\",
+            \"mode\": \"placeholder\",
+            \"topic\": \"Example self-research entry\",
+            \"sources\": [\"repo_code\", \"docs\"],
+            \"summary\": \"Future versions should record real internal research sessions here.\"
+          }" >> "$LOG_FILE"
+
+      - name: Commit research log (optional)
+        run: |
+          git config user.name "rocketgpt-bot"
+          git config user.email "rocketgpt-bot@users.noreply.github.com"
+
+          git add data/self_research/research_log.jsonl || true
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(self-research): append placeholder research log"
+            git push || echo "Push skipped (no permissions in this context)."
+          fi
