@@ -1,121 +1,252 @@
 ﻿"use client";
 
-import React, { useState } from "react";
-import { SessionsTable } from "./SessionsTable"; // named import
+import React, { useMemo, useState } from "react";
+
+type SessionStatus = "active" | "expired";
+
+interface SessionRow {
+  id: string;
+  title: string;
+  model: string;
+  status: SessionStatus;
+  lastUpdated: string;
+}
+
+const MOCK_SESSIONS: SessionRow[] = [
+  {
+    id: "1",
+    title: "UI Fix Discussion",
+    model: "gpt-4.1",
+    status: "active",
+    lastUpdated: "2025-11-20",
+  },
+  {
+    id: "2",
+    title: "RLS Repair Debug",
+    model: "gpt-4.1",
+    status: "active",
+    lastUpdated: "2025-11-19",
+  },
+  {
+    id: "3",
+    title: "Self-Improve Backlog",
+    model: "gpt-4.1-mini",
+    status: "expired",
+    lastUpdated: "2025-11-18",
+  },
+  {
+    id: "4",
+    title: "CORS Investigation",
+    model: "gpt-4.1",
+    status: "expired",
+    lastUpdated: "2025-11-17",
+  },
+];
 
 export default function SessionsPage() {
-  const [listCollapsed, setListCollapsed] = useState(false);
-  const [detailsCollapsed, setDetailsCollapsed] = useState(false);
+  const [tab, setTab] = useState<"all" | "active" | "expired">("active");
+  const [search, setSearch] = useState("");
+  const [modelFilter, setModelFilter] = useState<string>("all");
 
-  // During build / server-side render, avoid rendering SessionsTable
-  if (typeof window === "undefined") {
+  const filtered = useMemo(() => {
+    return MOCK_SESSIONS.filter((s) => {
+      if (tab === "active" && s.status !== "active") return false;
+      if (tab === "expired" && s.status !== "expired") return false;
+
+      if (modelFilter !== "all" && s.model !== modelFilter) return false;
+
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        if (!s.title.toLowerCase().includes(q)) return false;
+      }
+
+      return true;
+    });
+  }, [tab, search, modelFilter]);
+
+  const models = Array.from(new Set(MOCK_SESSIONS.map((s) => s.model)));
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <header className="space-y-1">
+        <h1 className="text-2xl font-semibold tracking-tight">Sessions</h1>
+        <p className="text-sm text-muted-foreground">
+          Review, search, and filter RocketGPT chat sessions by status, model, and time.
+        </p>
+      </header>
+
+      {/* Tabs + Filters */}
+      <section className="space-y-3 rounded-xl border bg-card p-4 shadow-sm">
+        {/* Tabs */}
+        <div className="flex flex-wrap items-center gap-2">
+          <TabButton
+            label="Active"
+            isActive={tab === "active"}
+            onClick={() => setTab("active")}
+            count={MOCK_SESSIONS.filter((s) => s.status === "active").length}
+          />
+          <TabButton
+            label="Expired"
+            isActive={tab === "expired"}
+            onClick={() => setTab("expired")}
+            count={MOCK_SESSIONS.filter((s) => s.status === "expired").length}
+          />
+          <TabButton
+            label="All"
+            isActive={tab === "all"}
+            onClick={() => setTab("all")}
+            count={MOCK_SESSIONS.length}
+          />
+        </div>
+
+        {/* Search + Filters row */}
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          {/* Search */}
+          <div className="w-full md:max-w-sm">
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">
+              Search sessions
+            </label>
+            <div className="flex items-center rounded-lg border bg-background/60 px-2">
+              <span className="mr-1 text-xs text-muted-foreground">🔍</span>
+              <input
+                className="h-8 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/70"
+                placeholder="Search by title..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Model filter */}
+          <div className="flex gap-3 md:items-end">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                Model
+              </label>
+              <select
+                className="h-8 rounded-lg border bg-background/60 px-2 text-sm outline-none"
+                value={modelFilter}
+                onChange={(e) => setModelFilter(e.target.value)}
+              >
+                <option value="all">All models</option>
+                {models.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Table section */}
+      <section className="rounded-xl border bg-card p-4 shadow-sm">
+        <SessionsTable rows={filtered} />
+      </section>
+    </div>
+  );
+}
+
+interface TabButtonProps {
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+  count?: number;
+}
+
+function TabButton({ label, isActive, onClick, count }: TabButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+        isActive
+          ? "bg-primary text-primary-foreground border-primary"
+          : "bg-background/60 text-muted-foreground hover:bg-muted/40",
+      ].join(" ")}
+    >
+      <span>{label}</span>
+      {typeof count === "number" ? (
+        <span
+          className={[
+            "rounded-full px-1.5 text-[10px] font-semibold",
+            isActive ? "bg-primary-foreground/20" : "bg-muted",
+          ].join(" ")}
+        >
+          {count}
+        </span>
+      ) : null}
+    </button>
+  );
+}
+
+interface SessionsTableProps {
+  rows: SessionRow[];
+}
+
+function SessionsTable({ rows }: SessionsTableProps) {
+  if (!rows.length) {
     return (
-      <div className="flex h-full w-full bg-slate-950 text-slate-50">
-        <section className="flex h-full w-full flex-col border-slate-800 bg-slate-950">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-slate-800">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-300">
-              Sessions
-            </h2>
-            <span className="text-[10px] text-slate-500">
-              Preparing sessions UI…
-            </span>
-          </div>
-          <div className="flex-1 min-h-0 overflow-auto px-4 py-3 text-sm text-slate-400">
-            This page will fully load in the browser.
-          </div>
-        </section>
+      <div className="flex min-h-[120px] flex-col items-center justify-center text-center text-sm text-muted-foreground">
+        <p className="font-medium">No sessions found.</p>
+        <p className="text-xs">
+          Try adjusting search text, filters, or switching tabs.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="flex h-full w-full bg-slate-950 text-slate-50">
-      {/* Left: Sessions list */}
-      {!listCollapsed && (
-        <section className="flex h-full w-72 flex-col border-r border-slate-800 bg-slate-950/80">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-slate-800">
-            <h1 className="text-xs font-semibold uppercase tracking-wide text-slate-300">
-              Sessions
-            </h1>
-            <button
-              type="button"
-              onClick={() => setListCollapsed(true)}
-              className="text-[10px] rounded-md border border-slate-700 px-1.5 py-0.5 text-slate-300 hover:bg-slate-800"
+    <div className="overflow-x-auto rounded-lg border">
+      <table className="w-full text-sm">
+        <thead className="bg-muted/40 text-muted-foreground">
+          <tr>
+            <th className="px-3 py-2 text-left font-medium">Title</th>
+            <th className="px-3 py-2 text-left font-medium">Model</th>
+            <th className="px-3 py-2 text-left font-medium">Status</th>
+            <th className="px-3 py-2 text-left font-medium">Last Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr
+              key={row.id}
+              className="border-b last:border-0 hover:bg-muted/20 transition-colors"
             >
-              Hide
-            </button>
-          </div>
-          <div className="flex-1 min-h-0 overflow-auto">
-            <SessionsTable />
-          </div>
-        </section>
-      )}
-      {listCollapsed && (
-        <button
-          type="button"
-          onClick={() => setListCollapsed(false)}
-          className="flex h-full w-4 items-center justify-center border-r border-slate-800 text-[10px] text-slate-400 hover:bg-slate-900"
-          title="Show sessions list"
-        >
-          &raquo;
-        </button>
-      )}
-
-      {/* Center: Chat / transcript */}
-      <section className="flex min-w-0 flex-1 flex-col border-r border-slate-800 bg-slate-950">
-        <div className="flex items-center justify-between px-3 py-2 border-b border-slate-800">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-300">
-            Conversation
-          </h2>
-          <span className="text-[10px] text-slate-500">
-            Select a session to view details
-          </span>
-        </div>
-        <div className="flex-1 min-h-0 overflow-auto px-4 py-3 text-sm text-slate-300">
-          {/* Hook up actual session detail component here */}
-          <p className="text-slate-500">
-            Conversation content will appear here once wired to the active session.
-          </p>
-        </div>
-      </section>
-
-      {/* Right: Metadata / context */}
-      {!detailsCollapsed && (
-        <section className="hidden h-full w-80 flex-col border-l border-slate-800 bg-slate-950/90 lg:flex">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-slate-800">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-300">
-              Context
-            </h3>
-            <button
-              type="button"
-              onClick={() => setDetailsCollapsed(true)}
-              className="text-[10px] rounded-md border border-slate-700 px-1.5 py-0.5 text-slate-300 hover:bg-slate-800"
-            >
-              Hide
-            </button>
-          </div>
-          <div className="flex-1 min-h-0 overflow-auto px-3 py-2 text-xs text-slate-400 space-y-2">
-            <p>
-              Session metadata, tags, models, and runbook links can be shown here.
-            </p>
-            <ul className="space-y-1">
-              <li>- Model: gpt-4.x / claude</li>
-              <li>- Last activity: –</li>
-              <li>- Tokens used: –</li>
-            </ul>
-          </div>
-        </section>
-      )}
-      {detailsCollapsed && (
-        <button
-          type="button"
-          onClick={() => setDetailsCollapsed(false)}
-          className="hidden h-full w-4 items-center justify-center border-l border-slate-800 text-[10px] text-slate-400 hover:bg-slate-900 lg:flex"
-          title="Show context panel"
-        >
-          &laquo;
-        </button>
-      )}
+              <td className="px-3 py-2">{row.title}</td>
+              <td className="px-3 py-2">{row.model}</td>
+              <td className="px-3 py-2">
+                <StatusBadge status={row.status} />
+              </td>
+              <td className="px-3 py-2">{row.lastUpdated}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
+  );
+}
+
+function StatusBadge({ status }: { status: SessionStatus }) {
+  const base =
+    "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium";
+
+  if (status === "active") {
+    return (
+      <span className={base + " bg-emerald-500/10 text-emerald-400 border border-emerald-600/40"}>
+        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+        Active
+      </span>
+    );
+  }
+
+  return (
+    <span className={base + " bg-amber-500/10 text-amber-300 border border-amber-500/40"}>
+      <span className="h-1.5 w-1.5 rounded-full bg-amber-300" />
+      Expired
+    </span>
   );
 }
