@@ -1,0 +1,36 @@
+﻿{
+  "version": 1,
+  "enabled": true,
+  "owner": "nirav",
+  "allowed_areas": [
+    "ui_ux",
+    "runbooks",
+    "observability",
+    "developer_experience",
+    "safety_and_guardrails",
+    "domain_math",
+    "domain_finance",
+    "domain_science"
+  ],
+  "disallowed_areas": [
+    "billing",
+    "legal",
+    "compliance_external",
+    "destructive_migrations"
+  ],
+  "max_parallel_experiments": 2,
+  "idea_scoring": {
+    "weights": {
+      "impact": 0.5,
+      "effort": 0.2,
+      "risk": 0.2,
+      "alignment": 0.1
+    },
+    "min_score_to_propose": 0.6
+  },
+  "outputs": {
+    "idea_pool_file": "data/self_innovate/idea_pool.jsonl",
+    "experiments_file": "data/self_innovate/experiments.jsonl",
+    "reports_dir": "docs/self_innovate"
+  }
+}

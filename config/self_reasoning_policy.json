@@ -1,0 +1,24 @@
+﻿{
+  "version": 1,
+  "enabled": true,
+  "owner": "nirav",
+  "max_steps_per_plan": 10,
+  "require_tests_for_code_changes": true,
+  "require_lint_for_code_changes": true,
+  "allowed_scopes": [
+    "ui",
+    "docs",
+    "workflows",
+    "non_critical_api"
+  ],
+  "disallowed_scopes": [
+    "billing",
+    "auth_core",
+    "database_schema",
+    "infra_core"
+  ],
+  "outputs": {
+    "plans_dir": "data/self_reasoning/task_plans",
+    "plans_index_file": "data/self_reasoning/plans_index.json"
+  }
+}

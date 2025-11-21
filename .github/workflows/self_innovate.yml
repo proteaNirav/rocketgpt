@@ -1,0 +1,60 @@
+﻿name: Self Innovate (Idea-Only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  self-innovate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure directories
+        run: |
+          mkdir -p data/self_innovate
+          mkdir -p docs/self_innovate
+
+      - name: Initialise idea pool if missing
+        run: |
+          IDEA_FILE="data/self_innovate/idea_pool.jsonl"
+          if [ ! -f "$IDEA_FILE" ]; then
+            touch "$IDEA_FILE"
+          fi
+
+      - name: Append placeholder innovation idea
+        run: |
+          IDEA_FILE="data/self_innovate/idea_pool.jsonl"
+          TS="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+          echo "{
+            \"id\": \"SI-${TS}\",
+            \"timestamp_utc\": \"$TS\",
+            \"source\": \"placeholder\",
+            \"area\": \"developer_experience\",
+            \"problem_observed\": \"Example: navigation to Self-Improve is not obvious from Sessions.\",
+            \"idea\": \"Add a small 'Self-Improve This' button on Sessions page to open the self-improve console with context.\",
+            \"impact_score\": 0.8,
+            \"effort_score\": 0.3,
+            \"risk_score\": 0.2,
+            \"alignment_score\": 0.9,
+            \"status\": \"candidate\"
+          }" >> "$IDEA_FILE"
+
+      - name: Commit idea pool update (optional)
+        run: |
+          git config user.name "rocketgpt-bot"
+          git config user.email "rocketgpt-bot@users.noreply.github.com"
+
+          git add data/self_innovate/idea_pool.jsonl || true
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(self-innovate): add placeholder innovation idea"
+            git push || echo "Push skipped (no permissions in this context)."
+          fi
