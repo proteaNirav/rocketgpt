@@ -1,0 +1,29 @@
+﻿{
+  "version": 1,
+  "enabled": true,
+  "owner": "nirav",
+  "modes": {
+    "internal_only": true,
+    "external_allowed": false
+  },
+  "internal_sources": [
+    "repo_code",
+    "docs",
+    "roadmaps",
+    "past_prs",
+    "issues"
+  ],
+  "external_allowlist": [
+    "https://nextjs.org/docs",
+    "https://supabase.com/docs",
+    "https://vercel.com/docs"
+  ],
+  "budgets": {
+    "max_external_research_calls_per_week": 0,
+    "max_tokens_per_research_session": 8000
+  },
+  "outputs": {
+    "log_file": "data/self_research/research_log.jsonl",
+    "summary_dir": "docs/self_research"
+  }
+}

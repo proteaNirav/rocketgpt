@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "enabled": true,
+  "owner": "nirav",
+
+  "natural_languages": {
+    "priority": [
+      "sanskrit",
+      "hindi",
+      "marathi",
+      "gujarati",
+      "english"
+    ],
+    "allow_all_others": true
+  },
+
+  "programming_languages": {
+    "priority": [
+      "csharp",
+      "typescript",
+      "javascript",
+      "python",
+      "sql"
+    ],
+    "allow_all_others": true
+  },
+
+  "modes": {
+    "bootstrap_from_model": true,
+    "self_study_enabled": true,
+    "self_research_enabled": false,  // can enable later
+    "self_innovate_enabled": true
+  },
+
+  "outputs": {
+    "natural_root": "data/language/natural",
+    "programming_root": "data/language/programming",
+    "docs_root": "docs/language"
+  },
+
+  "goals": [
+    "build reusable language knowledge for RocketGPT's own use",
+    "standardise translation and explanation style across languages",
+    "capture best-practice patterns for programming languages RocketGPT uses",
+    "stay within free-tier constraints by using repo storage instead of databases"
+  ]
+}

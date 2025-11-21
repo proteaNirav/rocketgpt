@@ -1,0 +1,27 @@
+﻿{
+  "version": 1,
+  "enabled": true,
+  "owner": "nirav",
+  "scan_targets": [
+    "rocketgpt_v3_full/webapp/next/app",
+    "rocketgpt_v3_full/webapp/next/components",
+    "apps",
+    ".github/workflows",
+    "docs",
+    "config"
+  ],
+  "scan_frequency": {
+    "mode": "scheduled",
+    "cron": "0 2 * * 1-5"
+  },
+  "outputs": {
+    "knowledge_index_file": "data/self_study/knowledge_index.json",
+    "recent_changes_file": "data/self_study/recent_changes.json",
+    "summary_markdown_dir": "docs/self_study"
+  },
+  "goals": [
+    "keep an up-to-date map of key modules, routes, and workflows",
+    "identify hotspots and frequently changed areas",
+    "summarise important code and doc changes for the AI"
+  ]
+}

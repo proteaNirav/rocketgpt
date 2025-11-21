@@ -1,0 +1,111 @@
+﻿name: Self Infra Evolve (Analysis Only)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  analyse-infra:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read infra strategy policy
+        id: policy
+        run: |
+          if [ ! -f "config/infra_strategy_policy.json" ]; then
+            echo "Infra strategy policy not found. Skipping."
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "skip=false" >> $GITHUB_OUTPUT
+
+      - name: Generate infra capacity snapshot
+        if: steps.policy.outputs.skip != 'true'
+        id: snapshot
+        run: |
+          mkdir -p docs/infra
+          SNAPSHOT_FILE="docs/infra/infra_capacity_snapshot.json"
+
+          cat << 'EOF' > "$SNAPSHOT_FILE"
+          {
+            "timestamp_utc": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "notes": "Placeholder snapshot. Wire real metrics later.",
+            "supabase": {
+              "db_size_mb_estimate": 50,
+              "bandwidth_gb_estimate": 0.5
+            },
+            "vercel": {
+              "serverless_invocations_estimate_ratio": 0.1
+            },
+            "github_actions": {
+              "minutes_used_ratio_estimate": 0.05
+            }
+          }
+          EOF
+
+          echo "snapshot_file=$SNAPSHOT_FILE" >> $GITHUB_OUTPUT
+
+      - name: Generate Cloud Self-Expansion Report (Markdown)
+        if: steps.policy.outputs.skip != 'true'
+        id: report
+        run: |
+          REPORT_DIR="docs/infra"
+          mkdir -p "$REPORT_DIR"
+
+          TS="$(date -u +"%Y%m%dT%H%M%SZ")"
+          REPORT_FILE="$REPORT_DIR/cloud_self_expansion_report_${TS}.md"
+
+          echo "# Cloud Self-Expansion Report" > "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "- Generated at (UTC): $(date -u +"%Y-%m-%d %H:%M:%S")" >> "$REPORT_FILE"
+          echo "- Mode: Analysis only (no infra changes)" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "## Current Capacity Snapshot (Estimates/Placeholders)" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "See \`infra_capacity_snapshot.json\` for raw data." >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "## Recommended Next Steps (High-Level)" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "1. Keep Supabase as primary DB/auth until at least 60–70% of free-tier limits." >> "$REPORT_FILE"
+          echo "2. Store AI/self-intelligence data in repo JSON/markdown instead of DB." >> "$REPORT_FILE"
+          echo "3. When growth is observed, federate logs/cold data to secondary storage." >> "$REPORT_FILE"
+          echo "4. Use dedicated branch + PR for any DB/provider switch with human approval." >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "## Notes" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "- Placeholder logic; wire real telemetry in future versions." >> "$REPORT_FILE"
+          echo "- No infrastructure changes attempted by this workflow." >> "$REPORT_FILE"
+
+          echo "report_file=$REPORT_FILE" >> $GITHUB_OUTPUT
+
+      - name: Commit report (optional)
+        if: steps.policy.outputs.skip != 'true'
+        run: |
+          git config user.name "rocketgpt-bot"
+          git config user.email "rocketgpt-bot@users.noreply.github.com"
+
+          git add docs/infra/infra_capacity_snapshot.json || true
+          git add docs/infra/cloud_self_expansion_report_* || true
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(infra): add cloud self-expansion report (analysis only)"
+            git push || echo "Push skipped (no permissions in this context)."
+          fi
+
+      - name: Open or update tracking issue
+        if: steps.policy.outputs.skip != 'true'
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: "[Cloud Self-Expansion] Infra Capacity & Options"
+          content-file: ${{ steps.report.outputs.report_file }}
+          labels: infra, cloud-self-expansion, ai-generated
