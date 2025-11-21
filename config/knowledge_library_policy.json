@@ -1,0 +1,52 @@
+﻿{
+  "version": 1,
+  "enabled": true,
+  "owner": "nirav",
+  "languages": {
+    "natural_priority": [
+      "sanskrit",
+      "hindi",
+      "marathi",
+      "gujarati",
+      "english"
+    ],
+    "programming_priority": [
+      "csharp",
+      "typescript",
+      "javascript",
+      "python",
+      "sql"
+    ],
+    "allow_all_others": true
+  },
+  "domains": {
+    "priority": [
+      "math",
+      "finance",
+      "economics",
+      "physics",
+      "chemistry",
+      "biology",
+      "medicine",
+      "computer_science"
+    ],
+    "allow_all_others": true
+  },
+  "modes": {
+    "bootstrap_from_model": true,
+    "self_study_enabled": true,
+    "self_research_enabled": true,
+    "self_innovate_enabled": true
+  },
+  "paths": {
+    "language_root": "data/language",
+    "domains_root": "data/domains",
+    "docs_root": "docs"
+  },
+  "goals": [
+    "build a reusable knowledge base across subjects for RocketGPT",
+    "standardise explanations and reasoning patterns per domain",
+    "capture examples, patterns and anti-patterns to guide self-study, self-research and self-innovation",
+    "keep everything in repo storage to stay within free tiers"
+  ]
+}
