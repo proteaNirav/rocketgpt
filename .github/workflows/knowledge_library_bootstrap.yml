@@ -1,0 +1,54 @@
+name: Knowledge Library Bootstrap
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap-knowledge-library:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure domain folders and meta
+        run: |
+          mkdir -p data/domains/math
+          mkdir -p data/domains/finance
+          mkdir -p data/domains/economics
+          mkdir -p data/domains/physics
+          mkdir -p data/domains/chemistry
+          mkdir -p data/domains/biology
+          mkdir -p data/domains/medicine
+          mkdir -p data/domains/computer_science
+          mkdir -p docs/domains
+
+          # Example minimal meta for math
+          cat << EOF > data/domains/math/meta.json
+          {
+            "name": "Mathematics",
+            "categories": [],
+            "usage_in_rocketgpt": []
+          }
+          EOF
+
+          touch data/domains/math/concepts.jsonl
+          touch data/domains/math/examples.jsonl
+
+          # Similar blocks can be added for finance, economics, etc.
+
+      - name: Commit bootstrap artifacts (optional)
+        run: |
+          git config user.name "rocketgpt-bot"
+          git config user.email "rocketgpt-bot@users.noreply.github.com"
+
+          git add data/domains docs/domains || true
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(knowledge-library): bootstrap domain folders and meta files"
+            git push || echo "Push skipped (no permissions in this context)."
+          fi
