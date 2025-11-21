@@ -172,8 +172,8 @@ function TabButton({ label, isActive, onClick, count }: TabButtonProps) {
       {typeof count === "number" ? (
         <span
           className={[
-            "rounded-full px-1.5 text-[10px] font-semibold",
-            isActive ? "bg-primary-foreground/20" : "bg-muted",
+            "inline-flex items-center justify-center rounded-full min-w-[2rem] px-1.5 text-[10px] font-semibold",
+            isActive ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted/80 text-foreground",
           ].join(" ")}
         >
           {count}
@@ -250,3 +250,4 @@ function StatusBadge({ status }: { status: SessionStatus }) {
     </span>
   );
 }
+

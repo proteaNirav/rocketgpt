@@ -1,6 +1,6 @@
 ﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
-// webapp/next/app/layout.tsx
+
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -8,6 +8,7 @@ import SentryClientInit from "@/components/SentryClientInit";
 import RateLimitBanner from "@/components/RateLimitBanner";
 import { Sidebar } from "../components/layout/Sidebar";
 import { Topbar } from "../components/layout/Topbar";
+import { ModeProvider } from "../components/layout/ModeContext";
 
 export const metadata: Metadata = {
   title: "RocketGPT",
@@ -18,25 +19,25 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-neutral-950 text-gray-100 antialiased">
-        <SentryClientInit />
-        <Header />
-        <main className="mx-auto max-w-6xl px-4 py-6"><div className="min-h-screen flex flex-col bg-background text-foreground">
-        <Topbar />
+      <body className="min-h-screen bg-neutral-950 text-gray-100 antialiased flex flex-col">
+        <ModeProvider>
+          <SentryClientInit />
+          <Header />
 
-        <div className="flex flex-1">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto">
-            {children}
-          </main>
-        </div>
-      </div></main>
-        <RateLimitBanner />
+          {/* Full app shell */}
+          <div className="flex-1 flex flex-col min-h-0">
+            <Topbar />
+            <div className="flex flex-1 min-h-0">
+              <Sidebar />
+              <main className="flex-1 min-h-0 overflow-hidden bg-background">
+                {children}
+              </main>
+            </div>
+          </div>
+
+          <RateLimitBanner />
+        </ModeProvider>
       </body>
     </html>
   );
 }
-
-
-
-

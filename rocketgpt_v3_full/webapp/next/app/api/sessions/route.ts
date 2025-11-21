@@ -1,36 +1,51 @@
 ﻿import { NextResponse } from "next/server";
 
-type SessionStatus = "Active" | "Expired";
-
-export interface SessionSummary {
+type SessionSummary = {
   id: string;
+  title: string;
   model: string;
-  createdAt: string;
-  lastActiveAt: string;
-  status: SessionStatus;
-}
+  updatedAt: string;
+};
 
-const demoSessions: SessionSummary[] = [
-  {
-    id: "sess_12345",
-    model: "gpt-5.1",
-    createdAt: "2025-11-19 10:32",
-    lastActiveAt: "2025-11-19 10:45",
-    status: "Active",
-  },
-  {
-    id: "sess_67890",
-    model: "claude-3-opus",
-    createdAt: "2025-11-18 17:05",
-    lastActiveAt: "2025-11-18 17:40",
-    status: "Expired",
-  },
-];
+type SessionsListResponse = {
+  today: SessionSummary[];
+  recent: SessionSummary[];
+};
 
 export async function GET() {
-  // TODO (R-UI-1 / later steps):
-  //  - Replace demoSessions with real data from Supabase / DB / logs
-  return NextResponse.json({
-    sessions: demoSessions,
-  });
+  const now = new Date();
+
+  const today: SessionSummary[] = [
+    {
+      id: "sess-welcome",
+      title: "Welcome to RocketGPT",
+      model: "gpt-5.1",
+      updatedAt: now.toISOString(),
+    },
+    {
+      id: "sess-sql-optimizer",
+      title: "SQL optimizer for leave balance SP",
+      model: "db-gpt-4.1",
+      updatedAt: now.toISOString(),
+    },
+  ];
+
+  const recent: SessionSummary[] = [
+    {
+      id: "sess-rls-debug",
+      title: "RLS debugging for Supabase",
+      model: "gpt-4.1",
+      updatedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: "sess-workflow-v4",
+      title: "Workflow design for RocketGPT v4",
+      model: "llm-gpt-5.1",
+      updatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  ];
+
+  const payload: SessionsListResponse = { today, recent };
+
+  return NextResponse.json(payload);
 }

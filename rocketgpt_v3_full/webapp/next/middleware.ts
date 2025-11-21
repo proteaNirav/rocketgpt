@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
@@ -44,11 +44,17 @@ export async function middleware(req: NextRequest) {
   const { data: { user }, error } = await supabase.auth.getUser();
 
   // Protected routes check
-  const isProtectedRoute = 
-    url.pathname.startsWith('/account') || 
-    url.pathname.startsWith('/profile') ||
-    url.pathname.startsWith('/admin') ||
-    url.pathname.startsWith('/super');
+    // Public exception for Self-Improve console (go-live support)
+  const isSelfImprovePublic = url.pathname.startsWith('/super/self-improve');
+
+  // Protected routes (except the public Self-Improve)
+  const isProtectedRoute =
+    !isSelfImprovePublic && (
+      url.pathname.startsWith('/account') ||
+      url.pathname.startsWith('/profile') ||
+      url.pathname.startsWith('/admin') ||
+      url.pathname.startsWith('/super')
+    );
 
   const isAuthRoute = 
     url.pathname.startsWith('/login') || 
@@ -75,4 +81,6 @@ export async function middleware(req: NextRequest) {
 
   return res;
 }
+
+
 

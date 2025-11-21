@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -33,9 +33,20 @@ html, body, #__next { height: 100%; }
            text-gray-100 transition-colors;
   }
 
-  /* Muted text that’s still readable on dark */
+  /* Muted text thatâ€™s still readable on dark */
   .text-muted {
     @apply text-gray-400;
   }
 }
 
+  
+/* RocketGPT high-contrast chips */
+@layer components {
+  .rg-chip {
+    @apply inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-medium bg-slate-700 text-slate-100 border border-slate-500/80;
+  }
+
+  .rg-chip-soft {
+    @apply inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-medium bg-slate-600/80 text-slate-100 border border-slate-400/80;
+  }
+}
