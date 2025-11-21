@@ -1,0 +1,68 @@
+﻿{
+  "version": 1,
+  "owner": "nirav",
+  "enabled": true,
+  "monitoring": {
+    "supabase": {
+      "db_size_mb_threshold_warn": 350,
+      "db_size_mb_threshold_critical": 450,
+      "monthly_bandwidth_gb_threshold_warn": 4,
+      "monthly_bandwidth_gb_threshold_critical": 5.5
+    },
+    "vercel": {
+      "serverless_invocations_warn": 0.7,
+      "serverless_invocations_critical": 0.9
+    },
+    "github_actions": {
+      "minutes_warn_ratio": 0.7,
+      "minutes_critical_ratio": 0.9
+    }
+  },
+  "provider_allowlist": [
+    "supabase",
+    "vercel",
+    "railway",
+    "render",
+    "neon",
+    "cloudflare",
+    "upstash",
+    "github"
+  ],
+  "disallowed_actions": [
+    "auto_migrate_primary_database",
+    "auto_drop_database",
+    "auto_change_dns",
+    "auto_delete_storage_bucket"
+  ],
+  "allowed_actions_without_approval": [
+    "generate_report",
+    "open_issue",
+    "open_draft_pr",
+    "update_docs",
+    "simulate_migration"
+  ],
+  "required_human_approval_actions": [
+    "switch_primary_database_provider",
+    "change_auth_provider",
+    "move_production_data",
+    "change_primary_region"
+  ],
+  "reporting": {
+    "output_dir": "docs/infra",
+    "report_filename_prefix": "cloud_self_expansion_report_",
+    "open_issue": true,
+    "issue_title": "[Cloud Self-Expansion] Infra Capacity & Options",
+    "labels": ["infra", "cloud-self-expansion", "ai-generated"]
+  },
+  "strategy": {
+    "objectives": [
+      "minimize_monthly_cost",
+      "maximize_stability",
+      "prefer_free_tier",
+      "preserve_data_integrity",
+      "preserve_api_contracts"
+    ],
+    "max_recommended_options": 3,
+    "prefer_incremental_changes": true
+  }
+}
