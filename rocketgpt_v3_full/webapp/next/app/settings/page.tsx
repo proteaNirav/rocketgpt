@@ -1,4 +1,4 @@
-﻿"use client";
+﻿'use client'
 
 export default function SettingsPage() {
   return (
@@ -7,12 +7,10 @@ export default function SettingsPage() {
 
       {/* UI Settings */}
       <section className="rounded-lg border border-gray-700 bg-gray-900 p-4">
-        <h2 className="text-sm font-semibold text-slate-100 mb-2">
-          UI & Theme
-        </h2>
+        <h2 className="text-sm font-semibold text-slate-100 mb-2">UI & Theme</h2>
         <p className="text-xs text-slate-300 mb-3">
-          Theme switching is currently handled globally. This section is a
-          placeholder for future per-user preferences.
+          Theme switching is currently handled globally. This section is a placeholder for future
+          per-user preferences.
         </p>
         <div className="inline-flex items-center gap-2 text-xs text-slate-400">
           <span className="h-2 w-2 rounded-full bg-emerald-400" />
@@ -22,25 +20,21 @@ export default function SettingsPage() {
 
       {/* Behaviour Settings */}
       <section className="rounded-lg border border-gray-700 bg-gray-900 p-4">
-        <h2 className="text-sm font-semibold text-slate-100 mb-2">
-          Behaviour (placeholder)
-        </h2>
+        <h2 className="text-sm font-semibold text-slate-100 mb-2">Behaviour (placeholder)</h2>
         <p className="text-xs text-slate-300">
-          In a future iteration, this area will control how RocketGPT behaves:
-          default model, response length, tone, and safety level.
+          In a future iteration, this area will control how RocketGPT behaves: default model,
+          response length, tone, and safety level.
         </p>
       </section>
 
       {/* Advanced Settings */}
       <section className="rounded-lg border border-gray-700 bg-gray-900 p-4">
-        <h2 className="text-sm font-semibold text-slate-100 mb-2">
-          Advanced (placeholder)
-        </h2>
+        <h2 className="text-sm font-semibold text-slate-100 mb-2">Advanced (placeholder)</h2>
         <p className="text-xs text-slate-300">
-          Reserved for admin-level toggles like enabling experimental models,
-          self-improve intensity, and integration flags.
+          Reserved for admin-level toggles like enabling experimental models, self-improve
+          intensity, and integration flags.
         </p>
       </section>
     </div>
-  );
+  )
 }

@@ -16,7 +16,6 @@ export default async function Header() {
 
   // ...rest of your Header JSX...
 
-
   return (
     <header className="w-full border-b bg-white/70 backdrop-blur">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
@@ -28,10 +27,7 @@ export default async function Header() {
         {/* Right side */}
         <div className="flex items-center gap-2">
           {!user ? (
-            <Link
-              href="/login"
-              className="rounded border px-3 py-1.5 text-sm hover:bg-gray-50"
-            >
+            <Link href="/login" className="rounded border px-3 py-1.5 text-sm hover:bg-gray-50">
               Login / Sign up
             </Link>
           ) : (
@@ -39,10 +35,7 @@ export default async function Header() {
               <span className="hidden sm:inline text-sm text-gray-600">
                 Welcome, <b>{user.user_metadata?.full_name ?? user.email}</b>
               </span>
-              <Link
-                href="/account"
-                className="rounded border px-3 py-1.5 text-sm hover:bg-gray-50"
-              >
+              <Link href="/account" className="rounded border px-3 py-1.5 text-sm hover:bg-gray-50">
                 Account
               </Link>
               <Link
@@ -52,11 +45,7 @@ export default async function Header() {
                 Profile
               </Link>
               <form action={signOutAction}>
-                <button
-                  className="rounded bg-black text-white px-3 py-1.5 text-sm"
-                >
-                  Logout
-                </button>
+                <button className="rounded bg-black text-white px-3 py-1.5 text-sm">Logout</button>
               </form>
             </>
           )}
@@ -65,5 +54,3 @@ export default async function Header() {
     </header>
   )
 }
-
-

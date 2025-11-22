@@ -28,5 +28,5 @@ export default function ConsoleDashboardPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -1,19 +1,19 @@
-﻿export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
+﻿export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 
-import type { Metadata } from "next";
-import "./globals.css";
-import Header from "@/components/Header";
-import SentryClientInit from "@/components/SentryClientInit";
-import RateLimitBanner from "@/components/RateLimitBanner";
-import Sidebar from "../components/layout/Sidebar";
-import Topbar from "../components/layout/Topbar";
+import type { Metadata } from 'next'
+import './globals.css'
+import Header from '@/components/Header'
+import SentryClientInit from '@/components/SentryClientInit'
+import RateLimitBanner from '@/components/RateLimitBanner'
+import Sidebar from '../components/layout/Sidebar'
+import Topbar from '../components/layout/Topbar'
 
 export const metadata: Metadata = {
-  title: "RocketGPT",
-  description: "AI Orchestrator",
-  icons: { icon: "/favicon.svg" },
-};
+  title: 'RocketGPT',
+  description: 'AI Orchestrator',
+  icons: { icon: '/favicon.svg' },
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -36,5 +36,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <RateLimitBanner />
       </body>
     </html>
-  );
+  )
 }
