@@ -39,3 +39,5 @@ _ui_backups/
 # UI backup files
 *.bak*
 
+
+*.tsbuildinfo
