@@ -24,10 +24,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <main className="mx-auto max-w-6xl px-4 py-6">
           <div className="min-h-screen flex flex-col bg-background text-foreground">
-            <Topbar />
+            <Topbar sidebarCollapsed={false} onToggleSidebar={() => {}} />
 
             <div className="flex flex-1">
-              <Sidebar />
+              <Sidebar collapsed={false} onToggle={() => {}} />
               <main className="flex-1 overflow-y-auto">{children}</main>
             </div>
           </div>
@@ -38,3 +38,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
