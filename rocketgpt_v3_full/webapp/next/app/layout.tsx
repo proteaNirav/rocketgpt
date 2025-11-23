@@ -6,8 +6,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import SentryClientInit from "@/components/SentryClientInit";
 import RateLimitBanner from "@/components/RateLimitBanner";
-import Sidebar from "../components/layout/Sidebar";
-import Topbar from "../components/layout/Topbar";
+import Shell from "../components/layout/Shell";
 
 export const metadata: Metadata = {
   title: "RocketGPT",
@@ -23,14 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
 
         <main className="mx-auto max-w-6xl px-4 py-6">
-          <div className="min-h-screen flex flex-col bg-background text-foreground">
-            <Topbar sidebarCollapsed={false} onToggleSidebar={() => {}} />
-
-            <div className="flex flex-1">
-              <Sidebar collapsed={false} onToggle={() => {}} />
-              <main className="flex-1 overflow-y-auto">{children}</main>
-            </div>
-          </div>
+          <Shell>{children}</Shell>
         </main>
 
         <RateLimitBanner />
@@ -38,4 +30,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-
