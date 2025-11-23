@@ -28,7 +28,10 @@ export default function DemoUploadPage() {
     try {
       const formData = new FormData();
       for (let i = 0; i < files.length; i++) {
-        formData.append("file", files[i]);
+        const file = files[i];
+        if (file) {
+          formData.append("file", file);
+        }
       }
 
       const res = await fetch("/api/demo/upload", {
@@ -99,3 +102,4 @@ export default function DemoUploadPage() {
     </div>
   );
 }
+
