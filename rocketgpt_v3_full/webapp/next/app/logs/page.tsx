@@ -22,7 +22,7 @@ export default function LogsPage() {
     },
   ];
 
-  const levelColor = {
+  const levelColor: Record<string, string> = {
     info: "text-emerald-300",
     warn: "text-yellow-300",
     error: "text-red-400",
@@ -54,3 +54,4 @@ export default function LogsPage() {
     </div>
   );
 }
+
