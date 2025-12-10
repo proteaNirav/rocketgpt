@@ -1,99 +1,201 @@
-// rocketgpt_v3_full/webapp/next/app/api/planner/route.ts
-// Planner API endpoint for RocketGPT
-// Runtime LLM: OpenAI only
+﻿import { NextRequest, NextResponse } from "next/server";
+import { callLLM } from "@/lib/llm/router";
+import { makePlannerGoal } from "@/lib/orchestrator/goal-factory";
+import { resolveRouting } from "@/lib/orchestrator/router";
+import { evaluateApproval } from "@/lib/approvals/v9/evaluator";
+import type { ApprovalInput, ApprovalPacket } from "@/lib/approvals/v9/types";
 
-import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
-import {
-  PLANNER_SYSTEM_PROMPT,
-  buildPlannerUserPrompt,
-  PlannerInput,
-} from "@/app/api/_lib/plannerPrompt";
+type PlannerStep = {
+  step_no: number;
+  title: string;
+  description: string;
+  acceptance_criteria?: string;
+};
 
-export const runtime = "nodejs";
+type PlannerPlan = {
+  plan_title: string;
+  goal_summary: string;
+  steps: PlannerStep[];
+};
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const PLANNER_SYSTEM_PROMPT = `
+You are the RocketGPT Planner.
 
-const DEFAULT_PLANNER_MODEL =
-  process.env.RGPT_PLANNER_MODEL ||
-  process.env.RGPT_DEFAULT_MODEL ||
-  "gpt-4o-mini";
+Your job:
+- Take a product or engineering GOAL.
+- Produce a clear, practical, step-by-step PLAN.
+- Each step must be small, implementable, and testable.
+- Audience: senior engineers + tech PMs.
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+STRICT OUTPUT FORMAT:
+Return ONLY valid JSON, no markdown, no commentary.
+
+{
+  "plan_title": "Short title for the plan",
+  "goal_summary": "1–3 sentence summary in plain English.",
+  "steps": [
+    {
+      "step_no": 1,
+      "title": "Step title",
+      "description": "Clear explanation of what to do in this step.",
+      "acceptance_criteria": "How we know this step is complete."
+    }
+  ]
+}
+`.trim();
+
+function buildUserPrompt(goalTitle: string, goalDescription: string): string {
+  const title = goalTitle || "Untitled goal";
+  const desc = goalDescription || "";
+  return [
+    "You will design a step-by-step implementation plan.",
+    "",
+    `Goal title: ${title}`,
+    "",
+    desc ? `Goal description: ${desc}` : "",
+    "",
+    "Respond ONLY with JSON as per the required schema. Do not wrap in markdown. Do not add explanations.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+export async function POST(req: NextRequest) {
   try {
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json(
-        { error: "OPENAI_API_KEY is not configured on the server." },
-        { status: 500 }
-      );
-    }
+    const body = await req.json().catch(() => ({}));
 
-    const body = (await req.json()) as PlannerInput | null;
+    const goalTitle: string =
+      body.goal_title ?? body.goalTitle ?? "Untitled Goal";
 
-    if (!body || !body.goal || !body.goal.trim()) {
-      return NextResponse.json(
-        { error: "Missing required field: goal" },
-        { status: 400 }
-      );
-    }
+    const goalDescription: string =
+      body.goal_description ?? body.goalDescription ?? "";
 
-    const userPrompt = buildPlannerUserPrompt(body);
+    const plannerModel: string =
+      body.planner_model ??
+      body.model ??
+      process.env.RGPT_PLANNER_MODEL ??
+      "gpt-4.1-mini";
 
-    const completion = await openai.chat.completions.create({
-      model: DEFAULT_PLANNER_MODEL,
-      temperature: 0.2,
-      messages: [
-        {
-          role: "system",
-          content: PLANNER_SYSTEM_PROMPT,
-        },
-        {
-          role: "user",
-          content: userPrompt,
-        },
-      ],
+    // ---- Neural Orchestrator: goal + routing (read-only) ----
+    const runId: string =
+      body.run_id ?? body.runId ?? "planner-ad-hoc-run";
+
+    const step: number =
+      typeof body.step === "number" && Number.isFinite(body.step)
+        ? body.step
+        : 1;
+
+    const domain: string | undefined =
+      typeof body.domain === "string" && body.domain.trim().length > 0
+        ? body.domain
+        : undefined;
+
+    const tags: string[] | undefined = Array.isArray(body.tags)
+      ? body.tags
+          .map((t: unknown) => (typeof t === "string" ? t.trim() : ""))
+          .filter((t: string) => t.length > 0)
+      : undefined;
+
+    const goal = makePlannerGoal({
+      runId,
+      step,
+      domain,
+      tags,
+      description: goalDescription || goalTitle,
     });
 
-    const message = completion.choices[0]?.message?.content?.trim() || "";
+    const routing = resolveRouting(goal);
 
-    if (!message) {
-      return NextResponse.json(
-        { error: "Planner LLM returned empty content." },
-        { status: 502 }
-      );
-    }
+    console.log("[Planner Router]", {
+      goal,
+      routingDecision: routing.decision,
+      agent: routing.agent?.id,
+      libraries: routing.libraries.map((l) => l.id),
+    });
+    // ---- end Neural Orchestrator block ----
 
-    let plan: unknown;
+    const userPrompt = buildUserPrompt(goalTitle, goalDescription);
 
+    const llmResult = await callLLM({
+      model: plannerModel,
+      messages: [
+        { role: "system", content: PLANNER_SYSTEM_PROMPT },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.2,
+      max_tokens: 1800,
+    });
+
+    const rawText = (llmResult.output_text || "").trim();
+
+    let parsedPlan: PlannerPlan | null = null;
     try {
-      plan = JSON.parse(message);
-    } catch (err) {
-      // LLM did not return valid JSON; return raw text for debugging
-      return NextResponse.json(
-        {
-          error: "Planner LLM did not return valid JSON.",
-          raw: message,
-        },
-        { status: 502 }
-      );
+      parsedPlan = JSON.parse(rawText) as PlannerPlan;
+    } catch (parseErr) {
+      console.error("[Planner] Failed to parse LLM JSON:", parseErr);
     }
+
+    // ---- Approvals V9: shadow evaluation, non-blocking ----
+    const approvalInput: ApprovalInput = {
+      requestId: `${runId}:${step}:planner`,
+      runId,
+      step,
+      category: "planner",
+      payload: {
+        goal,
+        routingDecision: routing.decision,
+        routingAgentId: routing.agent?.id ?? null,
+        routingLibraryIds: routing.libraries.map((l) => l.id),
+        plannerModel,
+        goalTitle,
+        goalDescription,
+        rawText,
+        parsedPlan,
+      },
+    };
+
+    let approvalResult: ApprovalPacket | null = null;
+    try {
+      approvalResult = await evaluateApproval(approvalInput);
+
+      console.log("[Planner Approvals V9]", {
+        risk: approvalResult.risk,
+        suggestedAction: approvalResult.suggestedAction,
+        requiresHuman: approvalResult.requiresHuman,
+        reasons: approvalResult.reasons,
+        hints: approvalResult.hints,
+      });
+    } catch (err) {
+      console.error("[Planner Approvals V9] evaluation failed", err);
+    }
+    // ---- end Approvals V9 block ----
+
+    return NextResponse.json({
+      success: true,
+      model: llmResult.model,
+      goal_title: goalTitle,
+      goal_description: goalDescription,
+      plan: parsedPlan,
+      rawText,
+      usage: llmResult.usage ?? null,
+      // NOTE: response shape kept backward-compatible;
+      // approvals are only logged, not returned.
+    });
+  } catch (err: any) {
+    console.error("[Planner] Error:", err);
+
+    const message =
+      err?.message || "Unexpected error while generating plan.";
+
+    const status = (err as any)?.status || 500;
 
     return NextResponse.json(
       {
-        model: DEFAULT_PLANNER_MODEL,
-        plan,
+        success: false,
+        error: "PlannerError",
+        message,
       },
-      { status: 200 }
-    );
-  } catch (error: unknown) {
-    console.error("[PLANNER_API] Unexpected error:", error);
-    return NextResponse.json(
-      {
-        error: "Unexpected error while generating plan.",
-      },
-      { status: 500 }
+      { status }
     );
   }
 }
