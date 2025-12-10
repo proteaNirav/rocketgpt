@@ -1,79 +1,111 @@
-﻿/**
- * Category used for logic, grouping and evaluation.
- */
-export type HttpStatusCategory =
+﻿export type HttpStatusCategory =
+  | "1xx-info"
   | "2xx-success"
   | "3xx-redirect"
-  | "4xx-client"
-  | "5xx-server"
-  | "network-error";
+  | "4xx-client-error"
+  | "5xx-server-error"
+  | "unknown";
 
-/**
- * Expected HTTP behaviour for a test case.
- * - exact: expect a specific status code
- * - category: expect a class of status codes (e.g. any 2xx)
- * - none: no expectation given (use profile + test-case defaults)
- */
-export interface HttpStatusExpectation {
-  mode: "exact" | "category" | "none";
+export type HttpExpectationMode = "exact" | "category" | "none";
+
+export type HttpStatusExpectation = {
+  mode: HttpExpectationMode;
   expectedCode?: number;
   expectedCategory?: HttpStatusCategory;
-}
+};
 
-/**
- * Final evaluation object produced by tester engine.
- * This is consumed by:
- * - Tester /api/tester/run
- * - Orchestrator /api/orchestrator/tester/execute
- * - Builder/Test pipelines
- */
-export interface HttpStatusEvaluation {
-  status_code: number | null;       // null if network failure
-  category: HttpStatusCategory;
+export type HttpStatusEvaluation = {
+  status_code: number | null;
+  category: HttpStatusCategory | null;
   expected: HttpStatusExpectation;
-
-  /**
-   * - "match" → status matches expected code/category
-   * - "mismatch" → code/category deviation detected
-   * - "error" → network/transport/error
-   */
   result: "match" | "mismatch" | "error";
-
-  /**
-   * Human-readable evaluation summary for logs.
-   */
   message: string;
-}
+};
 
-/**
- * Utility: derive category from numeric HTTP code.
- */
-export function categorizeStatus(code: number | null): HttpStatusCategory {
-  if (code === null || code <= 0) return "network-error";
+function getCategory(code: number | null): HttpStatusCategory {
+  if (code == null) return "unknown";
+  if (code >= 100 && code < 200) return "1xx-info";
   if (code >= 200 && code < 300) return "2xx-success";
   if (code >= 300 && code < 400) return "3xx-redirect";
-  if (code >= 400 && code < 500) return "4xx-client";
-  if (code >= 500) return "5xx-server";
-  return "network-error";
+  if (code >= 400 && code < 500) return "4xx-client-error";
+  if (code >= 500 && code < 600) return "5xx-server-error";
+  return "unknown";
 }
 
 /**
- * Utility: produce a default expectation based on tester profile strictness.
- * This will be expanded in a later step.
+ * Default HTTP expectations per profile.
+ * Mirrors what we used in the smoke outputs:
+ * - base/light/stress: expect 2xx-success
+ * - full/regression: expect exact 200
  */
 export function defaultExpectationForProfile(
-  strictness: "lenient" | "normal" | "strict" | "paranoid"
+  profileId: string
 ): HttpStatusExpectation {
-  switch (strictness) {
-    case "lenient":
-      return { mode: "category", expectedCategory: "2xx-success" };
-    case "normal":
-      return { mode: "category", expectedCategory: "2xx-success" };
-    case "strict":
-      return { mode: "exact", expectedCode: 200 };
-    case "paranoid":
-      return { mode: "exact", expectedCode: 200 };
+  switch (profileId) {
+    case "full":
+    case "regression":
+      return {
+        mode: "exact",
+        expectedCode: 200,
+      };
+    case "base":
+    case "light":
+    case "stress":
     default:
-      return { mode: "category", expectedCategory: "2xx-success" };
+      return {
+        mode: "category",
+        expectedCategory: "2xx-success",
+      };
   }
+}
+
+export function evaluateHttpStatus(
+  statusCode: number,
+  expectation: HttpStatusExpectation
+): HttpStatusEvaluation {
+  const category = getCategory(statusCode);
+
+  if (expectation.mode === "none") {
+    return {
+      status_code: statusCode,
+      category,
+      expected: expectation,
+      result: "match",
+      message: "No HTTP expectation configured (mode=none); treating as match.",
+    };
+  }
+
+  if (expectation.mode === "exact") {
+    const ok = expectation.expectedCode === statusCode;
+    return {
+      status_code: statusCode,
+      category,
+      expected: expectation,
+      result: ok ? "match" : "mismatch",
+      message: ok
+        ? `Got expected status code ${statusCode}.`
+        : `Expected status code ${expectation.expectedCode}, but got ${statusCode}.`,
+    };
+  }
+
+  if (expectation.mode === "category") {
+    const ok = expectation.expectedCategory === category;
+    return {
+      status_code: statusCode,
+      category,
+      expected: expectation,
+      result: ok ? "match" : "mismatch",
+      message: ok
+        ? `Got expected HTTP category ${category}.`
+        : `Expected HTTP category ${expectation.expectedCategory}, but got ${category}.`,
+    };
+  }
+
+  return {
+    status_code: statusCode,
+    category,
+    expected: expectation,
+    result: "error",
+    message: "Unknown HTTP expectation mode.",
+  };
 }
