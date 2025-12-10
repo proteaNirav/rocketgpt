@@ -1,0 +1,105 @@
+﻿// app/api/orchestrator/tester/execute/route.ts
+// Orchestrator → Tester execute bridge
+// - Validates orchestrator payload
+// - Forwards to /api/tester/run (DEV STUB or real implementation)
+// - Normalizes response for orchestrator / UI
+
+import { NextRequest, NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
+
+type OrchestratorTesterPayload = {
+  runId: number;
+  buildId: number;
+  testFiles?: string[];
+};
+
+function badRequest(message: string) {
+  return NextResponse.json(
+    {
+      success: false,
+      error: "InvalidPayload",
+      message,
+    },
+    { status: 400 }
+  );
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = (await req.json()) as Partial<OrchestratorTesterPayload>;
+
+    const { runId, buildId } = body;
+
+    if (typeof runId !== "number") {
+      return badRequest("runId (number) is required.");
+    }
+
+    if (typeof buildId !== "number") {
+      return badRequest("buildId (number) is required.");
+    }
+
+    let testFiles = body.testFiles;
+
+    // Default test file if none provided
+    if (!Array.isArray(testFiles) || testFiles.length === 0) {
+      testFiles = ["sample-orchestrator-test.js"];
+    }
+
+    if (!testFiles.every((f) => typeof f === "string")) {
+      return badRequest("testFiles must contain only strings.");
+    }
+
+    const forwardPayload = {
+      runId,
+      buildId,
+      testFiles,
+      environment: "orchestrator-local",
+    };
+
+    // Build URL pointing to the local tester route
+    const testerUrl = new URL("/api/tester/run", req.nextUrl);
+
+    const testerRes = await fetch(testerUrl.toString(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(forwardPayload),
+    });
+
+    const testerJson = await testerRes.json().catch(() => null);
+
+    if (!testerRes.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "TesterExecuteForwardError",
+          status: testerRes.status,
+          response: testerJson ?? null,
+        },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Orchestrator – Tester integration OK.",
+        tester: testerJson,
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("[OrchestratorTesterExecute] Unexpected error:", err);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "OrchestratorTesterExecuteError",
+        message: "Unexpected error while executing tester from orchestrator.",
+      },
+      { status: 500 }
+    );
+  }
+}
+
