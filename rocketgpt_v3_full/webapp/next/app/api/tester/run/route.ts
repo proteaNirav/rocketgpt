@@ -2,97 +2,108 @@
 export const fetchCache = "force-no-store";
 
 import { NextRequest, NextResponse } from "next/server";
-import { resolveTesterProfile } from "@/lib/tester/profiles";
-import type {
-  TesterRunRequest,
-  TesterRunResolvedContext,
-} from "@/lib/tester/types";
-import {
-  categorizeStatus,
-  defaultExpectationForProfile,
+import { getTesterProfile } from "@/lib/tester/profiles";
+import { defaultExpectationForProfile,evaluateHttpStatus,
 } from "@/lib/tester/http_status";
-import type { HttpStatusEvaluation } from "@/lib/tester/http_status";
+import { getTesterEngine, TesterExecutionResult } from "@/lib/tester/engine";
+
+type TesterRunRequest = {
+  goal?: string;
+  run_id?: string;
+  profile?: string;
+  test_cases?: string[];
+  options?: Record<string, unknown>;
+};
+
+type TesterRunResponse = {
+  success: boolean;
+  profile: ReturnType<typeof getTesterProfile>;
+  http: ReturnType<typeof evaluateHttpStatus>;
+  summary: string;
+  tests_executed: number;
+  engine: TesterExecutionResult;
+  run_id: string | null;
+};
 
 export async function POST(req: NextRequest) {
+  let parsedBody: TesterRunRequest | null = null;
+
   try {
-    const json = (await req.json()) as Partial<TesterRunRequest> | null;
+    parsedBody = (await req.json().catch(() => null)) as TesterRunRequest | null;
 
     const body: TesterRunRequest = {
-      goal: json?.goal,
-      run_id: json?.run_id,
-      test_cases: json?.test_cases ?? [],
-      profile: json?.profile,
-      options: json?.options ?? {},
+      goal: parsedBody?.goal,
+      run_id: parsedBody?.run_id,
+      profile: parsedBody?.profile,
+      test_cases: parsedBody?.test_cases ?? ["sample-orchestrator-test.js"],
+      options: parsedBody?.options ?? {},
     };
 
-    // Allow overriding profile via query string: ?profile=full
-    const { searchParams } = new URL(req.url);
-    const profileFromQuery = searchParams.get("profile");
-    const effectiveProfileInput = profileFromQuery || body.profile || undefined;
+    const profile = getTesterProfile(body.profile);
+    const engine = getTesterEngine("stub");
 
-    const resolvedProfile = resolveTesterProfile(effectiveProfileInput);
-
-    const context: TesterRunResolvedContext = {
-      request: body,
-      profile: resolvedProfile,
-    };
-
-    // ============================================================
-    // HTTP STATUS EVALUATION STUB
-    // ------------------------------------------------------------
-    // For now we are not actually calling any downstream HTTP API.
-    // We simulate a "200 OK" response and evaluate it based on the
-    // tester profile strictness. This will be replaced later by the
-    // real tester engine's HTTP result.
-    // ============================================================
-
-    const assumedStatusCode = 200;
-    const category = categorizeStatus(assumedStatusCode);
-    const expectation = defaultExpectationForProfile(
-      resolvedProfile.strictness
+    const engineResult = await engine.runTests(
+      body.test_cases ?? [],
+      body.options ?? {}
     );
 
-    const httpStatusEvaluation: HttpStatusEvaluation = {
-      status_code: assumedStatusCode,
-      category,
-      expected: expectation,
-      result: "match",
-      message: `Stub HTTP evaluation: got ${assumedStatusCode} (${category}) for profile '${resolvedProfile.id}'.`,
+    // For now, this route itself returns 200 on success, so we evaluate HTTP
+    // using the expectation model and a fixed 200 code.
+    const expectation = defaultExpectationForProfile(profile.id);
+    const httpEval = evaluateHttpStatus(200, expectation);
+
+    const summary =
+      body.goal && body.goal.trim().length > 0
+        ? `Tester run scheduled with '${profile.id}' profile for goal: ${body.goal}`
+        : `Tester run scheduled with '${profile.id}' profile.`;
+
+    const response: TesterRunResponse = {
+      success: engineResult.success,
+      profile,
+      http: httpEval,
+      summary,
+      tests_executed: engineResult.tests_executed,
+      engine: engineResult,
+      run_id: body.run_id ?? null,
     };
 
-    // TODO: Replace this stub with actual tester engine call, e.g.:
-    // const engineResult = await runTesterEngine(context);
-    // const httpStatusEvaluation = engineResult.http;
-
-    const result = {
-      success: true,
-      profile: {
-        id: resolvedProfile.id,
-        label: resolvedProfile.label,
-        strictness: resolvedProfile.strictness,
-        depth: resolvedProfile.depth,
-        maxTestCases: resolvedProfile.maxTestCases,
-        maxDurationMs: resolvedProfile.maxDurationMs,
-        parallelism: resolvedProfile.parallelism,
-      },
-      http: httpStatusEvaluation,
-      summary: `Tester run scheduled with '${resolvedProfile.id}' profile.`,
-      tests_executed: 0,
-      evaluations: [],
-      context,
-    };
-
-    return NextResponse.json(result, { status: 200 });
+    return NextResponse.json(response, { status: 200 });
   } catch (error: any) {
+    // eslint-disable-next-line no-console
     console.error("[/api/tester/run] Error:", error);
+
+    const fallbackProfile = getTesterProfile(null);
+    const fallbackExpectation = defaultExpectationForProfile(fallbackProfile.id);
+    const httpEval = evaluateHttpStatus(500, fallbackExpectation);
 
     return NextResponse.json(
       {
         success: false,
-        error: "TesterRunError",
-        message: error?.message ?? "Unexpected error while running tester.",
+        profile: fallbackProfile,
+        http: httpEval,
+        summary:
+          "Tester run failed due to an unexpected error in /api/tester/run.",
+        tests_executed: 0,
+        engine: {
+          success: false,
+          tests_executed: 0,
+          tests_passed: 0,
+          tests_failed: 0,
+          duration_ms: 0,
+          logs: [
+            "Tester engine not executed due to route-level error.",
+            error?.message ?? "Unknown error.",
+          ],
+        } as TesterExecutionResult,
+        run_id: parsedBody?.run_id ?? null,
+        error: {
+          message:
+            error?.message ??
+            "Unexpected error while running tester engine in /api/tester/run.",
+        },
       },
       { status: 500 }
     );
   }
 }
+
