@@ -1,107 +1,96 @@
-﻿export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import { NextRequest, NextResponse } from "next/server";
-import { randomUUID } from "crypto";
 
-type TesterStatus = "success" | "failed" | "error" | "partial";
+type OrchestratorTesterExecuteRequest = {
+  /**
+   * High-level goal or description of what we are testing.
+   * This is passed through to the Tester API.
+   */
+  goal?: string;
 
-interface TesterRunRequest {
-  runId: string;
-  planId?: string | number;
-  goalTitle?: string;
-  goalSummary?: string;
-  buildArtifacts?: any[];
-  testCommand?: string;
-}
+  /**
+   * Optional run identifier for correlation / logging.
+   */
+  run_id?: string;
 
-interface TesterResultEntry {
-  test_case: string;
-  status: "passed" | "failed" | "skipped" | "error";
-  error: string | null;
-  duration_ms: number | null;
-}
+  /**
+   * Desired Tester profile, e.g. "base", "light", "full", "stress", "regression".
+   * This is passed straight through to /api/tester/run.
+   */
+  profile?: string;
 
-interface TesterRunResponse {
-  test_run_id: string;
-  status: TesterStatus;
-  summary: string;
-  results: TesterResultEntry[];
-  logs: string[];
-  artifacts: string[];
-}
+  /**
+   * Optional explicit list of test cases.
+   */
+  test_cases?: string[];
 
-interface OrchestratorTesterExecuteResponse {
-  success: boolean;
-  message: string;
-  tester: TesterRunResponse | null;
-}
+  /**
+   * Arbitrary options forwarded to the Tester engine.
+   */
+  options?: Record<string, unknown>;
+};
 
-/**
- * POST /api/orchestrator/tester/execute
- *
- * Orchestrator → Tester adapter:
- * - Accepts a tester execution request (runId, planId, etc.).
- * - Calls /api/tester/run internally.
- * - Returns { success, message, tester } for the Orchestrator/Builder.
- */
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const rawBody = await request.text();
-    const body = (rawBody ? JSON.parse(rawBody) : {}) as Partial<TesterRunRequest>;
+    const json = (await req.json().catch(() => null)) as
+      | OrchestratorTesterExecuteRequest
+      | null;
 
-    const runId = body.runId ?? randomUUID();
-
-    const testerRequest: TesterRunRequest = {
-      runId,
-      planId: body.planId,
-      goalTitle: body.goalTitle,
-      goalSummary: body.goalSummary,
-      buildArtifacts: body.buildArtifacts ?? [],
-      testCommand: body.testCommand,
+    const body: OrchestratorTesterExecuteRequest = {
+      goal: json?.goal,
+      run_id: json?.run_id,
+      profile: json?.profile,
+      test_cases: json?.test_cases ?? [],
+      options: json?.options ?? {},
     };
 
-    // Build absolute URL for /api/tester/run based on incoming request
-    const testerUrl = new URL("/api/tester/run", request.url);
+    // Construct internal URL for Tester API
+    const testerUrl = new URL("/api/tester/run", req.url);
 
-    const testerResponse = await fetch(testerUrl.toString(), {
+    const testerRes = await fetch(testerUrl.toString(), {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "content-type": "application/json",
       },
-      cache: "no-store",
-      body: JSON.stringify(testerRequest),
+      body: JSON.stringify(body),
     });
 
-    const testerJson = (await testerResponse.json()) as TesterRunResponse;
+    const testerPayload: any = await testerRes.json().catch(() => null);
 
-    const ok =
-      testerResponse.ok &&
-      testerJson &&
-      (testerJson.status === "success" || testerJson.status === "partial");
-
-    const payload: OrchestratorTesterExecuteResponse = {
-      success: ok,
-      message: ok
-        ? "Orchestrator → Tester execute completed."
-        : `Orchestrator → Tester execute encountered issues (HTTP ${testerResponse.status}).`,
-      tester: testerJson ?? null,
+    const response = {
+      success: testerRes.ok && testerPayload?.success !== false,
+      orchestrator: {
+        status_code: testerRes.status,
+        status_text: testerRes.statusText,
+      },
+      tester: {
+        success: testerPayload?.success ?? null,
+        profile: testerPayload?.profile ?? null,
+        http: testerPayload?.http ?? null,
+        summary: testerPayload?.summary ?? null,
+        tests_executed: testerPayload?.tests_executed ?? null,
+      },
+      // Full raw payload for debugging / future evolution
+      tester_raw: testerPayload,
+      // Echo back the request we sent to tester for traceability
+      forwarded_request: body,
     };
 
-    return NextResponse.json(payload, {
-      status: ok ? 200 : 500,
-    });
+    return NextResponse.json(response, { status: testerRes.status });
   } catch (error: any) {
-    console.error("[orchestrator/tester/execute] Error:", error);
+    console.error("[/api/orchestrator/tester/execute] Error:", error);
 
-    const payload: OrchestratorTesterExecuteResponse = {
-      success: false,
-      message:
-        "Orchestrator → Tester execute failed due to an internal error in /api/orchestrator/tester/execute.",
-      tester: null,
-    };
-
-    return NextResponse.json(payload, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: "OrchestratorTesterExecuteError",
+        message:
+          error?.message ??
+          "Unexpected error while running orchestrator tester execute.",
+      },
+      { status: 500 }
+    );
   }
 }
