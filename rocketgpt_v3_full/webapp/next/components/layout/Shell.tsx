@@ -1,29 +1,18 @@
 ﻿"use client";
 
-import React, { useState } from "react";
 import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
 
 export default function Shell({ children }: { children: React.ReactNode }) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  const handleToggleSidebar = () => {
-    setSidebarCollapsed((prev) => !prev);
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <Topbar
-        sidebarCollapsed={sidebarCollapsed}
-        onToggleSidebar={handleToggleSidebar}
-      />
+    <div className="flex w-full">
+      {/* LEFT SIDEBAR only */}
+      <Sidebar collapsed={false} onToggle={() => {}} />
 
-      <div className="flex flex-1">
-        <Sidebar collapsed={sidebarCollapsed} onToggle={handleToggleSidebar} />
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
+      {/* MAIN CONTENT – full width */}
+      <div className="flex-1 px-4 py-4">
+        {children}
       </div>
     </div>
   );
 }
+
