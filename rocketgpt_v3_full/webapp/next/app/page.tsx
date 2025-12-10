@@ -49,6 +49,7 @@ export default function HomePage() {
   const [limits, setLimits] = useState<LimitsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -73,6 +74,7 @@ export default function HomePage() {
 
         setHealth(healthJson);
         setLimits(limitsJson);
+        setLastUpdated(new Date().toLocaleString());
       } catch (err: any) {
         console.error("Failed to load dashboard data", err);
         setError(err?.message ?? "Failed to load dashboard data");
@@ -100,6 +102,7 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
+      {/* Header + status */}
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -108,6 +111,11 @@ export default function HomePage() {
           <p className="text-sm text-muted-foreground">
             Live status and limits from the running RocketGPT instance.
           </p>
+          {lastUpdated && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Last updated: {lastUpdated}
+            </p>
+          )}
         </div>
         <div
           className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${statusColor}`}
@@ -133,8 +141,15 @@ export default function HomePage() {
         <div className="grid gap-4 md:grid-cols-3">
           {/* Uptime & environment */}
           <div className="rounded-xl border border-border bg-card p-4">
-            <div className="text-xs font-medium uppercase text-muted-foreground">
-              Instance
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-medium uppercase text-muted-foreground">
+                Instance
+              </div>
+              {health?.env && (
+                <span className="rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">
+                  Env: {health.env}
+                </span>
+              )}
             </div>
             <div className="mt-2 text-lg font-semibold">
               {formatUptime(health?.startedAt)}
@@ -147,15 +162,8 @@ export default function HomePage() {
             </div>
             <div className="mt-3 text-[11px] text-muted-foreground break-all">
               Commit:{" "}
-              {health?.commit
-                ? health.commit.substring(0, 7)
-                : "n/a"}
+              {health?.commit ? health.commit.substring(0, 7) : "n/a"}
             </div>
-            {health?.env && (
-              <div className="mt-1 text-[11px] text-muted-foreground">
-                Env: {health.env}
-              </div>
-            )}
           </div>
 
           {/* Plan & limits */}
@@ -188,11 +196,19 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Usage placeholder */}
-          <div className="rounded-xl border border-border bg-card p-4">
+          {/* Usage snapshot */}
+          <div
+            className="
+              rounded-xl border 
+              border-border
+              bg-card
+              p-4
+            "
+          >
             <div className="text-xs font-medium uppercase text-muted-foreground">
               Usage snapshot
             </div>
+
             {limits?.usage && limits.usage.length > 0 ? (
               <div className="mt-2 text-sm text-muted-foreground">
                 {limits.usage.length} usage entries recorded.
@@ -202,9 +218,42 @@ export default function HomePage() {
                 No usage records available yet.
               </div>
             )}
-            <div className="mt-3 text-[11px] text-muted-foreground">
-              This section will evolve into a full usage chart in the next
-              iteration.
+
+            {/* Simple visual activity bar */}
+            <div className="mt-3">
+              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className="
+                    h-full rounded-full
+                    bg-blue-500/70 dark:bg-blue-400/70
+                  "
+                  style={{
+                    width:
+                      limits?.usage && limits.usage.length
+                        ? `${Math.min(100, limits.usage.length * 5)}%`
+                        : "10%",
+                  }}
+                />
+              </div>
+              <div className="mt-1 text-[11px] text-muted-foreground">
+                This bar will evolve into a proper usage chart in a future
+                iteration.
+              </div>
+            </div>
+
+            {/* Link to full usage page */}
+            <div className="mt-3">
+              <a
+                href="/usage"
+                className="
+                  inline-flex items-center gap-1 text-xs
+                  text-blue-600 dark:text-blue-400
+                  hover:underline hover:text-blue-700
+                  dark:hover:text-blue-300
+                "
+              >
+                View usage details →
+              </a>
             </div>
           </div>
         </div>
