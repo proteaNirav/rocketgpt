@@ -1,0 +1,276 @@
+﻿"use client";
+
+import React, { useState } from "react";
+import { Loader2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+
+type AnyRecord = Record<string, any>;
+
+export default function TesterPage() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [response, setResponse] = useState<AnyRecord | null>(null);
+
+  async function runTester() {
+    setLoading(true);
+    setError(null);
+    setResponse(null);
+
+    try {
+      const res = await fetch("/api/tester/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          profile: "base",
+          goal: "Orchestrator \u2192 Tester HTTP status + profile test",
+          runId: "orch-tester-ui",
+        }),
+      });
+
+      const data = await res.json();
+      setResponse(data);
+    } catch (err: any) {
+      setError(err?.message || "Unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function StatusBadge({ ok }: { ok: boolean | null }) {
+    if (ok === true) {
+      return (
+        <span className="inline-flex items-center gap-1 text-green-400 text-sm">
+          <CheckCircle size={16} /> PASS
+        </span>
+      );
+    }
+    if (ok === false) {
+      return (
+        <span className="inline-flex items-center gap-1 text-red-400 text-sm">
+          <XCircle size={16} /> FAIL
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1 text-yellow-400 text-sm">
+        <AlertTriangle size={16} /> UNKNOWN
+      </span>
+    );
+  }
+
+  // Derive a single synthetic test row from engine/http data
+  function getTestRow(resp: AnyRecord | null) {
+    if (!resp) return null;
+
+    const http = resp.http || {};
+    const engine = resp.engine || {};
+
+    const name =
+      http.status_code && http.category
+        ? `HTTP ${http.status_code} (${http.category})`
+        : "HTTP status evaluation";
+
+    const ok =
+      engine.success ?? resp.success ?? (http.result === "match" ? true : null);
+
+    const duration =
+      typeof engine.duration_ms === "number" ? engine.duration_ms : null;
+
+    return {
+      name,
+      ok,
+      duration,
+    };
+  }
+
+  const testRow = getTestRow(response);
+
+  const profile = response?.profile || null;
+  const http = response?.http || null;
+
+  const totalCases =
+    typeof response?.tests_executed === "number"
+      ? response!.tests_executed
+      : typeof response?.engine?.tests_executed === "number"
+      ? response!.engine.tests_executed
+      : testRow
+      ? 1
+      : 0;
+
+  const logs: string[] =
+    (Array.isArray(response?.engine?.logs) && response!.engine.logs) ||
+    (Array.isArray(response?.logs) && response!.logs) ||
+    [];
+
+  return (
+    <div className="p-6 space-y-6">
+      {/* Runner Card */}
+      <div className="rounded-xl border border-gray-800 p-6 bg-black/30">
+        <h2 className="text-xl font-semibold mb-4">Tester Runner</h2>
+
+        {error && (
+          <div className="border border-red-600 text-red-400 p-3 rounded-md mb-4 text-sm">
+            <strong>Error:</strong> {error}
+          </div>
+        )}
+
+        <button
+          onClick={runTester}
+          disabled={loading}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 rounded-lg text-white inline-flex items-center gap-2 text-sm"
+        >
+          {loading && <Loader2 className="animate-spin" size={18} />}
+          Run Tests
+        </button>
+      </div>
+
+      {/* Results Section */}
+      {response && (
+        <div className="rounded-xl border border-gray-800 p-6 bg-black/20 space-y-6">
+          <h3 className="text-lg font-semibold">Results</h3>
+
+          {/* Top Summary Row */}
+          <div className="grid gap-4 md:grid-cols-3">
+            {/* Summary Card */}
+            <div className="border rounded-lg p-4 bg-black/30 border-gray-700 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-gray-200">
+                  Overall
+                </span>
+                <StatusBadge
+                  ok={
+                    response.success ??
+                    response.engine?.success ??
+                    (response.http?.result === "match" ? true : null)
+                  }
+                />
+              </div>
+              <p className="text-sm text-gray-300">
+                <span className="font-semibold">Tests executed:</span>{" "}
+                {totalCases}
+              </p>
+              {typeof response.engine?.tests_passed === "number" && (
+                <p className="text-sm text-gray-300">
+                  <span className="font-semibold">Passed:</span>{" "}
+                  {response.engine.tests_passed} &nbsp;|&nbsp;
+                  <span className="font-semibold">Failed:</span>{" "}
+                  {response.engine.tests_failed}
+                </p>
+              )}
+              {typeof response.engine?.duration_ms === "number" && (
+                <p className="text-sm text-gray-300">
+                  <span className="font-semibold">Duration:</span>{" "}
+                  {response.engine.duration_ms} ms
+                </p>
+              )}
+              {response.summary && (
+                <p className="text-xs text-gray-400 mt-2 whitespace-pre-line">
+                  {response.summary}
+                </p>
+              )}
+            </div>
+
+            {/* Profile Card */}
+            <div className="border rounded-lg p-4 bg-black/30 border-gray-700 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-gray-200">
+                  Profile
+                </span>
+                <span className="text-xs rounded-full border border-gray-600 px-2 py-0.5 uppercase tracking-wide text-gray-300">
+                  {profile?.id ?? "base"}
+                </span>
+              </div>
+              <p className="text-sm text-gray-300">
+                <span className="font-semibold">Label:</span>{" "}
+                {profile?.label ?? "Base Smoke"}
+              </p>
+              {profile && (
+                <>
+                  <p className="text-sm text-gray-300">
+                    <span className="font-semibold">Strictness:</span>{" "}
+                    {profile.strictness}
+                  </p>
+                  <p className="text-sm text-gray-300">
+                    <span className="font-semibold">Depth:</span>{" "}
+                    {profile.depth}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    Max cases: {profile.maxTestCases} &nbsp;|&nbsp; Max duration:{" "}
+                    {profile.maxDurationMs} ms &nbsp;|&nbsp; Parallelism:{" "}
+                    {profile.parallelism}
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* HTTP Evaluation Card */}
+            <div className="border rounded-lg p-4 bg-black/30 border-gray-700 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-gray-200">
+                  HTTP Evaluation
+                </span>
+                <StatusBadge
+                  ok={http?.result === "match" ? true : null}
+                />
+              </div>
+              <p className="text-sm text-gray-300">
+                <span className="font-semibold">Status Code:</span>{" "}
+                {http?.status_code ?? "-"}
+              </p>
+              <p className="text-sm text-gray-300">
+                <span className="font-semibold">Category:</span>{" "}
+                {http?.category ?? "-"}
+              </p>
+              {http?.message && (
+                <p className="text-xs text-gray-400 mt-2 whitespace-pre-line">
+                  {http.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Synthetic Test Row Table */}
+          {testRow && (
+            <div className="overflow-x-auto border border-gray-700 rounded-lg">
+              <table className="w-full border-collapse text-sm">
+                <thead className="bg-gray-900/60">
+                  <tr>
+                    <th className="border border-gray-700 px-3 py-2 text-left">
+                      Test Case
+                    </th>
+                    <th className="border border-gray-700 px-3 py-2 text-left">
+                      Status
+                    </th>
+                    <th className="border border-gray-700 px-3 py-2 text-left">
+                      Duration (ms)
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="bg-black/40 hover:bg-black/60">
+                    <td className="border border-gray-800 px-3 py-2">
+                      {testRow.name}
+                    </td>
+                    <td className="border border-gray-800 px-3 py-2">
+                      <StatusBadge ok={testRow.ok} />
+                    </td>
+                    <td className="border border-gray-800 px-3 py-2">
+                      {testRow.duration ?? "-"}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Logs Panel */}
+          <div className="border border-gray-700 rounded-lg p-4 bg-black/40">
+            <h4 className="font-medium mb-2 text-sm">Logs</h4>
+            <div className="max-h-48 overflow-y-auto text-gray-400 whitespace-pre-wrap bg-black/30 p-3 rounded-md text-xs">
+              {logs.length > 0 ? logs.join("\n") : "No logs returned."}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
