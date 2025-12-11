@@ -1,101 +1,148 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+﻿export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
-export const dynamic = "force-dynamic";
+import { NextRequest, NextResponse } from "next/server";
+import { withOrchestratorHandler } from "../../_utils/orchestratorError";
+import { safeModeGuard } from "../../_core/safeMode";
 
-/**
- * Extract runId from either:
- * - JSON body: { runId } or { run_id } or { id }
- * - Query string: ?runId= or ?run_id=
- */
-async function extractRunId(req: NextRequest): Promise<number | null> {
-  let raw: unknown = null;
+const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
+const INTERNAL_BASE_URL =
+  process.env.RGPT_INTERNAL_BASE_URL ||
+  process.env.NEXT_PUBLIC_BASE_URL ||
+  "http://localhost:3000";
 
-  // 1) Try query string first (works well for manual tests)
-  const url = new URL(req.url);
-  const search = url.searchParams;
-  const fromQuery =
-    search.get("runId") ??
-    search.get("run_id") ??
-    null;
-
-  if (fromQuery) {
-    const n = Number.parseInt(fromQuery, 10);
-    if (Number.isFinite(n) && n > 0) {
-      return n;
-    }
-  }
-
-  // 2) Try JSON body (used by auto-advance)
+function summarizeBody(body: unknown): string {
   try {
-    const body = (await req.json()) as any;
-    if (body) {
-      raw =
-        body.runId ??
-        body.run_id ??
-        body.id ??
-        null;
+    const asString =
+      typeof body === "string" ? body : JSON.stringify(body);
+    if (asString.length > 5000) {
+      return asString.slice(0, 5000) + "...[truncated]";
     }
+    return asString;
   } catch {
-    // no/invalid JSON – ignore
+    return "[unserializable body]";
   }
-
-  if (typeof raw === "number") {
-    return Number.isFinite(raw) && raw > 0 ? raw : null;
-  }
-
-  if (typeof raw === "string") {
-    const n = Number.parseInt(raw, 10);
-    return Number.isFinite(n) && n > 0 ? n : null;
-  }
-
-  return null;
 }
 
-// POST: used by /api/orchestrator/auto-advance
-export async function POST(req: NextRequest) {
-  const runId = await extractRunId(req);
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const url = new URL(req.url);
 
-  if (!runId) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "InvalidPayload",
-        message: "runId required",
-      },
-      { status: 400 },
+  const headerRunId = req.headers.get("x-rgpt-run-id") ?? undefined;
+  const queryRunId = url.searchParams.get("run_id") ?? undefined;
+
+  let body: any = {};
+  try {
+    body = (await req.json()) as any;
+  } catch {
+    body = {};
+  }
+
+  const bodyRunId: string | undefined = body.run_id ?? body.runId ?? undefined;
+
+  const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID();
+
+  // Safe-Mode guard – block orchestrator run/tester when enabled
+  try {
+    safeModeGuard("run-tester");
+  } catch (err: any) {
+    const statusCode = typeof err?.status === "number" ? err.status : 503;
+    return NextResponse.json(err, { status: statusCode });
+  }
+
+  // Internal security check
+  const internalKeyHeader = req.headers.get("x-rgpt-internal");
+
+  if (INTERNAL_KEY) {
+    if (!internalKeyHeader || internalKeyHeader !== INTERNAL_KEY) {
+      console.warn("[ORCH-RUN-TESTER] Unauthorized access attempt.", {
+        route: "/api/orchestrator/run/tester",
+        runId,
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized orchestrator access.",
+          route: "/api/orchestrator/run/tester",
+          runId,
+        },
+        { status: 401 }
+      );
+    }
+  } else {
+    console.warn(
+      "[ORCH-RUN-TESTER] RGPT_INTERNAL_KEY is not set. Route is running without header enforcement."
     );
   }
 
-  // 🔧 Stub behaviour:
-  // For now we just acknowledge success so that auto-advance
-  // can proceed to the finalize phase.
-  //
-  // Later you can replace this with real Tester integration
-  // (calling your test runner / orchestrator-tester bridge).
+  return withOrchestratorHandler(
+    { route: "/api/orchestrator/run/tester", runId },
+    async () => {
+      console.log("[ORCH-RUN-TESTER] Incoming request", {
+        route: "/api/orchestrator/run/tester",
+        runId,
+        bodySummary: summarizeBody(body),
+      });
 
-  return NextResponse.json(
-    {
-      success: true,
-      runId,
-      mode: "tester_stub",
-      message:
-        "Tester stub executed successfully. Replace with real test execution when ready.",
-    },
-    { status: 200 },
-  );
-}
+      const testerBody = {
+        ...body,
+        run_id: runId,
+      };
 
-// GET: handy for manual checks in browser/PowerShell
-export async function GET(req: NextRequest) {
-  const url = new URL(req.url);
-  const runId = url.searchParams.get("runId") ?? url.searchParams.get("run_id");
+      const testerUrl = `${INTERNAL_BASE_URL}/api/tester/run`;
 
-  return NextResponse.json(
-    {
-      success: true,
-      mode: "tester_stub_get",
-      runId,
-    },
-    { status: 200 },
+      const res = await fetch(testerUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          ...(INTERNAL_KEY
+            ? { "x-rgpt-internal": INTERNAL_KEY }
+            : {}),
+        },
+        body: JSON.stringify(testerBody),
+      });
+
+      const text = await res.text();
+      let json: any = null;
+
+      try {
+        json = text ? JSON.parse(text) : null;
+      } catch {
+        // Not valid JSON, keep raw text
+      }
+
+      console.log("[ORCH-RUN-TESTER] Tester response", {
+        route: "/api/orchestrator/run/tester",
+        runId,
+        status: res.status,
+        ok: res.ok,
+        bodySummary: summarizeBody(json ?? text),
+      });
+
+      if (!res.ok) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Tester call failed.",
+            route: "/api/orchestrator/run/tester",
+            runId,
+            status: res.status,
+            testerRaw: json ?? text,
+          },
+          { status: 502 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Tester run executed via orchestrator run endpoint.",
+          route: "/api/orchestrator/run/tester",
+          runId,
+          tester: json,
+        },
+        { status: 200 }
+      );
+    }
   );
 }
