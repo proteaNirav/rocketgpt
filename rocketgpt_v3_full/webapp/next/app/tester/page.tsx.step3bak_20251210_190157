@@ -1,0 +1,142 @@
+﻿"use client";
+
+import React, { useState } from "react";
+import { Loader2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+
+export default function TesterPage() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [response, setResponse] = useState<any>(null);
+
+  async function runTester() {
+    setLoading(true);
+    setError(null);
+    setResponse(null);
+
+    try {
+      const res = await fetch("/api/tester/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ goal: "UI-run" }),
+      });
+
+      const data = await res.json();
+      setResponse(data);
+    } catch (err: any) {
+      setError(err.message || "Unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function StatusBadge({ status }: { status: string }) {
+    const normalized = status?.toLowerCase();
+
+    if (normalized === "passed") {
+      return (
+        <span className="text-green-400 flex items-center gap-1">
+          <CheckCircle size={16} /> PASS
+        </span>
+      );
+    }
+
+    if (normalized === "failed") {
+      return (
+        <span className="text-red-400 flex items-center gap-1">
+          <XCircle size={16} /> FAIL
+        </span>
+      );
+    }
+
+    return (
+      <span className="text-yellow-400 flex items-center gap-1">
+        <AlertTriangle size={16} /> UNKNOWN
+      </span>
+    );
+  }
+
+  return (
+    <div className="p-6 space-y-6">
+      {/* Run Button */}
+      <div className="rounded-xl border border-gray-800 p-6 bg-black/30">
+        <h2 className="text-xl font-semibold mb-4">Tester Runner</h2>
+
+        {error && (
+          <div className="border border-red-600 text-red-400 p-3 rounded-md mb-4">
+            <strong>Error:</strong> {error}
+          </div>
+        )}
+
+        <button
+          onClick={runTester}
+          disabled={loading}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white flex items-center gap-2"
+        >
+          {loading && <Loader2 className="animate-spin" size={18} />}
+          Run Tests
+        </button>
+      </div>
+
+      {/* Results */}
+      {response && (
+        <div className="rounded-xl border border-gray-800 p-6 bg-black/20 space-y-6">
+          <h3 className="text-lg font-semibold">Results</h3>
+
+          {/* Summary */}
+          <div className="border rounded-lg p-4 bg-black/30 border-gray-700">
+            <p className="text-gray-300">
+              <strong>Status:</strong> {response.status}
+            </p>
+            <p className="text-gray-300">
+              <strong>Total Cases:</strong> {response.results?.length || 0}
+            </p>
+          </div>
+
+          {/* Test Case Table */}
+          <div className="overflow-x-auto border border-gray-700 rounded-lg">
+            <table className="w-full border-collapse text-sm">
+              <thead className="bg-gray-900/60">
+                <tr>
+                  <th className="border border-gray-700 px-3 py-2 text-left">
+                    Test Case
+                  </th>
+                  <th className="border border-gray-700 px-3 py-2 text-left">
+                    Status
+                  </th>
+                  <th className="border border-gray-700 px-3 py-2 text-left">
+                    Duration (ms)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {response.results?.map((t: any, idx: number) => (
+                  <tr key={idx} className="bg-black/40 hover:bg-black/60">
+                    <td className="border border-gray-800 px-3 py-2">
+                      {t.test_case}
+                    </td>
+                    <td className="border border-gray-800 px-3 py-2">
+                      <StatusBadge status={t.status} />
+                    </td>
+                    <td className="border border-gray-800 px-3 py-2">
+                      {t.duration_ms}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Logs Panel */}
+          <div className="border border-gray-700 rounded-lg p-4 bg-black/40">
+            <h4 className="font-medium mb-2">Logs</h4>
+            <div className="max-h-48 overflow-y-auto text-gray-400 whitespace-pre-wrap bg-black/30 p-3 rounded-md">
+              {response.logs && response.logs.length > 0
+                ? response.logs.join("\n")
+                : "No logs returned."}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
