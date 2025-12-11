@@ -1,68 +1,131 @@
-﻿import { NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
-
-// Planner model service
-// Assumes you already have: /lib/llm/plannerModel.ts
-// Modify import if your path differs.
-import { callPlannerModel } from "@/lib/llm/plannerModel";
-
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
-export async function POST(req: Request) {
+import { NextRequest, NextResponse } from "next/server";
+import { withOrchestratorHandler } from "../_utils/orchestratorError";
+
+const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
+const INTERNAL_BASE_URL =
+  process.env.RGPT_INTERNAL_BASE_URL ||
+  process.env.NEXT_PUBLIC_BASE_URL ||
+  "http://localhost:3000";
+
+function summarizeBody(body: unknown): string {
   try {
-    const body = await req.json();
-
-    const { goal_title, goal_description } = body;
-
-    if (!goal_title || !goal_description) {
-      return NextResponse.json(
-        { success: false, message: "Missing goal_title or goal_description." },
-        { status: 400 }
-      );
+    const asString =
+      typeof body === "string" ? body : JSON.stringify(body);
+    if (asString.length > 5000) {
+      return asString.slice(0, 5000) + "...[truncated]";
     }
+    return asString;
+  } catch {
+    return "[unserializable body]";
+  }
+}
 
-    // Generate new run ID for orchestration
-    const runId = uuidv4();
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const url = new URL(req.url);
 
-    // Call the Planner LLM
-    const plannerOutput = await callPlannerModel({
-      goal_title,
-      goal_description,
-    });
+  const headerRunId = req.headers.get("x-rgpt-run-id") ?? undefined;
+  const queryRunId = url.searchParams.get("run_id") ?? undefined;
+  const runId = headerRunId ?? queryRunId ?? crypto.randomUUID();
 
-    if (!plannerOutput || !plannerOutput.steps) {
+  // Internal security check
+  const internalKeyHeader = req.headers.get("x-rgpt-internal");
+
+  if (INTERNAL_KEY) {
+    if (!internalKeyHeader || internalKeyHeader !== INTERNAL_KEY) {
+      console.warn("[ORCH-PLAN] Unauthorized access attempt.", {
+        route: "/api/orchestrator/plan",
+        runId,
+      });
+
       return NextResponse.json(
         {
           success: false,
-          run_id: runId,
-          message: "Planner failed or returned invalid output.",
+          message: "Unauthorized orchestrator access.",
+          route: "/api/orchestrator/plan",
+          runId,
         },
-        { status: 500 }
+        { status: 401 }
       );
     }
-
-    // Standardized output format for Builder
-    const payload = {
-      success: true,
-      run_id: runId,
-      plan_title: plannerOutput.plan_title ?? goal_title,
-      goal_summary: plannerOutput.goal_summary ?? goal_description,
-      steps: plannerOutput.steps,
-      raw: plannerOutput, // optional debugging block
-    };
-
-    return NextResponse.json(payload, { status: 200 });
-  } catch (err: any) {
-    console.error("[PLAN API] Error:", err);
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Unhandled server error in Planner API.",
-        error: err?.message,
-      },
-      { status: 500 }
+  } else {
+    console.warn(
+      "[ORCH-PLAN] RGPT_INTERNAL_KEY is not set. Route is running without header enforcement."
     );
   }
+
+  return withOrchestratorHandler(
+    { route: "/api/orchestrator/plan", runId },
+    async () => {
+      const body = (await req.json().catch(() => ({}))) as any;
+
+      console.log("[ORCH-PLAN] Incoming request", {
+        route: "/api/orchestrator/plan",
+        runId,
+        bodySummary: summarizeBody(body),
+      });
+
+      const plannerBody = {
+        ...body,
+        run_id: runId,
+      };
+
+      const plannerUrl = `${INTERNAL_BASE_URL}/api/planner`;
+
+      const res = await fetch(plannerUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          ...(INTERNAL_KEY
+            ? { "x-rgpt-internal": INTERNAL_KEY }
+            : {}),
+        },
+        body: JSON.stringify(plannerBody),
+      });
+
+      const text = await res.text();
+      let json: any = null;
+
+      try {
+        json = text ? JSON.parse(text) : null;
+      } catch {
+        // Not valid JSON, keep raw text
+      }
+
+      console.log("[ORCH-PLAN] Planner response", {
+        route: "/api/orchestrator/plan",
+        runId,
+        status: res.status,
+        ok: res.ok,
+        bodySummary: summarizeBody(json ?? text),
+      });
+
+      if (!res.ok) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Planner call failed.",
+            route: "/api/orchestrator/plan",
+            runId,
+            status: res.status,
+            plannerRaw: json ?? text,
+          },
+          { status: 502 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Planner plan generated via orchestrator.",
+          route: "/api/orchestrator/plan",
+          runId,
+          planner: json,
+        },
+        { status: 200 }
+      );
+    }
+  );
 }

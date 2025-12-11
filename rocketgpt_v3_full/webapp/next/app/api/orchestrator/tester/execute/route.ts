@@ -2,134 +2,55 @@
 export const fetchCache = "force-no-store";
 
 import { NextRequest, NextResponse } from "next/server";
-import {
-  logOrchTesterInfo,
-  logOrchTesterError,
-} from "@/lib/logging/orchestratorTester";
+import { safeModeGuard } from "../../_core/safeMode";
 
-type OrchestratorTesterExecuteRequest = {
-  /**
-   * High-level goal or description of what we are testing.
-   * This is passed through to the Tester API.
-   */
-  goal?: string;
+/**
+ * RocketGPT Orchestrator – Tester Execute Route (Stub)
+ * PhaseB StepB7 – Safe-Mode hardened.
+ *
+ * When Safe-Mode is active:
+ *   - Request is blocked with structured SAFE_MODE_ACTIVE error.
+ *
+ * When Safe-Mode is disabled:
+ *   - Returns a stubbed response confirming the endpoint is reachable.
+ *   - No heavy tester execution is performed here yet.
+ */
 
-  /**
-   * Optional run identifier for correlation / logging.
-   */
-  run_id?: string;
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const url = new URL(req.url);
 
-  /**
-   * Desired Tester profile, e.g. "base", "light", "full", "stress", "regression".
-   * This is passed straight through to /api/tester/run.
-   */
-  profile?: string;
+  const headerRunId = req.headers.get("x-rgpt-run-id") ?? undefined;
+  const queryRunId = url.searchParams.get("run_id") ?? undefined;
 
-  /**
-   * Optional explicit list of test cases.
-   */
-  test_cases?: string[];
-
-  /**
-   * Arbitrary options forwarded to the Tester engine.
-   */
-  options?: Record<string, unknown>;
-};
-
-export async function POST(req: NextRequest) {
-  let parsedBody: OrchestratorTesterExecuteRequest | null = null;
-
+  let body: any = {};
   try {
-    parsedBody = (await req.json().catch(() => null)) as
-      | OrchestratorTesterExecuteRequest
-      | null;
-
-    const body: OrchestratorTesterExecuteRequest = {
-      goal: parsedBody?.goal,
-      run_id: parsedBody?.run_id,
-      profile: parsedBody?.profile,
-      test_cases: parsedBody?.test_cases ?? [],
-      options: parsedBody?.options ?? {},
-    };
-
-    logOrchTesterInfo("Orchestrator tester execute: request received", {
-      run_id: body.run_id,
-      profile: body.profile,
-      goal: body.goal,
-      context: {
-        test_cases_count: body.test_cases?.length ?? 0,
-      },
-    });
-
-    // Construct internal URL for Tester API
-    const testerUrl = new URL("/api/tester/run", req.url);
-
-    const testerRes = await fetch(testerUrl.toString(), {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-
-    const testerPayload: any = await testerRes.json().catch(() => null);
-
-    const response = {
-      success: testerRes.ok && testerPayload?.success !== false,
-      orchestrator: {
-        status_code: testerRes.status,
-        status_text: testerRes.statusText,
-      },
-      tester: {
-        success: testerPayload?.success ?? null,
-        profile: testerPayload?.profile ?? null,
-        http: testerPayload?.http ?? null,
-        summary: testerPayload?.summary ?? null,
-        tests_executed: testerPayload?.tests_executed ?? null,
-      },
-      // Full raw payload for debugging / future evolution
-      tester_raw: testerPayload,
-      // Echo back the request we sent to tester for traceability
-      forwarded_request: body,
-    };
-
-    logOrchTesterInfo("Orchestrator tester execute: tester response received", {
-      run_id: body.run_id,
-      profile: body.profile,
-      goal: body.goal,
-      orchestrator_status_code: testerRes.status,
-      tester_status_code: testerPayload?.http?.status_code ?? null,
-      tester_success: testerPayload?.success ?? null,
-      context: {
-        tester_http_category: testerPayload?.http?.category ?? null,
-        tests_executed: testerPayload?.tests_executed ?? null,
-      },
-    });
-
-    return NextResponse.json(response, { status: testerRes.status });
-  } catch (error: any) {
-    logOrchTesterError("Orchestrator tester execute: error", {
-      run_id: parsedBody?.run_id,
-      profile: parsedBody?.profile,
-      goal: parsedBody?.goal,
-      context: {
-        error_message: error?.message ?? "Unknown error",
-        error_stack: error?.stack ?? null,
-      },
-    });
-
-    // eslint-disable-next-line no-console
-    console.error("[/api/orchestrator/tester/execute] Error:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: "OrchestratorTesterExecuteError",
-        message:
-          error?.message ??
-          "Unexpected error while running orchestrator tester execute.",
-      },
-      { status: 500 }
-    );
+    body = (await req.json()) as any;
+  } catch {
+    body = {};
   }
+
+  const bodyRunId: string | undefined = body.run_id ?? body.runId ?? undefined;
+  const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID();
+
+  // Safe-Mode guard – block high-risk capability when enabled
+  try {
+    safeModeGuard("tester-execute");
+  } catch (err: any) {
+    const statusCode = typeof err?.status === "number" ? err.status : 503;
+    return NextResponse.json(err, { status: statusCode });
+  }
+
+  // Stubbed behaviour (no heavy side effects)
+  return NextResponse.json(
+    {
+      success: true,
+      message: "Orchestrator tester execute endpoint (stub).",
+      route: "/api/orchestrator/tester/execute",
+      runId,
+      received_input: body ?? null,
+      note:
+        "PhaseB StepB7 placeholder. Wire to real tester engine in a future step.",
+    },
+    { status: 200 }
+  );
 }
