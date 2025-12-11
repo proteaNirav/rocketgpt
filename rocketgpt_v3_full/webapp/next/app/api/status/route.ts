@@ -1,66 +1,80 @@
 ﻿import { NextResponse } from "next/server";
-import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
 
-function controllerTimeout(ms: number) {
-  const c = new AbortController();
-  const id = setTimeout(() => c.abort(), ms);
-  return { signal: c.signal, cancel: () => clearTimeout(id) };
-}
+/**
+ * Global status endpoint for RocketGPT.
+ * Aggregates health from:
+ *  - /api/orchestrator/health
+ *  - /api/tester/health
+ *
+ * NOTE:
+ * - Uses an internal base URL. For local dev, defaults to http://localhost:3000
+ * - Can be extended later with DB, Supabase, queue checks, etc.
+ */
 
-async function getJson(url: string, timeoutMs = 6000) {
+const INTERNAL_BASE_URL =
+  process.env.RGPT_INTERNAL_BASE_URL ?? "http://localhost:3000";
+
+type ServiceStatus = {
+  ok: boolean;
+  status: number;
+  body?: unknown;
+  error?: string;
+};
+
+async function safeFetch(path: string): Promise<ServiceStatus> {
+  const url = `${INTERNAL_BASE_URL}${path}`;
+
   try {
-    const { signal, cancel } = controllerTimeout(timeoutMs);
-    const res = await fetch(url, { method: "GET", cache: "no-store", signal });
-    cancel();
-    const status = res.status;
-    if (!res.ok) return { ok: false, status };
-    return { ok: true, status, data: await res.json() };
-  } catch (e) {
-    return { ok: false, error: (e as any)?.name || "fetch_error" };
+    const res = await fetch(url, {
+      cache: "no-store",
+    });
+
+    let json: unknown = undefined;
+    try {
+      json = await res.json();
+    } catch {
+      // ignore JSON parse errors – body may be empty or not JSON
+    }
+
+    return {
+      ok: res.ok,
+      status: res.status,
+      body: json,
+    };
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Unknown error in fetch";
+    return {
+      ok: false,
+      status: 0,
+      error: message,
+    };
   }
 }
 
 export async function GET() {
-  const ts = new Date().toISOString();
-  const build = process.env.VERCEL_GIT_COMMIT_SHA || "dev";
-
-  // Build exact origin from request headers to avoid alias/host mismatch
-  const h = headers();
-  const proto = h.get("x-forwarded-proto") || "https";
-  const host  = h.get("x-forwarded-host") || h.get("host") || "";
-  const base  = `${proto}://${host}`;
-
-  const [health, version, limits] = await Promise.all([
-    getJson(`${base}/api/health`),
-    getJson(`${base}/api/version`),
-    getJson(`${base}/api/limits`)
+  const [orchestrator, tester] = await Promise.all([
+    safeFetch("/api/orchestrator/health"),
+    safeFetch("/api/tester/health"),
   ]);
 
-  const status = {
-    ok: !!(health?.ok && health.data?.ok === true),
-    ts,
-    build,
-    version: version?.data?.version ?? build,
-    health: {
-      fetch_ok: health?.ok ?? false,
-      http:    health?.status ?? null,
-      ok:      health?.data?.ok ?? false,
-      supabase_ok: health?.data?.supabase_ok ?? false,
-      error:   health?.data?.error ?? null
-    },
-    plans: {
-      fetch_ok: limits?.ok ?? false,
-      http:     limits?.status ?? null,
-      count: Array.isArray(limits?.data?.plans) ? limits.data.plans.length : 0
-    },
-    diag: {
-      base_used: "headers-origin",
-      host
-    }
-  };
+  const orchBody: any = orchestrator.body ?? {};
+  const testerBody: any = tester.body ?? {};
 
-  return NextResponse.json(status, { status: 200, headers: { "Cache-Control": "no-store" } });
+  const success =
+    orchestrator.ok &&
+    tester.ok &&
+    orchBody.success === true &&
+    testerBody.success === true;
+
+  return NextResponse.json({
+    success,
+    services: {
+      orchestrator,
+      tester,
+    },
+    timestamp: new Date().toISOString(),
+  });
 }
