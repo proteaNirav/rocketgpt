@@ -1,98 +1,41 @@
-﻿import { NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
-
-// Tester model service
-// Assumes you already have: /lib/llm/testerModel.ts
-// Modify the import if your path differs.
-import { callTesterModel } from "@/lib/llm/testerModel";
-
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+import { ensureCorrelationId, newCorrelationId } from "@/app/api/orchestrator/utils/correlation";
+import { wrapError } from "@/app/api/orchestrator/utils/errorEnvelope";
+import { respondSuccess, respondError } from "@/app/api/orchestrator/utils/httpResponse";
 
-export async function POST(req: Request) {
+const STAGE = "orchestrator-test";
+
+export async function GET(request: Request) {
+  const headers = request.headers;
+
+  const correlationId = ensureCorrelationId(headers);
+  const existingRunId = headers.get("x-run-id");
+  const run_id = existingRunId ?? newCorrelationId();
+
   try {
-    const body = await req.json();
-
-    const {
-      run_id,
-      files_changed,
-      plan,
-      steps,
-      test_config,
-      environment,
-    } = body;
-
-    if (!files_changed || !Array.isArray(files_changed) || files_changed.length === 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Missing or empty 'files_changed' array in request body.",
-        },
-        { status: 400 }
-      );
-    }
-
-    const effectiveRunId = run_id || uuidv4();
-
-    // Prepare payload for Tester model
-    const testerInput = {
-      run_id: effectiveRunId,
-      files_changed,
-      plan: plan ?? null,
-      steps: steps ?? null,
-      test_config: test_config ?? {},
-      environment: environment ?? "local",
+    // Build a small diagnostic echo of selected incoming headers
+    const echoHeaders: Record<string, string | null> = {
+      "user-agent": headers.get("user-agent"),
+      "x-correlation-id": headers.get("x-correlation-id"),
     };
 
-    // Call Tester model / service
-    const testerOutput = await callTesterModel(testerInput);
-
-    if (!testerOutput) {
-      return NextResponse.json(
-        {
-          success: false,
-          run_id: effectiveRunId,
-          message: "Tester returned no output.",
-        },
-        { status: 500 }
-      );
-    }
-
-    // Expected testerOutput shape (flexible, pass-through friendly)
-    // {
-    //   test_run_id: string;
-    //   status: "success" | "failed" | "partial";
-    //   summary: string;
-    //   results: [
-    //     { test_case: string; status: string; error?: string | null; duration_ms?: number }
-    //   ];
-    //   logs: string[];
-    //   artifacts: string[];
-    // }
-
-    const payload = {
-      success: true,
-      run_id: effectiveRunId,
-      test_run_id: testerOutput.test_run_id ?? uuidv4(),
-      status: testerOutput.status ?? "unknown",
-      summary: testerOutput.summary ?? "Test execution completed.",
-      test_results: testerOutput.results ?? [],
-      logs: testerOutput.logs ?? [],
-      artifacts: testerOutput.artifacts ?? [],
-      raw: testerOutput, // full raw output for debugging if needed
+    const data = {
+      status: "ok",
+      service: "orchestrator",
+      stage: STAGE,
+      timestamp: new Date().toISOString(),
+      correlation_id: correlationId,
+      echo_headers: echoHeaders,
     };
 
-    return NextResponse.json(payload, { status: 200 });
-  } catch (err: any) {
-    console.error("[TEST API] Error:", err);
+    return respondSuccess(run_id, STAGE, data, correlationId);
+  } catch (error: any) {
+    const errEnvelope = wrapError(error, STAGE);
 
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Unhandled server error in Tester API.",
-        error: err?.message,
-      },
-      { status: 500 }
-    );
+    return respondError(run_id, STAGE, errEnvelope, correlationId, {
+      status: 500,
+    });
   }
 }
+
