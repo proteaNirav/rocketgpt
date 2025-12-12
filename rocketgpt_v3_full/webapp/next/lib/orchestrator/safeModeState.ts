@@ -1,9 +1,9 @@
-﻿let safeModeEnabled = false;
+﻿let safeModeEnabled = false
 
 export function getSafeModeEnabled(): boolean {
-  return safeModeEnabled;
+  return safeModeEnabled
 }
 
 export function setSafeModeEnabled(enabled: boolean): void {
-  safeModeEnabled = enabled;
+  safeModeEnabled = enabled
 }

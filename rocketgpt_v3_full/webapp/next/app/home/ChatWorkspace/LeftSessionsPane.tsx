@@ -1,11 +1,10 @@
-﻿"use client";
+﻿'use client'
 
-import React from "react";
-import { useHomeSessions } from "./useHomeSessions";
+import React from 'react'
+import { useHomeSessions } from './useHomeSessions'
 
 export default function LeftSessionsPane() {
-  const { groups, loading, error, activeSessionId, selectSession } =
-    useHomeSessions();
+  const { groups, loading, error, activeSessionId, selectSession } = useHomeSessions()
 
   return (
     <aside className="h-full bg-slate-950/60 border-r border-slate-900/80 flex flex-col">
@@ -15,9 +14,7 @@ export default function LeftSessionsPane() {
           <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Sessions
           </span>
-          <span className="text-[11px] text-slate-500">
-            Recent conversations & workspaces
-          </span>
+          <span className="text-[11px] text-slate-500">Recent conversations & workspaces</span>
         </div>
         <button
           type="button"
@@ -45,17 +42,9 @@ export default function LeftSessionsPane() {
 
       {/* Session list */}
       <div className="flex-1 overflow-y-auto px-2 pb-3 space-y-3 text-xs">
-        {loading && (
-          <div className="px-2 pt-2 text-[11px] text-slate-500">
-            Loading sessions...
-          </div>
-        )}
+        {loading && <div className="px-2 pt-2 text-[11px] text-slate-500">Loading sessions...</div>}
 
-        {error && !loading && (
-          <div className="px-2 pt-2 text-[11px] text-rose-400">
-            {error}
-          </div>
-        )}
+        {error && !loading && <div className="px-2 pt-2 text-[11px] text-rose-400">{error}</div>}
 
         {!loading && !error && groups.length === 0 && (
           <div className="px-2 pt-2 text-[11px] text-slate-500">
@@ -93,16 +82,16 @@ export default function LeftSessionsPane() {
         Active selection is local-only for now.
       </div>
     </aside>
-  );
+  )
 }
 
 type SessionItemProps = {
-  title: string;
-  subtitle?: string;
-  badge?: string;
-  isActive?: boolean;
-  onClick?: () => void;
-};
+  title: string
+  subtitle?: string
+  badge?: string
+  isActive?: boolean
+  onClick?: () => void
+}
 
 function SessionItem({ title, subtitle, badge, isActive, onClick }: SessionItemProps) {
   return (
@@ -110,10 +99,10 @@ function SessionItem({ title, subtitle, badge, isActive, onClick }: SessionItemP
       type="button"
       onClick={onClick}
       className={
-        "group w-full rounded-md border px-2 py-1.5 text-left text-[11px] " +
+        'group w-full rounded-md border px-2 py-1.5 text-left text-[11px] ' +
         (isActive
-          ? "border-emerald-500/80 bg-emerald-600/15 text-emerald-50"
-          : "border-transparent bg-slate-900/40 text-slate-200 hover:border-slate-700 hover:bg-slate-900/80")
+          ? 'border-emerald-500/80 bg-emerald-600/15 text-emerald-50'
+          : 'border-transparent bg-slate-900/40 text-slate-200 hover:border-slate-700 hover:bg-slate-900/80')
       }
     >
       <div className="flex items-center justify-between">
@@ -132,5 +121,5 @@ function SessionItem({ title, subtitle, badge, isActive, onClick }: SessionItemP
         </div>
       )}
     </button>
-  );
+  )
 }

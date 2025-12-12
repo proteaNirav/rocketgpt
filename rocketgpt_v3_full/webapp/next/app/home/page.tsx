@@ -1,7 +1,7 @@
-﻿import LeftSessionsPane from "./ChatWorkspace/LeftSessionsPane";
-import CenterChatPane from "./ChatWorkspace/CenterChatPane";
-import RightInspectorPane from "./ChatWorkspace/RightInspectorPane";
-import CollapsibleWrapper from "./ChatWorkspace/CollapsibleWrapper";
+﻿import LeftSessionsPane from './ChatWorkspace/LeftSessionsPane'
+import CenterChatPane from './ChatWorkspace/CenterChatPane'
+import RightInspectorPane from './ChatWorkspace/RightInspectorPane'
+import CollapsibleWrapper from './ChatWorkspace/CollapsibleWrapper'
 
 export default function HomeChatPage() {
   return (
@@ -20,5 +20,5 @@ export default function HomeChatPage() {
         </CollapsibleWrapper>
       </div>
     </div>
-  );
+  )
 }

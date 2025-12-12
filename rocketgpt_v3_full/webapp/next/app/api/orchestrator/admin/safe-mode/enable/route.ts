@@ -1,10 +1,10 @@
-﻿export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
+﻿export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 
-import { NextRequest, NextResponse } from "next/server";
-import { enableSafeMode, getSafeMode } from "../../../_core/safeMode";
+import { NextRequest, NextResponse } from 'next/server'
+import { enableSafeMode, getSafeMode } from '../../../_core/safeMode'
 
-const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
+const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY
 
 /**
  * POST /api/orchestrator/admin/safe-mode/enable
@@ -14,37 +14,37 @@ const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
 export async function POST(req: NextRequest): Promise<NextResponse> {
   // Enforce internal key
   if (INTERNAL_KEY) {
-    const hdr = req.headers.get("x-rgpt-internal") ?? "";
+    const hdr = req.headers.get('x-rgpt-internal') ?? ''
     if (hdr !== INTERNAL_KEY) {
       return NextResponse.json(
         {
           success: false,
-          error_code: "UNAUTHORIZED",
-          message: "Invalid or missing x-rgpt-internal header.",
+          error_code: 'UNAUTHORIZED',
+          message: 'Invalid or missing x-rgpt-internal header.',
         },
-        { status: 401 }
-      );
+        { status: 401 },
+      )
     }
   }
 
-  let body: any = {};
+  let body: any = {}
   try {
-    body = await req.json();
+    body = await req.json()
   } catch {
-    body = {};
+    body = {}
   }
 
-  const reason = body?.reason ?? "Safe-Mode enabled by admin API.";
+  const reason = body?.reason ?? 'Safe-Mode enabled by admin API.'
 
-  enableSafeMode(reason);
+  enableSafeMode(reason)
 
   return NextResponse.json(
     {
       success: true,
-      message: "Safe-Mode enabled.",
+      message: 'Safe-Mode enabled.',
       safe_mode: getSafeMode(),
       timestamp: new Date().toISOString(),
     },
-    { status: 200 }
-  );
+    { status: 200 },
+  )
 }

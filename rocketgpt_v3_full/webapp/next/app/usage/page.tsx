@@ -1,51 +1,52 @@
-﻿"use client";
+﻿'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 
 type UsageEntry = {
-  date: string;
-  requests: number;
-  tokens: number;
-};
+  date: string
+  requests: number
+  tokens: number
+}
 
 type UsageResponse = {
-  usage: UsageEntry[];
-};
+  usage: UsageEntry[]
+}
 
 export default function UsagePage() {
-  const [usage, setUsage] = useState<UsageEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [usage, setUsage] = useState<UsageEntry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadUsage() {
       try {
-        setLoading(true);
-        setError(null);
+        setLoading(true)
+        setError(null)
 
-        const res = await fetch("/api/usage");
+        const res = await fetch('/api/usage')
         if (!res.ok) {
-          throw new Error(`Failed to load usage (${res.status})`);
+          throw new Error(`Failed to load usage (${res.status})`)
         }
 
-        const json = (await res.json()) as UsageResponse;
-        setUsage(json.usage ?? []);
+        const json = (await res.json()) as UsageResponse
+        setUsage(json.usage ?? [])
       } catch (err: any) {
-        console.error("Failed to load usage", err);
-        setError(err?.message ?? "Failed to load usage");
+        console.error('Failed to load usage', err)
+        setError(err?.message ?? 'Failed to load usage')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    loadUsage();
-  }, []);
+    loadUsage()
+  }, [])
 
   return (
     <div className="p-6 space-y-4 text-gray-900 dark:text-gray-100">
       <h1 className="text-xl font-semibold">Usage Dashboard</h1>
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        This page will evolve into full usage analytics. Currently powered by <code>/api/usage</code>.
+        This page will evolve into full usage analytics. Currently powered by{' '}
+        <code>/api/usage</code>.
       </p>
 
       {loading && (
@@ -115,9 +116,7 @@ export default function UsagePage() {
                       <td className="py-2 pr-4 text-gray-800 dark:text-gray-200">
                         {new Date(row.date).toLocaleDateString()}
                       </td>
-                      <td className="py-2 pr-4 text-gray-800 dark:text-gray-200">
-                        {row.requests}
-                      </td>
+                      <td className="py-2 pr-4 text-gray-800 dark:text-gray-200">{row.requests}</td>
                       <td className="py-2 pr-4 text-right text-gray-800 dark:text-gray-200">
                         {row.tokens}
                       </td>
@@ -134,5 +133,5 @@ export default function UsagePage() {
         </div>
       )}
     </div>
-  );
+  )
 }
