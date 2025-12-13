@@ -9,6 +9,12 @@ export interface SafeModeState {
   enforced_at?: string;
 }
 
+
+function isEnvSafeModeOn(): boolean {
+  const a = (process.env.RGPT_SAFE_MODE_ENABLED ?? "").toLowerCase();
+  const b = (process.env.RGPT_SAFE_MODE ?? "").toLowerCase();
+  return a === "true" || b === "on";
+}
 // In-memory Safe-Mode state (can be externalised later)
 let _safeMode: SafeModeState = {
   enabled: false,
@@ -38,7 +44,7 @@ export function disableSafeMode() {
  * - Callers should catch this and convert to HTTP 503 (or similar).
  */
 export function safeModeGuard(capability: string): void {
-  if (_safeMode.enabled) {
+  if (_safeMode.enabled || isEnvSafeModeOn()) {
     const error: any = {
       success: false,
       error_code: "SAFE_MODE_ACTIVE",
@@ -56,3 +62,4 @@ export function safeModeGuard(capability: string): void {
     throw error;
   }
 }
+
