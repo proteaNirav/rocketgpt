@@ -106,8 +106,7 @@ export async function withOrchestratorHandler(
         route: ctx.route,
         runId: ctx.runId ?? null,
       },
-      { status: 403 }
+      { status: 500 }
     );
   }
 }
-
