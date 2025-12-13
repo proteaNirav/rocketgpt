@@ -1,167 +1,196 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+﻿export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
-export interface OrchestratorRouteContext {
-  route: string;
-  runId?: string;
-}
+import { NextRequest, NextResponse } from "next/server";
+import { withOrchestratorHandler } from "../../_utils/orchestratorError";
+import { safeModeGuard } from "../../_core/safeMode";
 
-interface SafeModeErrorPayload {
-  success: boolean;
-  error_code: string;
-  message: string;
-  capability?: string;
-  safe_mode?: boolean;
-  timestamp?: string;
-  details?: any;
-  status?: number;
-}
+const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
+const INTERNAL_BASE_URL =
+  process.env.RGPT_INTERNAL_BASE_URL ||
+  process.env.NEXT_PUBLIC_BASE_URL ||
+  "http://localhost:3000";
 
-/**
- * Type guard to detect Safe-Mode errors thrown by safeModeGuard().
- */
-function isSafeModeError(err: unknown): err is SafeModeErrorPayload {
-  if (!err || typeof err !== "object") return false;
-  const anyErr = err as any;
-  return (
-    anyErr.error_code === "SAFE_MODE_ACTIVE" ||
-    (anyErr.safe_mode === true && typeof anyErr.message === "string")
-  );
-}
-
-/**
- * Normalize unknown error objects into a safe JSON payload.
- */
-export function normalizeError(err: unknown): { message: string; name?: string } {
-  if (err instanceof Error) {
-    return {
-      message: err.message || "Unexpected error",
-      name: err.name,
-    };
-  }
-
-  if (typeof err === "string") {
-    return {
-      message: err,
-    };
-  }
-
+function summarizeBody(body: unknown): string {
   try {
-    const asJson = JSON.stringify(err);
-    return {
-      message: asJson,
-    };
+    const asString =
+      typeof body === "string" ? body : JSON.stringify(body);
+    if (asString.length > 5000) {
+      return asString.slice(0, 5000) + "...[truncated]";
+    }
+    return asString;
   } catch {
-    return {
-      message: "Unexpected error",
-    };
+    return "[unserializable body]";
   }
 }
 
-/**
- * Wrap a route handler with standardized error logging and response.
- */
-export async function withOrchestratorHandler(
-  ctx: OrchestratorRouteContext,
-  handler: () => Promise<NextResponse> | NextResponse
-): Promise<NextResponse> {
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const url = new URL(req.url);
+
+  const headerRunId = req.headers.get("x-rgpt-run-id") ?? undefined;
+  const queryRunId = url.searchParams.get("run_id") ?? undefined;
+
+  let body: any = {};
   try {
-    return await handler();
-  } catch (err) {
-    // 1) Safe-Mode specific handling – return the error object as-is
-    if (isSafeModeError(err)) {
-      const safeErr = err as SafeModeErrorPayload;
+    body = (await req.json()) as any;
+  } catch {
+    body = {};
+  }
 
-      const statusCode =
-        typeof safeErr.status === "number" && safeErr.status >= 400
-          ? safeErr.status
-          : 403;
+  const bodyRunId: string | undefined = body.run_id ?? body.runId ?? undefined;
 
-      console.warn("[ORCH-ROUTE-SAFEMODE]", {
-        route: ctx.route,
-        runId: ctx.runId,
-        error: safeErr,
+  const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID();
+
+  // Safe-Mode check: if active, block immediately with structured error
+  try {
+    safeModeGuard("builder-execute-all");
+  } catch (err: any) {
+    const statusCode = typeof err?.status === "number" ? err.status : 503;
+    return NextResponse.json(err, { status: statusCode });
+  }
+
+  // Internal security check
+  const internalKeyHeader = req.headers.get("x-rgpt-internal");
+
+  if (INTERNAL_KEY) {
+    if (!internalKeyHeader || internalKeyHeader !== INTERNAL_KEY) {
+      console.warn("[ORCH-BUILDER-EXEC-ALL] Unauthorized access attempt.", {
+        route: "/api/orchestrator/builder/execute-all",
+        runId,
       });
 
-      return NextResponse.json(safeErr, { status: statusCode });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized orchestrator access.",
+          route: "/api/orchestrator/builder/execute-all",
+          runId,
+        },
+        { status: 401 }
+      );
     }
-
-    // 2) Generic error handling (existing behaviour)
-    const errorPayload = normalizeError(err);
-
-    // Server-side log for observability
-    console.error(
-      "[ORCH-ROUTE-ERROR]",
-      {
-        route: ctx.route,
-        runId: ctx.runId,
-        error: errorPayload,
-      },
-      err
-    );
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: errorPayload,
-        route: ctx.route,
-        runId: ctx.runId ?? null,
-      },
-      { status: 403 }
+  } else {
+    console.warn(
+      "[ORCH-BUILDER-EXEC-ALL] RGPT_INTERNAL_KEY is not set. Route is running without header enforcement."
     );
   }
-}
 
-/**
- * Route handler: POST /api/orchestrator/builder/execute-all
- * - Internal auth: x-rgpt-internal must match process.env.RGPT_INTERNAL_KEY
- * - Safe-Mode: if RGPT_SAFE_MODE_ENABLED=true -> return 403 SAFE_MODE_ACTIVE
- */
-export async function POST(req: NextRequest) {
   return withOrchestratorHandler(
-    { route: "/api/orchestrator/builder/execute-all" },
+    { route: "/api/orchestrator/builder/execute-all", runId },
     async () => {
-      // --- Internal auth ---
-      const expected = process.env.RGPT_INTERNAL_KEY || "";
-      const provided = req.headers.get("x-rgpt-internal") || "";
+      console.log("[ORCH-BUILDER-EXEC-ALL] Incoming request", {
+        route: "/api/orchestrator/builder/execute-all",
+        runId,
+        bodySummary: summarizeBody(body),
+      });
 
-      if (!expected || provided !== expected) {
+      // 1) Call orchestrator run/planner
+      const plannerUrl = `${INTERNAL_BASE_URL}/api/orchestrator/run/planner`;
+      const plannerBody = {
+        ...body,
+        run_id: runId,
+      };
+
+      const plannerRes = await fetch(plannerUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          ...(INTERNAL_KEY
+            ? { "x-rgpt-internal": INTERNAL_KEY }
+            : {}),
+        },
+        body: JSON.stringify(plannerBody),
+      });
+
+      const plannerText = await plannerRes.text();
+      let plannerJson: any = null;
+      try {
+        plannerJson = plannerText ? JSON.parse(plannerText) : null;
+      } catch {
+        // leave as text
+      }
+
+      console.log("[ORCH-BUILDER-EXEC-ALL] Planner leg response", {
+        route: "/api/orchestrator/builder/execute-all",
+        runId,
+        status: plannerRes.status,
+        ok: plannerRes.ok,
+        bodySummary: summarizeBody(plannerJson ?? plannerText),
+      });
+
+      if (!plannerRes.ok) {
         return NextResponse.json(
           {
             success: false,
-            error_code: "INTERNAL_AUTH_REQUIRED",
-            message: "Missing or invalid internal auth header (x-rgpt-internal).",
-            status: 401,
-            timestamp: new Date().toISOString(),
+            message: "Planner leg failed in execute-all.",
+            route: "/api/orchestrator/builder/execute-all",
+            runId,
+            status: plannerRes.status,
+            planner: plannerJson ?? plannerText,
           },
-          { status: 401 }
+          { status: 502 }
         );
       }
 
-      // --- Safe-Mode gate ---
-      const safeModeEnabled =
-        (process.env.RGPT_SAFE_MODE_ENABLED || "").toLowerCase() === "true";
+      // 2) Call orchestrator run/tester
+      const testerUrl = `${INTERNAL_BASE_URL}/api/orchestrator/run/tester`;
+      const testerBody = {
+        run_id: runId,
+      };
 
-      if (safeModeEnabled) {
+      const testerRes = await fetch(testerUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          ...(INTERNAL_KEY
+            ? { "x-rgpt-internal": INTERNAL_KEY }
+            : {}),
+        },
+        body: JSON.stringify(testerBody),
+      });
+
+      const testerText = await testerRes.text();
+      let testerJson: any = null;
+      try {
+        testerJson = testerText ? JSON.parse(testerText) : null;
+      } catch {
+        // leave as text
+      }
+
+      console.log("[ORCH-BUILDER-EXEC-ALL] Tester leg response", {
+        route: "/api/orchestrator/builder/execute-all",
+        runId,
+        status: testerRes.status,
+        ok: testerRes.ok,
+        bodySummary: summarizeBody(testerJson ?? testerText),
+      });
+
+      if (!testerRes.ok) {
         return NextResponse.json(
           {
             success: false,
-            error_code: "SAFE_MODE_ACTIVE",
-            message: "Safe-Mode is enabled. This capability is blocked.",
-            capability: "builder.execute_all",
-            safe_mode: true,
-            status: 403,
-            timestamp: new Date().toISOString(),
+            message: "Tester leg failed in execute-all.",
+            route: "/api/orchestrator/builder/execute-all",
+            runId,
+            status: testerRes.status,
+            planner: plannerJson ?? plannerText,
+            tester: testerJson ?? testerText,
           },
-          { status: 403 }
+          { status: 502 }
         );
       }
 
-      // --- Normal execution path (stub) ---
       return NextResponse.json(
-        { success: true, message: "execute-all allowed (safe-mode disabled)." },
+        {
+          success: true,
+          message: "Orchestrator execute-all completed successfully.",
+          route: "/api/orchestrator/builder/execute-all",
+          runId,
+          planner: plannerJson,
+          tester: testerJson,
+        },
         { status: 200 }
       );
     }
   );
 }
-
