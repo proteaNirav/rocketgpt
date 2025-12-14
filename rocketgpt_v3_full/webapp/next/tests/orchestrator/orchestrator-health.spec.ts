@@ -13,7 +13,7 @@ test.describe("Orchestrator health endpoint", () => {
 
     expect(typeof body).toBe("object");
     expect(body).toHaveProperty("success", true);
-    expect(body).toHaveProperty("service", "orchestrator");
+    expect(body).toHaveProperty("service", "RocketGPT Orchestrator");
     expect(body).toHaveProperty("message");
     expect(typeof body.message).toBe("string");
   });
@@ -31,3 +31,4 @@ test.describe("Orchestrator health endpoint", () => {
     expect(status).toBeLessThan(600);
   });
 });
+
