@@ -46,3 +46,7 @@ RGPT-HealthProbe.log
 **/test-results/
 **/test-artifacts/
 **/rgpt-artifacts/
+
+# dependencies
+node_modules/
+
