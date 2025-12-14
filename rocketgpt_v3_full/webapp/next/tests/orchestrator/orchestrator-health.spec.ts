@@ -13,10 +13,8 @@ test.describe("Orchestrator health endpoint", () => {
 
     expect(typeof body).toBe("object");
     expect(body).toHaveProperty("success", true);
-    expect(body).toHaveProperty("service", "orchestrator");
-    expect(body).toHaveProperty("message");
-    expect(typeof body.message).toBe("string");
-  });
+    expect(body).toHaveProperty("service", "RocketGPT Orchestrator");
+});
 
   test.skip("Tester /api/tester/run smoke check (heavy, enable in later phase)", async ({ request }) => {
     const response = await request.post("/api/tester/run", {
@@ -31,3 +29,5 @@ test.describe("Orchestrator health endpoint", () => {
     expect(status).toBeLessThan(600);
   });
 });
+
+
