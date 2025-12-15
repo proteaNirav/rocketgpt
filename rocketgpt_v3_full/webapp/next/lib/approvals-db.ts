@@ -23,7 +23,7 @@ import type {
   UpdateApprovalStatusInput,
   UpdateApprovalStatusResult,
   ListApprovalsFilter,
-  ApprovalStatus,
+  _ApprovalStatus,
 } from "./approvals";
 
 // -----------------------------------------------------------------------------
@@ -237,4 +237,5 @@ export async function logApprovalEvent(
     return null;
   }
 }
+
 
