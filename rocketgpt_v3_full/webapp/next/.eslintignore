@@ -1,0 +1,6 @@
+﻿# RGPT: ignore generated/backup/stub files
+**/*.backup.*
+**/*.rgptstub.*
+**/*.bak.*
+**/*.tmp.*
+**/*.disabled.*
