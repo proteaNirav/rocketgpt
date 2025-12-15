@@ -1,4 +1,6 @@
-﻿export const dynamic = "force-dynamic";
+﻿import crypto from "crypto";
+import { writeDecisionEntry, writeDecisionOutcome } from "@/lib/core-ai/decision-ledger/writer";
+export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import { NextRequest, NextResponse } from "next/server";
@@ -97,6 +99,53 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID();
 
+  // P4-A1: Decision Ledger (local-first JSONL) — planner started (best-effort)
+  try {
+    const __ledgerDecisionId = crypto.randomUUID();
+    const __ledgerNow = new Date().toISOString();
+
+    await writeDecisionEntry({
+      decision_id: __ledgerDecisionId,
+      run_id: runId,
+      session_id: undefined,
+      step: "orchestrator/run/planner",
+
+      cat_id: "core",
+      cat_version: "0.0.0",
+      device_mode: "cloud",
+
+      agent: "system",
+      decision_type: "info",
+      intent: "Planner run started",
+
+      inputs_summary: "Orchestrator run/planner invoked.",
+      evidence: { endpoint: "/api/orchestrator/run/planner" },
+      constraints: { local_first: true },
+
+      risk_score: 0,
+      confidence_score: 1,
+
+      decision: "allow",
+      reasoning: "Ledger records the planner execution start event.",
+      context_hash: "pending",
+      supersedes: null,
+
+      timestamp: __ledgerNow,
+    });
+
+    await writeDecisionOutcome({
+      decision_id: __ledgerDecisionId,
+      run_id: runId,
+      status: "success",
+      error_type: "none",
+      metrics: {},
+      side_effects: { notes: "Recorded planner start event in JSONL ledger." },
+      human_intervention: false,
+      evaluated_at: __ledgerNow,
+    });
+  } catch {
+    // Never block planner if ledger write fails
+  }
   // Safe-Mode guard – block orchestrator run/planner when enabled
   try {
     safeModeGuard("run-planner");
@@ -202,6 +251,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
   );
 }
+
 
 
 
