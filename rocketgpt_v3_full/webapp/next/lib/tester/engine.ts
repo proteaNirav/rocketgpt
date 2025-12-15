@@ -43,7 +43,8 @@ class StubTesterEngine implements TesterEngine {
   }
 }
 
-export function getTesterEngine(mode: "stub" | "real" = "stub"): TesterEngine {
+export function getTesterEngine(_mode: "stub" | "real" = "stub"): TesterEngine {
   // Currently, only stub engine exists.
   return new StubTesterEngine();
 }
+
