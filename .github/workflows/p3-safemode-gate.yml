@@ -1,4 +1,4 @@
-name: P3 Safe-Mode CI Gate
+﻿name: P3 Safe-Mode CI Gate
 
 on:
   pull_request:
@@ -51,7 +51,7 @@ jobs:
             "NEXT_PUBLIC_SAFE_MODE=1"
           )
           $lines | Set-Content -Path $envFile -Encoding UTF8
-          Write-Host "Wrote $envFile:"
+          Write-Host "Wrote ${envFile}:"
           Get-Content $envFile
 
       - name: Build Next app
@@ -82,7 +82,7 @@ jobs:
             Start-Sleep -Seconds 2
           }
           if (-not $ok) { throw "App did not become ready at $base/api/status" }
-          Write-Host "✅ App ready."
+          Write-Host "âœ… App ready."
 
       - name: Safe-Mode Gate (must block execute-all)
         shell: pwsh
@@ -115,20 +115,20 @@ jobs:
             # Try to detect "success" from JSON body without requiring strict schema
             $body = $execResp.Content
             if ($body -match '"success"\s*:\s*true' -or $body -match 'completed successfully' -or $body -match '"message"\s*:\s*".*execute-all.*completed') {
-              throw "❌ Safe-Mode Gate FAILED: execute-all executed successfully (should be blocked)."
+              throw "âŒ Safe-Mode Gate FAILED: execute-all executed successfully (should be blocked)."
             } else {
-              throw "❌ Safe-Mode Gate FAILED: execute-all returned 200 (unexpected). Treating as a bypass risk."
+              throw "âŒ Safe-Mode Gate FAILED: execute-all returned 200 (unexpected). Treating as a bypass risk."
             }
           }
 
           if ($execResp.StatusCode -ge 500) {
-            throw "❌ Safe-Mode Gate FAILED: Server error ($($execResp.StatusCode)). Gate expects a clean block (4xx), not a crash."
+            throw "âŒ Safe-Mode Gate FAILED: Server error ($($execResp.StatusCode)). Gate expects a clean block (4xx), not a crash."
           }
 
           if ($execResp.StatusCode -ge 400 -and $execResp.StatusCode -lt 500) {
-            Write-Host "✅ Safe-Mode Gate PASSED: execute-all blocked with $($execResp.StatusCode)."
+            Write-Host "âœ… Safe-Mode Gate PASSED: execute-all blocked with $($execResp.StatusCode)."
           } else {
-            throw "❌ Safe-Mode Gate FAILED: Unexpected status code $($execResp.StatusCode)."
+            throw "âŒ Safe-Mode Gate FAILED: Unexpected status code $($execResp.StatusCode)."
           }
 
       - name: Stop Next app
@@ -141,3 +141,4 @@ jobs:
               Write-Host "Stopped PID $env:NEXT_PID"
             } catch {}
           }
+
