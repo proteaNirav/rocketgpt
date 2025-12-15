@@ -99,6 +99,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     } catch {
       // swallow
     }
+    // P4-A1: Decision Ledger — Planner finished (best-effort)
+    try {
+      if (__ledgerDecisionId) {
+        const now2 = new Date().toISOString();
+        await writeDecisionOutcome({
+          decision_id: __ledgerDecisionId,
+          run_id: runId,
+          status: "success",
+          error_type: "none",
+          metrics: {},
+          side_effects: { notes: "Planner completed; response returned." },
+          human_intervention: false,
+          evaluated_at: now2,
+        });
+      }
+    } catch {
+      // swallow
+    }
+
 
     return NextResponse.json({ success: false, error: control.reason ?? 'Blocked by Control Plane' }, { status: 403 });
   }
@@ -118,12 +137,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const bodyRunId: string | undefined = body.run_id ?? body.runId ?? undefined;
 
   const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID();
-
+  const sessionId =
+    req.headers.get("x-rgpt-session-id") ??
+    url.searchParams.get("session_id") ??
+    url.searchParams.get("sessionId") ??
+    (typeof body?.session_id === "string" ? body.session_id : undefined) ??
+    (typeof body?.sessionId === "string" ? body.sessionId : undefined) ??
+    undefined;
   // P4-A1: Decision Ledger — Planner started (best-effort)
   let __ledgerDecisionId: string | null = null;
   try {
     const now = new Date().toISOString();
     __ledgerDecisionId = crypto.randomUUID();
+
     await ensureRunDirs(runId);
 
     await writeDecisionEntry({
@@ -155,6 +181,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   } catch {
     __ledgerDecisionId = null;
   }
+  }
   // Safe-Mode guard – block orchestrator run/planner when enabled
   try {
     safeModeGuard("run-planner");
@@ -178,6 +205,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     } catch {
       // swallow
     }
+    // P4-A1: Decision Ledger — Planner finished (best-effort)
+    try {
+      if (__ledgerDecisionId) {
+        const now2 = new Date().toISOString();
+        await writeDecisionOutcome({
+          decision_id: __ledgerDecisionId,
+          run_id: runId,
+          status: "success",
+          error_type: "none",
+          metrics: {},
+          side_effects: { notes: "Planner completed; response returned." },
+          human_intervention: false,
+          evaluated_at: now2,
+        });
+      }
+    } catch {
+      // swallow
+    }
+
 
     return NextResponse.json(err, { status: statusCode });
   }
@@ -209,6 +255,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     } catch {
       // swallow
     }
+    // P4-A1: Decision Ledger — Planner finished (best-effort)
+    try {
+      if (__ledgerDecisionId) {
+        const now2 = new Date().toISOString();
+        await writeDecisionOutcome({
+          decision_id: __ledgerDecisionId,
+          run_id: runId,
+          status: "success",
+          error_type: "none",
+          metrics: {},
+          side_effects: { notes: "Planner completed; response returned." },
+          human_intervention: false,
+          evaluated_at: now2,
+        });
+      }
+    } catch {
+      // swallow
+    }
+
 
 
       return NextResponse.json(
@@ -290,6 +355,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     } catch {
       // swallow
     }
+    // P4-A1: Decision Ledger — Planner finished (best-effort)
+    try {
+      if (__ledgerDecisionId) {
+        const now2 = new Date().toISOString();
+        await writeDecisionOutcome({
+          decision_id: __ledgerDecisionId,
+          run_id: runId,
+          status: "success",
+          error_type: "none",
+          metrics: {},
+          side_effects: { notes: "Planner completed; response returned." },
+          human_intervention: false,
+          evaluated_at: now2,
+        });
+      }
+    } catch {
+      // swallow
+    }
+
 
         return NextResponse.json(
           {
@@ -321,6 +405,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     } catch {
       // swallow
     }
+    // P4-A1: Decision Ledger — Planner finished (best-effort)
+    try {
+      if (__ledgerDecisionId) {
+        const now2 = new Date().toISOString();
+        await writeDecisionOutcome({
+          decision_id: __ledgerDecisionId,
+          run_id: runId,
+          status: "success",
+          error_type: "none",
+          metrics: {},
+          side_effects: { notes: "Planner completed; response returned." },
+          human_intervention: false,
+          evaluated_at: now2,
+        });
+      }
+    } catch {
+      // swallow
+    }
+
 
 
       return NextResponse.json(
@@ -336,6 +439,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
   );
 }
+
 
 
 
