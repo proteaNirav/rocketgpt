@@ -1,4 +1,5 @@
-﻿"use client";
+﻿/* eslint-disable @next/next/no-img-element */
+"use client";
 
 import React, { useState } from "react";
 import { Loader2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
@@ -216,7 +217,7 @@ export default function TesterPage() {
 
   const orchTesterOk = deriveTesterOk(orchTester);
   const orchTesterRows = buildTestRowsFromTester(orchTester);
-  const orchTesterTotal = deriveTesterTotalCases(orchTester, orchTesterRows);
+  const _orchTesterTotal = deriveTesterTotalCases(orchTester, orchTesterRows);
   const orchTesterLogs = deriveTesterLogs(orchTester);
   const orchTesterArtifacts = deriveTesterArtifacts(orchTester);
 
@@ -631,3 +632,5 @@ export default function TesterPage() {
     </div>
   );
 }
+
+
