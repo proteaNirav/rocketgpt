@@ -23,7 +23,6 @@ import type {
   UpdateApprovalStatusInput,
   UpdateApprovalStatusResult,
   ListApprovalsFilter,
-  ApprovalStatus,
 } from "./approvals";
 
 // -----------------------------------------------------------------------------
