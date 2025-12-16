@@ -50,3 +50,16 @@ RGPT-HealthProbe.log
 # dependencies
 node_modules/
 
+# RGPT local runs
+RGPT_*.log
+RGPT_GO_*.log
+RGPT_NEXT_DEV*.log
+RGPT_*CHECK*.ps1
+RGPT_REPO_TREE.txt
+RGPT_STOCKTAKE_REPORT.md
+
+# Local run outputs
+*.log
+
+# Generated indexes (if not meant to be committed)
+docs/_repo_index/
