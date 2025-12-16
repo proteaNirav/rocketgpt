@@ -238,6 +238,27 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         );
       }
 
+      // === D1 Decision Ledger (planner success) ===
+      try {
+        fetch("/api/ledger/write", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-rgpt-internal-key": process.env.RGPT_INTERNAL_KEY ?? ""
+          },
+          body: JSON.stringify({
+            runId,
+            phase: "planner",
+            decisionType: "PLAN_CREATED",
+            summary: "Planner generated execution plan",
+            assumptions: ["Inputs assumed complete"],
+            risks: [],
+            confidence: 78
+          })
+        }).catch(() => {});
+      } catch {}
+      // ===========================================
+
       return NextResponse.json(
         {
           success: true,
