@@ -63,3 +63,13 @@ RGPT_STOCKTAKE_REPORT.md
 
 # Generated indexes (if not meant to be committed)
 docs/_repo_index/
+# RGPT local tools (if not part of repo)
+.github/tools/gen-repo-callmap.ps1
+.github/tools/gen-repo-index.ps1
+RGPT-ENV-CHECK.ps1
+RGPT-GO-01.ps1
+
+# Draft docs (if not ready to commit)
+docs/architecture/
+docs/manifesto/
+docs/strategy/
