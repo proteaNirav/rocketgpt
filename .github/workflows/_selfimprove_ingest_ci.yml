@@ -1,0 +1,70 @@
+﻿name: _selfimprove_ingest_ci
+
+on:
+  workflow_call:
+    inputs:
+      phase:
+        required: true
+        type: string
+      subsystem:
+        required: true
+        type: string
+      signal_type:
+        required: true
+        type: string
+      severity:
+        required: true
+        type: string
+      recommendation:
+        required: true
+        type: string
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ingest CI failure into Self-Improve Ledger
+        shell: pwsh
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          $phase = "${{ inputs.phase }}"
+          $subsystem = "${{ inputs.subsystem }}"
+          $signal = "${{ inputs.signal_type }}"
+          $severity = "${{ inputs.severity }}"
+          $reco = "${{ inputs.recommendation }}"
+
+          $origin = "gh:${{ github.repository }}:${{ github.workflow }}:${{ github.run_id }}:${{ github.job }}"
+          $runUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          $evidence = @{
+            logs = @(
+              $runUrl
+            )
+            metrics = @{
+              run_id = "${{ github.run_id }}"
+              workflow = "${{ github.workflow }}"
+              job = "${{ github.job }}"
+              sha = "${{ github.sha }}"
+              ref = "${{ github.ref_name }}"
+            }
+          }
+
+          $summary = "CI failure in workflow '${{ github.workflow }}' job '${{ github.job }}' (ref '${{ github.ref_name }}', sha '${{ github.sha }}')."
+
+          ./.github/tools/rgpt-ledger-ingest.ps1 `
+            -Phase $phase `
+            -Source "ci" `
+            -Subsystem $subsystem `
+            -SignalType $signal `
+            -Severity $severity `
+            -Summary $summary `
+            -Recommendation $reco `
+            -Confidence 0.75 `
+            -OriginRef $origin `
+            -Evidence $evidence
