@@ -2,9 +2,7 @@
 
 on:
   push:
-    branches: ["**"]
   pull_request:
-
 jobs:
   build_test:
     name: Build + Test (placeholder)
@@ -34,3 +32,4 @@ jobs:
       signal_type: "failure"
       severity: "high"
       recommendation: "Review CI failure logs, classify root-cause, and add a deterministic guard/test to prevent recurrence."
+
