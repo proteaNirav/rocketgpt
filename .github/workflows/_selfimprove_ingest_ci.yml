@@ -1,6 +1,8 @@
 ﻿name: _selfimprove_ingest_ci
 
 on:
+
+  workflow_dispatch:
   workflow_call:
     inputs:
       subsystem:
@@ -54,3 +56,4 @@ jobs:
             -RelatedCommit "${{ github.sha }}" `
             -RelatedPR "" `
             -OriginRef $origin
+
