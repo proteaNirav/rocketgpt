@@ -25,16 +25,33 @@ jobs:
     needs: [build_test]
     if: ${{ always() }}
     steps:
+      - uses: actions/checkout@v4
+
       - name: Skip if build did not fail
         if: ${{ needs.build_test.result != 'failure' }}
         run: |
           echo "Build did not fail — skipping ingestion."
           exit 0
 
-      - name: Call reusable ingest workflow
-        uses: ./.github/workflows/_selfimprove_ingest_ci.yml
-        secrets: inherit
-        with:
-          subsystem: "ci"
-          severity: "high"
-          title_prefix: "CI failure"
+      - name: Ingest CI failure into Self-Improve Ledger (aligned RPC)
+        if: ${{ needs.build_test.result == 'failure' }}
+        shell: pwsh
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          $runUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          $origin = "gh:${{ github.repository }}:${{ github.workflow }}:${{ github.run_id }}:${{ github.job }}"
+          $title  = "CI failure :: ${{ github.workflow }} :: job build_test"
+          $desc   = "Workflow: ${{ github.workflow }}`nJob: build_test`nRepo: ${{ github.repository }}`nRef: ${{ github.ref_name }}`nSHA: ${{ github.sha }}`nRun URL: $runUrl`nOrigin: $origin"
+
+          ./.github/tools/rgpt-ledger-ingest.ps1 `
+            -Subsystem "ci" `
+            -Severity "high" `
+            -Title $title `
+            -Description $desc `
+            -Confidence 0.75 `
+            -EvidenceRef $runUrl `
+            -RelatedCommit "${{ github.sha }}" `
+            -RelatedPR "" `
+            -OriginRef $origin
