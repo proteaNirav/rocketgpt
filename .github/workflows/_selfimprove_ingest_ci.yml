@@ -22,7 +22,11 @@ on:
 
 jobs:
   ingest:
-    runs-on: ubuntu-latest
+    env:
+      RGPT_SUBSYSTEM_FALLBACK: ci-selfimprove
+      RGPT_SEVERITY_FALLBACK: error
+      RGPT_TITLE_PREFIX_FALLBACK: CI
+      RGPT_CONFIDENCE_FALLBACK: "0.80"    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -56,4 +60,5 @@ jobs:
             -RelatedCommit "${{ github.sha }}" `
             -RelatedPR "" `
             -OriginRef $origin
+
 
