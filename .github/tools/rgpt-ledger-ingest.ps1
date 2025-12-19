@@ -37,7 +37,9 @@ $headers = @{
   "apikey"        = $ServiceKey
   "Authorization" = "Bearer $ServiceKey"
   "Content-Type"  = "application/json"
+  "Accept-Profile"  = "public"
+  "Content-Profile" = "public"
 }
 Write-Host "[RGPT] Ingesting CI Self-Improve event -> ledger" -ForegroundColor Cyan
-Invoke-RestMethod -Method Post -Uri $rpcUrl -Headers $headers -Body $body | Out-Null
+Invoke-RestMethod -Method Post -Uri $rpcUrl -Headers $headers -Body $body -UserAgent "rgpt-ci/1.0" | Out-Null
 Write-Host "[OK] Ledger row written." -ForegroundColor Green
