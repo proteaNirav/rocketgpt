@@ -1,4 +1,4 @@
-﻿param(
+param(
   [Parameter(Mandatory=$true)][string]$Subsystem,
   [Parameter(Mandatory=$true)][ValidateSet("low","medium","high","critical")][string]$Severity,
   [Parameter(Mandatory=$true)][string]$Title,
@@ -10,7 +10,7 @@
   [Parameter()][string]$OriginRef
 )
 
-function Fail($msg) { Write-Host "[ERROR] $msg" -ForegroundColor Red; exit 1 }
+function Fail($msg) { Write-Host "[ERROR] $msg" -ForegroundColor Red; throw $msg }
 
 $SupabaseUrl = $env:SUPABASE_URL
 $ServiceKey  = $env:SUPABASE_SERVICE_ROLE_KEY
@@ -21,6 +21,7 @@ if ([string]::IsNullOrWhiteSpace($ServiceKey))  { Fail "SUPABASE_SERVICE_ROLE_KE
 $rpcUrl = ($SupabaseUrl.TrimEnd("/") + "/rest/v1/rpc/rgpt_ingest_selfimprove_ci")
 
 $body = @{
+  p_source         = "ci"
   p_subsystem      = $Subsystem
   p_severity       = $Severity
   p_title          = $Title
