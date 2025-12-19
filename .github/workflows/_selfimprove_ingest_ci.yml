@@ -43,6 +43,8 @@ jobs:
           $desc  = "Workflow: ${{ github.workflow }}`nJob: ${{ github.job }}`nRepo: ${{ github.repository }}`nRef: ${{ github.ref_name }}`nSHA: ${{ github.sha }}`nRun URL: $runUrl`nOrigin: $origin"
 
           ./.github/tools/rgpt-ledger-ingest.ps1 `
+            -SUPABASE_URL $env:SUPABASE_URL `
+            -SUPABASE_SERVICE_ROLE_KEY $env:SUPABASE_SERVICE_ROLE_KEY `
             -Subsystem $subsystem `
             -Severity $severity `
             -Title $title `
