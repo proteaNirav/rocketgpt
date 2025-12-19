@@ -3,6 +3,7 @@
 on:
   push:
   pull_request:
+
 jobs:
   build_test:
     name: Build + Test (placeholder)
@@ -10,9 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # TODO: Replace this with your real CI steps (pnpm test, playwright, etc.)
       - name: Placeholder (fails if marker exists)
-      # This is intentionally safe; it only fails if a file exists.
         run: |
           if [ -f ".rgpt_force_fail_ci" ]; then
             echo "Forced failure marker detected."
@@ -22,14 +21,20 @@ jobs:
 
   ingest_on_failure:
     name: Ingest failure → Self-Improve Ledger
+    runs-on: ubuntu-latest
     needs: [build_test]
-    if: ${{ always() && needs.build_test.result == 'failure' }}
-    uses: ./.github/workflows/_selfimprove_ingest_ci.yml
-    secrets: inherit
-    with:
-      phase: "S1"
-      subsystem: "ci"
-      signal_type: "failure"
-      severity: "high"
-      recommendation: "Review CI failure logs, classify root-cause, and add a deterministic guard/test to prevent recurrence."
+    if: ${{ always() }}
+    steps:
+      - name: Skip if build did not fail
+        if: ${{ needs.build_test.result != 'failure' }}
+        run: |
+          echo "Build did not fail — skipping ingestion."
+          exit 0
 
+      - name: Call reusable ingest workflow
+        uses: ./.github/workflows/_selfimprove_ingest_ci.yml
+        secrets: inherit
+        with:
+          subsystem: "ci"
+          severity: "high"
+          title_prefix: "CI failure"
