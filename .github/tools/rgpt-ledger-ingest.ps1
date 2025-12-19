@@ -18,19 +18,19 @@ $ServiceKey  = $env:SUPABASE_SERVICE_ROLE_KEY
 if ([string]::IsNullOrWhiteSpace($SupabaseUrl)) { Fail "SUPABASE_URL missing" }
 if ([string]::IsNullOrWhiteSpace($ServiceKey))  { Fail "SUPABASE_SERVICE_ROLE_KEY missing" }
 
-$rpcUrl = ($SupabaseUrl.TrimEnd("/") + "/rest/v1/rpc/rgpt_ingest_selfimprove_ci")
+$rpcUrl = ($SupabaseUrl.TrimEnd("/") + "/rest/v1/rpc/rgpt_selfimprove_ingest_event")
 
 $body = @{
   p_source         = "ci"
-  p_subsystem      = $Subsystem
-  p_severity       = $Severity
-  p_title          = $Title
-  p_description    = $Description
-  p_confidence     = $Confidence
-  p_evidence_ref   = $EvidenceRef
-  p_related_commit = $RelatedCommit
-  p_related_pr     = $RelatedPR
-  p_origin_ref     = $OriginRef
+  subsystem      = $Subsystem
+  severity       = $Severity
+  title          = $Title
+  description    = $Description
+  confidence     = $Confidence
+  evidence_ref   = $EvidenceRef
+  related_commit = $RelatedCommit
+  related_pr     = $RelatedPR
+  origin_ref     = $OriginRef
 } | ConvertTo-Json -Depth 6
 
 $headers = @{
