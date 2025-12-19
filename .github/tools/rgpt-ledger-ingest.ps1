@@ -36,6 +36,8 @@ $body = @{
 $headers = @{
   "Authorization" = "Bearer $ServiceKey"
   "Content-Type"  = "application/json"
-}Write-Host "[RGPT] Ingesting CI Self-Improve event Ã¢â€ â€™ ledger" -ForegroundColor Cyan
+}
+
+Write-Host "[RGPT] Ingesting CI Self-Improve event -> ledger" -ForegroundColor Cyan
 Invoke-RestMethod -Method Post -Uri $rpcUrl -Headers $headers -Body $body | Out-Null
 Write-Host "[OK] Ledger row written." -ForegroundColor Green
