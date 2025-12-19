@@ -21,7 +21,6 @@ if ([string]::IsNullOrWhiteSpace($ServiceKey))  { Fail "SUPABASE_SERVICE_ROLE_KE
 $rpcUrl = ($SupabaseUrl.TrimEnd("/") + "/rest/v1/rpc/rgpt_selfimprove_ingest_event")
 
 $body = @{
-  p_source         = "ci"
   subsystem      = $Subsystem
   severity       = $Severity
   title          = $Title
