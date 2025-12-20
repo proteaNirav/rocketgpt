@@ -1,4 +1,4 @@
-﻿name: Auto Codegen (issue -> PR)
+name: Auto Codegen (issue -> PR)
 
 on:
   issues:
