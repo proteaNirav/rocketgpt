@@ -1,4 +1,4 @@
-﻿name: PR Checks (meta)
+name: PR Checks (meta)
 
 on:
   pull_request:

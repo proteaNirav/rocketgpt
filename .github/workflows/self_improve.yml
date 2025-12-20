@@ -1,4 +1,4 @@
-﻿name: Self-Improve (v4 Core AI)
+name: Self-Improve (v4 Core AI)
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-﻿name: Self Innovate (Idea-Only)
+name: Self Innovate (Idea-Only)
 
 on:
   workflow_dispatch:
