@@ -61,33 +61,60 @@ $headers = @{
 Write-Host "[RGPT] Ingesting CI Self-Improve event -> ledger" -ForegroundColor Cyan
 Write-Host ("[RGPT] rpcUrl: {0}" -f $rpcUrl) -ForegroundColor DarkCyan
 
+# --- Canonical HTTP ingest wrapper (RGPT-S1-C4)
+$httpStatus = 0
+$httpBody   = ""
+
 try {
-  Invoke-RestMethod -Method Post -Uri $rpcUrl -Headers $headers -Body $body -UserAgent "rgpt-ci/1.0" | Out-Null
-  Write-Host "[OK] Ledger row written." -ForegroundColor Green
+  # Use Invoke-WebRequest so we can always read StatusCode + Body
+  $resp = Invoke-WebRequest `
+    -Method Post `
+    -Uri $rpcUrl `
+    -Headers $headers `
+    -Body $body `
+    -ContentType "application/json" `
+    -UserAgent "rgpt-ci/1.0"
+
+  $httpStatus = [int]$resp.StatusCode
+  $httpBody   = $resp.Content
 }
 catch {
-  Write-Host "[FAILED] Ledger ingest rejected" -ForegroundColor Red
-  Write-Host $_.Exception.Message -ForegroundColor Red
+  $ex = $_.Exception
+  $httpStatus = 0
+  $httpBody   = ""
 
-  $resp = $_.Exception.Response
-  if ($resp -ne $null) {
+  # If HTTP-layer exception, attempt to read response
+  if ($ex -is [System.Net.WebException] -and $ex.Response) {
     try {
-      $status = [int]$resp.StatusCode
-      Write-Host ("[HTTP] Status: {0}" -f $status) -ForegroundColor Yellow
+      $r = $ex.Response
+      $httpStatus = [int]$r.StatusCode
 
-      $stream = $resp.GetResponseStream()
-      if ($stream -ne $null) {
-        $reader = New-Object System.IO.StreamReader($stream)
-        $serverBody = $reader.ReadToEnd()
-        if ($serverBody) {
-          Write-Host "`n[SERVER BODY]" -ForegroundColor Yellow
-          Write-Host $serverBody
-        }
-      }
+      $sr = New-Object System.IO.StreamReader($r.GetResponseStream())
+      $httpBody = $sr.ReadToEnd()
+      $sr.Close()
     } catch {
-      Write-Host "[WARN] Could not read HTTP response body." -ForegroundColor Yellow
+      $httpBody = ""
     }
+  } else {
+    # Non-HTTP failure (bad URI, DNS, TLS, etc.)
+    $httpBody = $ex.Message
   }
-  throw
+}
+finally {
+  Write-Host ("[HTTP] Status: {0}" -f $httpStatus) -ForegroundColor Yellow
+
+  if (-not [string]::IsNullOrWhiteSpace($httpBody)) {
+    $preview = $httpBody
+    if ($preview.Length -gt 1200) { $preview = $preview.Substring(0,1200) + " ..." }
+    Write-Host "[HTTP] Body:" -ForegroundColor Yellow
+    Write-Host $preview
+  } else {
+    Write-Host "[HTTP] Body: <empty>" -ForegroundColor Yellow
+  }
 }
 
+if ($httpStatus -lt 200 -or $httpStatus -ge 300) {
+  throw "[FAILED] Ledger ingest rejected (HTTP $httpStatus)"
+}
+
+Write-Host "[OK] Ledger row written." -ForegroundColor Green
