@@ -59,6 +59,19 @@ jobs:
         run: |
           $subsystem = ("${{ inputs.subsystem }}".Trim()); if ([string]::IsNullOrWhiteSpace($subsystem)) { $subsystem = $env:RGPT_SUBSYSTEM_FALLBACK }
           $severity  = ("${{ inputs.severity }}".Trim());  if ([string]::IsNullOrWhiteSpace($severity))  { $severity  = $env:RGPT_SEVERITY_FALLBACK }
+
+          # Map workflow severities (info|warning|error|critical) -> ingest ValidateSet (low|medium|high|critical)
+          $severityMap = @{
+            "info"     = "low"
+            "warning"  = "medium"
+            "error"    = "high"
+            "critical" = "critical"
+            "low"      = "low"
+            "medium"   = "medium"
+            "high"     = "high"
+          }
+          $sevKey = $severity.ToLowerInvariant()
+          if ($severityMap.ContainsKey($sevKey)) { $severity = $severityMap[$sevKey] }
           $prefix    = ("${{ inputs.title_prefix }}".Trim()); if ([string]::IsNullOrWhiteSpace($prefix)) { $prefix = $env:RGPT_TITLE_PREFIX_FALLBACK }
           $confRaw = ("${{ inputs.confidence }}".Trim()); if ([string]::IsNullOrWhiteSpace($confRaw)) { $confRaw = $env:RGPT_CONFIDENCE_FALLBACK }; $conf = [double]$confRaw
 
@@ -80,3 +93,4 @@ jobs:
             -RelatedCommit "${{ github.sha }}" `
             -RelatedPR "" `
             -OriginRef $origin
+
