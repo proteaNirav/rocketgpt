@@ -1,4 +1,4 @@
-﻿name: Self Research (Log Only)
+name: Self Research (Log Only)
 
 on:
   workflow_dispatch:

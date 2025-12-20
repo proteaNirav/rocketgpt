@@ -1,4 +1,4 @@
-﻿name: text-guard (smoke)
+name: text-guard (smoke)
 
 on:
   workflow_dispatch:
