@@ -8,9 +8,15 @@ on:
         required: false
         default: "ci-selfimprove"
       severity:
-        description: "Severity (info|warning|error|critical)"
+        description: "Ingest severity (must match rgpt-ledger-ingest ValidateSet)"
         required: false
-        default: "error"
+        type: choice
+        default: "high"
+        options:
+          - low
+          - medium
+          - high
+          - critical
       title_prefix:
         description: "Title prefix"
         required: false
@@ -93,4 +99,6 @@ jobs:
             -RelatedCommit "${{ github.sha }}" `
             -RelatedPR "" `
             -OriginRef $origin
+
+
 
