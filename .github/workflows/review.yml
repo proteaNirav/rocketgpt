@@ -1,4 +1,4 @@
-name: RocketGPT Review Pipeline
+﻿name: RocketGPT Review Pipeline
 
 on:
   pull_request:
@@ -116,7 +116,7 @@ jobs:
         id: score
         uses: actions/github-script@v7
         env:
-          LABELS_JSON: ${{ toJson(github.event.pull_request.labels || []) }}
+          LABELS_JSON: ${{ toJson(github.event.pull_request.labels || fromJson('[]')) }}
         with:
           script: |
             const fs = require('fs');
@@ -185,7 +185,7 @@ jobs:
               provider_hint: process.env.PROVIDER || 'unknown'
             };
             fs.writeFileSync('review_input.json', JSON.stringify(obj, null, 2));
-            core.info('✅ Created review_input.json');
+            core.info('âœ… Created review_input.json');
 
       - name: Run AI review (runner -> review_result.json)
         env:
@@ -269,3 +269,4 @@ jobs:
           (command -v jq >/dev/null && jq -C '.' dispatch.merge.resp.json) || cat dispatch.merge.resp.json
           echo "::endgroup::"
           test "$STATUS" = "204" || (echo "ERR: merge dispatch failed"; exit 1)
+
