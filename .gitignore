@@ -73,3 +73,19 @@ RGPT-GO-01.ps1
 docs/architecture/
 docs/manifesto/
 docs/strategy/
+
+# Local secrets
+.rgpt.local.env.ps1
+
+
+# RGPT local scratch / CI triage artifacts
+.rgpt_ci_audit/
+.rgpt_ci_fail_scan/
+.rgpt_ci_logs/
+.rgpt_ci_rootcause/
+.rgpt_ci_triage/
+CI_LOG_DUMP_SUMMARY.txt
+.rgpt_safe_runner.ps1
+
+# RGPT temporary runner scripts
+RGPT-S1-C2-07R*.ps1
