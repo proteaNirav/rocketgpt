@@ -1,4 +1,5 @@
 ﻿name: _selfimprove_ingest_ci
+
 on:
   workflow_dispatch:
     inputs:
@@ -18,15 +19,34 @@ on:
         description: "Confidence 0..1"
         required: false
         default: "0.80"
-    workflow_call:
+
+  workflow_call:
+    inputs:
+      subsystem:
+        required: false
+        type: string
+        default: "ci-selfimprove"
+      severity:
+        required: false
+        type: string
+        default: "error"
+      title_prefix:
+        required: false
+        type: string
+        default: "CI"
+      confidence:
+        required: false
+        type: string
+        default: "0.80"
 
 jobs:
   ingest:
+    runs-on: ubuntu-latest
     env:
       RGPT_SUBSYSTEM_FALLBACK: ci-selfimprove
       RGPT_SEVERITY_FALLBACK: error
       RGPT_TITLE_PREFIX_FALLBACK: CI
-      RGPT_CONFIDENCE_FALLBACK: "0.80"`n      runs-on: ubuntu-latest
+      RGPT_CONFIDENCE_FALLBACK: "0.80"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,20 +66,23 @@ jobs:
           $origin = "gh:${{ github.repository }}:${{ github.workflow }}:${{ github.run_id }}:${{ github.job }}"
 
           $title = "$prefix :: ${{ github.workflow }} :: job ${{ github.job }}"
-          $desc  = "Workflow: ${{ github.workflow }}`nJob: ${{ github.job }}`nRepo: ${{ github.repository }}`nRef: ${{ github.ref_name }}`nSHA: ${{ github.sha }}`nRun URL: $runUrl`nOrigin: $origin"
+          $desc  = "Workflow: ${{ github.workflow }}
+Job: ${{ github.job }}
+Repo: ${{ github.repository }}
+Ref: ${{ github.ref_name }}
+SHA: ${{ github.sha }}
+Run URL: $runUrl
+Origin: $origin"
 
-          ./.github/tools/rgpt-ledger-ingest.ps1 `
-            -SUPABASE_URL $env:SUPABASE_URL `
-            -SUPABASE_SERVICE_ROLE_KEY $env:SUPABASE_SERVICE_ROLE_KEY `
-            -Subsystem $subsystem `
-            -Severity $severity `
-            -Title $title `
-            -Description $desc `
-            -Confidence $conf `
-            -EvidenceRef $runUrl `
-            -RelatedCommit "${{ github.sha }}" `
-            -RelatedPR "" `
+          ./.github/tools/rgpt-ledger-ingest.ps1 
+            -SUPABASE_URL $env:SUPABASE_URL 
+            -SUPABASE_SERVICE_ROLE_KEY $env:SUPABASE_SERVICE_ROLE_KEY 
+            -Subsystem $subsystem 
+            -Severity $severity 
+            -Title $title 
+            -Description $desc 
+            -Confidence $conf 
+            -EvidenceRef $runUrl 
+            -RelatedCommit "${{ github.sha }}" 
+            -RelatedPR "" 
             -OriginRef $origin
-
-
-
