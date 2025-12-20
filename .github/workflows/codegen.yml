@@ -1,4 +1,4 @@
-name: AI Codegen
+﻿name: AI Codegen
 
 on:
   # Manual run
@@ -78,7 +78,7 @@ jobs:
             const repo = context.repo.repo;
             const issue_number = parseInt(process.env.ISSUE_NO, 10);
             const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number });
-            const has = (issue.labels || []).some(l => (typeof l === 'string' ? l : l.name) === 'codegen:ready');
+            const has = (issue.labels || fromJson('[]')).some(l => (typeof l === 'string' ? l : l.name) === 'codegen:ready');
             if (!has) await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['codegen:ready'] });
 
       - name: Pull Spec from Issue (with engine)
@@ -127,7 +127,7 @@ jobs:
             core.info(`Engine requested: "${request || '(none)'}" -> chosen: "${chosen}"`);
             core.setOutput('engine', chosen);
 
-      - name: Generate Code (Plan→Code→Tests→Docs→Guard)
+      - name: Generate Code (Planâ†’Codeâ†’Testsâ†’Docsâ†’Guard)
         env:
           MODEL_PROVIDER:     ${{ steps.engine.outputs.engine }}
           OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
@@ -189,15 +189,15 @@ jobs:
         with:
           base: main
           branch: ${{ env.BRANCH }}
-          title: "AI Codegen: #${{ env.ISSUE_NO }} — ${{ steps.spec.outputs.title }} (engine=${{ steps.engine.outputs.engine }})"
+          title: "AI Codegen: #${{ env.ISSUE_NO }} â€” ${{ steps.spec.outputs.title }} (engine=${{ steps.engine.outputs.engine }})"
           body: |
-            ## 🤖 What changed
+            ## ðŸ¤– What changed
             Generated code and tests from spec in #${{ env.ISSUE_NO }}.
 
             **Engine (chosen):** `${{ steps.engine.outputs.engine }}`
             **Routing hint:** `MODEL_PROVIDER=${{ steps.engine.outputs.engine }}`
 
-            ## ✅ Checklist
+            ## âœ… Checklist
             - [ ] Builds pass
             - [ ] Tests added & green
             - [ ] Security scan clean
@@ -207,7 +207,7 @@ jobs:
             - `generated/ai_test_${{ env.ISSUE_NO }}.md`
             - See commit diff for agent-written files.
 
-      # ✅ This must be INSIDE the steps: block
+      # âœ… This must be INSIDE the steps: block
       - name: Trigger Review via repository_dispatch
         if: ${{ steps.cpr.outputs.pull-request-number }}
         env:
@@ -220,7 +220,7 @@ jobs:
           if [ -z "$GH_PAT" ]; then
             echo "ERROR: GH_PAT not set"; exit 1
           fi
-          echo "Dispatching review for PR #${PR} on ${OWNER}/${REPO}…"
+          echo "Dispatching review for PR #${PR} on ${OWNER}/${REPO}â€¦"
           STATUS=$(curl -s -o /tmp/resp.json -w "%{http_code}" \
             -X POST \
             -H "Authorization: token ${GH_PAT}" \
@@ -242,5 +242,6 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number,
-              body: `✅ Codegen executed.\n\n- Engine: \`${{ steps.engine.outputs.engine }}\`\n- PR: ${pr}`
+              body: `âœ… Codegen executed.\n\n- Engine: \`${{ steps.engine.outputs.engine }}\`\n- PR: ${pr}`
             });
+
