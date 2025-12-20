@@ -1,4 +1,4 @@
-﻿name: Self Study (Analysis Only)
+name: Self Study (Analysis Only)
 
 on:
   workflow_dispatch:
