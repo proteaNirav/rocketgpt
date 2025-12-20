@@ -1,4 +1,4 @@
-﻿name: v4 Ship (placeholder)
+name: v4 Ship (placeholder)
 
 on:
   workflow_dispatch:

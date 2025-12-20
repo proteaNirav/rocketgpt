@@ -1,4 +1,4 @@
-﻿name: Policy Gate (v4 Core AI)
+name: Policy Gate (v4 Core AI)
 
 on:
   pull_request:

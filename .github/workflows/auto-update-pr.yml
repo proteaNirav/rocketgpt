@@ -1,4 +1,4 @@
-﻿name: Auto Update PR Branches
+name: Auto Update PR Branches
 on:
   push:
     branches: [ "main", "develop" ]
