@@ -1,4 +1,4 @@
-﻿name: AI CI-Failure Advisor
+name: AI CI-Failure Advisor
 
 on:
   workflow_run:

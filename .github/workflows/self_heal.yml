@@ -1,4 +1,4 @@
-﻿name: Self-Heal (v4 Core AI)
+name: Self-Heal (v4 Core AI)
 
 on:
   workflow_dispatch:
