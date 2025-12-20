@@ -73,3 +73,6 @@ RGPT-GO-01.ps1
 docs/architecture/
 docs/manifesto/
 docs/strategy/
+
+# Local drafts (do not commit)
+.rgpt_drafts/
