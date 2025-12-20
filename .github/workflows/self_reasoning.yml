@@ -1,4 +1,4 @@
-﻿name: Self Reasoning (Plans Only)
+name: Self Reasoning (Plans Only)
 
 on:
   workflow_dispatch:

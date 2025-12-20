@@ -1,4 +1,4 @@
-﻿name: Self-Heal Hooks
+name: Self-Heal Hooks
 on:
   workflow_dispatch:
   pull_request:

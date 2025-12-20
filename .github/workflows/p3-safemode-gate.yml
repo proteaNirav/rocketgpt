@@ -1,4 +1,4 @@
-﻿name: P3 Safe-Mode CI Gate
+name: P3 Safe-Mode CI Gate
 
 on:
   pull_request:

@@ -1,4 +1,4 @@
-﻿name: Self Infra Evolve (Analysis Only)
+name: Self Infra Evolve (Analysis Only)
 
 on:
   workflow_dispatch:
