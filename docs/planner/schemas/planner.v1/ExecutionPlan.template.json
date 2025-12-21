@@ -1,0 +1,76 @@
+﻿{
+  "schema_version": "planner.v1",
+  "plan_id": "RGPT-S2-PLAN-YYYYMMDD-001",
+  "created_at": "YYYY-MM-DDTHH:mm:ss+05:30",
+  "phase": "S2",
+  "status": "draft",
+  "input_fingerprint": {
+    "intent_hash": "sha256:...",
+    "repo_state_hash": "sha256:...",
+    "policy_state_hash": "sha256:..."
+  },
+  "normalized_goal": {
+    "original_input": "",
+    "interpreted_goal": "",
+    "success_criteria": [],
+    "explicit_non_goals": []
+  },
+  "scope_contract": {
+    "in_scope": [],
+    "out_of_scope": [],
+    "phase_lock": "S2-only"
+  },
+  "tasks": [
+    {
+      "task_id": "TASK-01",
+      "title": "",
+      "description": "",
+      "category": "design",
+      "effort": 1,
+      "risk": 1,
+      "reversible": true,
+      "preconditions": [],
+      "postconditions": []
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "TASK-02",
+      "to": "TASK-01",
+      "type": "hard"
+    }
+  ],
+  "risk_summary": {
+    "overall_risk": 1,
+    "highest_risk_task": "",
+    "risk_factors": []
+  },
+  "approvals": {
+    "required": true,
+    "reason": [],
+    "required_level": "architect",
+    "approval_status": "pending"
+  },
+  "rollback_strategy": {
+    "supported": true,
+    "method": "versioned_schema_revert",
+    "fallback_version": "planner.v0"
+  },
+  "constraints": {
+    "no_execution": true,
+    "ledger_append_only": true,
+    "safe_mode_respected": true
+  },
+  "outputs": {
+    "artifacts": [
+      "ExecutionPlan.json",
+      "ExecutionPlan.md"
+    ],
+    "consumers": [
+      "Orchestrator",
+      "DecisionLedger",
+      "ApprovalGate"
+    ]
+  },
+  "hash": "sha256:..."
+}
