@@ -1,4 +1,4 @@
-﻿param(
+param(
   [Parameter(Mandatory=$true)][string]$SUPABASE_URL,
   [Parameter(Mandatory=$true)][string]$SUPABASE_SERVICE_ROLE_KEY,
 
