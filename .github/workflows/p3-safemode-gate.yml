@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 concurrency:
-  group: p3-safemode-gate-${{ github.ref }}
+  group: p3-safemode-gate-main
   cancel-in-progress: true
 
 jobs:
@@ -83,8 +83,7 @@ jobs:
             Start-Sleep -Seconds 2
           }
           if (-not $ok) { throw "App did not become ready at $base/api/status" }
-          Write-Host "âœ… App ready."
-
+          Write-Host "[OK] App ready."
       - name: Safe-Mode Gate (must block execute-all)
         shell: pwsh
         run: |
@@ -116,20 +115,20 @@ jobs:
             # Try to detect "success" from JSON body without requiring strict schema
             $body = $execResp.Content
             if ($body -match '"success"\s*:\s*true' -or $body -match 'completed successfully' -or $body -match '"message"\s*:\s*".*execute-all.*completed') {
-              throw "âŒ Safe-Mode Gate FAILED: execute-all executed successfully (should be blocked)."
+              throw "[FAIL] Safe-Mode Gate FAILED: execute-all executed successfully (should be blocked)."
             } else {
-              throw "âŒ Safe-Mode Gate FAILED: execute-all returned 200 (unexpected). Treating as a bypass risk."
+              throw "[FAIL] Safe-Mode Gate FAILED: execute-all returned 200 (unexpected). Treating as a bypass risk."
             }
           }
 
           if ($execResp.StatusCode -ge 500) {
-            throw "âŒ Safe-Mode Gate FAILED: Server error ($($execResp.StatusCode)). Gate expects a clean block (4xx), not a crash."
+              throw "[FAIL] Safe-Mode Gate FAILED: Server error ($($execResp.StatusCode)). Gate expects a clean block (4xx), not a crash."
           }
 
           if ($execResp.StatusCode -ge 400 -and $execResp.StatusCode -lt 500) {
-            Write-Host "âœ… Safe-Mode Gate PASSED: execute-all blocked with $($execResp.StatusCode)."
+            Write-Host "[OK] Safe-Mode Gate PASSED: execute-all blocked with $($execResp.StatusCode)."
           } else {
-            throw "âŒ Safe-Mode Gate FAILED: Unexpected status code $($execResp.StatusCode)."
+              throw "[FAIL] Safe-Mode Gate FAILED: Unexpected status code $($execResp.StatusCode)."
           }
 
       - name: Stop Next app
