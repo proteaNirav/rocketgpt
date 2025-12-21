@@ -1,0 +1,160 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rocketgpt://planner/schemas/planner.v1/executionplan.schema.json",
+  "title": "RocketGPT Planner v1 ExecutionPlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "plan_id",
+    "created_at",
+    "phase",
+    "status",
+    "input_fingerprint",
+    "normalized_goal",
+    "scope_contract",
+    "tasks",
+    "dependencies",
+    "risk_summary",
+    "approvals",
+    "rollback_strategy",
+    "constraints",
+    "outputs",
+    "hash"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "planner.v1" },
+    "plan_id": { "type": "string", "minLength": 8, "maxLength": 80 },
+    "created_at": { "type": "string", "minLength": 10, "maxLength": 64 },
+    "phase": { "type": "string", "const": "S2" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "proposed", "approved", "rejected", "superseded"]
+    },
+    "input_fingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intent_hash", "repo_state_hash", "policy_state_hash"],
+      "properties": {
+        "intent_hash": { "type": "string", "pattern": "^sha256:" },
+        "repo_state_hash": { "type": "string", "pattern": "^sha256:" },
+        "policy_state_hash": { "type": "string", "pattern": "^sha256:" }
+      }
+    },
+    "normalized_goal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["original_input", "interpreted_goal", "success_criteria", "explicit_non_goals"],
+      "properties": {
+        "original_input": { "type": "string" },
+        "interpreted_goal": { "type": "string" },
+        "success_criteria": { "type": "array", "items": { "type": "string" } },
+        "explicit_non_goals": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "scope_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in_scope", "out_of_scope", "phase_lock"],
+      "properties": {
+        "in_scope": { "type": "array", "items": { "type": "string" } },
+        "out_of_scope": { "type": "array", "items": { "type": "string" } },
+        "phase_lock": { "type": "string" }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "task_id",
+          "title",
+          "description",
+          "category",
+          "effort",
+          "risk",
+          "reversible",
+          "preconditions",
+          "postconditions"
+        ],
+        "properties": {
+          "task_id": { "type": "string", "pattern": "^TASK-[0-9]{2,3}$" },
+          "title": { "type": "string", "minLength": 1 },
+          "description": { "type": "string", "minLength": 1 },
+          "category": { "type": "string" },
+          "effort": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "risk": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "reversible": { "type": "boolean" },
+          "preconditions": { "type": "array", "items": { "type": "string" } },
+          "postconditions": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "to", "type"],
+        "properties": {
+          "from": { "type": "string", "pattern": "^TASK-[0-9]{2,3}$" },
+          "to": { "type": "string", "pattern": "^TASK-[0-9]{2,3}$" },
+          "type": { "type": "string", "enum": ["hard", "soft", "external"] }
+        }
+      }
+    },
+    "risk_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overall_risk", "highest_risk_task", "risk_factors"],
+      "properties": {
+        "overall_risk": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "highest_risk_task": { "type": "string" },
+        "risk_factors": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "reason", "required_level", "approval_status"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "reason": { "type": "array", "items": { "type": "string" } },
+        "required_level": { "type": "string" },
+        "approval_status": { "type": "string", "enum": ["pending", "approved", "rejected"] }
+      }
+    },
+    "rollback_strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supported", "method", "fallback_version"],
+      "properties": {
+        "supported": { "type": "boolean" },
+        "method": { "type": "string" },
+        "fallback_version": { "type": "string" }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["no_execution", "ledger_append_only", "safe_mode_respected"],
+      "properties": {
+        "no_execution": { "type": "boolean", "const": true },
+        "ledger_append_only": { "type": "boolean", "const": true },
+        "safe_mode_respected": { "type": "boolean", "const": true }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifacts", "consumers"],
+      "properties": {
+        "artifacts": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "consumers": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      }
+    },
+    "hash": { "type": "string", "pattern": "^sha256:" }
+  }
+}
