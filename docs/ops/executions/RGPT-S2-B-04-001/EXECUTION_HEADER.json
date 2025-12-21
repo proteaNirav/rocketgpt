@@ -1,0 +1,11 @@
+{
+  "plan_path": "docs/plans/PLAN_RGPT-S2-B-04-001.json",
+  "user": "Nirav",
+  "plan_id": "RGPT-S2-B-04-001",
+  "contract_version": "S2-B-06.v1",
+  "goal_id": "EG-S2-A-003",
+  "plan_sha256": "504F6FB00F32B4A30004B6D6900889255491407309D8DDAD6D7572885651B522",
+  "state": "LOCKED",
+  "host": "CHANAKYA",
+  "started_at_utc": "2025-12-21T15:23:08Z"
+}
