@@ -76,3 +76,7 @@ docs/strategy/
 
 # Local drafts (do not commit)
 .rgpt_drafts/
+
+# RocketGPT decision artifacts (suggest-only)
+.rgpt_decisions/
+
