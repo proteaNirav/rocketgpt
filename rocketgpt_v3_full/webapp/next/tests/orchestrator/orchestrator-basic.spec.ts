@@ -36,6 +36,8 @@ test("POST /api/orchestrator/builder/execute-all returns 400 for invalid input",
   expect(response.status()).toBe(400);
 
   const body = await response.json();
+  expect(body.error).toBeDefined();
+
   expect(body.error.code).toBe("INVALID_INPUT");
 });
 
@@ -51,4 +53,3 @@ test("POST /api/orchestrator/builder/execute-all accepts valid input", async ({ 
 
   expect(response.status()).not.toBe(400);
 });
-
