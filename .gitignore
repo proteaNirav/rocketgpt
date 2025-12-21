@@ -80,3 +80,6 @@ docs/strategy/
 # RocketGPT decision artifacts (suggest-only)
 .rgpt_decisions/
 
+
+# RocketGPT local quarantine
+.rgpt_quarantine/
