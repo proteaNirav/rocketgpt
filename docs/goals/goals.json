@@ -1,0 +1,95 @@
+﻿{
+    "schema":  "rgpt.goal-registry.v1",
+    "generatedAt":  "2025-12-21T15:18:05",
+    "strategic":  [
+                      {
+                          "id":  "SG-001",
+                          "title":  "Safe, Trustworthy AI Orchestrator",
+                          "owner":  "Human",
+                          "parent":  null,
+                          "phase":  null,
+                          "status":  "ACTIVE",
+                          "priority":  null,
+                          "impact":  null,
+                          "urgency":  null,
+                          "risk":  null,
+                          "effort":  null,
+                          "priorityScore":  null,
+                          "successCriteria":  [
+                                                  "Autonomous execution with human override",
+                                                  "Decision confidence tracked"
+                                              ],
+                          "exitCondition":  [
+                                                "Stable S3 release"
+                                            ]
+                      }
+                  ],
+    "phase":  [
+                  {
+                      "id":  "PG-S2-001",
+                      "title":  "Operational Intelligence \u0026 Controlled Autonomy",
+                      "owner":  null,
+                      "parent":  "SG-001",
+                      "phase":  "S2",
+                      "status":  "ACTIVE",
+                      "priority":  null,
+                      "impact":  null,
+                      "urgency":  null,
+                      "risk":  null,
+                      "effort":  null,
+                      "priorityScore":  null,
+                      "successCriteria":  [
+                                              "Planner active",
+                                              "Human-in-the-loop approvals"
+                                          ],
+                      "exitCondition":  [
+                                            "All S2 sub-phases closed"
+                                        ]
+                  }
+              ],
+    "execution":  [
+                      {
+                          "id":  "EG-S2-A-001",
+                          "title":  "Implement Goal Registry",
+                          "owner":  "RocketGPT",
+                          "parent":  "PG-S2-001",
+                          "phase":  null,
+                          "status":  "IN_PROGRESS",
+                          "priority":  "HIGH",
+                          "impact":  null,
+                          "urgency":  null,
+                          "risk":  null,
+                          "effort":  null,
+                          "priorityScore":  null,
+                          "successCriteria":  [
+                                                  "Goals stored and readable",
+                                                  "Explicit Done conditions"
+                                              ],
+                          "exitCondition":  [
+                                                "Registry consumed by Planner"
+                                            ]
+                      },
+                      {
+                          "id":  "EG-S2-A-003",
+                          "title":  "Planner reads Goal Registry and selects next actionable goal",
+                          "owner":  "RocketGPT",
+                          "parent":  "PG-S2-001",
+                          "phase":  null,
+                          "status":  "IN_PROGRESS",
+                          "priority":  "HIGH",
+                          "impact":  4,
+                          "urgency":  5,
+                          "risk":  3,
+                          "effort":  2,
+                          "priorityScore":  69,
+                          "successCriteria":  [
+                                                  "A parser can extract goals into structured JSON",
+                                                  "A deterministic \"next goal\" selector exists",
+                                                  "Evidence recorded (doc + sample output)"
+                                              ],
+                          "exitCondition":  [
+                                                "Goal selection output committed under docs/ops/"
+                                            ]
+                      }
+                  ]
+}
