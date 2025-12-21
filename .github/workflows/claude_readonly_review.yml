@@ -1,0 +1,38 @@
+name: claude-readonly-review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (read-only)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate diff
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD > diff.txt
+
+      - name: Run Claude read-only review
+        shell: pwsh
+        env:
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+        run: |
+          pwsh .github/tools/claude/invoke-claude-review.ps1 `
+            -DiffFile diff.txt `
+            -OutFile claude_review.md
+
+      - name: Upload review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-readonly-review
+          path: claude_review.md
