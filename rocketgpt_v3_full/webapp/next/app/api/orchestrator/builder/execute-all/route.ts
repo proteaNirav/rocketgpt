@@ -155,7 +155,37 @@ export async function POST(req: NextRequest) {
           { status: 403 }
         );
       }
+      // --- Input validation ---
+      let body: any;
+      try {
+        body = await req.json();
+      } catch (err) {
+        return NextResponse.json(
+          {
+            error: {
+              code: "INVALID_INPUT",
+              message: "Request body must be valid JSON.",
+            },
+          },
+          { status: 400 }
+        );
+      }
 
+      if (
+        typeof body.runId !== "number" ||
+        !Number.isFinite(body.runId) ||
+        body.runId <= 0
+      ) {
+        return NextResponse.json(
+          {
+            error: {
+              code: "INVALID_INPUT",
+              message: "Field 'runId' must be a positive number.",
+            },
+          },
+          { status: 400 }
+        );
+      }
       // --- Normal execution path (stub) ---
       return NextResponse.json(
         { success: true, message: "execute-all allowed (safe-mode disabled)." },
@@ -164,4 +194,3 @@ export async function POST(req: NextRequest) {
     }
   );
 }
-
