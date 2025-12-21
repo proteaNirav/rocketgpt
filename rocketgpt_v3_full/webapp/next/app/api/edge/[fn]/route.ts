@@ -4,7 +4,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 
 const EDGE_BASE =
-  process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/$/, "") + "/functions/v1";
+  (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/\/$/, "") + "/functions/v1";
 
 async function forward(req: NextRequest, fn: string) {
   const cookieStore = cookies();
