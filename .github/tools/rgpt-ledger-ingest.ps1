@@ -29,6 +29,13 @@ function Assert-RgptNoForbiddenBodyKeys {
 # --- Inputs
 $SupabaseUrl = $SUPABASE_URL
 $ServiceKey  = $SUPABASE_SERVICE_ROLE_KEY
+
+# RGPT-S1-C4: Always have an origin_ref (avoids empty/null in CI)
+if ($PSBoundParameters.ContainsKey("OriginRef")) {
+  if ([string]::IsNullOrWhiteSpace($OriginRef)) { $OriginRef = "manual:unknown" }
+} else {
+  $OriginRef = "manual:unknown"
+}
 if ([string]::IsNullOrWhiteSpace($SupabaseUrl)) { throw "SUPABASE_URL is empty" }
 if ([string]::IsNullOrWhiteSpace($ServiceKey))  { throw "SUPABASE_SERVICE_ROLE_KEY is empty" }
 
