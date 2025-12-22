@@ -48,14 +48,34 @@ if (
 # Load diff + prompt
 # ------------------------------------------------------------
 $diff   = Get-Content $DiffFile -Raw
-$prompt = Get-Content $promptPath -Raw
+$basePrompt = Get-Content $promptPath -Raw
+
+# ------------------------------------------------------------
+# Prepend contract enforcement header to prompt
+# ------------------------------------------------------------
+$contractHeader = @"
+# CLAUDE EXECUTION CONTRACT v1.0 - BINDING
+
+You are operating under the Claude Execution Contract v1.0.
+Contract hash (SHA256): $contractHash
+
+EXECUTION MODE: DIFF_ONLY (READ-ONLY)
+
+FORBIDDEN OPERATIONS (HARD GATE):
+- NO write operations to any files
+- NO git commits, branching, checkout, or push operations
+- NO dependency installation (npm install, pnpm install, pip install, etc.)
+- NO network access
+
+You MUST operate in DIFF_ONLY mode. You MAY only read files and generate analysis. Any violation halts execution.
+"@
 
 # ------------------------------------------------------------
 # Build Claude Messages API payload (correct format)
 # ------------------------------------------------------------
 $payload = @{
   model       = $model
-  system      = $prompt
+  system      = "$contractHeader`n`n---`n`n$basePrompt"
   max_tokens  = 2048
   messages    = @(
     @{
@@ -83,6 +103,18 @@ $response = Invoke-RestMethod `
   -Headers $headers `
   -Body $payload
 
-$response.content[0].text | Out-File $OutFile -Encoding utf8
+# ------------------------------------------------------------
+# Prepend contract metadata evidence to output
+# ------------------------------------------------------------
+$evidence = @"
+contract_path=docs/contracts/CLAUDE_EXECUTION_CONTRACT_v1.md
+contract_version=v1.0
+execution_mode=DIFF_ONLY
+contract_hash_sha256=$contractHash
+
+"@
+
+$evidence + $response.content[0].text | Out-File $OutFile -Encoding utf8
 
 Write-Host "[OK] Claude review written to $OutFile (model: $model)" -ForegroundColor Green
+
