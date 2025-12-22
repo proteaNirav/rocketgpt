@@ -1,4 +1,4 @@
-name: ci
+﻿name: ci
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
+          cache: 'npm'
           cache-dependency-path: rocketgpt_v3_full/webapp/next/pnpm-lock.yaml
 
       - name: Setup Node 20 (no cache fallback)
@@ -40,6 +40,10 @@ jobs:
 
       - name: Enable Corepack (for pnpm)
         run: corepack enable
+
+
+      - name: Activate pnpm (corepack)
+        run: corepack prepare pnpm@10.26.1 --activate
 
       # --- UI: install, typecheck, lint, build ---
       - name: Validate package.json (UI)
@@ -91,3 +95,5 @@ jobs:
         with:
           name: qa-report
           path: qa-report.json
+
+

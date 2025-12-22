@@ -29,10 +29,12 @@ $payload = @{
   )
 } | ConvertTo-Json -Depth 6
 
-$headers = @{
-  "x-api-key" = $env:CLAUDE_API_KEY
-  "content-type" = "application/json"
-}
+$ param($m)
+  $prefix = $m.Groups[1].Value
+  $body   = $m.Groups[2].Value
+  # Add at the top of headers block
+  return $prefix + "  `"anthropic-version`" = `"2023-06-01`"`r`n" + $body + "}"
+
 
 $response = Invoke-RestMethod `
   -Uri "https://api.anthropic.com/v1/messages" `
@@ -43,4 +45,5 @@ $response = Invoke-RestMethod `
 $response.content[0].text | Out-File $OutFile -Encoding utf8
 
 Write-Host "[OK] Claude review written to $OutFile" -ForegroundColor Green
+
 
