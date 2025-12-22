@@ -21,7 +21,7 @@ $diff = Get-Content $DiffFile -Raw
 $prompt = Get-Content $promptPath -Raw
 
 $payload = @{
-  model  = "claude-3-5-sonnet-20241022"
+  model  = "claude-3-5-sonnet"
   system = "You are a strict, senior software engineer performing a read-only code review. Do not suggest unsafe changes."
   max_tokens = 2048
   messages = @(
