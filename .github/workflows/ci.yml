@@ -1,4 +1,4 @@
-name: ci
+﻿name: ci
 
 on:
   push:
@@ -23,20 +23,27 @@ jobs:
           echo '--- UI dir ---'
           ls -la rocketgpt_v3_full/webapp/next || true
 
-      # --- Node 20 setup with safe caching (only if lockfile exists) ---
-      - name: Setup Node 20 (with cache if lockfile exists)
-        if: ${{ hashFiles('rocketgpt_v3_full/webapp/next/package-lock.json') != '' }}
+      # --- Node 20 setup with pnpm caching (only if lockfile exists) ---
+      - name: Setup Node 20 (with pnpm cache if lockfile exists)
+        if: ${{ hashFiles('rocketgpt_v3_full/webapp/next/pnpm-lock.yaml') != '' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: rocketgpt_v3_full/webapp/next/package-lock.json
+          cache-dependency-path: rocketgpt_v3_full/webapp/next/pnpm-lock.yaml
 
       - name: Setup Node 20 (no cache fallback)
-        if: ${{ hashFiles('rocketgpt_v3_full/webapp/next/package-lock.json') == '' }}
+        if: ${{ hashFiles('rocketgpt_v3_full/webapp/next/pnpm-lock.yaml') == '' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Enable Corepack (for pnpm)
+        run: corepack enable
+
+
+      - name: Activate pnpm (corepack)
+        run: corepack prepare pnpm@10.26.1 --activate
 
       # --- UI: install, typecheck, lint, build ---
       - name: Validate package.json (UI)
@@ -45,7 +52,7 @@ jobs:
 
       - name: Install UI deps
         working-directory: rocketgpt_v3_full/webapp/next
-        run: npm ci || npm i
+        run: pnpm install --frozen-lockfile
 
       - name: Typecheck (UI)
         working-directory: rocketgpt_v3_full/webapp/next
@@ -62,7 +69,7 @@ jobs:
 
       - name: Build (UI)
         working-directory: rocketgpt_v3_full/webapp/next
-        run: npm run build
+        run: pnpm build
 
       # --- Core API quick hygiene (Python) ---
       - name: Set up Python
@@ -88,3 +95,5 @@ jobs:
         with:
           name: qa-report
           path: qa-report.json
+
+
