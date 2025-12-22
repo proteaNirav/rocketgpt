@@ -17,11 +17,36 @@ jobs:
       - name: Checkout (read-only)
         uses: actions/checkout@v4
         with:
+    fetch-depth: 0
           fetch-depth: 0
-
       - name: Generate diff
+        shell: bash
         run: |
-          git diff origin/${{ github.base_ref }}...HEAD > diff.txt
+          set -euo pipefail
+
+          echo "[INFO] event_name=${GITHUB_EVENT_NAME}"
+          echo "[INFO] ref_name=${GITHUB_REF_NAME}"
+          echo "[INFO] sha=${GITHUB_SHA}"
+
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            # Ensure base branch exists locally
+            git fetch --no-tags --prune origin "${GITHUB_BASE_REF}:${GITHUB_BASE_REF}" || true
+            BASE="$(git merge-base "origin/${GITHUB_BASE_REF}" HEAD)"
+          else
+            if git rev-parse HEAD^ >/dev/null 2>&1; then
+              BASE="$(git rev-parse HEAD^)"
+            else
+              echo "[FAIL] Cannot compute BASE (no parent commit)."
+              exit 128
+            fi
+          fi
+
+          echo "[INFO] base=$BASE"
+          echo "[INFO] head=$(git rev-parse HEAD)"
+
+          git diff --no-color "$BASE..HEAD" > claude_diff.patch
+          echo "[OK] Diff written: claude_diff.patch"
+          echo "[INFO] Diff lines: $(wc -l < claude_diff.patch)"
 
       - name: Run Claude read-only review
         shell: pwsh
@@ -37,5 +62,6 @@ jobs:
         with:
           name: claude-readonly-review
           path: claude_review.md
+
 
 
