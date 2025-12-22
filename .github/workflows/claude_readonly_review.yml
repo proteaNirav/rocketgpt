@@ -1,6 +1,7 @@
-name: claude-readonly-review
+﻿name: claude-readonly-review
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -36,3 +37,4 @@ jobs:
         with:
           name: claude-readonly-review
           path: claude_review.md
+
