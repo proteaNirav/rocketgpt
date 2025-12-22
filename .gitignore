@@ -83,3 +83,5 @@ docs/strategy/
 
 # RocketGPT local quarantine
 .rgpt_quarantine/
+
+.claude/
