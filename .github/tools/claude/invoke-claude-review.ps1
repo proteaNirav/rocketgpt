@@ -21,7 +21,7 @@ $diff = Get-Content $DiffFile -Raw
 $prompt = Get-Content $promptPath -Raw
 
 $payload = @{
-  model  = "claude-3-5-sonnet-20240620"
+  model  = "claude-sonnet-4-5-20250929"
   system = "You are a strict, senior software engineer performing a read-only code review. Do not suggest unsafe changes."
   max_tokens = 2048
   messages = @(
@@ -43,6 +43,7 @@ $response = Invoke-RestMethod `
 $response.content[0].text | Out-File $OutFile -Encoding utf8
 
 Write-Host "[OK] Claude review written to $OutFile" -ForegroundColor Green
+
 
 
 
