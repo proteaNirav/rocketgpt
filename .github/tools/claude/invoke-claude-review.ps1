@@ -21,17 +21,17 @@ $diff = Get-Content $DiffFile -Raw
 $prompt = Get-Content $promptPath -Raw
 
 $payload = @{
-  model = "claude-3-opus-20240229"
-  max_tokens = 1500
+  model  = "claude-sonnet-4-5-20250929"
+  system = "You are a strict, senior software engineer performing a read-only code review. Do not suggest unsafe changes."
+  max_tokens = 2048
   messages = @(
-    @{ role = "system"; content = $prompt }
     @{ role = "user"; content = "DIFF:`n$diff" }
   )
 } | ConvertTo-Json -Depth 6
-
 $headers = @{
-  "x-api-key" = $env:CLAUDE_API_KEY
-  "content-type" = "application/json"
+  "x-api-key"         = $env:CLAUDE_API_KEY
+  "content-type"      = "application/json"
+  "anthropic-version" = "2023-06-01"
 }
 
 $response = Invoke-RestMethod `
@@ -43,4 +43,10 @@ $response = Invoke-RestMethod `
 $response.content[0].text | Out-File $OutFile -Encoding utf8
 
 Write-Host "[OK] Claude review written to $OutFile" -ForegroundColor Green
+
+
+
+
+
+
 
