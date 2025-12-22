@@ -8,6 +8,9 @@
 
 $ErrorActionPreference = "Stop"
 
+# ------------------------------------------------------------
+# Validate inputs
+# ------------------------------------------------------------
 if (-not (Test-Path $DiffFile)) {
   throw "Missing diff file: $DiffFile"
 }
@@ -17,23 +20,63 @@ if (-not (Test-Path $promptPath)) {
   throw "Missing prompt: $promptPath"
 }
 
-$diff = Get-Content $DiffFile -Raw
+# ------------------------------------------------------------
+# Load Claude model policy (single source of truth)
+# ------------------------------------------------------------
+$modelPolicyPath = ".github/tools/claude/CLAUDE_MODEL_POLICY.json"
+if (-not (Test-Path $modelPolicyPath)) {
+  throw "Missing model policy: $modelPolicyPath"
+}
+
+$policy = Get-Content $modelPolicyPath -Raw | ConvertFrom-Json
+
+$model = $policy.reviewer.fallback_model
+if (-not $model) {
+  throw "Model policy invalid: reviewer.fallback_model is empty"
+}
+
+$allowed = @($policy.reviewer.allowed_models)
+if (
+  ($policy.reviewer.enforce -eq $true) -and
+  ($allowed.Count -gt 0) -and
+  (-not ($allowed -contains $model))
+) {
+  throw "Model policy violation: '$model' is not in allowed_models"
+}
+
+# ------------------------------------------------------------
+# Load diff + prompt
+# ------------------------------------------------------------
+$diff   = Get-Content $DiffFile -Raw
 $prompt = Get-Content $promptPath -Raw
 
+# ------------------------------------------------------------
+# Build Claude Messages API payload (correct format)
+# ------------------------------------------------------------
 $payload = @{
-  model  = "claude-sonnet-4-5-20250929"
-  system = "You are a strict, senior software engineer performing a read-only code review. Do not suggest unsafe changes."
-  max_tokens = 2048
-  messages = @(
-    @{ role = "user"; content = "DIFF:`n$diff" }
+  model       = $model
+  system      = $prompt
+  max_tokens  = 2048
+  messages    = @(
+    @{
+      role    = "user"
+      content = "DIFF:`n$diff"
+    }
   )
 } | ConvertTo-Json -Depth 6
+
+# ------------------------------------------------------------
+# Headers (Anthropic compliant)
+# ------------------------------------------------------------
 $headers = @{
   "x-api-key"         = $env:CLAUDE_API_KEY
   "content-type"      = "application/json"
   "anthropic-version" = "2023-06-01"
 }
 
+# ------------------------------------------------------------
+# Invoke Claude
+# ------------------------------------------------------------
 $response = Invoke-RestMethod `
   -Uri "https://api.anthropic.com/v1/messages" `
   -Method POST `
@@ -42,11 +85,4 @@ $response = Invoke-RestMethod `
 
 $response.content[0].text | Out-File $OutFile -Encoding utf8
 
-Write-Host "[OK] Claude review written to $OutFile" -ForegroundColor Green
-
-
-
-
-
-
-
+Write-Host "[OK] Claude review written to $OutFile (model: $model)" -ForegroundColor Green
