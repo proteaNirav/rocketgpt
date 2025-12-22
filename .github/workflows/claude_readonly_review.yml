@@ -62,6 +62,3 @@ jobs:
         with:
           name: claude-readonly-review
           path: claude_review.md
-
-
-
