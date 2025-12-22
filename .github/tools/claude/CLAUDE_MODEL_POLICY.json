@@ -1,0 +1,10 @@
+{
+  "reviewer": {
+    "allowed_models": [
+      "claude-sonnet-4-5-20250929"
+    ],
+    "fallback_model": "claude-sonnet-4-5-20250929",
+    "enforce": true,
+    "fail_fast_on_unknown_model": true
+  }
+}
