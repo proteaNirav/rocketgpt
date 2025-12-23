@@ -1,8 +1,16 @@
 name: PR Checks (meta)
 
+# Safety: Meta PR checks workflow (read-only)
+# - Displays PR context for debugging
+# - No actual checks or modifications
+# - Permissions: read-only
+
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
 
 jobs:
   meta-pr-checks:

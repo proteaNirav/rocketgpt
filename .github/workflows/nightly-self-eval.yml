@@ -1,9 +1,18 @@
 name: nightly-self-evaluator
 
+# Safety: Scheduled self-evaluation workflow (read-only)
+# - Calls Supabase Edge Function for self-evaluation
+# - No repository modifications
+# - Permissions: read-only (no write access)
+# - Results stored as workflow artifact
+
 on:
   workflow_dispatch:        # allow manual runs
   schedule:
     - cron: "0 21 * * *"    # 21:00 UTC = 02:30/03:30 IST depending on DST; adjust as you prefer
+
+permissions:
+  contents: read
 
 jobs:
   run:
