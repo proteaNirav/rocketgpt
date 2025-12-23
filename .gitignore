@@ -84,4 +84,7 @@ docs/strategy/
 # RocketGPT local quarantine
 .rgpt_quarantine/
 
+# RocketGPT CI logs (transient artifacts)
+.rgpt_ci_logs/
+
 .claude/
