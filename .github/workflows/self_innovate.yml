@@ -1,10 +1,16 @@
 name: Self Innovate (Idea-Only)
 
+# Safety: Idea generation workflow (artifact-based, read-only)
+# - Generates innovation ideas without modifying repository
+# - Outputs ideas as workflow artifact for manual review
+# - Ideas can be manually committed after human approval
+# - Permissions: read-only (downgraded from write for safety)
+
 on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   self-innovate:
@@ -45,16 +51,20 @@ jobs:
             \"status\": \"candidate\"
           }" >> "$IDEA_FILE"
 
-      - name: Commit idea pool update (optional)
+      - name: Upload idea pool as artifact (for manual review)
+        uses: actions/upload-artifact@v4
+        with:
+          name: innovation-ideas
+          path: data/self_innovate/idea_pool.jsonl
+
+      - name: Instructions for manual commit
         run: |
-          git config user.name "rocketgpt-bot"
-          git config user.email "rocketgpt-bot@users.noreply.github.com"
-
-          git add data/self_innovate/idea_pool.jsonl || true
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "chore(self-innovate): add placeholder innovation idea"
-            git push || echo "Push skipped (no permissions in this context)."
-          fi
+          echo "✅ Innovation idea generated successfully!"
+          echo ""
+          echo "📋 To commit this idea to the repository:"
+          echo "1. Download the 'innovation-ideas' artifact from this workflow run"
+          echo "2. Review the idea in idea_pool.jsonl"
+          echo "3. If approved, manually commit to data/self_innovate/idea_pool.jsonl"
+          echo "4. Or use: git add data/self_innovate/idea_pool.jsonl && git commit -m 'chore: add innovation idea'"
+          echo ""
+          echo "🔒 Safety: This workflow uses read-only permissions and cannot modify the repository."
