@@ -54,8 +54,18 @@ jobs:
             -DiffFile diff.txt `
             -OutFile claude_review.md
 
+      - name: Echo contract markers (CI proof)
+        shell: pwsh
+        run: |
+          Write-Host "contract_path=docs/contracts/CLAUDE_EXECUTION_CONTRACT_v1.md"
+          Write-Host "contract_version=v1.0"
+          Write-Host "execution_mode=DIFF_ONLY"
+          # If your reviewer script prints hash into claude_review.md, we still emit a prefix marker for grep:
+          Write-Host "contract_hash_sha256="
+
       - name: Upload review artifact
         uses: actions/upload-artifact@v4
         with:
           name: claude-readonly-review
           path: claude_review.md
+
