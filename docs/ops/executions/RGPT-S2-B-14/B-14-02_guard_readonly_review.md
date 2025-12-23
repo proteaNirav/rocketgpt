@@ -25,3 +25,16 @@
 - RunUrl: https://github.com/proteaNirav/rocketgpt/actions/runs/20450968766
 - CreatedAt: 
 
+
+### Step: B-14-04 — Run metadata + log capture (corrected)
+- CapturedAt: 2025-12-23 11:41:54 +05:30
+- RunId: 20453000639
+- RunUrl: https://github.com/proteaNirav/rocketgpt/actions/runs/20453000639
+- CreatedAt: 2025-12-23T06:10:26Z
+- Status: completed
+- Conclusion: success
+- Event: workflow_dispatch
+- HeadSha: 7e0610ba3d00be5c39cf9203726dae9afd8f563b
+- Title: claude-readonly-review
+- LogFile: docs\ops\executions\RGPT-S2-B-14\B-14-03_run_20453000639_log.txt
+
