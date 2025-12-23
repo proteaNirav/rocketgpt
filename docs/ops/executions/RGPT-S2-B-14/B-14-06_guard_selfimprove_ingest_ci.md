@@ -19,3 +19,17 @@
 - Dispatch with enable=true, dry_run=true to validate guard behavior (no writes)
 - Only after review: enable=true, dry_run=false to allow actual ingest (controlled run)
 
+
+### Step: B-14-06D — Dry-run dispatch executed
+- Date: 2025-12-23 11:49:26 +05:30
+- Workflow: _selfimprove_ingest_ci.yml
+- Inputs: enable=true, dry_run=true
+- RunId: 20453141682
+- RunUrl: https://github.com/proteaNirav/rocketgpt/actions/runs/20453141682
+- CreatedAt: 2025-12-23T06:18:02Z
+- Status: completed
+- Conclusion: failure
+- HeadSha: 64a0d0b94b88d1a79c05cf77f9b07e48f580dfb1
+- Title: ci(selfimprove): gate ingest workflow (enable+dbrun) and add least peΓÇª
+- LogFile: docs\ops\executions\RGPT-S2-B-14\B-14-06_run_20453141682_log.txt
+
