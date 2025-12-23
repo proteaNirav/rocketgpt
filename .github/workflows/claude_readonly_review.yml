@@ -2,15 +2,32 @@
 
 on:
   workflow_dispatch:
+    inputs:
+      enable:
+        description: 'Set true to allow execution'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+      dry_run:
+        description: 'Set true to run with no side effects'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
   pull_request:
     types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
   pull-requests: read
-
 jobs:
   claude-review:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.enable == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -68,4 +85,7 @@ jobs:
         with:
           name: claude-readonly-review
           path: claude_review.md
+
+
+
 
