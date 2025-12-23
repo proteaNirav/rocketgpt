@@ -1,10 +1,19 @@
 name: Self-Heal Hooks
+
+# Safety: Self-heal tooling probe workflow (read-only)
+# - Tests self-heal hooks and tools
+# - No modifications, only displays tool status
+# - Permissions: read-only
+
 on:
   workflow_dispatch:
   pull_request:
     paths:
       - ".github/tools/**"
       - ".github/workflows/self_heal_hooks.yml"
+
+permissions:
+  contents: read
 
 jobs:
   hello:

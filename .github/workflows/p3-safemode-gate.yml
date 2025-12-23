@@ -1,10 +1,20 @@
 name: P3 Safe-Mode CI Gate
 
+# Safety: Safe-Mode enforcement gate (critical security workflow)
+# - Tests that Safe-Mode blocks dangerous operations (execute-all)
+# - Validates that SAFE_MODE=1 prevents unauthorized automation
+# - Fails CI if execute-all endpoint accepts requests in safe-mode
+# - Read-only permissions (builds and tests app, no repo writes)
+# - Critical: Prevents accidental deployment of unsafe automation
+
 on:
   workflow_dispatch:
   pull_request:
   push:
     branches: [ "main" ]
+
+permissions:
+  contents: read
 
 concurrency:
   group: p3-safemode-gate-main

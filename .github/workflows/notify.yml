@@ -1,5 +1,11 @@
 name: Notify on Pipeline
 
+# Safety: Notification-only workflow (read-only)
+# - Triggered on completion of other workflows
+# - Only sends notifications to Slack/Teams if configured
+# - No repository modifications
+# - Permissions: read-only on contents
+
 on:
   workflow_run:
     workflows: ["AI Codegen", "AI PR Review", "RocketGPT Review Pipeline"]
