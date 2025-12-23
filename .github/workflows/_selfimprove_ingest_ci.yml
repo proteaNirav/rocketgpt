@@ -1,8 +1,28 @@
-name: _selfimprove_ingest_ci
+﻿name: _selfimprove_ingest_ci
 
 on:
+
+permissions:
+  contents: read
+
   workflow_dispatch:
     inputs:
+      enable:
+        description: 'Set true to allow execution'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+      dry_run:
+        description: 'Set true to run with no side effects (no Supabase write)'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
       subsystem:
         description: "Subsystem name for ledger row"
         required: false
@@ -28,6 +48,14 @@ on:
 
   workflow_call:
     inputs:
+      enable:
+        required: false
+        type: string
+        default: 'false'
+      dry_run:
+        required: false
+        type: string
+        default: 'true'
       subsystem:
         required: false
         type: string
@@ -47,6 +75,7 @@ on:
 
 jobs:
   ingest:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.enable == 'true' || github.event_name == 'workflow_call' && inputs.enable == 'true' }}
     runs-on: ubuntu-latest
     env:
       RGPT_SUBSYSTEM_FALLBACK: ci-selfimprove
@@ -63,6 +92,14 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
+          $dry = ("${{ inputs.dry_run }}" ).Trim()
+          if ([string]::IsNullOrWhiteSpace($dry)) { $dry = "true" }
+          if ($dry -eq "true") {
+            Write-Host "[DRY_RUN] Ledger ingest skipped (no Supabase write)." -ForegroundColor Yellow
+            Write-Host "[DRY_RUN] Would ingest ledger row using provided inputs." -ForegroundColor Yellow
+            exit 0
+          }
+
           $subsystem = ("${{ inputs.subsystem }}".Trim()); if ([string]::IsNullOrWhiteSpace($subsystem)) { $subsystem = $env:RGPT_SUBSYSTEM_FALLBACK }
           $severity  = ("${{ inputs.severity }}".Trim());  if ([string]::IsNullOrWhiteSpace($severity))  { $severity  = $env:RGPT_SEVERITY_FALLBACK }
 
@@ -99,6 +136,7 @@ jobs:
             -RelatedCommit "${{ github.sha }}" `
             -RelatedPR "" `
             -OriginRef $origin
+
 
 
 
