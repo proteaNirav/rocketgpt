@@ -1,4 +1,4 @@
-﻿# UTF-8 BOM Policy
+# UTF-8 BOM Policy
 
 - Do not commit UTF-8 BOM in YAML/JSON/MD/TS/PS files.
 - On Windows PowerShell, `Set-Content -Encoding UTF8` writes BOM.
