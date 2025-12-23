@@ -1,0 +1,632 @@
+﻿claude-review	Set up job	∩╗┐2025-12-23T03:30:17.1424511Z ##[debug]Starting: Set up job
+claude-review	Set up job	2025-12-23T03:30:17.1426648Z Current runner version: '2.330.0'
+claude-review	Set up job	2025-12-23T03:30:17.1455511Z ##[group]Runner Image Provisioner
+claude-review	Set up job	2025-12-23T03:30:17.1456856Z Hosted Compute Agent
+claude-review	Set up job	2025-12-23T03:30:17.1457752Z Version: 20251211.462
+claude-review	Set up job	2025-12-23T03:30:17.1458712Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+claude-review	Set up job	2025-12-23T03:30:17.1459864Z Build Date: 2025-12-11T16:28:49Z
+claude-review	Set up job	2025-12-23T03:30:17.1460910Z Worker ID: {f977b1f6-d65c-48db-aa1a-d422b27d6b03}
+claude-review	Set up job	2025-12-23T03:30:17.1462127Z ##[endgroup]
+claude-review	Set up job	2025-12-23T03:30:17.1463213Z ##[group]Operating System
+claude-review	Set up job	2025-12-23T03:30:17.1464197Z Ubuntu
+claude-review	Set up job	2025-12-23T03:30:17.1465047Z 24.04.3
+claude-review	Set up job	2025-12-23T03:30:17.1465925Z LTS
+claude-review	Set up job	2025-12-23T03:30:17.1466735Z ##[endgroup]
+claude-review	Set up job	2025-12-23T03:30:17.1467694Z ##[group]Runner Image
+claude-review	Set up job	2025-12-23T03:30:17.1468716Z Image: ubuntu-24.04
+claude-review	Set up job	2025-12-23T03:30:17.1469577Z Version: 20251215.174.1
+claude-review	Set up job	2025-12-23T03:30:17.1471716Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+claude-review	Set up job	2025-12-23T03:30:17.1474569Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+claude-review	Set up job	2025-12-23T03:30:17.1476303Z ##[endgroup]
+claude-review	Set up job	2025-12-23T03:30:17.1478341Z ##[group]GITHUB_TOKEN Permissions
+claude-review	Set up job	2025-12-23T03:30:17.1480893Z Contents: read
+claude-review	Set up job	2025-12-23T03:30:17.1481801Z Metadata: read
+claude-review	Set up job	2025-12-23T03:30:17.1482917Z PullRequests: read
+claude-review	Set up job	2025-12-23T03:30:17.1483859Z ##[endgroup]
+claude-review	Set up job	2025-12-23T03:30:17.1487390Z Secret source: Actions
+claude-review	Set up job	2025-12-23T03:30:17.1489151Z ##[debug]Primary repository: proteaNirav/rocketgpt
+claude-review	Set up job	2025-12-23T03:30:17.1490385Z Prepare workflow directory
+claude-review	Set up job	2025-12-23T03:30:17.1582538Z ##[debug]Creating pipeline directory: '/home/runner/work/rocketgpt'
+claude-review	Set up job	2025-12-23T03:30:17.1588241Z ##[debug]Creating workspace directory: '/home/runner/work/rocketgpt/rocketgpt'
+claude-review	Set up job	2025-12-23T03:30:17.1590955Z ##[debug]Update context data
+claude-review	Set up job	2025-12-23T03:30:17.1596411Z ##[debug]Evaluating job-level environment variables
+claude-review	Set up job	2025-12-23T03:30:17.1923003Z ##[debug]Evaluating job container
+claude-review	Set up job	2025-12-23T03:30:17.1927588Z ##[debug]Evaluating job service containers
+claude-review	Set up job	2025-12-23T03:30:17.1931296Z ##[debug]Evaluating job defaults
+claude-review	Set up job	2025-12-23T03:30:17.1967020Z Prepare all required actions
+claude-review	Set up job	2025-12-23T03:30:17.2022654Z Getting action download info
+claude-review	Set up job	2025-12-23T03:30:17.4959444Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+claude-review	Set up job	2025-12-23T03:30:17.4992252Z ##[debug]Copied action archive '/opt/actionarchivecache/actions_checkout/34e114876b0b11c390a56381ad16ebd13914f8d5.tar.gz' to '/home/runner/work/_actions/_temp_9a59029d-0ca1-412c-b643-d3af18c49e9e/5baa5044-4e15-4450-8333-226e9a30668e.tar.gz'
+claude-review	Set up job	2025-12-23T03:30:17.5924611Z ##[debug]Unwrap 'actions-checkout-34e1148' to '/home/runner/work/_actions/actions/checkout/v4'
+claude-review	Set up job	2025-12-23T03:30:17.6051496Z ##[debug]Archive '/home/runner/work/_actions/_temp_9a59029d-0ca1-412c-b643-d3af18c49e9e/5baa5044-4e15-4450-8333-226e9a30668e.tar.gz' has been unzipped into '/home/runner/work/_actions/actions/checkout/v4'.
+claude-review	Set up job	2025-12-23T03:30:17.6161333Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+claude-review	Set up job	2025-12-23T03:30:17.6219724Z ##[debug]Copied action archive '/opt/actionarchivecache/actions_upload-artifact/ea165f8d65b6e75b540449e92b4886f43607fa02.tar.gz' to '/home/runner/work/_actions/_temp_ad384518-b596-45eb-95ee-31be4e9fee2f/07c45663-0438-47a9-9827-6aace5c1f285.tar.gz'
+claude-review	Set up job	2025-12-23T03:30:17.6893188Z ##[debug]Unwrap 'actions-upload-artifact-ea165f8' to '/home/runner/work/_actions/actions/upload-artifact/v4'
+claude-review	Set up job	2025-12-23T03:30:17.7189635Z ##[debug]Archive '/home/runner/work/_actions/_temp_ad384518-b596-45eb-95ee-31be4e9fee2f/07c45663-0438-47a9-9827-6aace5c1f285.tar.gz' has been unzipped into '/home/runner/work/_actions/actions/upload-artifact/v4'.
+claude-review	Set up job	2025-12-23T03:30:17.7270540Z ##[debug]action.yml for action: '/home/runner/work/_actions/actions/checkout/v4/action.yml'.
+claude-review	Set up job	2025-12-23T03:30:17.8129504Z ##[debug]action.yml for action: '/home/runner/work/_actions/actions/upload-artifact/v4/action.yml'.
+claude-review	Set up job	2025-12-23T03:30:17.8268566Z ##[debug]Set step '__actions_checkout' display name to: 'Checkout (read-only)'
+claude-review	Set up job	2025-12-23T03:30:17.8272176Z ##[debug]Set step '__run' display name to: 'Generate diff'
+claude-review	Set up job	2025-12-23T03:30:17.8274755Z ##[debug]Set step '__run_2' display name to: 'Run Claude read-only review'
+claude-review	Set up job	2025-12-23T03:30:17.8276753Z ##[debug]Set step '__run_3' display name to: 'Echo contract markers (CI proof)'
+claude-review	Set up job	2025-12-23T03:30:17.8278781Z ##[debug]Set step '__actions_upload-artifact' display name to: 'Upload review artifact'
+claude-review	Set up job	2025-12-23T03:30:17.8279704Z Complete job name: claude-review
+claude-review	Set up job	2025-12-23T03:30:17.8305099Z ##[debug]Collect running processes for tracking orphan processes.
+claude-review	Set up job	2025-12-23T03:30:17.8515114Z ##[debug]Finishing: Set up job
+claude-review	Checkout (read-only)	∩╗┐2025-12-23T03:30:17.8628115Z ##[debug]Evaluating condition for step: 'Checkout (read-only)'
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.8662956Z ##[debug]Evaluating: success()
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.8667756Z ##[debug]Evaluating success:
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.8683408Z ##[debug]=> true
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.8689186Z ##[debug]Result: true
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.8712104Z ##[debug]Starting: Checkout (read-only)
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.8786118Z ##[debug]Register post job cleanup for action: actions/checkout@v4
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9091092Z ##[debug]Loading inputs
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9115526Z ##[debug]Evaluating: github.repository
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9116682Z ##[debug]Evaluating Index:
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9118582Z ##[debug]..Evaluating github:
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9119738Z ##[debug]..=> Object
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9125223Z ##[debug]..Evaluating String:
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9126138Z ##[debug]..=> 'repository'
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9130552Z ##[debug]=> 'proteaNirav/rocketgpt'
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9132104Z ##[debug]Result: 'proteaNirav/rocketgpt'
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9136357Z ##[debug]Evaluating: github.token
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9136928Z ##[debug]Evaluating Index:
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9137398Z ##[debug]..Evaluating github:
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9137884Z ##[debug]..=> Object
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9138307Z ##[debug]..Evaluating String:
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9138771Z ##[debug]..=> 'token'
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9139459Z ##[debug]=> '***'
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9140037Z ##[debug]Result: '***'
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9157746Z ##[debug]Loading env
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9225181Z ##[group]Run actions/checkout@v4
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9225954Z with:
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9226387Z   fetch-depth: 0
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9226873Z   repository: proteaNirav/rocketgpt
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9227573Z   token: ***
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9228001Z   ssh-strict: true
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9228443Z   ssh-user: git
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9228888Z   persist-credentials: true
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9229374Z   clean: true
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9229818Z   sparse-checkout-cone-mode: true
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9230346Z   fetch-tags: false
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9230847Z   show-progress: true
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9231331Z   lfs: false
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9231784Z   submodules: false
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9232242Z   set-safe-directory: true
+claude-review	Checkout (read-only)	2025-12-23T03:30:17.9233142Z ##[endgroup]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0238206Z ##[debug]GITHUB_WORKSPACE = '/home/runner/work/rocketgpt/rocketgpt'
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0240021Z ##[debug]qualified repository = 'proteaNirav/rocketgpt'
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0241530Z ##[debug]ref = 'refs/heads/main'
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0242974Z ##[debug]commit = '6ebdde862d02c5e77e6938742f25df19bbd0e48f'
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0243889Z ##[debug]clean = true
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0244580Z ##[debug]filter = undefined
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0245297Z ##[debug]fetch depth = 0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0245999Z ##[debug]fetch tags = false
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0246755Z ##[debug]show progress = true
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0247541Z ##[debug]lfs = false
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0248269Z ##[debug]submodules = false
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0249061Z ##[debug]recursive submodules = false
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0249931Z ##[debug]GitHub Host URL = 
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0251293Z ::add-matcher::/home/runner/work/_actions/actions/checkout/v4/dist/problem-matcher.json
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0323592Z ##[debug]Added matchers: 'checkout-git'. Problem matchers scan action output for known warning or error strings and report these inline.
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0328411Z Syncing repository: proteaNirav/rocketgpt
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0329730Z ::group::Getting Git version info
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0330972Z ##[group]Getting Git version info
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0331741Z Working directory is '/home/runner/work/rocketgpt/rocketgpt'
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0333088Z ##[debug]Getting git version
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.0333621Z [command]/usr/bin/git version
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1079041Z git version 2.52.0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1103746Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1104531Z ##[debug]git version 2.52.0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1105011Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1106263Z ##[debug]Set git useragent to: git/2.52.0 (github-actions-checkout)
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1107770Z ::endgroup::
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1108453Z ##[endgroup]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1111916Z ::add-mask::***
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1120318Z Temporarily overriding HOME='/home/runner/work/_temp/9d81e34b-7c28-46cc-a01d-e68002ee4b46' before making global git config changes
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1121787Z Adding repository directory to the temporary git global config as a safe directory
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1132980Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/rocketgpt/rocketgpt
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1171889Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1173881Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1177216Z Deleting the contents of '/home/runner/work/rocketgpt/rocketgpt'
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1180944Z ::group::Initializing the repository
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1182206Z ##[group]Initializing the repository
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1184694Z [command]/usr/bin/git init /home/runner/work/rocketgpt/rocketgpt
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1304842Z hint: Using 'master' as the name for the initial branch. This default branch name
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1307227Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1309273Z hint: to use in all of your new repositories, which will suppress this warning,
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1310684Z hint: call:
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1311412Z hint:
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1312535Z hint: 	git config --global init.defaultBranch <name>
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1313655Z hint:
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1314700Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1316435Z hint: 'development'. The just-created branch can be renamed via this command:
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1317739Z hint:
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1318480Z hint: 	git branch -m <name>
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1319313Z hint:
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1320415Z hint: Disable this message with "git config set advice.defaultBranchName false"
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1322578Z Initialized empty Git repository in /home/runner/work/rocketgpt/rocketgpt/.git/
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1324481Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1326143Z ##[debug]Initialized empty Git repository in /home/runner/work/rocketgpt/rocketgpt/.git/
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1327527Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1328601Z [command]/usr/bin/git remote add origin https://github.com/proteaNirav/rocketgpt
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1356745Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1357954Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1359185Z ::endgroup::
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1359846Z ##[endgroup]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1361084Z ::group::Disabling automatic garbage collection
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1362156Z ##[group]Disabling automatic garbage collection
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1363494Z [command]/usr/bin/git config --local gc.auto 0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1391329Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1392875Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1394073Z ::endgroup::
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1394821Z ##[endgroup]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1396024Z ::group::Setting up auth
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1396833Z ##[group]Setting up auth
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1399603Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1424861Z ##[debug]1
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1426038Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1430732Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1803534Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1804296Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1809253Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1833245Z ##[debug]1
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1834236Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.1839209Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2059049Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2060520Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2066925Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2093743Z ##[debug]1
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2095125Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2100197Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2335240Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2337834Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2344332Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2369879Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2370562Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2378023Z ::endgroup::
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2378430Z ##[endgroup]
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2379114Z ::group::Fetching the repository
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2379609Z ##[group]Fetching the repository
+claude-review	Checkout (read-only)	2025-12-23T03:30:18.2387957Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7803356Z From https://github.com/proteaNirav/rocketgpt
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7809815Z  * [new branch]      +                           -> origin/+
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7817419Z  * [new branch]      Restore/main1               -> origin/Restore/main1
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7819183Z  * [new branch]      ai/codegen/102              -> origin/ai/codegen/102
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7820867Z  * [new branch]      ai/codegen/103              -> origin/ai/codegen/103
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7822730Z  * [new branch]      ai/codegen/110              -> origin/ai/codegen/110
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7824454Z  * [new branch]      ai/codegen/111              -> origin/ai/codegen/111
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7825958Z  * [new branch]      ai/codegen/112              -> origin/ai/codegen/112
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7827451Z  * [new branch]      ai/codegen/113              -> origin/ai/codegen/113
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7828929Z  * [new branch]      ai/codegen/114              -> origin/ai/codegen/114
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7830415Z  * [new branch]      ai/codegen/115              -> origin/ai/codegen/115
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7831939Z  * [new branch]      ai/codegen/116              -> origin/ai/codegen/116
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7833585Z  * [new branch]      ai/codegen/117              -> origin/ai/codegen/117
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7838018Z  * [new branch]      ai/codegen/118              -> origin/ai/codegen/118
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7839501Z  * [new branch]      ai/codegen/119              -> origin/ai/codegen/119
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7840997Z  * [new branch]      ai/codegen/120              -> origin/ai/codegen/120
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7842546Z  * [new branch]      ai/codegen/32               -> origin/ai/codegen/32
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7843982Z  * [new branch]      ai/codegen/35               -> origin/ai/codegen/35
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7845302Z  * [new branch]      ai/codegen/52               -> origin/ai/codegen/52
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7846627Z  * [new branch]      ai/codegen/53               -> origin/ai/codegen/53
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7847942Z  * [new branch]      ai/codegen/64               -> origin/ai/codegen/64
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7849266Z  * [new branch]      ai/codegen/65               -> origin/ai/codegen/65
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7850697Z  * [new branch]      ai/codegen/66               -> origin/ai/codegen/66
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7852284Z  * [new branch]      ai/codegen/67               -> origin/ai/codegen/67
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7853917Z  * [new branch]      automation/bundle           -> origin/automation/bundle
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7855420Z  * [new branch]      backup/main-2025-11-02      -> origin/backup/main-2025-11-02
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7856984Z  * [new branch]      backup/main-20251103-2158   -> origin/backup/main-20251103-2158
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7858498Z  * [new branch]      chore/auto-refactor         -> origin/chore/auto-refactor
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7860029Z  * [new branch]      chore/self-heal-setup       -> origin/chore/self-heal-setup
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7861805Z  * [new branch]      chore/sync-main-into-develop -> origin/chore/sync-main-into-develop
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7863770Z  * [new branch]      chore/text-guard-62         -> origin/chore/text-guard-62
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7865666Z  * [new branch]      chore/toggle-protection-ascii -> origin/chore/toggle-protection-ascii
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7867313Z  * [new branch]      ci/claude-review            -> origin/ci/claude-review
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7868790Z  * [new branch]      ci/claude-review-full       -> origin/ci/claude-review-full
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7870309Z  * [new branch]      ci/codegen-workflow         -> origin/ci/codegen-workflow
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7871738Z  * [new branch]      ci/protect-main             -> origin/ci/protect-main
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7873295Z  * [new branch]      ci/ui-bundle                -> origin/ci/ui-bundle
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7874753Z  * [new branch]      ci/workflows-bootstrap      -> origin/ci/workflows-bootstrap
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7877382Z  * [new branch]      dependabot/npm_and_yarn/dot-ops/claude/staging/next/npm_and_yarn-d004efb325 -> origin/dependabot/npm_and_yarn/dot-ops/claude/staging/next/npm_and_yarn-d004efb325
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7881020Z  * [new branch]      dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/autoprefixer-10.4.21 -> origin/dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/autoprefixer-10.4.21
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7884924Z  * [new branch]      dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/framer-motion-12.23.24 -> origin/dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/framer-motion-12.23.24
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7888495Z  * [new branch]      dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/multi-c808d207fc -> origin/dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/multi-c808d207fc
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7892075Z  * [new branch]      dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/npm_and_yarn-3c67cbb9cd -> origin/dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/npm_and_yarn-3c67cbb9cd
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7895981Z  * [new branch]      dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/supabase/ssr-0.7.0 -> origin/dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/supabase/ssr-0.7.0
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7899464Z  * [new branch]      dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/typescript-5.9.3 -> origin/dependabot/npm_and_yarn/rocketgpt_v3_full/webapp/next/typescript-5.9.3
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7902960Z  * [new branch]      dependabot/pip/rocketgpt_v3_full/apps/core-api/fastapi-0.121.1 -> origin/dependabot/pip/rocketgpt_v3_full/apps/core-api/fastapi-0.121.1
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7906135Z  * [new branch]      dependabot/pip/rocketgpt_v3_full/apps/core-api/pydantic-2.12.3 -> origin/dependabot/pip/rocketgpt_v3_full/apps/core-api/pydantic-2.12.3
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7909468Z  * [new branch]      dependabot/pip/rocketgpt_v3_full/apps/core-api/uvicorn-standard--0.38.0 -> origin/dependabot/pip/rocketgpt_v3_full/apps/core-api/uvicorn-standard--0.38.0
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7911887Z  * [new branch]      develop                     -> origin/develop
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7913504Z  * [new branch]      feat/add-status-endpoint    -> origin/feat/add-status-endpoint
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7915064Z  * [new branch]      feature/m1_5-cache          -> origin/feature/m1_5-cache
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7916891Z  * [new branch]      feature/m1_5-cost-tracking  -> origin/feature/m1_5-cost-tracking
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7918809Z  * [new branch]      feature/m1_5-failover       -> origin/feature/m1_5-failover
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7920341Z  * [new branch]      feature/m1_5-rate-limit     -> origin/feature/m1_5-rate-limit
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7921809Z  * [new branch]      feature/m1_5-sentry         -> origin/feature/m1_5-sentry
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7923579Z  * [new branch]      feature/p3-ci-safemode-gate-C -> origin/feature/p3-ci-safemode-gate-C
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7925529Z  * [new branch]      feature/p3-decision-ledger-safemode-B -> origin/feature/p3-decision-ledger-safemode-B
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7927649Z  * [new branch]      feature/p3-safe-mode-propagation-A -> origin/feature/p3-safe-mode-propagation-A
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7929778Z  * [new branch]      feature/phaseb-b8-orchestrator-health -> origin/feature/phaseb-b8-orchestrator-health
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7932166Z  * [new branch]      feature/pnext-d1-decision-ledger -> origin/feature/pnext-d1-decision-ledger
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7934259Z  * [new branch]      feature/pnext-d2-ledger-read -> origin/feature/pnext-d2-ledger-read
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7936189Z  * [new branch]      fix/health-node-runtime-diagnostics -> origin/fix/health-node-runtime-diagnostics
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7938045Z  * [new branch]      fix/health-sanitize-env     -> origin/fix/health-sanitize-env
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7939662Z  * [new branch]      fix/health-supabase-ping    -> origin/fix/health-supabase-ping
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7941199Z  * [new branch]      fix/ship-wait-pr            -> origin/fix/ship-wait-pr
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7942988Z  * [new branch]      fix/status-relative-self-call -> origin/fix/status-relative-self-call
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7944810Z  * [new branch]      fix/status-use-request-origin -> origin/fix/status-use-request-origin
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7946481Z  * [new branch]      fix/text-guard-phase2       -> origin/fix/text-guard-phase2
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7948048Z  * [new branch]      fix/text-guard-phase2c      -> origin/fix/text-guard-phase2c
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7949689Z  * [new branch]      go-live/p1p2-bundle         -> origin/go-live/p1p2-bundle
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7951041Z  * [new branch]      main                        -> origin/main
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7952598Z  * [new branch]      proteaNirav-patch-1         -> origin/proteaNirav-patch-1
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7954199Z  * [new branch]      proteaNirav-patch-10        -> origin/proteaNirav-patch-10
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7955776Z  * [new branch]      proteaNirav-patch-11        -> origin/proteaNirav-patch-11
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7957342Z  * [new branch]      proteaNirav-patch-12        -> origin/proteaNirav-patch-12
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7958914Z  * [new branch]      proteaNirav-patch-13        -> origin/proteaNirav-patch-13
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7960487Z  * [new branch]      proteaNirav-patch-14        -> origin/proteaNirav-patch-14
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7962045Z  * [new branch]      proteaNirav-patch-15        -> origin/proteaNirav-patch-15
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7963796Z  * [new branch]      proteaNirav-patch-16        -> origin/proteaNirav-patch-16
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7965356Z  * [new branch]      proteaNirav-patch-17        -> origin/proteaNirav-patch-17
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7966897Z  * [new branch]      proteaNirav-patch-18        -> origin/proteaNirav-patch-18
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7968474Z  * [new branch]      proteaNirav-patch-19        -> origin/proteaNirav-patch-19
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7970049Z  * [new branch]      proteaNirav-patch-2         -> origin/proteaNirav-patch-2
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7971589Z  * [new branch]      proteaNirav-patch-20        -> origin/proteaNirav-patch-20
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7973525Z  * [new branch]      proteaNirav-patch-21        -> origin/proteaNirav-patch-21
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7974728Z  * [new branch]      proteaNirav-patch-22        -> origin/proteaNirav-patch-22
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7975828Z  * [new branch]      proteaNirav-patch-23        -> origin/proteaNirav-patch-23
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7976946Z  * [new branch]      proteaNirav-patch-24        -> origin/proteaNirav-patch-24
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7978231Z  * [new branch]      proteaNirav-patch-25        -> origin/proteaNirav-patch-25
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7979323Z  * [new branch]      proteaNirav-patch-26        -> origin/proteaNirav-patch-26
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7980408Z  * [new branch]      proteaNirav-patch-27        -> origin/proteaNirav-patch-27
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7981498Z  * [new branch]      proteaNirav-patch-28        -> origin/proteaNirav-patch-28
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7982800Z  * [new branch]      proteaNirav-patch-29        -> origin/proteaNirav-patch-29
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7983913Z  * [new branch]      proteaNirav-patch-3         -> origin/proteaNirav-patch-3
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7984983Z  * [new branch]      proteaNirav-patch-30        -> origin/proteaNirav-patch-30
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7985983Z  * [new branch]      proteaNirav-patch-31        -> origin/proteaNirav-patch-31
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7987139Z  * [new branch]      proteaNirav-patch-32        -> origin/proteaNirav-patch-32
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7988134Z  * [new branch]      proteaNirav-patch-33        -> origin/proteaNirav-patch-33
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7989143Z  * [new branch]      proteaNirav-patch-34        -> origin/proteaNirav-patch-34
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7990140Z  * [new branch]      proteaNirav-patch-4         -> origin/proteaNirav-patch-4
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7991124Z  * [new branch]      proteaNirav-patch-5         -> origin/proteaNirav-patch-5
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7992110Z  * [new branch]      proteaNirav-patch-6         -> origin/proteaNirav-patch-6
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7993464Z  * [new branch]      proteaNirav-patch-7         -> origin/proteaNirav-patch-7
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7994464Z  * [new branch]      proteaNirav-patch-8         -> origin/proteaNirav-patch-8
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7995378Z  * [new branch]      proteaNirav-patch-9         -> origin/proteaNirav-patch-9
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7996251Z  * [new branch]      restore/good-snapshot1      -> origin/restore/good-snapshot1
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7997116Z  * [new branch]      restore/local-031125        -> origin/restore/local-031125
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7997980Z  * [new branch]      restore/local-2025-11-02    -> origin/restore/local-2025-11-02
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7998854Z  * [new branch]      rgpt/sbx/20251107-203410    -> origin/rgpt/sbx/20251107-203410
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.7999747Z  * [new branch]      rocketgpt-core/ai-advisor   -> origin/rocketgpt-core/ai-advisor
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8000693Z  * [new branch]      rocketgpt-core/ai-auto-merge -> origin/rocketgpt-core/ai-auto-merge
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8001644Z  * [new branch]      rocketgpt-core/ai-review    -> origin/rocketgpt-core/ai-review
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8002997Z  * [new branch]      rocketgpt-core/hands-off-mode -> origin/rocketgpt-core/hands-off-mode
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8004142Z  * [new branch]      rocketgpt-core/init-safety-baseline -> origin/rocketgpt-core/init-safety-baseline
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8005161Z  * [new branch]      temp/text-guard-register    -> origin/temp/text-guard-register
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8006040Z  * [new branch]      test/edge-contracts-61      -> origin/test/edge-contracts-61
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8006911Z  * [new branch]      tools/add-env-inspector     -> origin/tools/add-env-inspector
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8007755Z  * [new branch]      ui/add-home-fallback        -> origin/ui/add-home-fallback
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8008535Z  * [new branch]      ui/figma-eval               -> origin/ui/figma-eval
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8009313Z  * [new branch]      ui/fix-utf8-encoding        -> origin/ui/fix-utf8-encoding
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8010122Z  * [new branch]      ui/fix-utf8-mirrors         -> origin/ui/fix-utf8-mirrors
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8010918Z  * [new branch]      ui/header-badge             -> origin/ui/header-badge
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8011686Z  * [new branch]      ui/rehydrate-ui             -> origin/ui/rehydrate-ui
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8012666Z  * [new branch]      ui/root-redirect            -> origin/ui/root-redirect
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8013509Z  * [new branch]      ui/status-dashboard         -> origin/ui/status-dashboard
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8014504Z  * [new branch]      ui/status-health            -> origin/ui/status-health
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8015274Z  * [new branch]      v4-orchestrator             -> origin/v4-orchestrator
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8016042Z  * [new branch]      v4-policy-gate              -> origin/v4-policy-gate
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8016886Z  * [new branch]      v4-self-heal-scripts-impl   -> origin/v4-self-heal-scripts-impl
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8017791Z  * [new branch]      v4-toggle-protection        -> origin/v4-toggle-protection
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8018611Z  * [new tag]         go-live-ui-v4core-20251121  -> go-live-ui-v4core-20251121
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8019560Z  * [new tag]         go-live/safety-pre-final-20251123-065123 -> go-live/safety-pre-final-20251123-065123
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8020677Z  * [new tag]         go-live/v4-core-ui-final-20251123-c76e53d -> go-live/v4-core-ui-final-20251123-c76e53d
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8021837Z  * [new tag]         rgpt-audit-align-14.2.35-closed -> rgpt-audit-align-14.2.35-closed
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8023008Z  * [new tag]         rgpt-audit-align-14.2.35-evidence -> rgpt-audit-align-14.2.35-evidence
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8024028Z  * [new tag]         rgpt-main-pre-p3-merge-20251214-0609 -> rgpt-main-pre-p3-merge-20251214-0609
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8024941Z  * [new tag]         rgpt-p3-a-cleaned-20251213  -> rgpt-p3-a-cleaned-20251213
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8025761Z  * [new tag]         rgpt-p3-d-bad-main-20251213 -> rgpt-p3-d-bad-main-20251213
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8026582Z  * [new tag]         rgpt-p3-d-fixed-20251213    -> rgpt-p3-d-fixed-20251213
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8027496Z  * [new tag]         rgpt-p3-final-candidate-20251214-0615 -> rgpt-p3-final-candidate-20251214-0615
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8028455Z  * [new tag]         rgpt-p3-final-merged-20251214 -> rgpt-p3-final-merged-20251214
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8029350Z  * [new tag]         safety-pre-p3D-20251213-152120 -> safety-pre-p3D-20251213-152120
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8030319Z  * [new tag]         safety-pre-rls-repair-20251118-192117 -> safety-pre-rls-repair-20251118-192117
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8031228Z  * [new tag]         v-backup-20251103-2158      -> v-backup-20251103-2158
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8071447Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8072853Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8079454Z [command]/usr/bin/git branch --list --remote origin/main
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8118253Z   origin/main
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8122613Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8123616Z ##[debug]  origin/main
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8124077Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8126868Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8146199Z 6ebdde862d02c5e77e6938742f25df19bbd0e48f
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8150171Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8151175Z ##[debug]6ebdde862d02c5e77e6938742f25df19bbd0e48f
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8152124Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8153191Z ::endgroup::
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8153679Z ##[endgroup]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8154444Z ::group::Determining the checkout info
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8155209Z ##[group]Determining the checkout info
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8156323Z ::endgroup::
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8156953Z ##[endgroup]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8157725Z [command]/usr/bin/git sparse-checkout disable
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8189506Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8190539Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8193547Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8217242Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8218327Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8219394Z ::group::Checking out the ref
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8220070Z ##[group]Checking out the ref
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8221688Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8845719Z Switched to a new branch 'main'
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8847622Z branch 'main' set up to track 'origin/main'.
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8858114Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8860215Z ##[debug]branch 'main' set up to track 'origin/main'.
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8861930Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8863829Z ::endgroup::
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8864906Z ##[endgroup]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8892847Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8894659Z ##[debug]commit 6ebdde862d02c5e77e6938742f25df19bbd0e48f
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8896123Z ##[debug]Author: rgpt-bot <rgpt-bot@users.noreply.github.com>
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8897503Z ##[debug]Date:   Tue Dec 23 08:58:48 2025 +0530
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8898691Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8899835Z ##[debug]    ci(claude-review): echo contract markers to logs for CI proof
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8901291Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8902160Z [command]/usr/bin/git log -1 --format=%H
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8921207Z 6ebdde862d02c5e77e6938742f25df19bbd0e48f
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8926838Z ##[debug]0
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8928201Z ##[debug]6ebdde862d02c5e77e6938742f25df19bbd0e48f
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8929135Z ##[debug]
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8933258Z ##[debug]Unsetting HOME override
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8942922Z ::remove-matcher owner=checkout-git::
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.8958133Z ##[debug]Removed matchers: 'checkout-git'
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.9012618Z ##[debug]Node Action run completed with exit code 0
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.9046766Z ##[debug]Save intra-action state isPost = true
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.9047804Z ##[debug]Save intra-action state setSafeDirectory = true
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.9048690Z ##[debug]Save intra-action state repositoryPath = /home/runner/work/rocketgpt/rocketgpt
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.9053209Z ##[debug]Set output commit = 6ebdde862d02c5e77e6938742f25df19bbd0e48f
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.9054376Z ##[debug]Set output ref = refs/heads/main
+claude-review	Checkout (read-only)	2025-12-23T03:30:19.9060788Z ##[debug]Finishing: Checkout (read-only)
+claude-review	Generate diff	∩╗┐2025-12-23T03:30:19.9076109Z ##[debug]Evaluating condition for step: 'Generate diff'
+claude-review	Generate diff	2025-12-23T03:30:19.9079445Z ##[debug]Evaluating: success()
+claude-review	Generate diff	2025-12-23T03:30:19.9080137Z ##[debug]Evaluating success:
+claude-review	Generate diff	2025-12-23T03:30:19.9080823Z ##[debug]=> true
+claude-review	Generate diff	2025-12-23T03:30:19.9081457Z ##[debug]Result: true
+claude-review	Generate diff	2025-12-23T03:30:19.9082797Z ##[debug]Starting: Generate diff
+claude-review	Generate diff	2025-12-23T03:30:19.9096792Z ##[debug]Loading inputs
+claude-review	Generate diff	2025-12-23T03:30:19.9098565Z ##[debug]Loading env
+claude-review	Generate diff	2025-12-23T03:30:19.9115449Z ##[group]Run set -euo pipefail
+claude-review	Generate diff	2025-12-23T03:30:19.9116076Z [36;1mset -euo pipefail[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9116524Z [36;1m[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9116960Z [36;1mecho "[INFO] event_name=${GITHUB_EVENT_NAME}"[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9117570Z [36;1mecho "[INFO] ref_name=${GITHUB_REF_NAME}"[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9118122Z [36;1mecho "[INFO] sha=${GITHUB_SHA}"[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9118589Z [36;1m[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9119064Z [36;1mif [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9182453Z [36;1m  # Ensure base branch exists locally[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9184196Z [36;1m  git fetch --no-tags --prune origin "${GITHUB_BASE_REF}:${GITHUB_BASE_REF}" || true[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9185895Z [36;1m  BASE="$(git merge-base "origin/${GITHUB_BASE_REF}" HEAD)"[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9186998Z [36;1melse[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9187859Z [36;1m  if git rev-parse HEAD^ >/dev/null 2>&1; then[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9188942Z [36;1m    BASE="$(git rev-parse HEAD^)"[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9189887Z [36;1m  else[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9190774Z [36;1m    echo "[FAIL] Cannot compute BASE (no parent commit)."[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9191863Z [36;1m    exit 128[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9192775Z [36;1m  fi[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9193436Z [36;1mfi[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9194069Z [36;1m[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9194745Z [36;1mecho "[INFO] base=$BASE"[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9195691Z [36;1mecho "[INFO] head=$(git rev-parse HEAD)"[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9196764Z [36;1mgit diff --no-color "$BASE..HEAD" > diff.txt[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9197856Z [36;1mecho "[OK] Diff written: diff.txt"[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9198973Z [36;1mecho "[INFO] Diff lines: $(wc -l < diff.txt)"[0m
+claude-review	Generate diff	2025-12-23T03:30:19.9236687Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+claude-review	Generate diff	2025-12-23T03:30:19.9237346Z ##[endgroup]
+claude-review	Generate diff	2025-12-23T03:30:19.9290940Z ##[debug]/usr/bin/bash --noprofile --norc -e -o pipefail /home/runner/work/_temp/18df0202-302e-4538-b61a-e616473f31be.sh
+claude-review	Generate diff	2025-12-23T03:30:19.9311893Z [INFO] event_name=workflow_dispatch
+claude-review	Generate diff	2025-12-23T03:30:19.9313791Z [INFO] ref_name=main
+claude-review	Generate diff	2025-12-23T03:30:19.9314588Z [INFO] sha=6ebdde862d02c5e77e6938742f25df19bbd0e48f
+claude-review	Generate diff	2025-12-23T03:30:19.9347365Z [INFO] base=4f4195acd1cf8de9fa9e8e494972f106268b6748
+claude-review	Generate diff	2025-12-23T03:30:19.9363094Z [INFO] head=6ebdde862d02c5e77e6938742f25df19bbd0e48f
+claude-review	Generate diff	2025-12-23T03:30:19.9383957Z [OK] Diff written: diff.txt
+claude-review	Generate diff	2025-12-23T03:30:19.9405127Z [INFO] Diff lines: 23
+claude-review	Generate diff	2025-12-23T03:30:19.9414373Z ##[debug]Finishing: Generate diff
+claude-review	Run Claude read-only review	∩╗┐2025-12-23T03:30:19.9428273Z ##[debug]Evaluating: secrets.CLAUDE_API_KEY
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9428954Z ##[debug]Evaluating Index:
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9429439Z ##[debug]..Evaluating secrets:
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9429938Z ##[debug]..=> Object
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9430368Z ##[debug]..Evaluating String:
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9430838Z ##[debug]..=> 'CLAUDE_API_KEY'
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9432029Z ##[debug]=> '***'
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9433308Z ##[debug]Result: '***'
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9440450Z ##[debug]Evaluating condition for step: 'Run Claude read-only review'
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9442808Z ##[debug]Evaluating: success()
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9443482Z ##[debug]Evaluating success:
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9444197Z ##[debug]=> true
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9444814Z ##[debug]Result: true
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9445912Z ##[debug]Starting: Run Claude read-only review
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9456766Z ##[debug]Loading inputs
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9458351Z ##[debug]Loading env
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9466207Z ##[group]Run pwsh .github/tools/claude/invoke-claude-review.ps1 `
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9467031Z [36;1mpwsh .github/tools/claude/invoke-claude-review.ps1 `[0m
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9467663Z [36;1m  -DiffFile diff.txt `[0m
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9468156Z [36;1m  -OutFile claude_review.md[0m
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9519853Z shell: /usr/bin/pwsh -command ". '{0}'"
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9520393Z env:
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9521421Z   CLAUDE_API_KEY: ***
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9521835Z ##[endgroup]
+claude-review	Run Claude read-only review	2025-12-23T03:30:19.9557629Z ##[debug]/usr/bin/pwsh -command ". '/home/runner/work/_temp/2350ce9d-4988-4838-8111-a6272e06c4ea.ps1'"
+claude-review	Run Claude read-only review	2025-12-23T03:30:41.4349871Z [OK] Claude review written to claude_review.md (model: claude-sonnet-4-5-20250929)
+claude-review	Run Claude read-only review	2025-12-23T03:30:41.7063174Z ##[debug]Finishing: Run Claude read-only review
+claude-review	Echo contract markers (CI proof)	∩╗┐2025-12-23T03:30:41.7073259Z ##[debug]Evaluating condition for step: 'Echo contract markers (CI proof)'
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7076523Z ##[debug]Evaluating: success()
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7077039Z ##[debug]Evaluating success:
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7077606Z ##[debug]=> true
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7078285Z ##[debug]Result: true
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7079134Z ##[debug]Starting: Echo contract markers (CI proof)
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7091800Z ##[debug]Loading inputs
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7093742Z ##[debug]Loading env
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7099441Z ##[group]Run Write-Host "contract_path=docs/contracts/CLAUDE_EXECUTION_CONTRACT_v1.md"
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7100339Z [36;1mWrite-Host "contract_path=docs/contracts/CLAUDE_EXECUTION_CONTRACT_v1.md"[0m
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7101015Z [36;1mWrite-Host "contract_version=v1.0"[0m
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7101514Z [36;1mWrite-Host "execution_mode=DIFF_ONLY"[0m
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7102496Z [36;1m# If your reviewer script prints hash into claude_review.md, we still emit a prefix marker for grep:[0m
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7103529Z [36;1mWrite-Host "contract_hash_sha256="[0m
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7140326Z shell: /usr/bin/pwsh -command ". '{0}'"
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7140808Z ##[endgroup]
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.7178468Z ##[debug]/usr/bin/pwsh -command ". '/home/runner/work/_temp/699a5afe-c144-4506-a50a-4b2e39109cc4.ps1'"
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.9559820Z contract_path=docs/contracts/CLAUDE_EXECUTION_CONTRACT_v1.md
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.9560833Z contract_version=v1.0
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.9562568Z execution_mode=DIFF_ONLY
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:41.9564859Z contract_hash_sha256=
+claude-review	Echo contract markers (CI proof)	2025-12-23T03:30:42.0286079Z ##[debug]Finishing: Echo contract markers (CI proof)
+claude-review	Upload review artifact	∩╗┐2025-12-23T03:30:42.0296605Z ##[debug]Evaluating condition for step: 'Upload review artifact'
+claude-review	Upload review artifact	2025-12-23T03:30:42.0299184Z ##[debug]Evaluating: success()
+claude-review	Upload review artifact	2025-12-23T03:30:42.0299894Z ##[debug]Evaluating success:
+claude-review	Upload review artifact	2025-12-23T03:30:42.0300397Z ##[debug]=> true
+claude-review	Upload review artifact	2025-12-23T03:30:42.0300819Z ##[debug]Result: true
+claude-review	Upload review artifact	2025-12-23T03:30:42.0301581Z ##[debug]Starting: Upload review artifact
+claude-review	Upload review artifact	2025-12-23T03:30:42.0337302Z ##[debug]Loading inputs
+claude-review	Upload review artifact	2025-12-23T03:30:42.0342705Z ##[debug]Loading env
+claude-review	Upload review artifact	2025-12-23T03:30:42.0347714Z ##[group]Run actions/upload-artifact@v4
+claude-review	Upload review artifact	2025-12-23T03:30:42.0348017Z with:
+claude-review	Upload review artifact	2025-12-23T03:30:42.0348215Z   name: claude-readonly-review
+claude-review	Upload review artifact	2025-12-23T03:30:42.0348477Z   path: claude_review.md
+claude-review	Upload review artifact	2025-12-23T03:30:42.0348720Z   if-no-files-found: warn
+claude-review	Upload review artifact	2025-12-23T03:30:42.0348950Z   compression-level: 6
+claude-review	Upload review artifact	2025-12-23T03:30:42.0349168Z   overwrite: false
+claude-review	Upload review artifact	2025-12-23T03:30:42.0349383Z   include-hidden-files: false
+claude-review	Upload review artifact	2025-12-23T03:30:42.0349619Z ##[endgroup]
+claude-review	Upload review artifact	2025-12-23T03:30:42.2445440Z ##[debug]followSymbolicLinks 'true'
+claude-review	Upload review artifact	2025-12-23T03:30:42.2446740Z ##[debug]implicitDescendants 'true'
+claude-review	Upload review artifact	2025-12-23T03:30:42.2448112Z ##[debug]omitBrokenSymbolicLinks 'true'
+claude-review	Upload review artifact	2025-12-23T03:30:42.2449480Z ##[debug]excludeHiddenFiles 'true'
+claude-review	Upload review artifact	2025-12-23T03:30:42.2468620Z ##[debug]followSymbolicLinks 'true'
+claude-review	Upload review artifact	2025-12-23T03:30:42.2469644Z ##[debug]implicitDescendants 'true'
+claude-review	Upload review artifact	2025-12-23T03:30:42.2470672Z ##[debug]matchDirectories 'true'
+claude-review	Upload review artifact	2025-12-23T03:30:42.2471761Z ##[debug]omitBrokenSymbolicLinks 'true'
+claude-review	Upload review artifact	2025-12-23T03:30:42.2473244Z ##[debug]excludeHiddenFiles 'true'
+claude-review	Upload review artifact	2025-12-23T03:30:42.2477091Z ##[debug]Search path '/home/runner/work/rocketgpt/rocketgpt/claude_review.md'
+claude-review	Upload review artifact	2025-12-23T03:30:42.2507692Z ##[debug]File:/home/runner/work/rocketgpt/rocketgpt/claude_review.md was found using the provided searchPath
+claude-review	Upload review artifact	2025-12-23T03:30:42.2508841Z With the provided path, there will be 1 file uploaded
+claude-review	Upload review artifact	2025-12-23T03:30:42.2509977Z ##[debug]Root artifact directory is /home/runner/work/rocketgpt/rocketgpt
+claude-review	Upload review artifact	2025-12-23T03:30:42.2514002Z Artifact name is valid!
+claude-review	Upload review artifact	2025-12-23T03:30:42.2515305Z Root directory input is valid!
+claude-review	Upload review artifact	2025-12-23T03:30:42.2528980Z ##[debug]Workflow Run Backend ID: 028efe73-4dce-4c69-b747-4e3d1f2068b2
+claude-review	Upload review artifact	2025-12-23T03:30:42.2530371Z ##[debug]Workflow Job Run Backend ID: acff9507-eaf5-5a8f-92c0-630b57e13590
+claude-review	Upload review artifact	2025-12-23T03:30:42.2541676Z ##[debug][Request] CreateArtifact https://results-receiver.actions.githubusercontent.com/twirp/github.actions.results.api.v1.ArtifactService/CreateArtifact
+claude-review	Upload review artifact	2025-12-23T03:30:42.3199941Z ##[debug][Response] - 200
+claude-review	Upload review artifact	2025-12-23T03:30:42.3205524Z ##[debug]Headers: {
+claude-review	Upload review artifact	2025-12-23T03:30:42.3206088Z ##[debug]  "content-length": "577",
+claude-review	Upload review artifact	2025-12-23T03:30:42.3206850Z ##[debug]  "content-type": "application/json",
+claude-review	Upload review artifact	2025-12-23T03:30:42.3207401Z ##[debug]  "date": "Tue, 23 Dec 2025 03:30:42 GMT",
+claude-review	Upload review artifact	2025-12-23T03:30:42.3208042Z ##[debug]  "x-github-backend": "Kubernetes",
+claude-review	Upload review artifact	2025-12-23T03:30:42.3208671Z ##[debug]  "x-github-request-id": "1C32:1C0191:D131D8:10A3704:694A0CE2"
+claude-review	Upload review artifact	2025-12-23T03:30:42.3209257Z ##[debug]}
+claude-review	Upload review artifact	2025-12-23T03:30:42.3209985Z ::add-mask::***
+claude-review	Upload review artifact	2025-12-23T03:30:42.3211623Z ::add-mask::***
+claude-review	Upload review artifact	2025-12-23T03:30:42.3213184Z ##[debug]Body: {
+claude-review	Upload review artifact	2025-12-23T03:30:42.3213534Z ##[debug]  "ok": true,
+claude-review	Upload review artifact	2025-12-23T03:30:42.3218018Z ##[debug]  "signed_upload_url": "https://productionresultssa7.blob.core.windows.net/actions-results/028efe73-4dce-4c69-b747-4e3d1f2068b2/workflow-job-run-acff9507-eaf5-5a8f-92c0-630b57e13590/artifacts/87f1eddee9cbb661920127db5a4f896d076f21fedf4a7356a7b6bb0a110d87a9.zip?se=2025-12-23T04%3A30%3A42Z&sig=***&ske=2025-12-23T14%3A00%3A44Z&skoid=ca7593d4-ee42-46cd-af88-8b886a2f84eb&sks=b&skt=2025-12-23T02%3A00%3A44Z&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skv=2025-11-05&sp=cw&spr=https&sr=b&st=2025-12-23T03%3A30%3A37Z&sv=2025-11-05"
+claude-review	Upload review artifact	2025-12-23T03:30:42.3220872Z ##[debug]}
+claude-review	Upload review artifact	2025-12-23T03:30:42.3221426Z ##[debug]Creating Artifact archive with compressionLevel: 6
+claude-review	Upload review artifact	2025-12-23T03:30:42.3234428Z ##[debug]Zip write high watermark value 8388608
+claude-review	Upload review artifact	2025-12-23T03:30:42.3235082Z ##[debug]Zip read high watermark value 8388608
+claude-review	Upload review artifact	2025-12-23T03:30:42.3282233Z ##[debug]Uploading artifact zip to blob storage with maxConcurrency: 5, bufferSize: 8388608
+claude-review	Upload review artifact	2025-12-23T03:30:42.3292063Z Beginning upload of artifact content to blob storage
+claude-review	Upload review artifact	2025-12-23T03:30:42.3486940Z ##[debug]Zip stream for upload has ended.
+claude-review	Upload review artifact	2025-12-23T03:30:42.3490148Z ##[debug]Zip stream for upload has finished.
+claude-review	Upload review artifact	2025-12-23T03:30:42.4026368Z Uploaded bytes 1266
+claude-review	Upload review artifact	2025-12-23T03:30:42.4215456Z Finished uploading artifact content to blob storage!
+claude-review	Upload review artifact	2025-12-23T03:30:42.4219097Z SHA256 digest of uploaded artifact zip is 4ed1fba85e91be27d474cf92c47b4f3902809d4d589b7342e81dd3bed6ce58f6
+claude-review	Upload review artifact	2025-12-23T03:30:42.4221026Z Finalizing artifact upload
+claude-review	Upload review artifact	2025-12-23T03:30:42.4226357Z ##[debug][Request] FinalizeArtifact https://results-receiver.actions.githubusercontent.com/twirp/github.actions.results.api.v1.ArtifactService/FinalizeArtifact
+claude-review	Upload review artifact	2025-12-23T03:30:42.5021960Z ##[debug][Response] - 200
+claude-review	Upload review artifact	2025-12-23T03:30:42.5023747Z ##[debug]Headers: {
+claude-review	Upload review artifact	2025-12-23T03:30:42.5024563Z ##[debug]  "content-length": "38",
+claude-review	Upload review artifact	2025-12-23T03:30:42.5025695Z ##[debug]  "content-type": "application/json",
+claude-review	Upload review artifact	2025-12-23T03:30:42.5027007Z ##[debug]  "date": "Tue, 23 Dec 2025 03:30:42 GMT",
+claude-review	Upload review artifact	2025-12-23T03:30:42.5028243Z ##[debug]  "x-github-backend": "Kubernetes",
+claude-review	Upload review artifact	2025-12-23T03:30:42.5029752Z ##[debug]  "x-github-request-id": "1C32:1C0191:D13208:10A3754:694A0CE2"
+claude-review	Upload review artifact	2025-12-23T03:30:42.5031166Z ##[debug]}
+claude-review	Upload review artifact	2025-12-23T03:30:42.5032246Z ##[debug]Body: {
+claude-review	Upload review artifact	2025-12-23T03:30:42.5033025Z ##[debug]  "ok": true,
+claude-review	Upload review artifact	2025-12-23T03:30:42.5033664Z ##[debug]  "artifact_id": "4949530439"
+claude-review	Upload review artifact	2025-12-23T03:30:42.5034251Z ##[debug]}
+claude-review	Upload review artifact	2025-12-23T03:30:42.5035197Z Artifact claude-readonly-review.zip successfully finalized. Artifact ID 4949530439
+claude-review	Upload review artifact	2025-12-23T03:30:42.5037227Z Artifact claude-readonly-review has been successfully uploaded! Final size is 1266 bytes. Artifact ID is 4949530439
+claude-review	Upload review artifact	2025-12-23T03:30:42.5039405Z Artifact download URL: https://github.com/proteaNirav/rocketgpt/actions/runs/20450514792/artifacts/4949530439
+claude-review	Upload review artifact	2025-12-23T03:30:42.5108050Z ##[debug]Node Action run completed with exit code 0
+claude-review	Upload review artifact	2025-12-23T03:30:42.5111902Z ##[debug]Set output artifact-id = 4949530439
+claude-review	Upload review artifact	2025-12-23T03:30:42.5112998Z ##[debug]Set output artifact-digest = 4ed1fba85e91be27d474cf92c47b4f3902809d4d589b7342e81dd3bed6ce58f6
+claude-review	Upload review artifact	2025-12-23T03:30:42.5114155Z ##[debug]Set output artifact-url = https://github.com/proteaNirav/rocketgpt/actions/runs/20450514792/artifacts/4949530439
+claude-review	Upload review artifact	2025-12-23T03:30:42.5115269Z ##[debug]Finishing: Upload review artifact
+claude-review	Post Checkout (read-only)	∩╗┐2025-12-23T03:30:42.5125894Z ##[debug]Evaluating condition for step: 'Post Checkout (read-only)'
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5128748Z ##[debug]Evaluating: always()
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5129198Z ##[debug]Evaluating always:
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5129995Z ##[debug]=> true
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5130402Z ##[debug]Result: true
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5131187Z ##[debug]Starting: Post Checkout (read-only)
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5188010Z ##[debug]Loading inputs
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5189789Z ##[debug]Evaluating: github.repository
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5190081Z ##[debug]Evaluating Index:
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5190332Z ##[debug]..Evaluating github:
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5190587Z ##[debug]..=> Object
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5190812Z ##[debug]..Evaluating String:
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5191071Z ##[debug]..=> 'repository'
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5191362Z ##[debug]=> 'proteaNirav/rocketgpt'
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5191654Z ##[debug]Result: 'proteaNirav/rocketgpt'
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5194120Z ##[debug]Evaluating: github.token
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5194406Z ##[debug]Evaluating Index:
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5194686Z ##[debug]..Evaluating github:
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5194937Z ##[debug]..=> Object
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5195166Z ##[debug]..Evaluating String:
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5195411Z ##[debug]..=> 'token'
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5195878Z ##[debug]=> '***'
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5196203Z ##[debug]Result: '***'
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5207727Z ##[debug]Loading env
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.5211982Z Post job cleanup.
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6132985Z ##[debug]Getting git version
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6147400Z [command]/usr/bin/git version
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6183958Z git version 2.52.0
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6206640Z ##[debug]0
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6207255Z ##[debug]git version 2.52.0
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6207649Z ##[debug]
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6208744Z ##[debug]Set git useragent to: git/2.52.0 (github-actions-checkout)
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6211994Z ::add-mask::***
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6228538Z Temporarily overriding HOME='/home/runner/work/_temp/93d71cf5-fe45-4829-8bbb-ff39caa8f9e5' before making global git config changes
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6230263Z Adding repository directory to the temporary git global config as a safe directory
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6235478Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/rocketgpt/rocketgpt
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6267611Z ##[debug]0
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6268001Z ##[debug]
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6274908Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6301592Z ##[debug]1
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6302047Z ##[debug]
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6307710Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6533722Z ##[debug]0
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6534610Z ##[debug]
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6543144Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6565098Z http.https://github.com/.extraheader
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6571862Z ##[debug]0
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6574377Z ##[debug]http.https://github.com/.extraheader
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6574839Z ##[debug]
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6578222Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6603946Z ##[debug]0
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6604670Z ##[debug]
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6608768Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6835557Z ##[debug]0
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6836298Z ##[debug]
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6841999Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6867906Z ##[debug]1
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6868565Z ##[debug]
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.6873661Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.7092006Z ##[debug]0
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.7092952Z ##[debug]
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.7093933Z ##[debug]Unsetting HOME override
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.7163514Z ##[debug]Node Action run completed with exit code 0
+claude-review	Post Checkout (read-only)	2025-12-23T03:30:42.7166297Z ##[debug]Finishing: Post Checkout (read-only)
+claude-review	Complete job	∩╗┐2025-12-23T03:30:42.7210180Z ##[debug]Starting: Complete job
+claude-review	Complete job	2025-12-23T03:30:42.7211814Z Cleaning up orphan processes
+claude-review	Complete job	2025-12-23T03:30:42.7502715Z ##[debug]Finishing: Complete job
