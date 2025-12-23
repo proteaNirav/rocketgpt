@@ -16,3 +16,12 @@
   - dry_run=true
 - Capture run URL + logs into this folder.
 
+
+## Step: B-14-03 — Dry-run dispatch executed
+- Date: 2025-12-23 11:40:32 +05:30
+- Workflow: claude_readonly_review.yml
+- Inputs: enable=true, dry_run=true
+- RunId: 20451150571
+- RunUrl: https://github.com/proteaNirav/rocketgpt/actions/runs/20450968766
+- CreatedAt: 
+
