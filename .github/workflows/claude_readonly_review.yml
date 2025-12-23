@@ -17,7 +17,6 @@ jobs:
       - name: Checkout (read-only)
         uses: actions/checkout@v4
         with:
-    fetch-depth: 0
           fetch-depth: 0
       - name: Generate diff
         shell: bash
@@ -43,11 +42,9 @@ jobs:
 
           echo "[INFO] base=$BASE"
           echo "[INFO] head=$(git rev-parse HEAD)"
-
-          git diff --no-color "$BASE..HEAD" > claude_diff.patch
-          echo "[OK] Diff written: claude_diff.patch"
-          echo "[INFO] Diff lines: $(wc -l < claude_diff.patch)"
-
+          git diff --no-color "$BASE..HEAD" > diff.txt
+          echo "[OK] Diff written: diff.txt"
+          echo "[INFO] Diff lines: $(wc -l < diff.txt)"
       - name: Run Claude read-only review
         shell: pwsh
         env:
