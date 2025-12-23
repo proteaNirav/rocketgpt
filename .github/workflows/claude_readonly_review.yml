@@ -1,4 +1,4 @@
-﻿name: claude-readonly-review
+name: claude-readonly-review
 
 on:
   workflow_dispatch:
