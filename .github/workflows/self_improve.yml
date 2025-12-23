@@ -1,5 +1,10 @@
 name: Self-Improve (v4 Core AI)
 
+# STATUS: STUB - Not Functional
+# This workflow is a placeholder for future v4 self-improve engine.
+# Current implementation only echoes TODO messages (no actual functionality).
+# DO NOT enable in production until v4 engine is implemented with proper safety gates.
+
 on:
   workflow_dispatch:
   schedule:
@@ -26,5 +31,14 @@ jobs:
 
       - name: Run self-improvement script (stub)
         run: |
+          echo "⚠️  STATUS: STUB - This workflow is not functional"
+          echo ""
           echo "TODO: Wire RocketGPT v4 self-improve engine."
           echo "Read docs/roadmap and config/self_improve_backlog.json, open PRs."
+          echo ""
+          echo "Required before activation:"
+          echo "- [ ] v4 Core AI engine implementation"
+          echo "- [ ] Dry-run mode"
+          echo "- [ ] Approval gates"
+          echo "- [ ] Human review workflow"
+          echo "- [ ] Limited scope testing (docs-only first)"
