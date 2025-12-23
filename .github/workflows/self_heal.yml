@@ -1,11 +1,20 @@
 name: Self-Heal (v4 Core AI)
 
+# Safety: Self-heal workflow (stub - currently disabled)
+# - Triggered on CI failure
+# - Stub implementation: will inspect and propose fixes
+# - Permissions: read-only (no auto-commits until approved)
+# - Future: Will create PR with fixes, requires human approval
+
 on:
   workflow_dispatch:
   workflow_run:
     workflows: ["ci"]
     types:
       - completed
+
+permissions:
+  contents: read
 
 jobs:
   self_heal:

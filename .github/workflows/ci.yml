@@ -1,8 +1,16 @@
 name: ci
 
+# Safety: Standard CI pipeline for build, test, lint validation
+# - Read-only checkout
+# - No write operations to repo or external services
+# - BOM detection enforces UTF-8 no-BOM policy
+
 on:
   push:
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   bom_check:

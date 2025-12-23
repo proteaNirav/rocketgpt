@@ -1,5 +1,13 @@
 name: _selfimprove_ingest_ci
 
+# Safety: Self-improve ledger ingest workflow (disabled by default)
+# - Workflow requires manual dispatch with enable='true' to run
+# - dry_run flag defaults to 'true' - no Supabase writes unless explicitly disabled
+# - Permissions: read-only on contents (no repository modifications)
+# - Writes to Supabase self-improve ledger only when: enable='true' AND dry_run='false'
+# - Used for logging CI failures/insights into improvement tracking system
+# - Audit: All ingests logged with origin ref, commit SHA, and evidence URL
+
 on:
   workflow_dispatch:
     inputs:

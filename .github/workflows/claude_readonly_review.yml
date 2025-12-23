@@ -1,5 +1,12 @@
 name: claude-readonly-review
 
+# Safety: Read-only Claude code review workflow
+# - Workflow requires manual dispatch with enable='true' to run
+# - dry_run flag defaults to 'true' for safe testing
+# - Only reads code diff, never modifies repository
+# - Permissions: read-only on contents and pull-requests
+# - Generates review as artifact for manual inspection
+
 on:
   workflow_dispatch:
     inputs:
