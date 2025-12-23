@@ -1,9 +1,6 @@
 ﻿name: _selfimprove_ingest_ci
 
 on:
-permissions:
-  contents: read
-
   workflow_dispatch:
     inputs:
       enable:
@@ -44,7 +41,6 @@ permissions:
         description: "Confidence 0..1"
         required: false
         default: "0.80"
-
   workflow_call:
     inputs:
       enable:
@@ -71,6 +67,9 @@ permissions:
         required: false
         type: string
         default: "0.80"
+
+permissions:
+  contents: read
 
 jobs:
   ingest:
@@ -135,8 +134,4 @@ jobs:
             -RelatedCommit "${{ github.sha }}" `
             -RelatedPR "" `
             -OriginRef $origin
-
-
-
-
 
