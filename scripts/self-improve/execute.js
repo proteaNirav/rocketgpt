@@ -19,6 +19,10 @@ function loadSelectedFromFile() {
 }
 
 function main() {
+  // 0) Check for --dry-run flag (always safe mode)
+  const args = process.argv.slice(2);
+  const isDryRun = args.includes("--dry-run") || args.includes("-n");
+
   // 1) Base data from env (as set by parse_selected.js)
   let id = process.env.improvement_id;
   let title = process.env.improvement_title;
@@ -120,8 +124,8 @@ function main() {
     console.log("----- End of Chat-Intent Plan (preview) -----");
     console.log("");
 
-    // Optional: write plan to docs when env flag is enabled
-    const allowWrite = process.env.SELF_IMPROVE_WRITE_PLAN === "true";
+    // Optional: write plan to docs when env flag is enabled (unless dry-run)
+    const allowWrite = process.env.SELF_IMPROVE_WRITE_PLAN === "true" && !isDryRun;
 
     if (allowWrite) {
       try {
@@ -137,14 +141,22 @@ function main() {
       }
       console.log("");
     } else {
-      console.log("Skipping write to docs/self-improve/chat-intent-plan.md (SELF_IMPROVE_WRITE_PLAN != 'true').");
+      if (isDryRun) {
+        console.log("Skipping write to docs/self-improve/chat-intent-plan.md (--dry-run mode).");
+      } else {
+        console.log("Skipping write to docs/self-improve/chat-intent-plan.md (SELF_IMPROVE_WRITE_PLAN != 'true').");
+      }
       console.log("");
     }
   }
 
   // 5) Simulation mode notice (global)
-  console.log("Executor is in simulation mode (no code changes yet).");
-  console.log("Only documentation/plan output is generated when enabled by env flag.");
+  if (isDryRun) {
+    console.log("Executor running in DRY-RUN mode (no file writes).");
+  } else {
+    console.log("Executor is in simulation mode (no code changes yet).");
+    console.log("Only documentation/plan output is generated when enabled by env flag.");
+  }
   console.log("");
 }
 
