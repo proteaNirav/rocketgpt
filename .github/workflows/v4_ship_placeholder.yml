@@ -1,7 +1,15 @@
 name: v4 Ship (placeholder)
 
+# Safety: Placeholder workflow (stub - currently no-op)
+# - Placeholder for future v4 ship logic
+# - Currently does nothing
+# - Permissions: read-only until ship logic is defined
+
 on:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   noop:
