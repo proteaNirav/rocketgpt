@@ -48,3 +48,19 @@
 - Title: fix(ci): strip UTF-8 BOM from _selfimprove_ingest_ci workflow
 - LogFile: docs\ops\executions\RGPT-S2-B-14\B-14-06_run_20453219914_log.txt
 
+
+### Step: B-14-06E — workflow_dispatch dry-run validation (log + metadata)
+- CapturedAt: 2025-12-23 12:18:45 +05:30
+- Workflow: _selfimprove_ingest_ci.yml
+- Inputs: enable=true, dry_run=true
+- RunId: 20453624455
+- RunUrl: https://github.com/proteaNirav/rocketgpt/actions/runs/20453624455
+- CreatedAt: 2025-12-23T06:45:46Z
+- Status: completed
+- Conclusion: success
+- HeadSha: 6b242542e38f569d2cc18a01e8bf72e765ad0b1a
+- Title: _selfimprove_ingest_ci
+- LogFile: docs\ops\executions\RGPT-S2-B-14\B-14-06_dispatch_run_20453624455_log.txt
+
+#### Result
+- Status: success
