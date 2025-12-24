@@ -1,4 +1,4 @@
-﻿name: Watchdog
+name: Watchdog
 
 on:
   workflow_dispatch:
