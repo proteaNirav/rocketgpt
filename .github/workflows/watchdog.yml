@@ -22,7 +22,7 @@ jobs:
             core.info('Observed run: ' + context.payload.workflow_run.name);
             core.info('Conclusion: ' + context.payload.workflow_run.conclusion);
 
-      - name: On failure Ã¢â‚¬â€ minimal redispatch
+      - name: On failure - minimal redispatch
         if: ${{ contains(fromJson('["failure","cancelled","timed_out"]'), github.event.workflow_run.conclusion) }}
         uses: actions/github-script@v7
         with:
@@ -40,3 +40,4 @@ jobs:
             } catch (e) {
               core.warning('Redispatch failed: ' + e.message);
             }
+
