@@ -15,10 +15,11 @@ jobs:
       contents: read
     steps:
       - name: Sanity
-        run: echo "Manual Watchdog dispatch running on ref=\"
-
-      # Reuse the same logic by calling the existing file's intent (minimal).
-      # We keep this simple: just log that this is a manual trigger.
+        shell: bash
+        run: |
+          echo Manual Watchdog dispatch running
+          echo REF=
+          echo SHA=
       - name: Manual Observe
         uses: actions/github-script@v7
         with:
