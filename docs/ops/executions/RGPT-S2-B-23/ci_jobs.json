@@ -1,0 +1,250 @@
+﻿{
+    "jobs":  [
+                 {
+                     "completedAt":  "2025-12-24T12:23:35Z",
+                     "conclusion":  "success",
+                     "databaseId":  58868779686,
+                     "name":  "build-test",
+                     "startedAt":  "2025-12-24T12:22:21Z",
+                     "status":  "completed",
+                     "steps":  [
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:22Z",
+                                       "conclusion":  "success",
+                                       "name":  "Set up job",
+                                       "number":  1,
+                                       "startedAt":  "2025-12-24T12:22:21Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:25Z",
+                                       "conclusion":  "success",
+                                       "name":  "Run actions/checkout@v4",
+                                       "number":  2,
+                                       "startedAt":  "2025-12-24T12:22:22Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:25Z",
+                                       "conclusion":  "success",
+                                       "name":  "Show tree (top level + UI folder)",
+                                       "number":  3,
+                                       "startedAt":  "2025-12-24T12:22:25Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:26Z",
+                                       "conclusion":  "success",
+                                       "name":  "Setup Node 20 (with pnpm cache if lockfile exists)",
+                                       "number":  4,
+                                       "startedAt":  "2025-12-24T12:22:25Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:26Z",
+                                       "conclusion":  "skipped",
+                                       "name":  "Setup Node 20 (no cache fallback)",
+                                       "number":  5,
+                                       "startedAt":  "2025-12-24T12:22:26Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:26Z",
+                                       "conclusion":  "success",
+                                       "name":  "Enable Corepack (for pnpm)",
+                                       "number":  6,
+                                       "startedAt":  "2025-12-24T12:22:26Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:27Z",
+                                       "conclusion":  "success",
+                                       "name":  "Activate pnpm (corepack)",
+                                       "number":  7,
+                                       "startedAt":  "2025-12-24T12:22:26Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:27Z",
+                                       "conclusion":  "success",
+                                       "name":  "Validate package.json (UI)",
+                                       "number":  8,
+                                       "startedAt":  "2025-12-24T12:22:27Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:34Z",
+                                       "conclusion":  "success",
+                                       "name":  "Install UI deps",
+                                       "number":  9,
+                                       "startedAt":  "2025-12-24T12:22:27Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:41Z",
+                                       "conclusion":  "success",
+                                       "name":  "Typecheck (UI)",
+                                       "number":  10,
+                                       "startedAt":  "2025-12-24T12:22:34Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:45Z",
+                                       "conclusion":  "success",
+                                       "name":  "Lint (UI) - autofix",
+                                       "number":  11,
+                                       "startedAt":  "2025-12-24T12:22:41Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:49Z",
+                                       "conclusion":  "success",
+                                       "name":  "Lint (UI) - strict",
+                                       "number":  12,
+                                       "startedAt":  "2025-12-24T12:22:45Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:23:29Z",
+                                       "conclusion":  "success",
+                                       "name":  "Build (UI)",
+                                       "number":  13,
+                                       "startedAt":  "2025-12-24T12:22:49Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:23:29Z",
+                                       "conclusion":  "success",
+                                       "name":  "Set up Python",
+                                       "number":  14,
+                                       "startedAt":  "2025-12-24T12:23:29Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:23:31Z",
+                                       "conclusion":  "success",
+                                       "name":  "Install ruff",
+                                       "number":  15,
+                                       "startedAt":  "2025-12-24T12:23:29Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:23:31Z",
+                                       "conclusion":  "success",
+                                       "name":  "Lint core-api (non blocking)",
+                                       "number":  16,
+                                       "startedAt":  "2025-12-24T12:23:31Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:23:31Z",
+                                       "conclusion":  "success",
+                                       "name":  "Format core-api (non blocking)",
+                                       "number":  17,
+                                       "startedAt":  "2025-12-24T12:23:31Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:23:32Z",
+                                       "conclusion":  "success",
+                                       "name":  "Run QA scenarios",
+                                       "number":  18,
+                                       "startedAt":  "2025-12-24T12:23:31Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:23:33Z",
+                                       "conclusion":  "success",
+                                       "name":  "Upload QA report",
+                                       "number":  19,
+                                       "startedAt":  "2025-12-24T12:23:32Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:23:33Z",
+                                       "conclusion":  "success",
+                                       "name":  "Post Set up Python",
+                                       "number":  36,
+                                       "startedAt":  "2025-12-24T12:23:33Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:23:33Z",
+                                       "conclusion":  "success",
+                                       "name":  "Post Setup Node 20 (with pnpm cache if lockfile exists)",
+                                       "number":  37,
+                                       "startedAt":  "2025-12-24T12:23:33Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:23:33Z",
+                                       "conclusion":  "success",
+                                       "name":  "Post Run actions/checkout@v4",
+                                       "number":  38,
+                                       "startedAt":  "2025-12-24T12:23:33Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:23:33Z",
+                                       "conclusion":  "success",
+                                       "name":  "Complete job",
+                                       "number":  39,
+                                       "startedAt":  "2025-12-24T12:23:33Z",
+                                       "status":  "completed"
+                                   }
+                               ],
+                     "url":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20486099701/job/58868779686"
+                 },
+                 {
+                     "completedAt":  "2025-12-24T12:22:28Z",
+                     "conclusion":  "failure",
+                     "databaseId":  58868779698,
+                     "name":  "Detect UTF-8 BOM",
+                     "startedAt":  "2025-12-24T12:22:20Z",
+                     "status":  "completed",
+                     "steps":  [
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:21Z",
+                                       "conclusion":  "success",
+                                       "name":  "Set up job",
+                                       "number":  1,
+                                       "startedAt":  "2025-12-24T12:22:20Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:22Z",
+                                       "conclusion":  "success",
+                                       "name":  "Checkout",
+                                       "number":  2,
+                                       "startedAt":  "2025-12-24T12:22:21Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:27Z",
+                                       "conclusion":  "failure",
+                                       "name":  "Run BOM detector",
+                                       "number":  3,
+                                       "startedAt":  "2025-12-24T12:22:22Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:27Z",
+                                       "conclusion":  "success",
+                                       "name":  "Post Checkout",
+                                       "number":  6,
+                                       "startedAt":  "2025-12-24T12:22:27Z",
+                                       "status":  "completed"
+                                   },
+                                   {
+                                       "completedAt":  "2025-12-24T12:22:27Z",
+                                       "conclusion":  "success",
+                                       "name":  "Complete job",
+                                       "number":  7,
+                                       "startedAt":  "2025-12-24T12:22:27Z",
+                                       "status":  "completed"
+                                   }
+                               ],
+                     "url":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20486099701/job/58868779698"
+                 }
+             ]
+}
