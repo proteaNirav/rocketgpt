@@ -1,0 +1,46 @@
+﻿"workflow","state","path","status","conclusion","headSha","onHead","createdAt"
+".github/workflows/_temp_bad.yml","active",".github/workflows/_temp_bad.yml",,,,"False",
+".github/workflows/auto-merge.yml","active",".github/workflows/auto-merge.yml","completed","failure","7a595039b7bd10f2ef790d34034dc7aace06f5b8","False","2025-10-31T08:53:31Z"
+".github/workflows/claude-pr-review.yml","active",".github/workflows/claude-pr-review.yml",,,,"False",
+".github/workflows/security-scan.yml","active",".github/workflows/security-scan.yml",,,,"False",
+".github/workflows/validate.yml","active",".github/workflows/validate.yml",,,,"False",
+"_selfimprove_ingest_ci","active",".github/workflows/_selfimprove_ingest_ci.yml","completed","success","6b242542e38f569d2cc18a01e8bf72e765ad0b1a","False","2025-12-23T06:45:46Z"
+"AI Codegen","active",".github/workflows/codegen.yml","completed","failure","70ec60c9e799ea0af2b753f0ad2e4a8cfd2d6d87","False","2025-11-05T04:22:23Z"
+"Auto Fix Policy and Merge","active",".github/workflows/auto_fix_policy.yml","completed","failure","54049e838a4b0b5cc4ccf361dda41b04e346ef45","False","2025-11-14T04:14:58Z"
+"Auto Label PRs","active",".github/workflows/auto-label.yml",,,,"False",
+"Auto Update PR Branches","active",".github/workflows/auto-update-pr.yml","completed","success","b5770842548c8c987db3fce45e6674aa20912777","True","2025-12-24T10:38:16Z"
+"Branch Sync (main to develop)","active",".github/workflows/branch-sync.yml","completed","success","b5770842548c8c987db3fce45e6674aa20912777","True","2025-12-24T10:25:31Z"
+"Chat Intake ΓåÆ Issue","active",".github/workflows/chat-intake.yml","completed","success","7a595039b7bd10f2ef790d34034dc7aace06f5b8","False","2025-10-31T08:57:18Z"
+"ci","active",".github/workflows/ci.yml","completed","success","b5770842548c8c987db3fce45e6674aa20912777","True","2025-12-24T10:15:45Z"
+"claude-readonly-review","active",".github/workflows/claude_readonly_review.yml","completed","success","891892f86bdc4f33231bc6a8a9d0536305d63a67","False","2025-12-24T01:08:55Z"
+"CodeQL","active",".github/workflows/codeql-analysis.yml",,,,"False",
+"Dependabot Updates","active","dynamic/dependabot/dependabot-updates","completed","success","1333911c524829bdadbc30e24a205cbbc932982e","False","2025-12-02T03:51:54Z"
+"ecosystem-watcher","active",".github/workflows/ecosystem-watcher.yml","completed","success","055787dc2b6402f49ec01be3e74f18085f59874a","False","2025-12-24T06:06:10Z"
+"Edge Routes Test","active",".github/workflows/edge-test.yml",,,,"False",
+"Knowledge Library Bootstrap","active",".github/workflows/knowledge_library_bootstrap.yml",,,,"False",
+"Mark AI-Generated Commits","active",".github/workflows/auto-assign-ai-generated.yml",,,,"False",
+"nightly-self-evaluator","active",".github/workflows/nightly-self-eval.yml","completed","failure","c592fd0d41f1f8fcb12c6a7a475d27a3c179bddf","False","2025-12-23T21:03:50Z"
+"Notify on Pipeline","active",".github/workflows/notify.yml","completed","success","055787dc2b6402f49ec01be3e74f18085f59874a","False","2025-12-24T10:15:36Z"
+"P3 Safe-Mode CI Gate","active",".github/workflows/p3-safemode-gate.yml","completed","success","b5770842548c8c987db3fce45e6674aa20912777","True","2025-12-24T10:15:45Z"
+"Policy Gate (v4 Core AI)","active",".github/workflows/policy_gate.yml",,,,"False",
+"PR Checks (meta)","active",".github/workflows/pr-checks.yml","completed","failure","356e923f762ce313b173da11c1373aa9ae141786","False","2025-11-23T02:06:38Z"
+"rgpt-ci-with-ledger","active",".github/workflows/rgpt-ci-with-ledger.yml",,,,"False",
+"RocketGPT Review Pipeline","active",".github/workflows/review.yml","completed","failure","9eb6b741f2608d9280723ed7777e18b5bbb14062","False","2025-12-20T10:51:46Z"
+"RocketGPT Ship Issue","active",".github/workflows/ship-issue.yml","completed","failure","70ec60c9e799ea0af2b753f0ad2e4a8cfd2d6d87","False","2025-11-05T04:22:18Z"
+"Self Infra Evolve (Analysis Only)","active",".github/workflows/self_infra_evolve.yml","completed","success","86fd3c72ab23815da77d2b287cba97895516dacc","False","2025-12-22T03:37:03Z"
+"Self Innovate (Idea-Only)","active",".github/workflows/self_innovate.yml",,,,"False",
+"Self Reasoning (Plans Only)","active",".github/workflows/self_reasoning.yml",,,,"False",
+"Self Research (Log Only)","active",".github/workflows/self_research.yml",,,,"False",
+"Self Study (Analysis Only)","active",".github/workflows/self_study.yml","completed","success","055787dc2b6402f49ec01be3e74f18085f59874a","False","2025-12-24T02:40:20Z"
+"Self-Heal (v4 Core AI)","active",".github/workflows/self_heal.yml","completed","skipped","b5770842548c8c987db3fce45e6674aa20912777","True","2025-12-24T10:17:11Z"
+"Self-Heal Hooks","active",".github/workflows/self_heal_hooks.yml","completed","success","9bf9b35711f9753ec673dcd5b06e247a3b043381","False","2025-12-24T01:13:52Z"
+"Self-Improve (v4 Core AI)","active",".github/workflows/self_improve.yml","completed","success","c592fd0d41f1f8fcb12c6a7a475d27a3c179bddf","False","2025-12-23T18:06:54Z"
+"self-redevelopment","active",".github/workflows/self-redev.yml","completed","success","055787dc2b6402f49ec01be3e74f18085f59874a","False","2025-12-24T02:38:45Z"
+"Sync Labels","active",".github/workflows/labels.yml",,,,"False",
+"text-guard (smoke)","active",".github/workflows/text-guard.yml","completed","success","d4c451c949461ae4ab26bf1b0ba660b887b83d7a","False","2025-11-13T08:33:06Z"
+"Triage Spec","active",".github/workflows/triage.yml","completed","success","70ec60c9e799ea0af2b753f0ad2e4a8cfd2d6d87","False","2025-11-05T04:13:11Z"
+"UI Healer (v3_full)","active",".github/workflows/ui-healer.yml",,,,"False",
+"unit-tests","active",".github/workflows/unit-tests.yml",,,,"False",
+"v4 Ship (placeholder)","active",".github/workflows/v4_ship_placeholder.yml",,,,"False",
+"Vercel Throttled Deploy","active",".github/workflows/vercel-throttled-deploy.yml","completed","success","b5770842548c8c987db3fce45e6674aa20912777","True","2025-12-24T10:15:45Z"
+"Watchdog","active",".github/workflows/watchdog.yml",,,,"False",
