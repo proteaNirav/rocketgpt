@@ -1,0 +1,35 @@
+﻿build-test	Typecheck (UI)	∩╗┐2025-12-24T18:08:22.0603679Z ##[debug]Evaluating condition for step: 'Typecheck (UI)'
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0605513Z ##[debug]Evaluating: success()
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0605900Z ##[debug]Evaluating success:
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0606329Z ##[debug]=> true
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0606672Z ##[debug]Result: true
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0607220Z ##[debug]Starting: Typecheck (UI)
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0614913Z ##[debug]Loading inputs
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0615969Z ##[debug]Loading env
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0619982Z ##[group]Run npx tsc -v && npx tsc --noEmit
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0620308Z [36;1mnpx tsc -v && npx tsc --noEmit[0m
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0653346Z shell: /usr/bin/bash -e {0}
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0653601Z env:
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0653887Z   CORE_API_BASE: https://rocketgpt-core-api.onrender.com
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0654255Z   NODE_OPTIONS: --max_old_space_size=4096
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0654538Z ##[endgroup]
+build-test	Typecheck (UI)	2025-12-24T18:08:22.0688992Z ##[debug]/usr/bin/bash -e /home/runner/work/_temp/7b619fdd-cbbf-4c92-a1d3-7d122012644a.sh
+build-test	Typecheck (UI)	2025-12-24T18:08:22.8193481Z Version 5.5.3
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8360724Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/auto-advance/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8367125Z ##[error]app/api/orchestrator/auto-advance/route.ts(1,1): error TS1490: File appears to be binary.
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8375584Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/builder/execute-next/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8376641Z ##[error]app/api/orchestrator/builder/execute-next/route.ts(1,1): error TS1490: File appears to be binary.
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8378115Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/builder/list/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8379005Z ##[error]app/api/orchestrator/builder/list/route.ts(1,1): error TS1490: File appears to be binary.
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8380602Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/builder/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8381457Z ##[error]app/api/orchestrator/builder/route.ts(1,1): error TS1490: File appears to be binary.
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8382740Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/release/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8383805Z ##[error]app/api/orchestrator/release/route.ts(1,1): error TS1490: File appears to be binary.
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8385135Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/run/finalize/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8385991Z ##[error]app/api/orchestrator/run/finalize/route.ts(1,1): error TS1490: File appears to be binary.
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8387267Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/run/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8388066Z ##[error]app/api/orchestrator/run/route.ts(1,1): error TS1490: File appears to be binary.
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8389343Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/test-tester/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8390446Z ##[error]app/api/orchestrator/test-tester/route.ts(1,1): error TS1490: File appears to be binary.
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8896022Z ##[error]Process completed with exit code 2.
+build-test	Typecheck (UI)	2025-12-24T18:08:29.8901839Z ##[debug]Finishing: Typecheck (UI)
