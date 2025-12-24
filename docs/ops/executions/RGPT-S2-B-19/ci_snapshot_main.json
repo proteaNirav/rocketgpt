@@ -1,0 +1,452 @@
+﻿[
+    {
+        "workflow":  "_selfimprove_ingest_ci",
+        "state":  "active",
+        "path":  ".github/workflows/_selfimprove_ingest_ci.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "6b242542e38f569d2cc18a01e8bf72e765ad0b1a",
+        "onHead":  false,
+        "createdAt":  "2025-12-23T06:45:46Z"
+    },
+    {
+        "workflow":  ".github/workflows/_temp_bad.yml",
+        "state":  "active",
+        "path":  ".github/workflows/_temp_bad.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "Mark AI-Generated Commits",
+        "state":  "active",
+        "path":  ".github/workflows/auto-assign-ai-generated.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "Auto Label PRs",
+        "state":  "active",
+        "path":  ".github/workflows/auto-label.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  ".github/workflows/auto-merge.yml",
+        "state":  "active",
+        "path":  ".github/workflows/auto-merge.yml",
+        "status":  "completed",
+        "conclusion":  "failure",
+        "headSha":  "7a595039b7bd10f2ef790d34034dc7aace06f5b8",
+        "onHead":  false,
+        "createdAt":  "2025-10-31T08:53:31Z"
+    },
+    {
+        "workflow":  "Auto Update PR Branches",
+        "state":  "active",
+        "path":  ".github/workflows/auto-update-pr.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "b5770842548c8c987db3fce45e6674aa20912777",
+        "onHead":  true,
+        "createdAt":  "2025-12-24T10:38:16Z"
+    },
+    {
+        "workflow":  "Auto Fix Policy and Merge",
+        "state":  "active",
+        "path":  ".github/workflows/auto_fix_policy.yml",
+        "status":  "completed",
+        "conclusion":  "failure",
+        "headSha":  "54049e838a4b0b5cc4ccf361dda41b04e346ef45",
+        "onHead":  false,
+        "createdAt":  "2025-11-14T04:14:58Z"
+    },
+    {
+        "workflow":  "Branch Sync (main to develop)",
+        "state":  "active",
+        "path":  ".github/workflows/branch-sync.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "b5770842548c8c987db3fce45e6674aa20912777",
+        "onHead":  true,
+        "createdAt":  "2025-12-24T10:25:31Z"
+    },
+    {
+        "workflow":  "Chat Intake ΓåÆ Issue",
+        "state":  "active",
+        "path":  ".github/workflows/chat-intake.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "7a595039b7bd10f2ef790d34034dc7aace06f5b8",
+        "onHead":  false,
+        "createdAt":  "2025-10-31T08:57:18Z"
+    },
+    {
+        "workflow":  "ci",
+        "state":  "active",
+        "path":  ".github/workflows/ci.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "b5770842548c8c987db3fce45e6674aa20912777",
+        "onHead":  true,
+        "createdAt":  "2025-12-24T10:15:45Z"
+    },
+    {
+        "workflow":  ".github/workflows/claude-pr-review.yml",
+        "state":  "active",
+        "path":  ".github/workflows/claude-pr-review.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "claude-readonly-review",
+        "state":  "active",
+        "path":  ".github/workflows/claude_readonly_review.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "891892f86bdc4f33231bc6a8a9d0536305d63a67",
+        "onHead":  false,
+        "createdAt":  "2025-12-24T01:08:55Z"
+    },
+    {
+        "workflow":  "AI Codegen",
+        "state":  "active",
+        "path":  ".github/workflows/codegen.yml",
+        "status":  "completed",
+        "conclusion":  "failure",
+        "headSha":  "70ec60c9e799ea0af2b753f0ad2e4a8cfd2d6d87",
+        "onHead":  false,
+        "createdAt":  "2025-11-05T04:22:23Z"
+    },
+    {
+        "workflow":  "CodeQL",
+        "state":  "active",
+        "path":  ".github/workflows/codeql-analysis.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "ecosystem-watcher",
+        "state":  "active",
+        "path":  ".github/workflows/ecosystem-watcher.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "055787dc2b6402f49ec01be3e74f18085f59874a",
+        "onHead":  false,
+        "createdAt":  "2025-12-24T06:06:10Z"
+    },
+    {
+        "workflow":  "Edge Routes Test",
+        "state":  "active",
+        "path":  ".github/workflows/edge-test.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "Knowledge Library Bootstrap",
+        "state":  "active",
+        "path":  ".github/workflows/knowledge_library_bootstrap.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "Sync Labels",
+        "state":  "active",
+        "path":  ".github/workflows/labels.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "nightly-self-evaluator",
+        "state":  "active",
+        "path":  ".github/workflows/nightly-self-eval.yml",
+        "status":  "completed",
+        "conclusion":  "failure",
+        "headSha":  "c592fd0d41f1f8fcb12c6a7a475d27a3c179bddf",
+        "onHead":  false,
+        "createdAt":  "2025-12-23T21:03:50Z"
+    },
+    {
+        "workflow":  "Notify on Pipeline",
+        "state":  "active",
+        "path":  ".github/workflows/notify.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "055787dc2b6402f49ec01be3e74f18085f59874a",
+        "onHead":  false,
+        "createdAt":  "2025-12-24T10:15:36Z"
+    },
+    {
+        "workflow":  "P3 Safe-Mode CI Gate",
+        "state":  "active",
+        "path":  ".github/workflows/p3-safemode-gate.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "b5770842548c8c987db3fce45e6674aa20912777",
+        "onHead":  true,
+        "createdAt":  "2025-12-24T10:15:45Z"
+    },
+    {
+        "workflow":  "Policy Gate (v4 Core AI)",
+        "state":  "active",
+        "path":  ".github/workflows/policy_gate.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "PR Checks (meta)",
+        "state":  "active",
+        "path":  ".github/workflows/pr-checks.yml",
+        "status":  "completed",
+        "conclusion":  "failure",
+        "headSha":  "356e923f762ce313b173da11c1373aa9ae141786",
+        "onHead":  false,
+        "createdAt":  "2025-11-23T02:06:38Z"
+    },
+    {
+        "workflow":  "RocketGPT Review Pipeline",
+        "state":  "active",
+        "path":  ".github/workflows/review.yml",
+        "status":  "completed",
+        "conclusion":  "failure",
+        "headSha":  "9eb6b741f2608d9280723ed7777e18b5bbb14062",
+        "onHead":  false,
+        "createdAt":  "2025-12-20T10:51:46Z"
+    },
+    {
+        "workflow":  "rgpt-ci-with-ledger",
+        "state":  "active",
+        "path":  ".github/workflows/rgpt-ci-with-ledger.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  ".github/workflows/security-scan.yml",
+        "state":  "active",
+        "path":  ".github/workflows/security-scan.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "self-redevelopment",
+        "state":  "active",
+        "path":  ".github/workflows/self-redev.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "055787dc2b6402f49ec01be3e74f18085f59874a",
+        "onHead":  false,
+        "createdAt":  "2025-12-24T02:38:45Z"
+    },
+    {
+        "workflow":  "Self-Heal (v4 Core AI)",
+        "state":  "active",
+        "path":  ".github/workflows/self_heal.yml",
+        "status":  "completed",
+        "conclusion":  "skipped",
+        "headSha":  "b5770842548c8c987db3fce45e6674aa20912777",
+        "onHead":  true,
+        "createdAt":  "2025-12-24T10:17:11Z"
+    },
+    {
+        "workflow":  "Self-Heal Hooks",
+        "state":  "active",
+        "path":  ".github/workflows/self_heal_hooks.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "9bf9b35711f9753ec673dcd5b06e247a3b043381",
+        "onHead":  false,
+        "createdAt":  "2025-12-24T01:13:52Z"
+    },
+    {
+        "workflow":  "Self-Improve (v4 Core AI)",
+        "state":  "active",
+        "path":  ".github/workflows/self_improve.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "c592fd0d41f1f8fcb12c6a7a475d27a3c179bddf",
+        "onHead":  false,
+        "createdAt":  "2025-12-23T18:06:54Z"
+    },
+    {
+        "workflow":  "Self Infra Evolve (Analysis Only)",
+        "state":  "active",
+        "path":  ".github/workflows/self_infra_evolve.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "86fd3c72ab23815da77d2b287cba97895516dacc",
+        "onHead":  false,
+        "createdAt":  "2025-12-22T03:37:03Z"
+    },
+    {
+        "workflow":  "Self Innovate (Idea-Only)",
+        "state":  "active",
+        "path":  ".github/workflows/self_innovate.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "Self Reasoning (Plans Only)",
+        "state":  "active",
+        "path":  ".github/workflows/self_reasoning.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "Self Research (Log Only)",
+        "state":  "active",
+        "path":  ".github/workflows/self_research.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "Self Study (Analysis Only)",
+        "state":  "active",
+        "path":  ".github/workflows/self_study.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "055787dc2b6402f49ec01be3e74f18085f59874a",
+        "onHead":  false,
+        "createdAt":  "2025-12-24T02:40:20Z"
+    },
+    {
+        "workflow":  "RocketGPT Ship Issue",
+        "state":  "active",
+        "path":  ".github/workflows/ship-issue.yml",
+        "status":  "completed",
+        "conclusion":  "failure",
+        "headSha":  "70ec60c9e799ea0af2b753f0ad2e4a8cfd2d6d87",
+        "onHead":  false,
+        "createdAt":  "2025-11-05T04:22:18Z"
+    },
+    {
+        "workflow":  "text-guard (smoke)",
+        "state":  "active",
+        "path":  ".github/workflows/text-guard.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "d4c451c949461ae4ab26bf1b0ba660b887b83d7a",
+        "onHead":  false,
+        "createdAt":  "2025-11-13T08:33:06Z"
+    },
+    {
+        "workflow":  "Triage Spec",
+        "state":  "active",
+        "path":  ".github/workflows/triage.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "70ec60c9e799ea0af2b753f0ad2e4a8cfd2d6d87",
+        "onHead":  false,
+        "createdAt":  "2025-11-05T04:13:11Z"
+    },
+    {
+        "workflow":  "UI Healer (v3_full)",
+        "state":  "active",
+        "path":  ".github/workflows/ui-healer.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "unit-tests",
+        "state":  "active",
+        "path":  ".github/workflows/unit-tests.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "v4 Ship (placeholder)",
+        "state":  "active",
+        "path":  ".github/workflows/v4_ship_placeholder.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  ".github/workflows/validate.yml",
+        "state":  "active",
+        "path":  ".github/workflows/validate.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "Vercel Throttled Deploy",
+        "state":  "active",
+        "path":  ".github/workflows/vercel-throttled-deploy.yml",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "b5770842548c8c987db3fce45e6674aa20912777",
+        "onHead":  true,
+        "createdAt":  "2025-12-24T10:15:45Z"
+    },
+    {
+        "workflow":  "Watchdog",
+        "state":  "active",
+        "path":  ".github/workflows/watchdog.yml",
+        "status":  null,
+        "conclusion":  null,
+        "headSha":  null,
+        "onHead":  false,
+        "createdAt":  null
+    },
+    {
+        "workflow":  "Dependabot Updates",
+        "state":  "active",
+        "path":  "dynamic/dependabot/dependabot-updates",
+        "status":  "completed",
+        "conclusion":  "success",
+        "headSha":  "1333911c524829bdadbc30e24a205cbbc932982e",
+        "onHead":  false,
+        "createdAt":  "2025-12-02T03:51:54Z"
+    }
+]
