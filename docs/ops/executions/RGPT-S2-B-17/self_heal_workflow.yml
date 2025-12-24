@@ -1,0 +1,44 @@
+﻿name: Self-Heal (v4 Core AI)
+
+# STATUS: STUB - Not Functional
+# This workflow is a placeholder for future self-heal functionality.
+# Current implementation only echoes TODO messages (no actual functionality).
+# DO NOT enable in production until implementation is complete with proper safety gates.
+
+# Safety notes for future implementation:
+# - Triggered on CI failure
+# - Must inspect and propose fixes (not auto-apply)
+# - Permissions: read-only (no auto-commits)
+# - Must create PR with fixes for human approval
+# - Requires dry-run mode and approval workflow
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["ci"]
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  self_heal:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Analyze last CI failure (stub)
+        run: |
+          echo "ΓÜá∩╕Å  STATUS: STUB - This workflow is not functional"
+          echo ""
+          echo "TODO: RocketGPT self-heal to inspect failing tests and propose fixes."
+          echo ""
+          echo "Required before activation:"
+          echo "- [ ] CI failure analysis logic"
+          echo "- [ ] Fix proposal generation"
+          echo "- [ ] PR creation workflow"
+          echo "- [ ] Human approval required"
+          echo "- [ ] Rollback plan"
