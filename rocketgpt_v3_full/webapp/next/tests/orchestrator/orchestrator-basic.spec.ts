@@ -1,8 +1,11 @@
-﻿import { test, expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+
+// RGPT_B17_FAILPROOF :: intentional failure for Self-Heal workflow_run proof
+test('RGPT_B17_FAILPROOF', async () => { throw new Error('RGPT_B17_FAILPROOF'); });
 
 // NOTE:
 // This test is intentionally skipped by default during initial Playwright setup.
-// Once Orchestrator → Builder → Tester is fully wired and stable,
+// Once Orchestrator ? Builder ? Tester is fully wired and stable,
 // change `test.skip` back to `test` to enforce this health check.
 
 test.skip("POST /api/orchestrator/builder/execute-all returns a JSON payload", async ({ request }) => {
