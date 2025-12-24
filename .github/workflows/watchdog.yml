@@ -1,6 +1,7 @@
 name: Watchdog
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ["AI Codegen", "RocketGPT Ship Issue", "v4_ship_placeholder"]
     types: [completed]

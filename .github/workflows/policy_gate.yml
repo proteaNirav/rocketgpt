@@ -1,6 +1,7 @@
 name: Policy Gate (v4 Core AI)
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: ["main"]
 
