@@ -19,9 +19,17 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            core.info('Observed run: ' + context.payload.workflow_run.name);
-            core.info('Conclusion: ' + context.payload.workflow_run.conclusion);
-
+            const wr = context.payload.workflow_run;
+            if (wr) {
+              core.info('Observed run: ' + (wr.name ?? '<no-name>'));
+              core.info('Conclusion: ' + (wr.conclusion ?? '<no-conclusion>'));
+              core.info('Workflow URL: ' + (wr.html_url ?? '<no-url>'));
+            } else {
+              core.info('Manual watchdog run (workflow_dispatch). No workflow_run payload present.');
+              core.info('Actor: ' + (context.actor ?? '<unknown>'));
+              core.info('Ref: ' + (process.env.GITHUB_REF ?? '<unknown>'));
+              core.info('SHA: ' + (process.env.GITHUB_SHA ?? '<unknown>'));
+            }
       - name: On failure - minimal redispatch
         if: ${{ contains(fromJson('["failure","cancelled","timed_out"]'), github.event.workflow_run.conclusion) }}
         uses: actions/github-script@v7
