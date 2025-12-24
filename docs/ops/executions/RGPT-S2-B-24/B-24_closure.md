@@ -17,3 +17,8 @@
 
 ## Evidence
 - docs\ops\executions\RGPT-S2-B-24\B-24_temp_bad_disable_proof.md
+
+## Note (post-disable observation)
+- After running 'gh workflow disable 204809617', the workflow no longer appeared in 'gh workflow list'.
+- This is acceptable when the YAML file is missing on the default branch; the registry entry may disappear instead of showing state=disabled.
+- RecordedAtUTC: 2025-12-24T12:46:26Z
