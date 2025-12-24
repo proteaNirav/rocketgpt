@@ -1,4 +1,4 @@
-﻿name: ci
+name: ci
 
 # Safety: Standard CI pipeline for build, test, lint validation
 # - Read-only checkout
