@@ -1,0 +1,140 @@
+﻿{
+    "baseRefName":  "main",
+    "createdAt":  "2025-12-24T17:51:23Z",
+    "headRefName":  "rgpt/s2-c01-deps-realapp",
+    "mergeable":  "MERGEABLE",
+    "number":  226,
+    "state":  "OPEN",
+    "statusCheckRollup":  [
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "2025-12-24T17:51:45Z",
+                                  "conclusion":  "FAILURE",
+                                  "detailsUrl":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20491331969/job/58883922453",
+                                  "name":  "AI Review",
+                                  "startedAt":  "2025-12-24T17:51:37Z",
+                                  "status":  "COMPLETED",
+                                  "workflowName":  "RocketGPT Review Pipeline"
+                              },
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "0001-01-01T00:00:00Z",
+                                  "conclusion":  "",
+                                  "detailsUrl":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20491331972/job/58883926319",
+                                  "name":  "safemode-gate",
+                                  "startedAt":  "2025-12-24T17:51:44Z",
+                                  "status":  "IN_PROGRESS",
+                                  "workflowName":  "P3 Safe-Mode CI Gate"
+                              },
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "2025-12-24T17:51:32Z",
+                                  "conclusion":  "SKIPPED",
+                                  "detailsUrl":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20491331977/job/58883921385",
+                                  "name":  "claude-review",
+                                  "startedAt":  "2025-12-24T17:51:32Z",
+                                  "status":  "COMPLETED",
+                                  "workflowName":  "claude-readonly-review"
+                              },
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "2025-12-24T17:51:42Z",
+                                  "conclusion":  "SUCCESS",
+                                  "detailsUrl":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20491331968/job/58883921299",
+                                  "name":  "Meta PR Checks",
+                                  "startedAt":  "2025-12-24T17:51:35Z",
+                                  "status":  "COMPLETED",
+                                  "workflowName":  "PR Checks (meta)"
+                              },
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "2025-12-24T17:51:38Z",
+                                  "conclusion":  "SUCCESS",
+                                  "detailsUrl":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20491332011/job/58883921368",
+                                  "name":  "policy_gate",
+                                  "startedAt":  "2025-12-24T17:51:35Z",
+                                  "status":  "COMPLETED",
+                                  "workflowName":  "Policy Gate (v4 Core AI)"
+                              },
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "2025-12-24T17:51:57Z",
+                                  "conclusion":  "SUCCESS",
+                                  "detailsUrl":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20491331971/job/58883921284",
+                                  "name":  "ui-check-and-heal",
+                                  "startedAt":  "2025-12-24T17:51:35Z",
+                                  "status":  "COMPLETED",
+                                  "workflowName":  "UI Healer (v3_full)"
+                              },
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "2025-12-24T17:51:45Z",
+                                  "conclusion":  "SUCCESS",
+                                  "detailsUrl":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20491331986/job/58883921328",
+                                  "name":  "Detect UTF-8 BOM",
+                                  "startedAt":  "2025-12-24T17:51:36Z",
+                                  "status":  "COMPLETED",
+                                  "workflowName":  "ci"
+                              },
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "2025-12-24T17:51:39Z",
+                                  "conclusion":  "SUCCESS",
+                                  "detailsUrl":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20491331486/job/58883920128",
+                                  "name":  "Detect UTF-8 BOM",
+                                  "startedAt":  "2025-12-24T17:51:33Z",
+                                  "status":  "COMPLETED",
+                                  "workflowName":  "ci"
+                              },
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "2025-12-24T17:51:39Z",
+                                  "conclusion":  "SUCCESS",
+                                  "detailsUrl":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20491331962/job/58883921300",
+                                  "name":  "smoke",
+                                  "startedAt":  "2025-12-24T17:51:35Z",
+                                  "status":  "COMPLETED",
+                                  "workflowName":  "text-guard (smoke)"
+                              },
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "0001-01-01T00:00:00Z",
+                                  "conclusion":  "",
+                                  "detailsUrl":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20491331986/job/58883921331",
+                                  "name":  "build-test",
+                                  "startedAt":  "2025-12-24T17:51:35Z",
+                                  "status":  "IN_PROGRESS",
+                                  "workflowName":  "ci"
+                              },
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "0001-01-01T00:00:00Z",
+                                  "conclusion":  "",
+                                  "detailsUrl":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20491331486/job/58883920129",
+                                  "name":  "build-test",
+                                  "startedAt":  "2025-12-24T17:51:33Z",
+                                  "status":  "IN_PROGRESS",
+                                  "workflowName":  "ci"
+                              },
+                              {
+                                  "__typename":  "StatusContext",
+                                  "context":  "Vercel",
+                                  "startedAt":  "2025-12-24T17:51:33Z",
+                                  "state":  "SUCCESS",
+                                  "targetUrl":  "https://vercel.com/nirav-shahs-projects-9c841707/rocketgpt/2HEifCatqSxamBK84Kx7NyXgkeRc"
+                              },
+                              {
+                                  "__typename":  "CheckRun",
+                                  "completedAt":  "2025-12-24T17:51:33Z",
+                                  "conclusion":  "SUCCESS",
+                                  "detailsUrl":  "https://vercel.com/github",
+                                  "name":  "Vercel Preview Comments",
+                                  "startedAt":  "2025-12-24T17:51:33Z",
+                                  "status":  "COMPLETED",
+                                  "workflowName":  ""
+                              }
+                          ],
+    "title":  "deps(next): patch security updates (real app)",
+    "updatedAt":  "2025-12-24T17:51:42Z",
+    "url":  "https://github.com/proteaNirav/rocketgpt/pull/226"
+}
