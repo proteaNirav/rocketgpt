@@ -1,0 +1,13 @@
+﻿{
+    "conclusion":  "failure",
+    "createdAt":  "2025-12-24T12:22:17Z",
+    "databaseId":  20486099701,
+    "displayTitle":  "ci(watchdog): remove temporary watchdog_manual wrapper",
+    "event":  "push",
+    "headBranch":  "main",
+    "headSha":  "a3cbbeec36488794bd1044c5b1c99b9f86fda8f1",
+    "status":  "completed",
+    "updatedAt":  "2025-12-24T12:23:36Z",
+    "url":  "https://github.com/proteaNirav/rocketgpt/actions/runs/20486099701",
+    "workflowName":  "ci"
+}

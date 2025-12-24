@@ -1,0 +1,18 @@
+﻿Detect UTF-8 BOM	Run BOM detector	∩╗┐2025-12-24T12:22:22.1334557Z ##[debug]Evaluating condition for step: 'Run BOM detector'
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1337728Z ##[debug]Evaluating: success()
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1338487Z ##[debug]Evaluating success:
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1339407Z ##[debug]=> true
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1340082Z ##[debug]Result: true
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1341158Z ##[debug]Starting: Run BOM detector
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1356253Z ##[debug]Loading inputs
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1370936Z ##[debug]Loading env
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1388537Z ##[group]Run pwsh .github/tools/ci/detect-bom.ps1 -Paths @(".github/workflows",".github/tools","docs","rocketgpt_v3_full")
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1390261Z [36;1mpwsh .github/tools/ci/detect-bom.ps1 -Paths @(".github/workflows",".github/tools","docs","rocketgpt_v3_full")[0m
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1450167Z shell: /usr/bin/pwsh -command ". '{0}'"
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1450775Z ##[endgroup]
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1507715Z ##[debug]/usr/bin/pwsh -command ". '/home/runner/work/_temp/ceb8ba4b-f323-4ba7-9a62-c102395f1c95.ps1'"
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:26.3601482Z [FAIL] UTF-8 BOM detected in:
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:26.3631173Z  - /home/runner/work/rocketgpt/rocketgpt/.github/workflows/ci.yml
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:26.3633098Z  - /home/runner/work/rocketgpt/rocketgpt/.github/workflows/watchdog.yml
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:27.0794083Z ##[error]Process completed with exit code 1.
+Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:27.0807799Z ##[debug]Finishing: Run BOM detector
