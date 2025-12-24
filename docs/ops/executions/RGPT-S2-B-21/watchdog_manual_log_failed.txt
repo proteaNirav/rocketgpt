@@ -1,0 +1,16 @@
+﻿watch	Sanity	∩╗┐2025-12-24T11:43:40.9922313Z ##[debug]Evaluating condition for step: 'Sanity'
+watch	Sanity	2025-12-24T11:43:40.9959635Z ##[debug]Evaluating: success()
+watch	Sanity	2025-12-24T11:43:40.9964532Z ##[debug]Evaluating success:
+watch	Sanity	2025-12-24T11:43:40.9981017Z ##[debug]=> true
+watch	Sanity	2025-12-24T11:43:40.9986965Z ##[debug]Result: true
+watch	Sanity	2025-12-24T11:43:41.0009438Z ##[debug]Starting: Sanity
+watch	Sanity	2025-12-24T11:43:41.0102727Z ##[debug]Loading inputs
+watch	Sanity	2025-12-24T11:43:41.0119056Z ##[debug]Loading env
+watch	Sanity	2025-12-24T11:43:41.0185158Z ##[group]Run echo "Manual Watchdog dispatch running on ref=\"
+watch	Sanity	2025-12-24T11:43:41.0186062Z [36;1mecho "Manual Watchdog dispatch running on ref=\"[0m
+watch	Sanity	2025-12-24T11:43:41.0223216Z shell: /usr/bin/bash -e {0}
+watch	Sanity	2025-12-24T11:43:41.0224037Z ##[endgroup]
+watch	Sanity	2025-12-24T11:43:41.0294759Z ##[debug]/usr/bin/bash -e /home/runner/work/_temp/ffcd1e6d-ab1f-4182-aee0-49180f38ddc1.sh
+watch	Sanity	2025-12-24T11:43:41.0353144Z /home/runner/work/_temp/ffcd1e6d-ab1f-4182-aee0-49180f38ddc1.sh: line 1: unexpected EOF while looking for matching `"'
+watch	Sanity	2025-12-24T11:43:41.0367525Z ##[error]Process completed with exit code 2.
+watch	Sanity	2025-12-24T11:43:41.0416253Z ##[debug]Finishing: Sanity

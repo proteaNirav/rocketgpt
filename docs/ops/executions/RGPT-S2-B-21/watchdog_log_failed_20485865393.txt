@@ -1,0 +1,57 @@
+﻿watch	Observe	∩╗┐2025-12-24T12:09:11.5534895Z ##[debug]Evaluating condition for step: 'Observe'
+watch	Observe	2025-12-24T12:09:11.5556944Z ##[debug]Evaluating: success()
+watch	Observe	2025-12-24T12:09:11.5558535Z ##[debug]Evaluating success:
+watch	Observe	2025-12-24T12:09:11.5566217Z ##[debug]=> true
+watch	Observe	2025-12-24T12:09:11.5568996Z ##[debug]Result: true
+watch	Observe	2025-12-24T12:09:11.5585007Z ##[debug]Starting: Observe
+watch	Observe	2025-12-24T12:09:11.5711425Z ##[debug]Loading inputs
+watch	Observe	2025-12-24T12:09:11.5724849Z ##[debug]Evaluating: github.token
+watch	Observe	2025-12-24T12:09:11.5725598Z ##[debug]Evaluating Index:
+watch	Observe	2025-12-24T12:09:11.5726293Z ##[debug]..Evaluating github:
+watch	Observe	2025-12-24T12:09:11.5726929Z ##[debug]..=> Object
+watch	Observe	2025-12-24T12:09:11.5727552Z ##[debug]..Evaluating String:
+watch	Observe	2025-12-24T12:09:11.5728199Z ##[debug]..=> 'token'
+watch	Observe	2025-12-24T12:09:11.5729234Z ##[debug]=> '***'
+watch	Observe	2025-12-24T12:09:11.5729958Z ##[debug]Result: '***'
+watch	Observe	2025-12-24T12:09:11.5735006Z ##[debug]Evaluating: (runner.debug == '1')
+watch	Observe	2025-12-24T12:09:11.5735859Z ##[debug]Evaluating Equal:
+watch	Observe	2025-12-24T12:09:11.5737207Z ##[debug]..Evaluating Index:
+watch	Observe	2025-12-24T12:09:11.5737941Z ##[debug]....Evaluating runner:
+watch	Observe	2025-12-24T12:09:11.5738716Z ##[debug]....=> Object
+watch	Observe	2025-12-24T12:09:11.5739328Z ##[debug]....Evaluating String:
+watch	Observe	2025-12-24T12:09:11.5739896Z ##[debug]....=> 'debug'
+watch	Observe	2025-12-24T12:09:11.5740624Z ##[debug]..=> '1'
+watch	Observe	2025-12-24T12:09:11.5741171Z ##[debug]..Evaluating String:
+watch	Observe	2025-12-24T12:09:11.5741777Z ##[debug]..=> '1'
+watch	Observe	2025-12-24T12:09:11.5745418Z ##[debug]=> true
+watch	Observe	2025-12-24T12:09:11.5747519Z ##[debug]Expanded: ('1' == '1')
+watch	Observe	2025-12-24T12:09:11.5748165Z ##[debug]Result: true
+watch	Observe	2025-12-24T12:09:11.5760168Z ##[debug]Loading env
+watch	Observe	2025-12-24T12:09:11.5829659Z ##[group]Run actions/github-script@v7
+watch	Observe	2025-12-24T12:09:11.5830661Z with:
+watch	Observe	2025-12-24T12:09:11.5831797Z   script: core.info('Observed run: ' + context.payload.workflow_run.name);
+watch	Observe	core.info('Conclusion: ' + context.payload.workflow_run.conclusion);
+watch	Observe	
+watch	Observe	2025-12-24T12:09:11.5833300Z   github-token: ***
+watch	Observe	2025-12-24T12:09:11.5833869Z   debug: true
+watch	Observe	2025-12-24T12:09:11.5834597Z   user-agent: actions/github-script
+watch	Observe	2025-12-24T12:09:11.5835270Z   result-encoding: json
+watch	Observe	2025-12-24T12:09:11.5835854Z   retries: 0
+watch	Observe	2025-12-24T12:09:11.5836403Z   retry-exempt-status-codes: 400,401,403,404,422
+watch	Observe	2025-12-24T12:09:11.5837327Z env:
+watch	Observe	2025-12-24T12:09:11.5837960Z   GH_TOKEN: ***
+watch	Observe	2025-12-24T12:09:11.5838521Z ##[endgroup]
+watch	Observe	2025-12-24T12:09:11.6758278Z TypeError: Cannot read properties of undefined (reading 'name')
+watch	Observe	2025-12-24T12:09:11.6760095Z     at eval (eval at callAsyncFunction (/home/runner/work/_actions/actions/github-script/v7/dist/index.js:36187:16), <anonymous>:3:59)
+watch	Observe	2025-12-24T12:09:11.6797872Z ##[error]Unhandled error: TypeError: Cannot read properties of undefined (reading 'name')
+watch	Observe	2025-12-24T12:09:11.6806195Z     at callAsyncFunction (/home/runner/work/_actions/actions/github-script/v7/dist/index.js:36188:12)
+watch	Observe	2025-12-24T12:09:11.6807541Z     at main (/home/runner/work/_actions/actions/github-script/v7/dist/index.js:36285:26)
+watch	Observe	2025-12-24T12:09:11.6808654Z     at /home/runner/work/_actions/actions/github-script/v7/dist/index.js:36260:1
+watch	Observe	2025-12-24T12:09:11.6809769Z     at /home/runner/work/_actions/actions/github-script/v7/dist/index.js:36317:3
+watch	Observe	2025-12-24T12:09:11.6810980Z     at Object.<anonymous> (/home/runner/work/_actions/actions/github-script/v7/dist/index.js:36320:12)
+watch	Observe	2025-12-24T12:09:11.6812051Z     at Module._compile (node:internal/modules/cjs/loader:1521:14)
+watch	Observe	2025-12-24T12:09:11.6813044Z     at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+watch	Observe	2025-12-24T12:09:11.6814131Z     at Module.load (node:internal/modules/cjs/loader:1266:32)
+watch	Observe	2025-12-24T12:09:11.6814972Z     at Module._load (node:internal/modules/cjs/loader:1091:12)
+watch	Observe	2025-12-24T12:09:11.6821143Z ##[debug]Node Action run completed with exit code 1
+watch	Observe	2025-12-24T12:09:11.6863728Z ##[debug]Finishing: Observe
