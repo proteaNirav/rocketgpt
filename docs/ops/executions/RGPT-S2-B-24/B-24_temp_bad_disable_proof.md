@@ -10,3 +10,7 @@
 ## Remote main check
 - GitHub API: repos/proteaNirav/rocketgpt/contents/=main
 - Result: 404 Not Found (file absent on main)
+
+## Post-disable verification note
+- After disable, 'gh workflow list' no longer returned id=204809617.
+- RecordedAtUTC: 2025-12-24T12:46:26Z
