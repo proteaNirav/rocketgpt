@@ -1,0 +1,35 @@
+﻿build-test	Typecheck (UI)	∩╗┐2025-12-24T18:14:00.6326775Z ##[debug]Evaluating condition for step: 'Typecheck (UI)'
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6328560Z ##[debug]Evaluating: success()
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6328908Z ##[debug]Evaluating success:
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6329293Z ##[debug]=> true
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6329603Z ##[debug]Result: true
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6330115Z ##[debug]Starting: Typecheck (UI)
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6337280Z ##[debug]Loading inputs
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6338209Z ##[debug]Loading env
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6341993Z ##[group]Run npx tsc -v && npx tsc --noEmit
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6342308Z [36;1mnpx tsc -v && npx tsc --noEmit[0m
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6374835Z shell: /usr/bin/bash -e {0}
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6375079Z env:
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6375343Z   CORE_API_BASE: https://rocketgpt-core-api.onrender.com
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6375699Z   NODE_OPTIONS: --max_old_space_size=4096
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6375951Z ##[endgroup]
+build-test	Typecheck (UI)	2025-12-24T18:14:00.6407897Z ##[debug]/usr/bin/bash -e /home/runner/work/_temp/64bd5e40-f36f-4936-82ce-52efaf9a24f7.sh
+build-test	Typecheck (UI)	2025-12-24T18:14:02.1791892Z Version 5.5.3
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7839885Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/auto-advance/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7846272Z ##[error]app/api/orchestrator/auto-advance/route.ts(1,1): error TS1127: Invalid character.
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7854349Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/builder/execute-next/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7855357Z ##[error]app/api/orchestrator/builder/execute-next/route.ts(1,1): error TS1127: Invalid character.
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7856799Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/builder/list/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7857623Z ##[error]app/api/orchestrator/builder/list/route.ts(1,1): error TS1127: Invalid character.
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7858884Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/builder/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7859704Z ##[error]app/api/orchestrator/builder/route.ts(1,1): error TS1127: Invalid character.
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7861244Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/release/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7862319Z ##[error]app/api/orchestrator/release/route.ts(1,1): error TS1127: Invalid character.
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7863700Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/run/finalize/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7864508Z ##[error]app/api/orchestrator/run/finalize/route.ts(1,1): error TS1127: Invalid character.
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7865772Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/run/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7866519Z ##[error]app/api/orchestrator/run/route.ts(1,1): error TS1127: Invalid character.
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7867740Z ##[debug]Dropping file value '/home/runner/work/rocketgpt/rocketgpt/app/api/orchestrator/test-tester/route.ts'. Path does not exist
+build-test	Typecheck (UI)	2025-12-24T18:14:08.7868572Z ##[error]app/api/orchestrator/test-tester/route.ts(1,1): error TS1127: Invalid character.
+build-test	Typecheck (UI)	2025-12-24T18:14:08.8362482Z ##[error]Process completed with exit code 2.
+build-test	Typecheck (UI)	2025-12-24T18:14:08.8367958Z ##[debug]Finishing: Typecheck (UI)
