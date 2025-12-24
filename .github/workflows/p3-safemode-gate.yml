@@ -1,4 +1,4 @@
-﻿name: P3 Safe-Mode CI Gate
+name: P3 Safe-Mode CI Gate
 
 # Safety: Safe-Mode enforcement gate (critical security workflow)
 # - Tests that Safe-Mode blocks dangerous operations (execute-all)

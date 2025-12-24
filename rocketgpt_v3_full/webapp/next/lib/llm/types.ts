@@ -1,4 +1,4 @@
-﻿export type LLMProviderId = "openai" | "gemini" | "anthropic";
+export type LLMProviderId = "openai" | "gemini" | "anthropic";
 
 export type LLMRole = "system" | "user" | "assistant";
 

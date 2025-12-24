@@ -1,4 +1,4 @@
-﻿name: RocketGPT Review Pipeline
+name: RocketGPT Review Pipeline
 
 on:
   pull_request:

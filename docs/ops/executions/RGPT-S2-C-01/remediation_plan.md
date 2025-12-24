@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-01 — Dependabot Remediation Plan
+# RGPT-S2-C-01 — Dependabot Remediation Plan
 
 - Commit (snapshot basis): 1b5fcf6bda4b100d8224528a312da32e2fdf5441
 - Generated: 2025-12-24 23:08:43 +05:30

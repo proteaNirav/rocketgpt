@@ -1,4 +1,4 @@
-﻿safemode-gate	Install deps (Next app)	∩╗┐2025-12-24T17:52:06.1935710Z ##[debug]Evaluating condition for step: 'Install deps (Next app)'
+safemode-gate	Install deps (Next app)	∩╗┐2025-12-24T17:52:06.1935710Z ##[debug]Evaluating condition for step: 'Install deps (Next app)'
 safemode-gate	Install deps (Next app)	2025-12-24T17:52:06.1937960Z ##[debug]Evaluating: success()
 safemode-gate	Install deps (Next app)	2025-12-24T17:52:06.1938270Z ##[debug]Evaluating success:
 safemode-gate	Install deps (Next app)	2025-12-24T17:52:06.1938731Z ##[debug]=> true

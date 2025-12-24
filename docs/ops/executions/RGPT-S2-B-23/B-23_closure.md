@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-23 — CI BOM Failure Resolution (Closure)
+# RGPT-S2-B-23 — CI BOM Failure Resolution (Closure)
 
 - ClosedAtUTC: 2025-12-24T12:33:48Z
 - HEAD: 87c09d689654b3653d4c4d24441acc3c41de22d4

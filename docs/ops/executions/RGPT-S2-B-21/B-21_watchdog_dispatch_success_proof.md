@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-21 — Watchdog Dispatch Success (Proof)
+# RGPT-S2-B-21 — Watchdog Dispatch Success (Proof)
 
 - RecordedAtUTC: 2025-12-24T12:20:34Z
 - HEAD: 4ce5e24e0ce868784c52e313d5d9760db00448b3

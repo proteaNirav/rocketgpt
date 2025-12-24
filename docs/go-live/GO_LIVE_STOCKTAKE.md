@@ -1,4 +1,4 @@
-﻿# RocketGPT · Go-Live Stock-Take (Branch: go-live/rls-repair)
+# RocketGPT · Go-Live Stock-Take (Branch: go-live/rls-repair)
 
 **Date:** 2025-11-18 21:08:08
 **Environment:** Production (Vercel) – https://rocketgpt.vercel.app  

@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-01 — Dependabot Snapshot
+# RGPT-S2-C-01 — Dependabot Snapshot
 
 - Repo: proteaNirav/rocketgpt
 - Commit: 50c9f128e1bb78d2c3af66bfac06259e80196c84

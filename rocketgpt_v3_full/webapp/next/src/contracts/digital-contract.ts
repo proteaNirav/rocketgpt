@@ -1,4 +1,4 @@
-﻿export type ContractType =
+export type ContractType =
   | 'DECISION'
   | 'EXECUTION'
   | 'SEARCH'

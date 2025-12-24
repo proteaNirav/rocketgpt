@@ -1,4 +1,4 @@
-﻿# RocketGPT Documentation Index
+# RocketGPT Documentation Index
 
 Welcome to the official documentation for **RocketGPT**.  
 This index links all major architectural, AI, safety, and improvement documents.

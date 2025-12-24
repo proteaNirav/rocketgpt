@@ -1,4 +1,4 @@
-﻿AI Review	fail	8s	https://github.com/proteaNirav/rocketgpt/actions/runs/20491331969/job/58883922453	
+AI Review	fail	8s	https://github.com/proteaNirav/rocketgpt/actions/runs/20491331969/job/58883922453	
 safemode-gate	fail	36s	https://github.com/proteaNirav/rocketgpt/actions/runs/20491331972/job/58883926319	
 Detect UTF-8 BOM	pass	6s	https://github.com/proteaNirav/rocketgpt/actions/runs/20491331486/job/58883920128	
 Detect UTF-8 BOM	pass	9s	https://github.com/proteaNirav/rocketgpt/actions/runs/20491331986/job/58883921328	

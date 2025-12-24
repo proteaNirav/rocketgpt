@@ -1,4 +1,4 @@
-﻿import type { TesterProfileConfig, TesterProfileId } from "./profiles";
+import type { TesterProfileConfig, TesterProfileId } from "./profiles";
 
 export interface TesterRunRequest {
   /**

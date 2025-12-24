@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-21 — Watchdog Failure Triage
+# RGPT-S2-B-21 — Watchdog Failure Triage
 
 - RunId: 20485295422
 - Workflow: Watchdog

@@ -1,4 +1,4 @@
-﻿AI Review	Trigger Auto-Merge (only if approve + Claude)	∩╗┐2025-12-24T17:51:42.8374372Z ##[debug]Evaluating: github.repository_owner
+AI Review	Trigger Auto-Merge (only if approve + Claude)	∩╗┐2025-12-24T17:51:42.8374372Z ##[debug]Evaluating: github.repository_owner
 AI Review	Trigger Auto-Merge (only if approve + Claude)	2025-12-24T17:51:42.8374757Z ##[debug]Evaluating Index:
 AI Review	Trigger Auto-Merge (only if approve + Claude)	2025-12-24T17:51:42.8375022Z ##[debug]..Evaluating github:
 AI Review	Trigger Auto-Merge (only if approve + Claude)	2025-12-24T17:51:42.8375335Z ##[debug]..=> Object

@@ -1,4 +1,4 @@
-﻿# B-15-02 — Claude Readonly Review (Enabled Dry-Run)
+# B-15-02 — Claude Readonly Review (Enabled Dry-Run)
 
 This evidence validates the workflow runs when explicitly enabled and operates in dry-run mode.
 

@@ -1,4 +1,4 @@
-﻿# RocketGPT v4 Core AI – Post Go-Live Backlog (UI & Core)
+# RocketGPT v4 Core AI – Post Go-Live Backlog (UI & Core)
 Tag: go-live-ui-v4core-20251121
 Date: 2025-11-21
 
