@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-23 — CI BOM Fix (Proof)
+# RGPT-S2-B-23 — CI BOM Fix (Proof)
 
 - RecordedAtUTC: 2025-12-24T12:33:48Z
 - HEAD: 87c09d689654b3653d4c4d24441acc3c41de22d4

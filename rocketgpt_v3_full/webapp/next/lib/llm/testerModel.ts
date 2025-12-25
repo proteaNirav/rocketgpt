@@ -1,4 +1,4 @@
-﻿export async function callTesterModel(input: any): Promise<any> {
+export async function callTesterModel(input: any): Promise<any> {
   // TODO: Replace with real Tester model call
   console.log("[Stub] callTesterModel invoked", input);
   return {

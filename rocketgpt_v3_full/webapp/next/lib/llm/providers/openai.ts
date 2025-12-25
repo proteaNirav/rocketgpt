@@ -1,4 +1,4 @@
-﻿import { LLMRequestBase, LLMResponse, LLMError } from "../types";
+import { LLMRequestBase, LLMResponse, LLMError } from "../types";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 

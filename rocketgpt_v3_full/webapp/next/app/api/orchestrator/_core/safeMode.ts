@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RocketGPT Orchestrator – Global Safe-Mode Module
  * PhaseB StepB7 – Core guard used by orchestrator endpoints.
  */

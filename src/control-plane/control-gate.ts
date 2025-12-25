@@ -1,4 +1,4 @@
-﻿/**
+/**
  * control-gate.ts (duplicate entrypoint)
  * ----------------
  * Lightweight control-plane gate used by earlier or alternate app

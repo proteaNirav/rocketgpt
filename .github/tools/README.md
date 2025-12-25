@@ -1,4 +1,4 @@
-﻿# Self-Heal / Self-Improve Tooling (PowerShell)
+# Self-Heal / Self-Improve Tooling (PowerShell)
 
 - `Self-Heal-Improve.ps1`: CI helper (repo-safe variant).
 - `Self-Heal-Improve.local.ps1`: local developer helper (no GH writes).

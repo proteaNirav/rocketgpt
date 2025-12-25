@@ -1,4 +1,4 @@
-﻿import { LLMRequestBase, LLMResponse, LLMError } from "../types";
+import { LLMRequestBase, LLMResponse, LLMError } from "../types";
 
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta";
 

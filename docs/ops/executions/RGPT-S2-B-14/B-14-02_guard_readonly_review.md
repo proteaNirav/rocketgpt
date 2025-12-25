@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-14 — Reinstate AI Workflows Safely
+# RGPT-S2-B-14 — Reinstate AI Workflows Safely
 
 ## Step: B-14-02 — Guard claude_readonly_review.yml (manual enable + dry_run)
 - Date: 2025-12-23 11:37:30 +05:30
