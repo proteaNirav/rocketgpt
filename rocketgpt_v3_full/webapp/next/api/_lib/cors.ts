@@ -1,4 +1,4 @@
-﻿export function corsHeaders(origin: string | null) {
+export function corsHeaders(origin: string | null) {
   const allow = origin ?? "*";
   return {
     "Access-Control-Allow-Origin": allow,

@@ -1,4 +1,4 @@
-﻿import type { PlannerRequest } from '@/types/planner';
+import type { PlannerRequest } from '@/types/planner';
 
 export function getPlannerSystemPrompt(): string {
   return [

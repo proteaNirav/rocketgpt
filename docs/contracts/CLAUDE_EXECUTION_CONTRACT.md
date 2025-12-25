@@ -1,4 +1,4 @@
-﻿# Claude Execution Contract (RGPT-S2-B-07)
+# Claude Execution Contract (RGPT-S2-B-07)
 
 ## 1. Purpose
 This document defines the execution boundaries for Claude when operating as a **primary executor** for RocketGPT.

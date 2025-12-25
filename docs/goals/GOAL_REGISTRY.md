@@ -1,4 +1,4 @@
-﻿# RocketGPT â€” Goal Registry (v1)
+# RocketGPT â€” Goal Registry (v1)
 
 ## Strategic Goals (SG)
 

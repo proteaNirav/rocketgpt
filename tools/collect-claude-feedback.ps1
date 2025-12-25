@@ -1,4 +1,4 @@
-﻿param(
+param(
   [string]$Repo = "proteaNirav/rocketgpt",
   [int]$DaysBack = 21,
   [int]$PrLimit = 60,

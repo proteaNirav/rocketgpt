@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { callLLM } from "@/lib/llm/router";
 import { makePlannerGoal } from "@/lib/orchestrator/goal-factory";
 import { resolveRouting } from "@/lib/orchestrator/router";

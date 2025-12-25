@@ -1,4 +1,4 @@
-﻿## B-20 Dispatch Proof
+## B-20 Dispatch Proof
 RecordedAtUTC: 2025-12-24T11:32:48Z
 HEAD: 329b47de47261fb61b87b9f3429e81851787a508
 

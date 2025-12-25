@@ -1,4 +1,4 @@
-﻿# Planner v1 Output Schema (LOCKED)
+# Planner v1 Output Schema (LOCKED)
 
 This folder defines the canonical output contract for RocketGPT Planner v1.
 
