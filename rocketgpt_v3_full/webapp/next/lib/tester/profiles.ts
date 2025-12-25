@@ -1,4 +1,4 @@
-﻿export type TesterProfileId =
+export type TesterProfileId =
   | "base"
   | "light"
   | "full"

@@ -1,4 +1,4 @@
-﻿# Evidence Rules (RGPT-S2-B-07)
+# Evidence Rules (RGPT-S2-B-07)
 
 This document defines **mandatory execution evidence** for Claude-driven tasks.
 

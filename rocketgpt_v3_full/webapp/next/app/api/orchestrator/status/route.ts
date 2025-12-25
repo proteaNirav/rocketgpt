@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getSafeModeEnabled } from "@/lib/orchestrator/safeModeState";
 
 export const dynamic = "force-dynamic";

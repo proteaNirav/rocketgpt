@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-25 — Closure Evidence
+# RGPT-S2-B-25 — Closure Evidence
 
 **Objective**  
 Verify that temporary branch _temp_bad is fully purged from repository, remotes, and CI state.

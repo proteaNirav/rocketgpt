@@ -1,4 +1,4 @@
-﻿//
+//
 // RocketGPT - Orchestrator/Builder State & Types
 // -----------------------------------------------
 // Central definition of:

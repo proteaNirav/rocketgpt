@@ -1,4 +1,4 @@
-﻿let _cacheVersion = 0;
+let _cacheVersion = 0;
 
 /**
  * Placeholder cache clear function for the Orchestrator.

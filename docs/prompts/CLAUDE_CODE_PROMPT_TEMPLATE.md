@@ -1,4 +1,4 @@
-﻿# Claude Code Task Prompt Template
+# Claude Code Task Prompt Template
 
 Copy/paste into Claude Code.
 

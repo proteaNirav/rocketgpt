@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-17 — Self-Heal Workflow Strict Smoke-Test + Closure
+# RGPT-S2-B-17 — Self-Heal Workflow Strict Smoke-Test + Closure
 
 ## Status
 CLOSED ✅

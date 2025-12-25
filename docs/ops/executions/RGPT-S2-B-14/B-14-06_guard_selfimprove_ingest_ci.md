@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-14 — Guard _selfimprove_ingest_ci.yml
+# RGPT-S2-B-14 — Guard _selfimprove_ingest_ci.yml
 
 - Date: 2025-12-23 11:47:54 +05:30
 - Base SHA (pre-commit): 5a56e5892d2b9e777c4666f27b20d55f9214e9b2
