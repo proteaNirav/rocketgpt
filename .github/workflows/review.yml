@@ -185,7 +185,7 @@ jobs:
               provider_hint: process.env.PROVIDER || 'unknown'
             };
             fs.writeFileSync('review_input.json', JSON.stringify(obj, null, 2));
-            core.info('Ã¢Å“â€¦ Created review_input.json');
+            core.info('âœ… Created review_input.json');
 
       - name: Run AI review (runner -> review_result.json)
         env:
@@ -268,6 +268,5 @@ jobs:
           echo "HTTP: $STATUS"
           (command -v jq >/dev/null && jq -C '.' dispatch.merge.resp.json) || cat dispatch.merge.resp.json
           echo "::endgroup::"
-          if [ "$STATUS" != "204" ]; then echo "WARN: merge dispatch failed (HTTP $STATUS). Continuing without auto-merge."; (cat dispatch.merge.resp.json 2>/dev/null || true); exit 0; fi
-
+          test "$STATUS" = "204" || (echo "ERR: merge dispatch failed"; exit 1)
 
