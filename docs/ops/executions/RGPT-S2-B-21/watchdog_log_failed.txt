@@ -1,4 +1,4 @@
-﻿watch	Observe	∩╗┐2025-12-24T11:33:22.7206152Z ##[debug]Evaluating condition for step: 'Observe'
+watch	Observe	∩╗┐2025-12-24T11:33:22.7206152Z ##[debug]Evaluating condition for step: 'Observe'
 watch	Observe	2025-12-24T11:33:22.7243774Z ##[debug]Evaluating: success()
 watch	Observe	2025-12-24T11:33:22.7248699Z ##[debug]Evaluating success:
 watch	Observe	2025-12-24T11:33:22.7265480Z ##[debug]=> true

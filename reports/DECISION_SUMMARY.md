@@ -1,4 +1,4 @@
-﻿# RocketGPT — Decision Summary (Suggest-Only)
+# RocketGPT — Decision Summary (Suggest-Only)
 
 Generated at: 2025-12-21 14:48:02 +05:30
 

@@ -35,7 +35,7 @@ jobs:
           node-version: "20"
           cache: "npm"
           cache-dependency-path: |
-            rocketgpt_v3_full/webapp/next/package-lock.json
+            rocketgpt_v3_full/webapp/next/pnpm-lock.yaml
 
       - name: Install deps (Next app)
         shell: pwsh

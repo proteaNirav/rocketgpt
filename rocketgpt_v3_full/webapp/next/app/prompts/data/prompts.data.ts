@@ -1,4 +1,4 @@
-﻿export type PromptItem = {
+export type PromptItem = {
   id: string;
   name: string;
   purpose: string;

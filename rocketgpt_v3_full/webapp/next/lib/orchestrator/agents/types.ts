@@ -1,4 +1,4 @@
-﻿export type AgentKind =
+export type AgentKind =
   | "planner"
   | "builder"
   | "tester"

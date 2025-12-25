@@ -1,4 +1,4 @@
-﻿export type HttpStatusCategory =
+export type HttpStatusCategory =
   | "1xx-info"
   | "2xx-success"
   | "3xx-redirect"

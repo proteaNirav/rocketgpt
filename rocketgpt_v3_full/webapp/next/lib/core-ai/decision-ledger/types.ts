@@ -1,4 +1,4 @@
-﻿export type DeviceMode = "cloud" | "edge" | "offline-degraded";
+export type DeviceMode = "cloud" | "edge" | "offline-degraded";
 
 export type AgentName = "planner" | "builder" | "tester" | "approvals" | "system";
 

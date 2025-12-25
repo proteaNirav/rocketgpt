@@ -1,4 +1,4 @@
-﻿# RocketGPT — Approval Request
+# RocketGPT — Approval Request
 
 GeneratedAt: 2025-12-21T15:18:05
 Schema: rgpt.next-goal.v1

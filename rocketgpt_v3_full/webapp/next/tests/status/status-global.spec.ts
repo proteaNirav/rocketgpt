@@ -1,4 +1,4 @@
-﻿import { test, expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("Global /api/status endpoint", () => {
   test("GET /api/status aggregates orchestrator and tester health", async ({ request }) => {

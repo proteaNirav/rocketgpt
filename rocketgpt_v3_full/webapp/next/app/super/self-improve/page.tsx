@@ -1,4 +1,4 @@
-﻿import StatusCard from "@/app/components/StatusCard";
+import StatusCard from "@/app/components/StatusCard";
 
 type Item = {
   title: string;

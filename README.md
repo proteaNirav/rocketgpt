@@ -1,4 +1,4 @@
-﻿## Go-Live Quick Notes
+## Go-Live Quick Notes
 
 - **Smoke page**: `/super/smoke` — one-glance health (limits, commit, start time, service assumptions).
 - **Self-Improve status**: `/super/self-improve` — shows improvement pipeline counts and items (placeholder wired for now).

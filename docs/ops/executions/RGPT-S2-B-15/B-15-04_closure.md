@@ -1,4 +1,4 @@
-﻿# B-15 — Closure (claude_readonly_review workflow)
+# B-15 — Closure (claude_readonly_review workflow)
 
 ## Outcome
 - B-15 objective achieved: workflow_dispatch works and the **enabled dry-run** path executes successfully.

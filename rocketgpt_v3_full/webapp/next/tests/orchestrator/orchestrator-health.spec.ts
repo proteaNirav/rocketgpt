@@ -1,4 +1,4 @@
-﻿import { test, expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("Orchestrator health endpoint", () => {
   test("GET /api/orchestrator/health responds with success", async ({ request }) => {

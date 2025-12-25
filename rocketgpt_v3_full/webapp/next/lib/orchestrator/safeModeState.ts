@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RocketGPT Orchestrator – Safe-Mode State (single source of truth)
  * ---------------------------------------------------------------
  * This module exposes Safe-Mode state for UI/status routes.

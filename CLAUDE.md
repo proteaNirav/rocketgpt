@@ -1,4 +1,4 @@
-﻿# Claude Project Instructions (ALWAYS APPLY)
+# Claude Project Instructions (ALWAYS APPLY)
 
 You are Claude Code working in a LOCAL clone of this repository.
 

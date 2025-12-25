@@ -1,4 +1,4 @@
-﻿/**
+/**
  * In-Memory Store for V9 Approvals
  *
  * - TTL-based expiry (soft time-based eviction)

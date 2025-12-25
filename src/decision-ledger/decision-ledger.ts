@@ -1,4 +1,4 @@
-﻿import { ExecutionContext } from '../types/execution-context';
+import { ExecutionContext } from '../types/execution-context';
 
 export interface DecisionRecord {
   executionId: string;

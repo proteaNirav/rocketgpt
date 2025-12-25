@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-03 — Planner → Decision Ledger Insert Mapping
+# RGPT-S2-B-03 — Planner → Decision Ledger Insert Mapping
 
 ## Purpose
 Define a deterministic, auditable mapping from `ExecutionPlan.json` (planner.v1)

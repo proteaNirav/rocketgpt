@@ -1,4 +1,4 @@
-﻿[Tester] Starting test run: runId=9f3a7534-211f-41bd-8bd4-01a1e008cda8, buildId=35f01716-2646-4823-ab8c-931368c09b25, mode=orchestrator
+[Tester] Starting test run: runId=9f3a7534-211f-41bd-8bd4-01a1e008cda8, buildId=35f01716-2646-4823-ab8c-931368c09b25, mode=orchestrator
 [Tester] Tests root resolved to: D:\Projects\RocketGPT\rocketgpt\rocketgpt_v3_full\webapp\next\tests
 [Tester] Preparing to execute test file: sample-orchestrator-test.js
 [Tester] Absolute path: D:\Projects\RocketGPT\rocketgpt\rocketgpt_v3_full\webapp\next\tests\sample-orchestrator-test.js

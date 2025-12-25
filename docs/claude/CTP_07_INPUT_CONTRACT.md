@@ -1,4 +1,4 @@
-﻿# CTP-07 — Claude Coding Input Contract (Minimal)
+# CTP-07 — Claude Coding Input Contract (Minimal)
 
 ## Purpose
 Define the minimum, explicit constraints and input format for using Claude (Claude Code / CI) as a **read-only, suggestion-only** coding accelerator for RocketGPT.

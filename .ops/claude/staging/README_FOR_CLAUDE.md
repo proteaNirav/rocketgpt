@@ -1,4 +1,4 @@
-﻿# RocketGPT – Auth/Session Audit (Claude)
+# RocketGPT – Auth/Session Audit (Claude)
 
 ## Issues to diagnose
 - Infinite redirect: /login → email → /auth/callback → back to /login

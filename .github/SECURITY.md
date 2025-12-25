@@ -1,4 +1,4 @@
-﻿# Security Policy
+# Security Policy
 
 ## Reporting a Vulnerability
 If you discover a vulnerability or security issue in **RocketGPT**, please **do not create a public issue**.

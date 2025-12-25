@@ -1,4 +1,4 @@
-﻿export type LibraryRiskLevel = "low" | "medium" | "high";
+export type LibraryRiskLevel = "low" | "medium" | "high";
 
 export interface LibraryDefinition {
   /** Unique ID used internally for routing. */

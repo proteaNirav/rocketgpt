@@ -1,4 +1,4 @@
-﻿# Claude Review Checklist (RGPT-S2-B-07)
+# Claude Review Checklist (RGPT-S2-B-07)
 
 This checklist is designed to validate Claude's execution
 **quickly, safely, and deterministically**.

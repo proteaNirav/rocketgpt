@@ -1,4 +1,4 @@
-﻿# CTP-07 — Claude Execution Task Pack
+# CTP-07 — Claude Execution Task Pack
 ## RocketGPT | RGPT-S2-B-07
 
 ---

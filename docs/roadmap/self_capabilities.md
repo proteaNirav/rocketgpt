@@ -1,4 +1,4 @@
-﻿## Self-* Capabilities (Study, Reasoning, Research, Innovation)
+## Self-* Capabilities (Study, Reasoning, Research, Innovation)
 
 ### Goals
 - Enable RocketGPT to understand its own codebase, docs, and workflows (Self-Study).

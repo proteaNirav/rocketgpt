@@ -1,4 +1,4 @@
-﻿# B-16-01 — self_heal_hooks (workflow_dispatch strict smoke proof)
+# B-16-01 — self_heal_hooks (workflow_dispatch strict smoke proof)
 
 - CapturedAt: 2025-12-24 06:44:23 +05:30
 - DispatchAtUtc: 2025-12-24T01:13:49.0356194Z

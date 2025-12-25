@@ -1,4 +1,4 @@
-﻿# Self-Improve CI Ingest Proof
+# Self-Improve CI Ingest Proof
 
 - Verified on: 2025-12-21
 - Workflow: _selfimprove_ingest_ci.yml

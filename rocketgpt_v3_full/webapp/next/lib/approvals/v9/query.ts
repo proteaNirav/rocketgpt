@@ -1,4 +1,4 @@
-﻿import type { ApprovalCategory, ApprovalPacket } from "./types";
+import type { ApprovalCategory, ApprovalPacket } from "./types";
 import { approvalStore } from "./store/inmemory-store";
 
 /**

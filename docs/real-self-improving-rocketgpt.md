@@ -1,4 +1,4 @@
-﻿# Real Self-Improving RocketGPT
+# Real Self-Improving RocketGPT
 
 > Vision: RocketGPT should not just *run* code – it should continuously **improve itself** (safely), using real usage, tests, and guardrails to get better over time.
 

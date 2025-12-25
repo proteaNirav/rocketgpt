@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-03 — Planner ↔ Decision Ledger Contract
+# RGPT-S2-B-03 — Planner ↔ Decision Ledger Contract
 
 ## Objective
 Define the append-only storage contract for Planner v1 ExecutionPlans in the Decision Ledger.

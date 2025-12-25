@@ -1,4 +1,4 @@
-﻿# B-15-03 — Claude Readonly Review (Enabled Dry-Run, Strict Capture)
+# B-15-03 — Claude Readonly Review (Enabled Dry-Run, Strict Capture)
 
 ### Step: B-15-03 — Enabled dry-run execution (must be NEW run)
 - CapturedAt: 2025-12-24 06:39:49 +05:30

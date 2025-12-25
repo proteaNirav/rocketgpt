@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-20 — CI Dispatch Hardening (Evidence)
+# RGPT-S2-B-20 — CI Dispatch Hardening (Evidence)
 
 - RecordedAtUTC: 2025-12-24T11:29:58Z
 - HEAD: 0a6670884adf77b2d7523e4119406eeaf7a10e81

@@ -1,4 +1,4 @@
-﻿{
+{
   "allowed_labels": ["safe:auto-pr", "safe:auto-merge", "safe:workflow-edit", "safe:override"],
   "branch_allowlist": ["^ai/.*", "^v4-core-ai$"],
   "deny_paths": [

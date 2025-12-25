@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 export function HomeV2CenterPane() {
   const mockMessages = [

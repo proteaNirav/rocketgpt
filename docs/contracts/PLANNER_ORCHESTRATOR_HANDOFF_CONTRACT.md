@@ -1,4 +1,4 @@
-﻿# Planner ↔ Orchestrator Handoff Contract
+# Planner ↔ Orchestrator Handoff Contract
 
 **Contract Version:** S2-B-05.v1 (plan schema) + S2-B-06.v1 (execution envelope)  
 **Status:** Authoritative  

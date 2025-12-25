@@ -1,4 +1,4 @@
-﻿export async function callBuilderModel(input: any): Promise<any> {
+export async function callBuilderModel(input: any): Promise<any> {
   // TODO: Replace with real Builder model call
   console.log("[Stub] callBuilderModel invoked", input);
   return {

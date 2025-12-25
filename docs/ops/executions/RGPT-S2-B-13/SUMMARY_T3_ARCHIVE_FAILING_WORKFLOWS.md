@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-13 — B-13-T3 Closure Note (archive failing workflows)
+# RGPT-S2-B-13 — B-13-T3 Closure Note (archive failing workflows)
 
 - Commit: dfa1699e0d8655290b19ddc82643f16225294fd2
 - Action: Archived failing workflows to stop 0s 'workflow file issue' failures:
