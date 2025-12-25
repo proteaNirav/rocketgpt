@@ -1,4 +1,4 @@
-﻿import type { DecisionEntry, DecisionOutcome } from "./types";
+import type { DecisionEntry, DecisionOutcome } from "./types";
 import { writeDecisionEntryJsonl, writeDecisionOutcomeJsonl } from "./jsonl-writer";
 
 /**

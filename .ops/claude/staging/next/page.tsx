@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 import { useChat } from '@/lib/store'
 import { plan as apiPlan, recommend as apiRecommend } from '@/lib/api'
 import PromptBar from '@/components/PromptBar'

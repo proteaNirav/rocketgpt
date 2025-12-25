@@ -1,4 +1,4 @@
-﻿# B-16 — Closure (self_heal_hooks smoke proof)
+# B-16 — Closure (self_heal_hooks smoke proof)
 
 ## What was validated
 - Workflow: self_heal_hooks.yml

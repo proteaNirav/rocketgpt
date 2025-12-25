@@ -1,4 +1,4 @@
-﻿# Execution Plan — RGPT-S2-PLAN-YYYYMMDD-001
+# Execution Plan — RGPT-S2-PLAN-YYYYMMDD-001
 
 ## Goal
 - Original Input:

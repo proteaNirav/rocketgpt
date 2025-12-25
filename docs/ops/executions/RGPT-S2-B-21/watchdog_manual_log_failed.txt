@@ -1,4 +1,4 @@
-﻿watch	Sanity	∩╗┐2025-12-24T11:43:40.9922313Z ##[debug]Evaluating condition for step: 'Sanity'
+watch	Sanity	∩╗┐2025-12-24T11:43:40.9922313Z ##[debug]Evaluating condition for step: 'Sanity'
 watch	Sanity	2025-12-24T11:43:40.9959635Z ##[debug]Evaluating: success()
 watch	Sanity	2025-12-24T11:43:40.9964532Z ##[debug]Evaluating success:
 watch	Sanity	2025-12-24T11:43:40.9981017Z ##[debug]=> true

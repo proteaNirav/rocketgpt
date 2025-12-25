@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-23 — CI Failure Triage
+# RGPT-S2-B-23 — CI Failure Triage
 
 - RunId: 20486099701
 - Workflow: ci

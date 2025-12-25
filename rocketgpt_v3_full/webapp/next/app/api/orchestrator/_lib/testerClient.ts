@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RocketGPT — Orchestrator → Tester Client
  * Phase 3: Orchestrator–Tester Integration
  */

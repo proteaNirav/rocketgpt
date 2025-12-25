@@ -1,4 +1,4 @@
-﻿# AI Evolution Roadmap
+# AI Evolution Roadmap
 
 This document describes the evolution of RocketGPT from Narrow AI → General AI → Super AI.
 

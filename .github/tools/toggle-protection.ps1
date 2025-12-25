@@ -1,4 +1,4 @@
-﻿Param(
+Param(
     [ValidateSet("show","dev","safe","lock")]
     [string]$mode = "show"
 )

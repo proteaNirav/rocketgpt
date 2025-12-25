@@ -1,4 +1,4 @@
-﻿export type TesterExecutionResult = {
+export type TesterExecutionResult = {
   success: boolean;
   tests_executed: number;
   tests_passed: number;

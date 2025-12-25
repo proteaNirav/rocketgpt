@@ -1,4 +1,4 @@
-﻿/** V9 Deterministic Rule Engine */
+/** V9 Deterministic Rule Engine */
 
 import { ApprovalPacket, RuleEvaluationResult } from "../types";
 

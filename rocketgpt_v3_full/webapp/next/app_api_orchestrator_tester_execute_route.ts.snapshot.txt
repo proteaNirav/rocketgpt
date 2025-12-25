@@ -1,4 +1,4 @@
-﻿// app/api/orchestrator/tester/execute/route.ts
+// app/api/orchestrator/tester/execute/route.ts
 // Orchestrator → Tester execute bridge
 // - Validates orchestrator payload
 // - Forwards to /api/tester/run (DEV STUB or real implementation)
