@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-13 — Execution Evidence Summary
+# RGPT-S2-B-13 — Execution Evidence Summary
 
 ## Task
 - Block: **RGPT-S2-B-13**

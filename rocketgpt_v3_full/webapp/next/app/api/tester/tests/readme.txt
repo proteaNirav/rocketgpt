@@ -1,4 +1,4 @@
-﻿RocketGPT Tester – Real Playwright Tests
+RocketGPT Tester – Real Playwright Tests
 ----------------------------------------
 This folder will contain the actual test definitions executed by
 runTesterEngine(). Each test file will export one or more test functions.

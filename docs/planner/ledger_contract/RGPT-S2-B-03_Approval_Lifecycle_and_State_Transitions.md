@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-03 — Approval Lifecycle & State Transitions
+# RGPT-S2-B-03 — Approval Lifecycle & State Transitions
 
 ## Objective
 Define the authoritative lifecycle of approvals for Planner v1 ExecutionPlans,

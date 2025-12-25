@@ -1,4 +1,4 @@
-﻿export interface ErrorEnvelope {
+export interface ErrorEnvelope {
   code: string;
   message: string;
   origin: string;

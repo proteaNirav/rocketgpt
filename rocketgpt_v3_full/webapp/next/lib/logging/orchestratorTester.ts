@@ -1,4 +1,4 @@
-﻿type LogLevel = "info" | "warn" | "error";
+type LogLevel = "info" | "warn" | "error";
 
 interface OrchTesterLogBase {
   component: "orchestrator-tester-execute";

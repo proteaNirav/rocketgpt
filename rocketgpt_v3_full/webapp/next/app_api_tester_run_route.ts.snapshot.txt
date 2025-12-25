@@ -1,4 +1,4 @@
-﻿// app/api/tester/run/route.ts
+// app/api/tester/run/route.ts
 // Dev-mode stub implementation for Tester Runner
 // - Validates payload shape
 // - Does NOT touch Supabase or rgpt_builds

@@ -1,4 +1,4 @@
-﻿import { test, expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("RocketGPT Tester UI", () => {
   test("loads the Tester page and shows the shared header", async ({ page }) => {

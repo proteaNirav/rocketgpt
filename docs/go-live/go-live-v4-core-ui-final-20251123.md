@@ -1,4 +1,4 @@
-﻿# RocketGPT Go-Live – v4 Core UI Final
+# RocketGPT Go-Live – v4 Core UI Final
 
 **Date:** 2025-11-23  
 **Environment:** Production (Vercel)  

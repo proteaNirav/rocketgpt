@@ -1,4 +1,4 @@
-﻿## Cloud Self-Expansion & Federated Free-Tier Architecture
+## Cloud Self-Expansion & Federated Free-Tier Architecture
 
 ### Goals
 - Detect when any free-tier resource (DB, storage, bandwidth, actions) is nearing limits.

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * lib/approvals-db.ts
  * -----------------------------------------------------------------------------
  * RocketGPT V9 – Approval Orchestration Hub (AOH)

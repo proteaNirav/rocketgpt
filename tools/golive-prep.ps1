@@ -1,4 +1,4 @@
-﻿param(
+param(
   [string]$Repo = "proteaNirav/rocketgpt",
   [string]$ProdUrl = "https://rocketgpt.vercel.app",
   [int]$GhRunLimit = 10

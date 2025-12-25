@@ -1,4 +1,4 @@
-﻿export async function callPlannerModel(input: any): Promise<any> {
+export async function callPlannerModel(input: any): Promise<any> {
   // Demo-only planner stub for RocketGPT Orchestrator.
   // Generates a small predictable plan so UI features can be demonstrated
   // without a real LLM backend.

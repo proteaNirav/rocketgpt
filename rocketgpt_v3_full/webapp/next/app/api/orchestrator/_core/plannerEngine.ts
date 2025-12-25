@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RocketGPT Orchestrator – Planner Engine (Stub)
  * PhaseB StepB7 – Minimal implementation so /planner/run compiles.
  *
