@@ -1,4 +1,4 @@
-﻿import type { OrchestratorGoal, OrchestratorStage } from "./router";
+import type { OrchestratorGoal, OrchestratorStage } from "./router";
 
 /**
  * Base shape for goal factory inputs.

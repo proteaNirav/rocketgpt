@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-13 — B-13-T2 Closure Note (notify.yml)
+# RGPT-S2-B-13 — B-13-T2 Closure Note (notify.yml)
 
 - Change: make notify.yml parse-safe (single-line expressions)
 - Commit: 821bdeea10bd21c393ad8f58685623d13b5632cf

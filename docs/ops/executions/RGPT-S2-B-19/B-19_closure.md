@@ -1,4 +1,4 @@
-﻿# RGPT-S2-B-19 — Post-merge CI verification + stocktake refresh (Closure)
+# RGPT-S2-B-19 — Post-merge CI verification + stocktake refresh (Closure)
 
 - ClosedAtUTC: 2025-12-24T11:12:27Z
 - HEAD: b5770842548c8c987db3fce45e6674aa20912777

@@ -1,4 +1,4 @@
-﻿param(
+param(
   [Parameter(Mandatory)][string]$PlanPath,
   [Parameter(Mandatory)][string]$TaskId,
   [Parameter(Mandatory)][ValidateSet("START","END")][string]$Phase,

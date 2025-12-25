@@ -1,4 +1,4 @@
-﻿# RocketGPT — Ledger Status Report
+# RocketGPT — Ledger Status Report
 
 Generated at: 2025-12-21 14:48:02 +05:30
 

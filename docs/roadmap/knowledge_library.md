@@ -1,4 +1,4 @@
-﻿## Knowledge Library (Languages + Domains)
+## Knowledge Library (Languages + Domains)
 
 ### Scope
 - Natural languages: Sanskrit, Hindi, Marathi, Gujarati, English, and others on demand.

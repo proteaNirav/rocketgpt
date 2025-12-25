@@ -1,4 +1,4 @@
-﻿# RocketGPT â€“ Planner LLM Prompt Specification (Design-Time, OpenAI Runtime)
+# RocketGPT â€“ Planner LLM Prompt Specification (Design-Time, OpenAI Runtime)
 
 Status: Draft v1  
 Runtime LLM: OpenAI only  

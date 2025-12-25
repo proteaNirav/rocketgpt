@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { HomeV2LeftPane } from "@/components/home-v2/left-pane";
 import { HomeV2CenterPane } from "@/components/home-v2/center-pane";

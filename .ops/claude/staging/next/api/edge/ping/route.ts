@@ -1,4 +1,4 @@
-﻿export const runtime = "edge";
+export const runtime = "edge";
 import { ok, noContent } from "../../_lib/cors";
 
 export async function GET(req: Request) {

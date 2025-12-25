@@ -1,4 +1,4 @@
-﻿//
+//
 // RocketGPT - Builder Execution Engine (DB helpers)
 // --------------------------------------------------
 // Responsibilities:

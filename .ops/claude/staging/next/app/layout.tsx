@@ -1,4 +1,4 @@
-﻿export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 // webapp/next/app/layout.tsx
 import type { Metadata } from "next";

@@ -1,4 +1,4 @@
-﻿# Claude Execution Contract v1.0
+# Claude Execution Contract v1.0
 
 **Effective Date**: 2025-12-22  
 **Authority**: RocketGPT Phase S2 Execution Framework  

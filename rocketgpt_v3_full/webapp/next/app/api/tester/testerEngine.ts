@@ -1,4 +1,4 @@
-﻿export type TesterProfile = {
+export type TesterProfile = {
   id: string;
   label: string;
   strictness: string;

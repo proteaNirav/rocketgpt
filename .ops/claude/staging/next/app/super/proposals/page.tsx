@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { getSupabase } from "../../../lib/supabase"; // relative to /app/super/proposals/page.tsx

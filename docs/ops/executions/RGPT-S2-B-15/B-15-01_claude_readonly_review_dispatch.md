@@ -1,4 +1,4 @@
-﻿# B-15 — Claude Readonly Review (Smoke Test)
+# B-15 — Claude Readonly Review (Smoke Test)
 
 This evidence validates that the GitHub Actions workflow **claude_readonly_review.yml** can be dispatched and completes successfully.
 

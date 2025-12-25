@@ -1,4 +1,4 @@
-﻿/**
+/**
  * control-gate.ts
  * ----------------
  * Central, deterministic gate for execution within the control plane.

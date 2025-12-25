@@ -1,4 +1,4 @@
-﻿claude-review	Set up job	∩╗┐2025-12-23T03:30:17.1424511Z ##[debug]Starting: Set up job
+claude-review	Set up job	∩╗┐2025-12-23T03:30:17.1424511Z ##[debug]Starting: Set up job
 claude-review	Set up job	2025-12-23T03:30:17.1426648Z Current runner version: '2.330.0'
 claude-review	Set up job	2025-12-23T03:30:17.1455511Z ##[group]Runner Image Provisioner
 claude-review	Set up job	2025-12-23T03:30:17.1456856Z Hosted Compute Agent

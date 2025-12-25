@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "rocketgpt://planner/schemas/planner.v1/executionplan.schema.json",
   "title": "RocketGPT Planner v1 ExecutionPlan",

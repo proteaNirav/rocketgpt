@@ -1,4 +1,4 @@
-﻿export type ApprovalRisk = "low" | "medium" | "high";
+export type ApprovalRisk = "low" | "medium" | "high";
 
 export type ApprovalCategory = "planner" | "builder" | "tester" | "release";
 

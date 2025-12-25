@@ -1,4 +1,4 @@
-﻿# RocketGPT Safety Ruleset (v4 Core AI)
+# RocketGPT Safety Ruleset (v4 Core AI)
 version: 1
 allowed_ops:
   - workflow-edit

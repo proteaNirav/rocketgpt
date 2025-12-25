@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Unified API error formatting utility for RocketGPT backend.
  * Ensures consistent error responses for all server-side routes.
  */

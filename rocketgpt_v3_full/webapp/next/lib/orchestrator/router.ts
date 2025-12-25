@@ -1,4 +1,4 @@
-﻿import type { AgentDefinition, AgentKind } from "./agents/types";
+import type { AgentDefinition, AgentKind } from "./agents/types";
 import { AGENTS, getAgentsByKind } from "./agents/registry";
 import type { LibraryDefinition } from "./libraries/types";
 import {

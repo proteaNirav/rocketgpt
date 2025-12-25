@@ -1,4 +1,4 @@
-﻿Detect UTF-8 BOM	Run BOM detector	∩╗┐2025-12-24T12:22:22.1334557Z ##[debug]Evaluating condition for step: 'Run BOM detector'
+Detect UTF-8 BOM	Run BOM detector	∩╗┐2025-12-24T12:22:22.1334557Z ##[debug]Evaluating condition for step: 'Run BOM detector'
 Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1337728Z ##[debug]Evaluating: success()
 Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1338487Z ##[debug]Evaluating success:
 Detect UTF-8 BOM	Run BOM detector	2025-12-24T12:22:22.1339407Z ##[debug]=> true

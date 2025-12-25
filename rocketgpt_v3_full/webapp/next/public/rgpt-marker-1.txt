@@ -1,4 +1,4 @@
-﻿RocketGPT Marker
+RocketGPT Marker
 index=1
 root=D:\Projects\RocketGPT\rocketgpt\rocketgpt_v3_full\webapp\next
 stamp=2025-11-15T12:59:15+05:30

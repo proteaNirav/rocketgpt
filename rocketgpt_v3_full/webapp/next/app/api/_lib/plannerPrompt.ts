@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RocketGPT Planner Prompt
  * Runtime: OpenAI only
  * This file defines the SYSTEM prompt and a helper to build the USER prompt

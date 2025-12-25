@@ -1,4 +1,4 @@
-﻿import { DecisionContract } from '@/src/contracts/decision-contract';
+import { DecisionContract } from '@/src/contracts/decision-contract';
 
 export interface ExecutionContext {
   // CAT (Contract Access Token) compatibility (V1 placeholder)

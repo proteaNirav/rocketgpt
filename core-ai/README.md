@@ -1,4 +1,4 @@
-﻿# RocketGPT v4 â€” Core AI (Self-Healing & Self-Improving)
+# RocketGPT v4 â€” Core AI (Self-Healing & Self-Improving)
 
 This branch seeds the **Self-Heal Controller** workflow and a core-ai/ workspace for future agents:
 - Diagnostics & plan generation
