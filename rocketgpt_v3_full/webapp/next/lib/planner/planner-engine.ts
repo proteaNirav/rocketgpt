@@ -1,4 +1,4 @@
-﻿import type { PlannerRequest, PlannerResponse, PlanStep } from '@/types/planner';
+import type { PlannerRequest, PlannerResponse, PlanStep } from '@/types/planner';
 import { buildPlanningPrompt, getPlannerSystemPrompt } from './planner-prompts';
 
 const OPENAI_URL =

@@ -1,4 +1,4 @@
-﻿RGPT-S2-B-19 — CI Dispatch Capability + Skip Explanation
+RGPT-S2-B-19 — CI Dispatch Capability + Skip Explanation
 HEAD: b5770842548c8c987db3fce45e6674aa20912777
 RecordedAtUTC: 2025-12-24T11:09:34Z
 

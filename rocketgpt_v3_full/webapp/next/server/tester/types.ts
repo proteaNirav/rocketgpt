@@ -1,4 +1,4 @@
-﻿export interface TesterRunInput {
+export interface TesterRunInput {
   runId: string;
   buildId: string;
   testFiles: string[];

@@ -1,4 +1,4 @@
-﻿# B-14 Closure — PR #223 merged (Self-Improve flags resolution)
+# B-14 Closure — PR #223 merged (Self-Improve flags resolution)
 
 ## Snapshot
 - CapturedAt: 2025-12-23 17:07:46 +05:30

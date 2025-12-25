@@ -1,4 +1,4 @@
-﻿import type { LibraryDefinition } from "./types";
+import type { LibraryDefinition } from "./types";
 
 /**
  * Library registry:

@@ -1,4 +1,4 @@
-﻿import LeftSessionsPane from "./ChatWorkspace/LeftSessionsPane";
+import LeftSessionsPane from "./ChatWorkspace/LeftSessionsPane";
 import CenterChatPane from "./ChatWorkspace/CenterChatPane";
 import RightInspectorPane from "./ChatWorkspace/RightInspectorPane";
 import CollapsibleWrapper from "./ChatWorkspace/CollapsibleWrapper";

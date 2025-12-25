@@ -1,4 +1,4 @@
-﻿# RocketGPT UI "” Phase 2 (Sprint 1)
+# RocketGPT UI "” Phase 2 (Sprint 1)
 Claude/Emergent-style chat shell wired to the live Core API.
 
 ## Quickstart

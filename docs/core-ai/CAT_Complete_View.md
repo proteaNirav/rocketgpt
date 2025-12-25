@@ -1,4 +1,4 @@
-﻿# CAT Complete View (v1.0) — RocketGPT-Aligned Nano-Robot Model
+# CAT Complete View (v1.0) — RocketGPT-Aligned Nano-Robot Model
 
 ## 1. What a CAT is (Authoritative Definition)
 A CAT (Contract-Agent-Team) is a **task-scoped nano-worker** that runs on **RocketGPT Core intelligence** and operates strictly under:

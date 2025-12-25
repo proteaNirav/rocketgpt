@@ -1,4 +1,4 @@
-﻿// Sample orchestrator-level test for RocketGPT Tester.
+// Sample orchestrator-level test for RocketGPT Tester.
 // This version is CommonJS-friendly and also works when imported via ESM
 // using dynamic import + default export mapping.
 

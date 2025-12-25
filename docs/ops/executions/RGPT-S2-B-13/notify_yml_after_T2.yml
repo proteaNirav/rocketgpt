@@ -1,4 +1,4 @@
-﻿name: Notify on Pipeline
+name: Notify on Pipeline
 
 on:
   workflow_run:

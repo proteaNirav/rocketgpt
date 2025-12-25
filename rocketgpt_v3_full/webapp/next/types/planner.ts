@@ -1,4 +1,4 @@
-﻿export interface PlannerRequest {
+export interface PlannerRequest {
   goal: string;                     // User goal or instruction
   context?: string;                 // Optional prior context
   constraints?: PlannerConstraints; // Hard limits

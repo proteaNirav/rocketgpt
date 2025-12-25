@@ -1,4 +1,4 @@
-﻿import { randomUUID } from "crypto";
+import { randomUUID } from "crypto";
 import { spawn } from "child_process";
 
 export type TesterStatus = "success" | "failed" | "error" | "partial";

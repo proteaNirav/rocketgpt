@@ -1,4 +1,4 @@
-﻿import { test, expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test("orchestrator must block execute-all when Safe-Mode is enabled", async ({ request }) => {
   const status = await request.get("/api/orchestrator/status");

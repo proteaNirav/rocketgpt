@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Minimal in-memory representation of an orchestrator run entry.
  * Replace with real persistence (DB / Supabase) later.
  */

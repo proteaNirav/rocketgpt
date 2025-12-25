@@ -1,4 +1,4 @@
-﻿export type LLMRole = "user" | "assistant" | "system";
+export type LLMRole = "user" | "assistant" | "system";
 
 export type LLMMessage = {
   role: LLMRole;
