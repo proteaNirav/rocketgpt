@@ -1,7 +1,7 @@
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server'
 
 /**
  * Lightweight health ping for monitoring systems.
@@ -12,10 +12,10 @@ export async function GET(_req: NextRequest) {
   return NextResponse.json(
     {
       success: true,
-      service: "RocketGPT Orchestrator",
-      status: "ok",
+      service: 'RocketGPT Orchestrator',
+      status: 'ok',
       timestamp: new Date().toISOString(),
     },
     { status: 200 },
-  );
+  )
 }

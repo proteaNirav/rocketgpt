@@ -1,25 +1,24 @@
-import Link from 'next/link';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import Link from 'next/link'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 const HeaderThemeToggle = () => {
-  return <ThemeToggle />;
-};
+  return <ThemeToggle />
+}
 
 //import { HeaderThemeToggle } from '@/components/header-theme-toggle';
-import ThemeToggle from "./ThemeToggle";
-
+import ThemeToggle from './ThemeToggle'
 
 export default async function Header() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient()
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getUser()
 
   async function signOutAction() {
-    'use server';
-    const supabase = await createSupabaseServerClient();
-    await supabase.auth.signOut();
+    'use server'
+    const supabase = await createSupabaseServerClient()
+    await supabase.auth.signOut()
   }
 
   return (
@@ -29,9 +28,7 @@ export default async function Header() {
         <div className="flex items-center gap-6">
           <Link href="/" className="font-semibold text-lg text-gray-900 dark:text-gray-100">
             RocketGPT
-            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-              AI Orchestrator
-            </span>
+            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">AI Orchestrator</span>
           </Link>
 
           {/* Primary navigation */}
@@ -122,9 +119,7 @@ export default async function Header() {
               </Link>
 
               <form action={signOutAction}>
-                <button
-                  className="rounded bg-black dark:bg-white text-white dark:text-black px-3 py-1.5 text-sm hover:opacity-90"
-                >
+                <button className="rounded bg-black dark:bg-white text-white dark:text-black px-3 py-1.5 text-sm hover:opacity-90">
                   Logout
                 </button>
               </form>
@@ -133,6 +128,5 @@ export default async function Header() {
         </div>
       </div>
     </header>
-  );
+  )
 }
-

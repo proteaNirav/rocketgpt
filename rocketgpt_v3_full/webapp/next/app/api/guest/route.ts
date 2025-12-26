@@ -1,5 +1,5 @@
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 import { NextRequest, NextResponse } from 'next/server'
 import * as Sentry from '@sentry/nextjs'
 import { createServerClient } from '@supabase/ssr'
@@ -36,7 +36,7 @@ export async function POST(_req: NextRequest) {
           remove: () => {},
         },
         global: { headers: { 'x-guest-id': guestId! } },
-      }
+      },
     )
 
     const { error } = await supabase.from('guests').insert({ id: guestId })
@@ -52,6 +52,3 @@ export async function POST(_req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'internal_error' }, { status: 500 })
   }
 }
-
-
-

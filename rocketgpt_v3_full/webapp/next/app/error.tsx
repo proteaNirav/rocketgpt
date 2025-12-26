@@ -1,23 +1,29 @@
-"use client";
+'use client'
 
-import { useEffect } from "react";
+import { useEffect } from 'react'
 
-export default function GlobalError({ error, reset }: { error: Error & { digest?: string }, reset: () => void }) {
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
   useEffect(() => {
     // fire-and-forget "“ best effort
-    fetch("/api/report-error", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    fetch('/api/report-error', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        title: `Prod Error: ${error?.message?.slice(0, 120) || "Unknown"}`,
-        stack: error?.stack || "",
-        url: typeof window !== "undefined" ? window.location.href : "",
-        note: "Auto-filed from GlobalError boundary",
-        engine: "anthropic",  // or "openai"/"groq"/"google"
-        goal: "Handle and fix this specific runtime error for rocketgpt.dev",
+        title: `Prod Error: ${error?.message?.slice(0, 120) || 'Unknown'}`,
+        stack: error?.stack || '',
+        url: typeof window !== 'undefined' ? window.location.href : '',
+        note: 'Auto-filed from GlobalError boundary',
+        engine: 'anthropic', // or "openai"/"groq"/"google"
+        goal: 'Handle and fix this specific runtime error for rocketgpt.dev',
       }),
-    }).catch(() => {});
-  }, [error]);
+    }).catch(() => {})
+  }, [error])
 
   return (
     <html>
@@ -27,5 +33,5 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
         <button onClick={() => reset()}>Retry</button>
       </body>
     </html>
-  );
+  )
 }

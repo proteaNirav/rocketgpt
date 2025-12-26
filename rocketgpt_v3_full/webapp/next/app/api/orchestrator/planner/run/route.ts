@@ -3,9 +3,9 @@
 //  PhaseB StepB7 â€“ Safe-Mode Hardened Implementation
 // ============================================================================
 
-import { NextResponse } from "next/server";
-import { safeModeGuard } from "../../_core/safeMode";
-import { runPlanner } from "../../_core/plannerEngine";
+import { NextResponse } from 'next/server'
+import { safeModeGuard } from '../../_core/safeMode'
+import { runPlanner } from '../../_core/plannerEngine'
 
 // ============================================================================
 //  POST /api/orchestrator/planner/run
@@ -17,19 +17,19 @@ import { runPlanner } from "../../_core/plannerEngine";
 export async function POST(req: Request) {
   try {
     // Enforce Safe-Mode protection
-    safeModeGuard("planner");
+    safeModeGuard('planner')
 
-    const body = await req.json();
-    const plannerResult = await runPlanner(body);
+    const body = await req.json()
+    const plannerResult = await runPlanner(body)
 
     return NextResponse.json({
       success: true,
-      route: "/api/orchestrator/planner/run",
+      route: '/api/orchestrator/planner/run',
       planner: plannerResult,
       timestamp: new Date().toISOString(),
-    });
+    })
   } catch (err: any) {
     // Safe-Mode or planner failure
-    return NextResponse.json(err, { status: 503 });
+    return NextResponse.json(err, { status: 503 })
   }
 }
