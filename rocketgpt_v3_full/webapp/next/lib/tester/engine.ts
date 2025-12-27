@@ -1,17 +1,14 @@
 export type TesterExecutionResult = {
-  success: boolean;
-  tests_executed: number;
-  tests_passed: number;
-  tests_failed: number;
-  duration_ms: number;
-  logs: string[];
-};
+  success: boolean
+  tests_executed: number
+  tests_passed: number
+  tests_failed: number
+  duration_ms: number
+  logs: string[]
+}
 
 export interface TesterEngine {
-  runTests(
-    testCases: string[],
-    options?: Record<string, unknown>
-  ): Promise<TesterExecutionResult>;
+  runTests(testCases: string[], options?: Record<string, unknown>): Promise<TesterExecutionResult>
 }
 
 /**
@@ -20,17 +17,17 @@ export interface TesterEngine {
 class StubTesterEngine implements TesterEngine {
   async runTests(
     testCases: string[],
-    _options: Record<string, unknown> = {}
+    _options: Record<string, unknown> = {},
   ): Promise<TesterExecutionResult> {
-    const start = Date.now();
+    const start = Date.now()
 
     // Stub logic: treat all tests as "passed"
     const logs = [
-      "StubTesterEngine started.",
+      'StubTesterEngine started.',
       `Executing ${testCases.length} test case(s).`,
-      "All tests passed (stub).",
-      "StubTesterEngine completed.",
-    ];
+      'All tests passed (stub).',
+      'StubTesterEngine completed.',
+    ]
 
     return {
       success: true,
@@ -39,12 +36,11 @@ class StubTesterEngine implements TesterEngine {
       tests_failed: 0,
       duration_ms: Date.now() - start,
       logs,
-    };
+    }
   }
 }
 
-export function getTesterEngine(_mode: "stub" | "real" = "stub"): TesterEngine {
+export function getTesterEngine(_mode: 'stub' | 'real' = 'stub'): TesterEngine {
   // Currently, only stub engine exists.
-  return new StubTesterEngine();
+  return new StubTesterEngine()
 }
-

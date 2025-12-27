@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic'
 
 /**
  * Global status endpoint for RocketGPT.
@@ -13,27 +13,26 @@ export const dynamic = "force-dynamic";
  * - Can be extended later with DB, Supabase, queue checks, etc.
  */
 
-const INTERNAL_BASE_URL =
-  process.env.RGPT_INTERNAL_BASE_URL ?? "http://localhost:3000";
+const INTERNAL_BASE_URL = process.env.RGPT_INTERNAL_BASE_URL ?? 'http://localhost:3000'
 
 type ServiceStatus = {
-  ok: boolean;
-  status: number;
-  body?: unknown;
-  error?: string;
-};
+  ok: boolean
+  status: number
+  body?: unknown
+  error?: string
+}
 
 async function safeFetch(path: string): Promise<ServiceStatus> {
-  const url = `${INTERNAL_BASE_URL}${path}`;
+  const url = `${INTERNAL_BASE_URL}${path}`
 
   try {
     const res = await fetch(url, {
-      cache: "no-store",
-    });
+      cache: 'no-store',
+    })
 
-    let json: unknown = undefined;
+    let json: unknown = undefined
     try {
-      json = await res.json();
+      json = await res.json()
     } catch {
       // ignore JSON parse errors – body may be empty or not JSON
     }
@@ -42,32 +41,28 @@ async function safeFetch(path: string): Promise<ServiceStatus> {
       ok: res.ok,
       status: res.status,
       body: json,
-    };
+    }
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Unknown error in fetch";
+    const message = err instanceof Error ? err.message : 'Unknown error in fetch'
     return {
       ok: false,
       status: 0,
       error: message,
-    };
+    }
   }
 }
 
 export async function GET() {
   const [orchestrator, tester] = await Promise.all([
-    safeFetch("/api/orchestrator/health"),
-    safeFetch("/api/tester/health"),
-  ]);
+    safeFetch('/api/orchestrator/health'),
+    safeFetch('/api/tester/health'),
+  ])
 
-  const orchBody: any = orchestrator.body ?? {};
-  const testerBody: any = tester.body ?? {};
+  const orchBody: any = orchestrator.body ?? {}
+  const testerBody: any = tester.body ?? {}
 
   const success =
-    orchestrator.ok &&
-    tester.ok &&
-    orchBody.success === true &&
-    testerBody.success === true;
+    orchestrator.ok && tester.ok && orchBody.success === true && testerBody.success === true
 
   return NextResponse.json({
     success,
@@ -76,5 +71,5 @@ export async function GET() {
       tester,
     },
     timestamp: new Date().toISOString(),
-  });
+  })
 }

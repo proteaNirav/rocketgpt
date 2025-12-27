@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic'
 
 /**
  * Lightweight Tester health endpoint for Playwright + external probes.
@@ -9,8 +9,8 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   return NextResponse.json({
     success: true,
-    service: "tester",
-    message: "Tester health OK",
+    service: 'tester',
+    message: 'Tester health OK',
     timestamp: new Date().toISOString(),
-  });
+  })
 }
