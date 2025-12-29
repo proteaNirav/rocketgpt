@@ -1,4 +1,4 @@
-﻿insert into public.rgpt_planner_plan_ledger
+insert into public.rgpt_planner_plan_ledger
 (
   plan_id,
   schema_version,
