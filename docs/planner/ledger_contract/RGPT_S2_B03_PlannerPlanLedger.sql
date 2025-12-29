@@ -1,4 +1,4 @@
-﻿-- =========================================================
+-- =========================================================
 -- RGPT-S2-B-03 — Planner ↔ Decision Ledger Contract (SQL Draft)
 -- Purpose: Append-only storage for planner.v1 ExecutionPlans
 -- Target: Supabase/Postgres (schema: public by default; adjust if needed)
