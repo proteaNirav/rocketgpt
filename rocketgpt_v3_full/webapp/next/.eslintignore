@@ -1,4 +1,4 @@
-﻿# RGPT: ignore generated/backup/stub files
+# RGPT: ignore generated/backup/stub files
 **/*.backup.*
 **/*.rgptstub.*
 **/*.bak.*
