@@ -1,4 +1,4 @@
-﻿"workflow","state","path","status","conclusion","headSha","onHead","createdAt"
+"workflow","state","path","status","conclusion","headSha","onHead","createdAt"
 ".github/workflows/_temp_bad.yml","active",".github/workflows/_temp_bad.yml",,,,"False",
 ".github/workflows/auto-merge.yml","active",".github/workflows/auto-merge.yml","completed","failure","7a595039b7bd10f2ef790d34034dc7aace06f5b8","False","2025-10-31T08:53:31Z"
 ".github/workflows/claude-pr-review.yml","active",".github/workflows/claude-pr-review.yml",,,,"False",
