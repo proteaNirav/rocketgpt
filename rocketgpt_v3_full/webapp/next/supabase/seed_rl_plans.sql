@@ -1,4 +1,4 @@
-﻿-- =========================================================
+-- =========================================================
 -- RocketGPT · Seed script for public.rl_plans (UPSERT version)
 -- Purpose: Baseline plan catalog for /api/limits
 -- Scope:
