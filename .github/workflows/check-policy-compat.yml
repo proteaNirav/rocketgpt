@@ -1,4 +1,4 @@
-﻿name: check-policy
+name: check-policy
 
 on:
   pull_request:
