@@ -1,21 +1,33 @@
-name: Policy Gate (v4 Core AI)
+﻿name: policy_gate
 
 on:
-  workflow_dispatch:
   pull_request:
-    branches: ["main"]
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: policy_gate-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  policy_gate:
+  dependabot_policy_gate:
+    name: Dependabot Policy Gate
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: YAML & workflow validation (stub)
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run Dependabot policy gate (path-scoped)
+        shell: pwsh
         run: |
-          echo "TODO: Add actionlint + YAML validation."
-          echo "Block merge on malformed workflows."
+          pwsh -NoProfile -File scripts/security/policy_gate_dependabot.ps1
