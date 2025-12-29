@@ -1,0 +1,12 @@
+﻿{
+  "incident_id": "RGPT-S2-C-03",
+  "type": "ci_bom_incident",
+  "status": "CLOSED",
+  "closed_at": "2025-12-29T17:33:58.1370916+05:30",
+  "confidence": 0.98,
+  "closure_tag": "RGPT-S2-C-03-CLOSED",
+  "fix_commit": "3d4f7be0",
+  "evidence_path": "docs/ops/executions/RGPT-S2-C-03/BOM_FIX_CLOSURE.md",
+  "workflow": "ci.yml",
+  "notes": "UTF-8 BOM cleanup validated via green CI on main and branch; no open PRs remain."
+}
