@@ -17,6 +17,11 @@
 
 $ErrorActionPreference = "Stop"
 
+# Resolve relative paths from repo root (script location -> repo root = 2 levels up)
+$scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoRoot   = Resolve-Path (Join-Path $scriptRoot "..\..") | Select-Object -ExpandProperty Path
+Set-Location $repoRoot
+
 function StartsWithAny([string]$value, [string[]]$prefixes) {
   foreach ($p in $prefixes) {
     if ($value -and $value.StartsWith($p, [System.StringComparison]::OrdinalIgnoreCase)) { return $true }
@@ -70,3 +75,4 @@ if ($high.Count -gt 0) {
 Write-Host ""
 Write-Host "[OK] Policy Gate passed (no high in enforced scope)." -ForegroundColor Green
 exit 0
+
