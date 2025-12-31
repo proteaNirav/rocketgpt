@@ -1,0 +1,45 @@
+﻿{
+    "meta":  {
+                 "focus_roles":  [
+                                     "anon",
+                                     "authenticated",
+                                     "service_role"
+                                 ],
+                 "generated_at":  "2025-12-31T17:16:34",
+                 "current_user":  null,
+                 "captured_at":  null,
+                 "database":  null,
+                 "baseline_file":  "docs/ops/executions/RGPT-S2-C-08/baseline/grants_snapshot_dashboard_20251231-170730.json"
+             },
+    "counts":  {
+                   "excess_table_danger":  0,
+                   "column_grants_focus":  0,
+                   "routine_grants_focus":  0,
+                   "excess_schema_create":  0,
+                   "views_touching_auth":  1,
+                   "table_grants_focus":  0,
+                   "schema_grants_focus":  0,
+                   "rls_tables":  1
+               },
+    "per_role":  {
+                     "table":  {
+
+                               },
+                     "schema":  {
+
+                                }
+                 },
+    "excess":  {
+                   "schema_create":  {
+
+                                     },
+                   "dangerous_table_privileges":  {
+
+                                                  }
+               },
+    "notes":  [
+                  "This is a baseline-driven delta analysis (read-only).",
+                  "Any INSERT/UPDATE/DELETE/TRUNCATE/REFERENCES/TRIGGER on anon/authenticated is flagged as excess by default.",
+                  "Schema CREATE for anon/authenticated is flagged as excess by default."
+              ]
+}
