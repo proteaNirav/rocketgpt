@@ -1,0 +1,429 @@
+﻿{
+    "captured_at":  "2025-12-31T19:47:00+05:30",
+    "baseline":  "docs/ops/executions/RGPT-S2-C-08/baseline/grants_snapshot_dashboard_20251231-194456_NORMALIZED.json",
+    "excess":  {
+                   "dangerous_table_privileges":  [
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "public",
+                                                          "object_name":  "orchestrator_runs",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "public",
+                                                          "object_name":  "orchestrator_runs",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "public",
+                                                          "object_name":  "proposals",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "public",
+                                                          "object_name":  "proposals",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "public",
+                                                          "object_name":  "self_apply_jobs",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "public",
+                                                          "object_name":  "self_apply_jobs",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "realtime",
+                                                          "object_name":  "messages",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "realtime",
+                                                          "object_name":  "messages",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "realtime",
+                                                          "object_name":  "messages",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "realtime",
+                                                          "object_name":  "messages",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "DELETE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "REFERENCES"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "TRIGGER"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "TRUNCATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "DELETE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "REFERENCES"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "TRIGGER"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "TRUNCATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "DELETE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "REFERENCES"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "TRIGGER"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "TRUNCATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "DELETE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "REFERENCES"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "TRIGGER"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "TRUNCATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "buckets_analytics",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "DELETE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "REFERENCES"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "TRIGGER"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "TRUNCATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "DELETE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "REFERENCES"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "TRIGGER"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "TRUNCATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "objects",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "DELETE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "REFERENCES"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "TRIGGER"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "TRUNCATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "anon",
+                                                          "privilege_type":  "UPDATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "DELETE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "INSERT"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "REFERENCES"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "TRIGGER"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "TRUNCATE"
+                                                      },
+                                                      {
+                                                          "section":  "GRANTS_TABLES",
+                                                          "schema":  "storage",
+                                                          "object_name":  "prefixes",
+                                                          "grantee":  "authenticated",
+                                                          "privilege_type":  "UPDATE"
+                                                      }
+                                                  ],
+                   "schema_create":  [
+
+                                     ],
+                   "view_touches_auth":  [
+                                             {
+                                                 "schema":  "public",
+                                                 "section":  "VIEW_TOUCHES_AUTH",
+                                                 "view_name":  "profiles_effective"
+                                             }
+                                         ]
+               },
+    "totals":  {
+                   "dangerous_table_privileges":  58,
+                   "schema_create":  0,
+                   "view_touches_auth":  1
+               }
+}
