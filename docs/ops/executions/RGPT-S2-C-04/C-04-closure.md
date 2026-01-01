@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-04 — Closure
+# RGPT-S2-C-04 — Closure
 
 ## HEAD
 - sha: 682c1a7a38ca0161538fcd77cae8c0bbb885a7d4

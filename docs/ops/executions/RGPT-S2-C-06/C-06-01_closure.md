@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-06 — Closure (Dependabot triage unblock via staging lockfile floors)
+# RGPT-S2-C-06 — Closure (Dependabot triage unblock via staging lockfile floors)
 
 **Date (UTC):** 2025-12-30T11:24:09Z  
 **Repo:** proteaNirav/rocketgpt  
