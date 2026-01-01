@@ -88,3 +88,9 @@ docs/strategy/
 .rgpt_ci_logs/
 
 .claude/
+docs/security/generated/AUTH_SURFACE_*
+docs/security/generated/DENY_BY_DEFAULT_ALLOWLIST_*
+docs/security/generated/*_REVIEW_*
+docs/security/generated/*_INVENTORY_*
+docs/security/AUTH_SURFACE_MATRIX.md
+docs/security/AUTH_SURFACE_OVERRIDES.json
