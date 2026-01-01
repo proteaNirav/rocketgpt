@@ -1,18 +1,15 @@
-# RGPT Security — API Surface Drift Check
+﻿# RGPT Security â€” API Surface Drift Check
 # Fails if Next.js app/api routes exist on disk but are missing from docs/security/generated/RUNTIME_ALLOWLIST.json
 
 $ErrorActionPreference = "Stop"
 
 $nextApiRoot = "rocketgpt_v3_full/webapp/next/app/api"
-$matrix = "docs/security/AUTH_SURFACE_MATRIX.md"
 $allowJson = "docs/security/generated/RUNTIME_ALLOWLIST.json"
 
 if (-not (Test-Path $nextApiRoot)) {
   Write-Host "[SKIP] No Next.js app/api directory found."
   exit 0
 }
-
-if (-not (Test-Path $matrix)) { throw "Missing AUTH_SURFACE_MATRIX.md" }
 if (-not (Test-Path $allowJson)) { throw "Missing RUNTIME_ALLOWLIST.json" }
 
 # Normalize to ABSOLUTE path for correct replacement
@@ -52,3 +49,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "[OK] No API surface drift detected." -ForegroundColor Green
+
