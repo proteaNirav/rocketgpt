@@ -1,4 +1,4 @@
-name: policy_gate
+﻿name: policy_gate
 
 on:
   pull_request:
@@ -22,6 +22,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Security — API Surface Drift Check
+        shell: pwsh
+        run: ./.github/tools/security/check_api_surface_drift.ps1
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -31,3 +35,4 @@ jobs:
         shell: pwsh
         run: |
           pwsh -NoProfile -File scripts/security/policy_gate_dependabot.ps1
+
