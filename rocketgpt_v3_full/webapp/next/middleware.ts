@@ -1,78 +1,90 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
 
-export const config = {
-  matcher: [
-    // Protected routes
-    "/account/:path*",
-    "/profile/:path*",
-    "/admin/:path*",
-    "/super/:path*",
-    // Auth routes
-    "/auth/callback",
-    "/login",
-  ]
-};
+const RUNTIME_ALLOWLIST = new Set<string>([
+  "/api/approvals/create",
+  "/api/approvals/update-status",
+  "/api/builder",
+  "/api/core/[...path]",
+  "/api/core-ai/ledger/ping",
+  "/api/debug-auth",
+  "/api/demo/chat",
+  "/api/demo/orchestrator/status",
+  "/api/demo/self-study",
+  "/api/demo/upload",
+  "/api/edge/[fn]",
+  "/api/edge/echo",
+  "/api/edge/ping",
+  "/api/env",
+  "/api/guest",
+  "/api/health",
+  "/api/limits",
+  "/api/llm",
+  "/api/logs",
+  "/api/orchestrator/admin/safe-mode",
+  "/api/orchestrator/admin/safe-mode/disable",
+  "/api/orchestrator/admin/safe-mode/enable",
+  "/api/orchestrator/auto-advance",
+  "/api/orchestrator/build",
+  "/api/orchestrator/builder",
+  "/api/orchestrator/builder/execute-all",
+  "/api/orchestrator/builder/execute-next",
+  "/api/orchestrator/builder/list",
+  "/api/orchestrator/clear-cache",
+  "/api/orchestrator/config",
+  "/api/orchestrator/health",
+  "/api/orchestrator/health/basic",
+  "/api/orchestrator/health/deep",
+  "/api/orchestrator/info",
+  "/api/orchestrator/logs",
+  "/api/orchestrator/plan",
+  "/api/orchestrator/planner/run",
+  "/api/orchestrator/release",
+  "/api/orchestrator/run",
+  "/api/orchestrator/run/builder",
+  "/api/orchestrator/run/finalize",
+  "/api/orchestrator/run/planner",
+  "/api/orchestrator/run/status",
+  "/api/orchestrator/run/tester",
+  "/api/orchestrator/run-history",
+  "/api/orchestrator/safe-mode",
+  "/api/orchestrator/start-run",
+  "/api/orchestrator/status",
+  "/api/orchestrator/test",
+  "/api/orchestrator/tester/execute",
+  "/api/orchestrator/test-tester",
+  "/api/planner",
+  "/api/planner/plan",
+  "/api/plans",
+  "/api/report-error",
+  "/api/self-improve/run",
+  "/api/self-improve/status",
+  "/api/sessions",
+  "/api/status",
+  "/api/suggest",
+  "/api/suggestions/[issue]/approve",
+  "/api/suggestions/[issue]/reject",
+  "/api/tester/health",
+  "/api/tester/run",
+  "/api/usage",
+  "/api/version"
+]);
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-  const url = req.nextUrl.clone();
-  
-  // Create Supabase client with cookie handling for middleware
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return req.cookies.get(name)?.value;
-        },
-        set(name: string, value: string, options?: any) {
-          // Set cookie on the response (Next.js middleware-safe)
-          res.cookies.set(name, value, options);
-        },
-        remove(name: string, options?: any) {
-          // Remove cookie on the response
-          res.cookies.set(name, "", { ...options, maxAge: 0 });
-        },
-      },
+export function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  if (!pathname.startsWith("/api/")) return NextResponse.next();
+
+  if (!RUNTIME_ALLOWLIST.has(pathname)) {
+    const res = new NextResponse("Not Found", { status: 404 });
+    if (process.env.NODE_ENV !== "production") {
+      res.headers.set("x-rgpt-deny-reason", "route-not-allowlisted");
+      res.headers.set("x-rgpt-path", pathname);
     }
-  );
-
-  // Refresh session if it exists (handles token refresh)
-  const { data: { user }, error } = await supabase.auth.getUser();
-
-  // Protected routes check
-  const isProtectedRoute = 
-    url.pathname.startsWith('/account') || 
-    url.pathname.startsWith('/profile') ||
-    url.pathname.startsWith('/admin') ||
-    url.pathname.startsWith('/super');
-
-  const isAuthRoute = 
-    url.pathname.startsWith('/login') || 
-    url.pathname.startsWith('/auth');
-
-  // Redirect unauthenticated users from protected routes
-  if (isProtectedRoute && (!user || error)) {
-    console.log('[middleware] Redirecting unauthenticated user from:', url.pathname);
-    url.pathname = '/login';
-    url.searchParams.set('redirectedFrom', req.nextUrl.pathname);
-    return NextResponse.redirect(url);
+    return res;
   }
 
-  // Redirect authenticated users away from login
-  if (isAuthRoute && user && !error && url.pathname === '/login') {
-    // Check if there's a redirect target
-    const redirectedFrom = url.searchParams.get('redirectedFrom');
-    const next = url.searchParams.get('next');
-    const redirectTo = redirectedFrom || next || '/account';
-    
-    console.log('[middleware] Redirecting authenticated user to:', redirectTo);
-    return NextResponse.redirect(new URL(redirectTo, url));
-  }
-
-  return res;
+  return NextResponse.next();
 }
 
+export const config = { matcher: ["/api/:path*"] };
