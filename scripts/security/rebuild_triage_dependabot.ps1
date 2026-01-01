@@ -1,4 +1,4 @@
-﻿param(
+param(
   [Parameter(Mandatory=$false)]
   [string]$RawPath = "docs/security/dependabot/RGPT-S2-C-04-inventory.raw.json",
 

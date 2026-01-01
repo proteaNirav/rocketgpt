@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-08 — Next Security Queue
+# RGPT-S2-C-08 — Next Security Queue
 
 Status: INITIALIZED  
 Objective: Privilege minimization & queue isolation  
