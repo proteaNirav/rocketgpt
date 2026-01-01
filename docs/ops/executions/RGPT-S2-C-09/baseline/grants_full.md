@@ -1,4 +1,4 @@
-﻿| schema | object | grantee | privilege | grantable |
+| schema | object | grantee | privilege | grantable |
 |--------|--------|---------|-----------|-----------|
 | auth | audit_log_entries | postgres | DELETE | NO |
 | auth | audit_log_entries | postgres | INSERT | NO |

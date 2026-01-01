@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-07 — Closure (Purge old glob from Claude staging lockfiles)
+# RGPT-S2-C-07 — Closure (Purge old glob from Claude staging lockfiles)
 
 **Date (UTC):** 2025-12-31T06:18:15Z  
 **Repo:** proteaNirav/rocketgpt  

@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-05 — Closure
+# RGPT-S2-C-05 — Closure
 
 ## Objective
 Verify ALL workflow runs for HEAD on main are success (or legitimately in_progress), and confirm no hidden failures.
