@@ -1,4 +1,4 @@
-﻿# Closure — CI Detect UTF-8 BOM Fix (RGPT-S2-C-03)
+# Closure — CI Detect UTF-8 BOM Fix (RGPT-S2-C-03)
 
 ## Problem
 CI workflow **ci.yml** job **Detect UTF-8 BOM** was failing (exit code 1) on multiple runs/branches.

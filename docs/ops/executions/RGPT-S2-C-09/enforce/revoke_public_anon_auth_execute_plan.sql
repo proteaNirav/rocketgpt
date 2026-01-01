@@ -1,4 +1,4 @@
-﻿-- RGPT-S2-C-09 — REVOKE PLAN (NOT APPLIED)
+-- RGPT-S2-C-09 — REVOKE PLAN (NOT APPLIED)
 -- Generated: 2026-01-01T08:47:43Z
 -- Scope: revoke EXECUTE on selected functions from PUBLIC/anon/authenticated
 
