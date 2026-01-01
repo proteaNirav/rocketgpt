@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-08 — Verification: Baseline vs POST
+# RGPT-S2-C-08 — Verification: Baseline vs POST
 
 - Verified at: 2025-12-31 20:00:54
 - Baseline (normalized): docs/ops/executions/RGPT-S2-C-08/baseline/grants_snapshot_dashboard_20251231-194456_NORMALIZED.json
