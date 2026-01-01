@@ -1,0 +1,402 @@
+﻿{
+    "generated_at":  "2026-01-02T04:36:19",
+    "source":  "filesystem:rocketgpt_v3_full/webapp/next/app/api",
+    "runtime_allowlist":  [
+                              {
+                                  "route":  "/api/approvals/create",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/approvals/update-status",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/builder",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/core/[...path]",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/core-ai/ledger/ping",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/debug-auth",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/demo/chat",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/demo/orchestrator/status",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/demo/self-study",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/demo/upload",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/edge/[fn]",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/edge/echo",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/edge/ping",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/env",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/guest",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/health",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/limits",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/llm",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/logs",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/admin/safe-mode",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/admin/safe-mode/disable",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/admin/safe-mode/enable",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/auto-advance",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/build",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/builder",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/builder/execute-all",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/builder/execute-next",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/builder/list",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/clear-cache",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/config",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/health",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/health/basic",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/health/deep",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/info",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/logs",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/plan",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/planner/run",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/release",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/run",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/run/builder",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/run/finalize",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/run/planner",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/run/status",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/run/tester",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/run-history",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/safe-mode",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/start-run",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/status",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/test",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/tester/execute",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/orchestrator/test-tester",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/planner",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/planner/plan",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/plans",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/report-error",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/self-improve/run",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/self-improve/status",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/sessions",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/status",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/suggest",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/suggestions/[issue]/approve",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/suggestions/[issue]/reject",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/tester/health",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/tester/run",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/usage",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              },
+                              {
+                                  "route":  "/api/version",
+                                  "caller":  "TBD",
+                                  "auth":  "TBD",
+                                  "runtime":  "YES"
+                              }
+                          ]
+}
