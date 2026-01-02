@@ -1,0 +1,50 @@
+﻿name: policy_gate
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: policy_gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependabot_policy_gate:
+    name: Dependabot Policy Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate route→auth surface matrix
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not (Test-Path 'docs/security/generated/RUNTIME_ALLOWLIST.json')) {
+            throw 'Missing docs/security/generated/RUNTIME_ALLOWLIST.json (ensure allowlist generation step runs before validation).'
+          }
+          if (-not (Test-Path 'docs/security/AUTH_SURFACE_MATRIX.md')) {
+            throw 'Missing docs/security/AUTH_SURFACE_MATRIX.md'
+          }
+          pwsh -NoProfile -File .github/tools/policy_gate/validate_auth_surface_matrix.ps1 -AllowlistJson docs/security/generated/RUNTIME_ALLOWLIST.json -MatrixMd docs/security/AUTH_SURFACE_MATRIX.md
+
+      - name: Security — API Surface Drift Check
+        shell: pwsh
+        run: ./.github/tools/security/check_api_surface_drift.ps1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run Dependabot policy gate (path-scoped)
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -File scripts/security/policy_gate_dependabot.ps1
+
