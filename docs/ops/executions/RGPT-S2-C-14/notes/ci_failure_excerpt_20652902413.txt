@@ -1,0 +1,169 @@
+﻿RGPT-S2-C-14 — CI failure excerpt
+Captured (UTC): 
+2026-01-02T07:21:16Z
+Repo: proteaNirav/rocketgpt
+Run ID: 20652902413
+Run URL: https://github.com/proteaNirav/rocketgpt/actions/runs/20652902413
+Workflow: ci
+Conclusion: failure
+
+build-test	Set up job	∩╗┐2026-01-02T07:07:31.9975051Z ##[debug]Starting: Set up job
+build-test	Set up job	2026-01-02T07:07:31.9976619Z Current runner version: '2.330.0'
+build-test	Set up job	2026-01-02T07:07:32.0003766Z ##[group]Runner Image Provisioner
+build-test	Set up job	2026-01-02T07:07:32.0004956Z Hosted Compute Agent
+build-test	Set up job	2026-01-02T07:07:32.0005849Z Version: 20251211.462
+build-test	Set up job	2026-01-02T07:07:32.0006901Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+build-test	Set up job	2026-01-02T07:07:32.0008021Z Build Date: 2025-12-11T16:28:49Z
+build-test	Set up job	2026-01-02T07:07:32.0009071Z Worker ID: {31a10398-7d19-464c-b159-a9b0e4a1c455}
+build-test	Set up job	2026-01-02T07:07:32.0010060Z ##[endgroup]
+build-test	Set up job	2026-01-02T07:07:32.0010931Z ##[group]Operating System
+build-test	Set up job	2026-01-02T07:07:32.0011756Z Ubuntu
+build-test	Set up job	2026-01-02T07:07:32.0012528Z 24.04.3
+build-test	Set up job	2026-01-02T07:07:32.0013236Z LTS
+build-test	Set up job	2026-01-02T07:07:32.0014113Z ##[endgroup]
+build-test	Set up job	2026-01-02T07:07:32.0014836Z ##[group]Runner Image
+build-test	Set up job	2026-01-02T07:07:32.0015843Z Image: ubuntu-24.04
+build-test	Set up job	2026-01-02T07:07:32.0016625Z Version: 20251215.174.1
+build-test	Set up job	2026-01-02T07:07:32.0018557Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+build-test	Set up job	2026-01-02T07:07:32.0021021Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+build-test	Set up job	2026-01-02T07:07:32.0022600Z ##[endgroup]
+build-test	Set up job	2026-01-02T07:07:32.0024421Z ##[group]GITHUB_TOKEN Permissions
+build-test	Set up job	2026-01-02T07:07:32.0027325Z Contents: read
+build-test	Set up job	2026-01-02T07:07:32.0028225Z Metadata: read
+build-test	Set up job	2026-01-02T07:07:32.0029007Z ##[endgroup]
+build-test	Set up job	2026-01-02T07:07:32.0031846Z Secret source: Actions
+build-test	Set up job	2026-01-02T07:07:32.0033708Z ##[debug]Primary repository: proteaNirav/rocketgpt
+build-test	Set up job	2026-01-02T07:07:32.0034845Z Prepare workflow directory
+build-test	Set up job	2026-01-02T07:07:32.0120002Z ##[debug]Creating pipeline directory: '/home/runner/work/rocketgpt'
+build-test	Set up job	2026-01-02T07:07:32.0125055Z ##[debug]Creating workspace directory: '/home/runner/work/rocketgpt/rocketgpt'
+build-test	Set up job	2026-01-02T07:07:32.0127584Z ##[debug]Update context data
+build-test	Set up job	2026-01-02T07:07:32.0132396Z ##[debug]Evaluating job-level environment variables
+build-test	Set up job	2026-01-02T07:07:32.0533092Z ##[debug]Evaluating job container
+build-test	Set up job	2026-01-02T07:07:32.0537194Z ##[debug]Evaluating job service containers
+build-test	Set up job	2026-01-02T07:07:32.0540708Z ##[debug]Evaluating job defaults
+build-test	Set up job	2026-01-02T07:07:32.0575634Z Prepare all required actions
+build-test	Set up job	2026-01-02T07:07:32.0630381Z Getting action download info
+build-test	Set up job	2026-01-02T07:07:32.3802166Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+build-test	Set up job	2026-01-02T07:07:32.3834336Z ##[debug]Copied action archive '/opt/actionarchivecache/actions_checkout/34e114876b0b11c390a56381ad16ebd13914f8d5.tar.gz' to '/home/runner/work/_actions/_temp_a458e49d-1bd2-48ac-b516-099515d1e87d/bcab8e4d-36b8-40d8-b87c-6852949247e6.tar.gz'
+build-test	Set up job	2026-01-02T07:07:32.4729241Z ##[debug]Unwrap 'actions-checkout-34e1148' to '/home/runner/work/_actions/actions/checkout/v4'
+build-test	Set up job	2026-01-02T07:07:32.4893148Z ##[debug]Archive '/home/runner/work/_actions/_temp_a458e49d-1bd2-48ac-b516-099515d1e87d/bcab8e4d-36b8-40d8-b87c-6852949247e6.tar.gz' has been unzipped into '/home/runner/work/_actions/actions/checkout/v4'.
+build-test	Set up job	2026-01-02T07:07:32.4989172Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+build-test	Set up job	2026-01-02T07:07:32.5035571Z ##[debug]Copied action archive '/opt/actionarchivecache/actions_setup-node/49933ea5288caeca8642d1e84afbd3f7d6820020.tar.gz' to '/home/runner/work/_actions/_temp_4cdbdcbc-ea9a-4de5-9203-80641de0290f/5940ac42-3935-4571-a9eb-a9c86822b54d.tar.gz'
+build-test	Set up job	2026-01-02T07:07:32.5596127Z ##[debug]Unwrap 'actions-setup-node-49933ea' to '/home/runner/work/_actions/actions/setup-node/v4'
+build-test	Set up job	2026-01-02T07:07:32.5855311Z ##[debug]Archive '/home/runner/work/_actions/_temp_4cdbdcbc-ea9a-4de5-9203-80641de0290f/5940ac42-3935-4571-a9eb-a9c86822b54d.tar.gz' has been unzipped into '/home/runner/work/_actions/actions/setup-node/v4'.
+build-test	Set up job	2026-01-02T07:07:32.5910014Z ##[debug]Action 'actions/setup-node@v4' already downloaded at '/home/runner/work/_actions/actions/setup-node/v4'.
+build-test	Set up job	2026-01-02T07:07:32.5914200Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+build-test	Set up job	2026-01-02T07:07:32.5957627Z ##[debug]Copied action archive '/opt/actionarchivecache/actions_setup-python/a26af69be951a213d495a4c3e4e4022e16d87065.tar.gz' to '/home/runner/work/_actions/_temp_52fd8bf0-8199-4919-8c7e-60667dd05550/eb640446-878d-45ab-8c96-cd6218eb6fe3.tar.gz'
+build-test	Set up job	2026-01-02T07:07:32.6451750Z ##[debug]Unwrap 'actions-setup-python-a26af69' to '/home/runner/work/_actions/actions/setup-python/v5'
+build-test	Set up job	2026-01-02T07:07:32.6649286Z ##[debug]Archive '/home/runner/work/_actions/_temp_52fd8bf0-8199-4919-8c7e-60667dd05550/eb640446-878d-45ab-8c96-cd6218eb6fe3.tar.gz' has been unzipped into '/home/runner/work/_actions/actions/setup-python/v5'.
+build-test	Set up job	2026-01-02T07:07:32.6699810Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+build-test	Set up job	2026-01-02T07:07:32.6750908Z ##[debug]Copied action archive '/opt/actionarchivecache/actions_upload-artifact/ea165f8d65b6e75b540449e92b4886f43607fa02.tar.gz' to '/home/runner/work/_actions/_temp_fe39239e-ed43-4e41-bec1-0a0abb6e07b5/c43af5d6-4170-42df-a9c6-30c238051071.tar.gz'
+build-test	Set up job	2026-01-02T07:07:32.7417142Z ##[debug]Unwrap 'actions-upload-artifact-ea165f8' to '/home/runner/work/_actions/actions/upload-artifact/v4'
+build-test	Set up job	2026-01-02T07:07:32.7812782Z ##[debug]Archive '/home/runner/work/_actions/_temp_fe39239e-ed43-4e41-bec1-0a0abb6e07b5/c43af5d6-4170-42df-a9c6-30c238051071.tar.gz' has been unzipped into '/home/runner/work/_actions/actions/upload-artifact/v4'.
+build-test	Set up job	2026-01-02T07:07:32.7895269Z ##[debug]action.yml for action: '/home/runner/work/_actions/actions/checkout/v4/action.yml'.
+build-test	Set up job	2026-01-02T07:07:32.8632698Z ##[debug]action.yml for action: '/home/runner/work/_actions/actions/setup-node/v4/action.yml'.
+build-test	Set up job	2026-01-02T07:07:32.8695385Z ##[debug]action.yml for action: '/home/runner/work/_actions/actions/setup-node/v4/action.yml'.
+build-test	Set up job	2026-01-02T07:07:32.8752384Z ##[debug]action.yml for action: '/home/runner/work/_actions/actions/setup-python/v5/action.yml'.
+build-test	Set up job	2026-01-02T07:07:32.8811528Z ##[debug]action.yml for action: '/home/runner/work/_actions/actions/upload-artifact/v4/action.yml'.
+build-test	Set up job	2026-01-02T07:07:32.8892612Z ##[debug]Set step '__actions_checkout' display name to: 'Run actions/checkout@v4'
+build-test	Set up job	2026-01-02T07:07:32.8896113Z ##[debug]Set step '__run' display name to: 'Show tree (top level + UI folder)'
+build-test	Set up job	2026-01-02T07:07:32.8898320Z ##[debug]Set step '__actions_setup-node' display name to: 'Setup Node 20 (with pnpm cache if lockfile exists)'
+build-test	Set up job	2026-01-02T07:07:32.8900461Z ##[debug]Set step '__actions_setup-node_2' display name to: 'Setup Node 20 (no cache fallback)'
+build-test	Set up job	2026-01-02T07:07:32.8902392Z ##[debug]Set step '__run_2' display name to: 'Enable Corepack (for pnpm)'
+build-test	Set up job	2026-01-02T07:07:32.8904359Z ##[debug]Set step '__run_3' display name to: 'Activate pnpm (corepack)'
+build-test	Set up job	2026-01-02T07:07:32.8906245Z ##[debug]Set step '__run_4' display name to: 'Validate package.json (UI)'
+build-test	Set up job	2026-01-02T07:07:32.8907960Z ##[debug]Set step '__run_5' display name to: 'Install UI deps'
+build-test	Set up job	2026-01-02T07:07:32.8909613Z ##[debug]Set step '__run_6' display name to: 'Typecheck (UI)'
+build-test	Set up job	2026-01-02T07:07:32.8911298Z ##[debug]Set step '__run_7' display name to: 'Lint (UI) - autofix'
+build-test	Set up job	2026-01-02T07:07:32.8912984Z ##[debug]Set step '__run_8' display name to: 'Lint (UI) - strict'
+build-test	Set up job	2026-01-02T07:07:32.8914864Z ##[debug]Set step '__run_9' display name to: 'Build (UI)'
+build-test	Set up job	2026-01-02T07:07:32.8916669Z ##[debug]Set step '__actions_setup-python' display name to: 'Set up Python'
+build-test	Set up job	2026-01-02T07:07:32.8918399Z ##[debug]Set step '__run_10' display name to: 'Install ruff'
+build-test	Set up job	2026-01-02T07:07:32.8920106Z ##[debug]Set step '__run_11' display name to: 'Lint core-api (non blocking)'
+build-test	Set up job	2026-01-02T07:07:32.8921896Z ##[debug]Set step '__run_12' display name to: 'Format core-api (non blocking)'
+build-test	Set up job	2026-01-02T07:07:32.8923741Z ##[debug]Set step '__run_13' display name to: 'Run QA scenarios'
+build-test	Set up job	2026-01-02T07:07:32.8925628Z ##[debug]Set step '__actions_upload-artifact' display name to: 'Upload QA report'
+build-test	Set up job	2026-01-02T07:07:32.8926426Z Complete job name: build-test
+build-test	Set up job	2026-01-02T07:07:32.8997298Z ##[debug]Collect running processes for tracking orphan processes.
+build-test	Set up job	2026-01-02T07:07:32.9200169Z ##[debug]Finishing: Set up job
+build-test	Run actions/checkout@v4	∩╗┐2026-01-02T07:07:32.9310671Z ##[debug]Evaluating condition for step: 'Run actions/checkout@v4'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9348536Z ##[debug]Evaluating: success()
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9353243Z ##[debug]Evaluating success:
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9368742Z ##[debug]=> true
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9375113Z ##[debug]Result: true
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9397695Z ##[debug]Starting: Run actions/checkout@v4
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9470158Z ##[debug]Register post job cleanup for action: actions/checkout@v4
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9542877Z ##[debug]Loading inputs
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9557728Z ##[debug]Evaluating: github.repository
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9558861Z ##[debug]Evaluating Index:
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9560711Z ##[debug]..Evaluating github:
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9561848Z ##[debug]..=> Object
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9567584Z ##[debug]..Evaluating String:
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9568586Z ##[debug]..=> 'repository'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9572580Z ##[debug]=> 'proteaNirav/rocketgpt'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9574341Z ##[debug]Result: 'proteaNirav/rocketgpt'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9578221Z ##[debug]Evaluating: github.token
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9578759Z ##[debug]Evaluating Index:
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9579210Z ##[debug]..Evaluating github:
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9579670Z ##[debug]..=> Object
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9580086Z ##[debug]..Evaluating String:
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9580515Z ##[debug]..=> 'token'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9581209Z ##[debug]=> '***'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9582047Z ##[debug]Result: '***'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9606818Z ##[debug]Loading env
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9710348Z ##[group]Run actions/checkout@v4
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9711609Z with:
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9712254Z   fetch-depth: 0
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9712961Z   repository: proteaNirav/rocketgpt
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9714293Z   token: ***
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9714903Z   ssh-strict: true
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9715352Z   ssh-user: git
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9715727Z   persist-credentials: true
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9716161Z   clean: true
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9716556Z   sparse-checkout-cone-mode: true
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9717018Z   fetch-tags: false
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9717407Z   show-progress: true
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9717791Z   lfs: false
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9718128Z   submodules: false
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9718511Z   set-safe-directory: true
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9719215Z env:
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9719692Z   CORE_API_BASE: https://rocketgpt-core-api.onrender.com
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9720331Z   NODE_OPTIONS: --max_old_space_size=4096
+build-test	Run actions/checkout@v4	2026-01-02T07:07:32.9720854Z ##[endgroup]
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1105552Z ##[debug]GITHUB_WORKSPACE = '/home/runner/work/rocketgpt/rocketgpt'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1107333Z ##[debug]qualified repository = 'proteaNirav/rocketgpt'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1108183Z ##[debug]ref = 'refs/heads/main'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1109212Z ##[debug]commit = '900a3f7b0604cbde4adf469269c18a6b7e94cb2a'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1110312Z ##[debug]clean = true
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1110949Z ##[debug]filter = undefined
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1111690Z ##[debug]fetch depth = 0
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1112788Z ##[debug]fetch tags = false
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1113965Z ##[debug]show progress = true
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1114698Z ##[debug]lfs = false
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1115329Z ##[debug]submodules = false
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1116005Z ##[debug]recursive submodules = false
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1116723Z ##[debug]GitHub Host URL = 
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1118280Z ::add-matcher::/home/runner/work/_actions/actions/checkout/v4/dist/problem-matcher.json
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1187856Z ##[debug]Added matchers: 'checkout-git'. Problem matchers scan action output for known warning or error strings and report these inline.
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1192725Z Syncing repository: proteaNirav/rocketgpt
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1194272Z ::group::Getting Git version info
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1195459Z ##[group]Getting Git version info
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1196127Z Working directory is '/home/runner/work/rocketgpt/rocketgpt'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1197030Z ##[debug]Getting git version
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1197728Z [command]/usr/bin/git version
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1271779Z git version 2.52.0
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1295021Z ##[debug]0
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1296070Z ##[debug]git version 2.52.0
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1296662Z ##[debug]
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1297852Z ##[debug]Set git useragent to: git/2.52.0 (github-actions-checkout)
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1298880Z ::endgroup::
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1299501Z ##[endgroup]
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1302938Z ::add-mask::***
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1311932Z Temporarily overriding HOME='/home/runner/work/_temp/5f175282-b2b7-481a-a205-845d9d8d4f48' before making global git config changes
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1313322Z Adding repository directory to the temporary git global config as a safe directory
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1324910Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/rocketgpt/rocketgpt
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1357924Z ##[debug]0
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1358604Z ##[debug]
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1362827Z Deleting the contents of '/home/runner/work/rocketgpt/rocketgpt'
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1366452Z ::group::Initializing the repository
+build-test	Run actions/checkout@v4	2026-01-02T07:07:33.1367044Z ##[group]Initializing the repository
