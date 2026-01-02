@@ -122,3 +122,90 @@ jobs:
 
           echo "[L0] OK — no immutable artifacts were modified."
 
+
+  pr_label_enforcement:
+    name: PR Label Enforcement (workflow-edit / auto-merge)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR labels
+        id: labels
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          api="https://api.github.com/repos/${REPO}/issues/${PR_NUMBER}/labels"
+          labels="$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "${api}" | jq -r '.[].name' | tr '\n' ' ')"
+          echo "labels=${labels}" >> $GITHUB_OUTPUT
+          echo "[LABELS] ${labels}"
+
+      - name: Detect changed files in PR
+        id: diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${{ github.base_ref }}"
+          git fetch --no-tags --prune origin "${base}" --depth=200 || true
+          range="origin/${base}...HEAD"
+          echo "[DIFF] range=${range}"
+          git diff --name-only "${range}" | sed '/^\s*$/d' > changed_files.txt || true
+          echo "[DIFF] changed files:"
+          cat changed_files.txt || true
+
+      - name: Enforce labels
+        shell: bash
+        env:
+          LABELS: ${{ steps.labels.outputs.labels }}
+        run: |
+          set -euo pipefail
+
+          need_workflow_edit=0
+          need_auto_merge=0
+
+          # Rules:
+          # - If any workflow file changes -> require safe:workflow-edit
+          # - If auto-update workflow or auto-ops allowlist changes -> require safe:auto-merge
+          if [ -s changed_files.txt ]; then
+            while IFS= read -r f; do
+              case "$f" in
+                .github/workflows/*)
+                  need_workflow_edit=1 ;;
+              esac
+
+              case "$f" in
+                .github/workflows/auto_update_policy.yml|.github/auto-ops.yml)
+                  need_auto_merge=1 ;;
+              esac
+            done < changed_files.txt
+          fi
+
+          echo "[REQ] workflow-edit=${need_workflow_edit} auto-merge=${need_auto_merge}"
+          echo "[HAVE] ${LABELS}"
+
+          if [ "${need_workflow_edit}" -eq 1 ]; then
+            echo "${LABELS}" | grep -q "safe:workflow-edit" || {
+              echo "::error::Missing required label: safe:workflow-edit"
+              exit 1
+            }
+          fi
+
+          if [ "${need_auto_merge}" -eq 1 ]; then
+            echo "${LABELS}" | grep -q "safe:auto-merge" || {
+              echo "::error::Missing required label: safe:auto-merge"
+              exit 1
+            }
+          fi
+
+          echo "[OK] PR label enforcement passed."
+
