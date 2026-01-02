@@ -47,3 +47,4 @@ jobs:
         shell: pwsh
         run: |
           pwsh -NoProfile -File scripts/security/policy_gate_dependabot.ps1
+
