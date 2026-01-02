@@ -16,8 +16,8 @@
 - Step 5: ci(auto-update) — L1-only allowlist_patch mode added
 
 ## CI Proof — Runs (push)
-- policy_gate runId: 20651895832
-- auto-update runId:  20651895837
+- policy_gate runId: 20651905064
+- auto-update runId:  20651905057
 
 ## Files
 - docs/ops/policy/POLICY_OWNERSHIP_MATRIX.md
@@ -27,3 +27,4 @@
 ## Notes
 - L0 artifacts are immutable by policy_gate enforcement.
 - Auto-update workflow is workflow_dispatch only and blocked from L0 edits.
+
