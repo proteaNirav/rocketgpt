@@ -1,7 +1,13 @@
 ﻿import { NextResponse } from "next/server";
+
+import { enforceRuntimeDecision } from "@/rgpt/runtime/runtime-guard";
 import { resolveRuntimeModeFromEnvAndHeaders } from "../../../../src/rgpt/runtime/runtime-mode.context";
+
+import { enforceRuntimeDecision } from "@/rgpt/runtime/runtime-guard";
 import { assertRuntimePermission } from "../../../../src/rgpt/runtime/runtime-guard";
 
+
+import { enforceRuntimeDecision } from "@/rgpt/runtime/runtime-guard";
 /**
  * Test endpoint to verify Runtime Mode resolution + enforcement.
  * Usage:
@@ -14,6 +20,23 @@ import { assertRuntimePermission } from "../../../../src/rgpt/runtime/runtime-gu
  *   ?action=READ|WRITE|WORKFLOW_TRIGGER|CODE_MUTATION|POLICY_MUTATION|AUTO_HEAL
  */
 export async function GET(req: Request) {
+  // RGPT-S4: Decision Ledger enforcement (FAIL-CLOSED)
+  const decision_id =
+    req?.headers?.get?.("x-rgpt-decision-id") ||
+    (await req.clone().json().catch(() => ({} as any)))?.decision_id;
+
+  if (!decision_id) {
+    return Response.json({ ok: false, error: "MISSING_DECISION_ID" }, { status: 400 });
+  }
+
+  try {
+    await enforceRuntimeDecision({ decision_id });
+  } catch (e: any) {
+    return Response.json(
+      { ok: false, error: "RUNTIME_GUARD_BLOCKED", reason: String(e?.message ?? e) },
+      { status: 403 }
+    );
+  }
   const url = new URL(req.url);
   const action = (url.searchParams.get("action") ?? "READ") as any;
 
@@ -53,4 +76,5 @@ export async function GET(req: Request) {
     },
   });
 }
+
 
