@@ -1,0 +1,109 @@
+﻿name: Auto Update Policy (Controlled)
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Why is this update needed?"
+        required: true
+        type: string
+      target_branch:
+        description: "Branch to operate on"
+        required: false
+        default: "main"
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-update-policy
+  cancel-in-progress: false
+
+jobs:
+  auto_update:
+    name: Controlled Auto-Update
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.target_branch }}
+
+      - name: Preflight — clean repo
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::Working tree not clean before auto-update"
+            git status --porcelain || true
+            exit 1
+          fi
+          echo "[AUTO-UPDATE] Clean working tree confirmed."
+
+      - name: Apply update (placeholder)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "[AUTO-UPDATE] No-op placeholder."
+          echo "reason=${{ inputs.reason }}" > auto_update_reason.txt
+
+      - name: Enforce L0 immutability
+        shell: bash
+        run: |
+          set -euo pipefail
+          blocked=0
+
+          git diff --name-only | sed '/^\s*$/d' > changed_files.txt || true
+
+          while IFS= read -r f; do
+            case "$f" in
+              .github/workflows/policy_gate.yml|\
+              docs/ops/policy/POLICY_OWNERSHIP_MATRIX.md|\
+              docs/ops/ledger/*)
+                echo "::error::Blocked L0 change: $f"
+                blocked=1 ;;
+              *)
+                ;;
+            esac
+          done < changed_files.txt
+
+          if [ "$blocked" -ne 0 ]; then
+            exit 1
+          fi
+
+          echo "[AUTO-UPDATE] L0 integrity OK."
+
+      - name: Create execution evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ts="$(date -u +%Y%m%d-%H%M%SZ)"
+          dir="docs/ops/executions/RGPT-S2-C-13"
+          mkdir -p "$dir"
+          cat > "$dir/AUTO_UPDATE_RUN_$ts.md" <<EOF
+          # Auto-Update Policy Run
+          - UTC: $ts
+          - Branch: ${{ inputs.target_branch }}
+          - Actor: ${{ github.actor }}
+          - Reason: ${{ inputs.reason }}
+          - SHA: ${{ github.sha }}
+          EOF
+
+      - name: Commit evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "[AUTO-UPDATE] Nothing to commit."
+            exit 0
+          fi
+          git config user.name "rgpt-bot"
+          git config user.email "rgpt-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "ops(auto-update): record controlled auto-update evidence"
+          git push
