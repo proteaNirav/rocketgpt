@@ -25,3 +25,4 @@
 ## Result
 - CI is green on HEAD; BOM detector no longer blocks workflow runs.
 
+
