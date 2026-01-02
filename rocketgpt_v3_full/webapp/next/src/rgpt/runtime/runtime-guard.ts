@@ -1,56 +1,32 @@
-﻿import type { RuntimeMode } from "./runtime-mode.types";
-import { RuntimePermissions } from "./runtime-permissions";
+﻿/* =========================================================
+ * RGPT-S4 — Runtime Guard (Decision Ledger Enforcement)
+ * FAIL-CLOSED BY DESIGN
+ * ========================================================= */
+import { loadDecisionById, verifyDecision } from "../ledger/decision-ledger";
+import { getExpectedPolicySnapshotHash } from "../policy/policy-snapshot";
 
-export type GuardedAction =
-  | "READ"
-  | "WRITE"
-  | "WORKFLOW_TRIGGER"
-  | "CODE_MUTATION"
-  | "POLICY_MUTATION"
-  | "AUTO_HEAL";
+export interface RuntimeDecisionContext {
+  decision_id: string;
+}
 
-export function assertRuntimePermission(
-  mode: RuntimeMode,
-  action: GuardedAction
-): { allowed: true } | { allowed: false; reason: string } {
-  const p = RuntimePermissions[mode];
-
-  if (!p) {
-    return { allowed: false, reason: `Unknown runtime mode: ${mode}` };
+export async function enforceRuntimeDecision(
+  ctx: RuntimeDecisionContext
+): Promise<void> {
+  if (!ctx || !ctx.decision_id) {
+    throw new Error("RGPT_GUARD_BLOCK: MISSING_DECISION_ID");
   }
 
-  switch (action) {
-    case "READ":
-      return p.allowRead
-        ? { allowed: true }
-        : { allowed: false, reason: "READ not allowed in this mode" };
-
-    case "WRITE":
-      return p.allowWrite
-        ? { allowed: true }
-        : { allowed: false, reason: "WRITE not allowed in this mode" };
-
-    case "WORKFLOW_TRIGGER":
-      return p.allowWorkflowTrigger
-        ? { allowed: true }
-        : { allowed: false, reason: "Workflow trigger not allowed in this mode" };
-
-    case "CODE_MUTATION":
-      return p.allowCodeMutation
-        ? { allowed: true }
-        : { allowed: false, reason: "Code mutation not allowed in this mode" };
-
-    case "POLICY_MUTATION":
-      return p.allowPolicyMutation
-        ? { allowed: true }
-        : { allowed: false, reason: "Policy mutation not allowed in this mode" };
-
-    case "AUTO_HEAL":
-      return p.allowAutoHeal
-        ? { allowed: true }
-        : { allowed: false, reason: "Auto-heal not allowed in this mode" };
-
-    default:
-      return { allowed: false, reason: "Unknown action" };
+  const expectedPolicyHash = getExpectedPolicySnapshotHash();
+  if (!expectedPolicyHash) {
+    throw new Error("RGPT_GUARD_BLOCK: MISSING_POLICY_SNAPSHOT_HASH");
   }
+
+  const decision = await loadDecisionById(ctx.decision_id);
+  const result = verifyDecision(decision, expectedPolicyHash);
+
+  if (!result.ok) {
+    throw new Error(`RGPT_GUARD_BLOCK: ${result.reason}`);
+  }
+
+  // Decision is approved and valid — execution may proceed
 }
