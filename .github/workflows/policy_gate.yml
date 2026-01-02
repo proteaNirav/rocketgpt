@@ -47,3 +47,78 @@ jobs:
         shell: pwsh
         run: |
           pwsh -NoProfile -File scripts/security/policy_gate_dependabot.ps1
+
+  l0_ownership_guard:
+    name: L0 Ownership Guard (immutable files)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changes
+        id: diff
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Determine diff range
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            base="${GITHUB_BASE_REF}"
+            git fetch --no-tags --prune origin "${base}" --depth=200 || true
+            range="origin/${base}...HEAD"
+          else
+            before="${GITHUB_EVENT_BEFORE:-}"
+            sha="${GITHUB_SHA}"
+            if [ -n "${before}" ] && [ "${before}" != "0000000000000000000000000000000000000000" ]; then
+              range="${before}...${sha}"
+            else
+              # fallback for initial commits
+              if git rev-parse --verify -q HEAD~1 >/dev/null; then
+                range="HEAD~1...HEAD"
+              else
+                range="HEAD...HEAD"
+              fi
+            fi
+          fi
+
+          echo "range=${range}" >> $GITHUB_OUTPUT
+          echo "[L0] Range: ${range}"
+          git diff --name-only "${range}" | sed '/^\s*$/d' > changed_files.txt || true
+          echo "[L0] Changed files:"
+          cat changed_files.txt || true
+
+      - name: Enforce L0 immutability
+        shell: bash
+        run: |
+          set -euo pipefail
+          blocked=0
+
+          if [ ! -s changed_files.txt ]; then
+            echo "[L0] No changed files. OK."
+            exit 0
+          fi
+
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            case "$f" in
+              .github/workflows/policy_gate.yml)
+                echo "::error::Blocked change (L0): $f"; blocked=1 ;;
+              docs/ops/ledger/*)
+                echo "::error::Blocked change (L0): $f"; blocked=1 ;;
+              docs/ops/policy/POLICY_OWNERSHIP_MATRIX.md)
+                echo "::error::Blocked change (L0): $f"; blocked=1 ;;
+              *)
+                ;;
+            esac
+          done < changed_files.txt
+
+          if [ "$blocked" -ne 0 ]; then
+            echo "::error::L0 ownership violation: immutable artifacts modified."
+            exit 1
+          fi
+
+          echo "[L0] OK — no immutable artifacts were modified."
+
