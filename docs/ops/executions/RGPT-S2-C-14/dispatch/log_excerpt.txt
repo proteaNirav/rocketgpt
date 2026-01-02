@@ -1,0 +1,131 @@
+﻿# RGPT-S2-C-14 — Auto-Update Dispatch Proof (Excerpt)
+
+Captured (UTC): 2026-01-02T07:06:24Z
+Repo: proteaNirav/rocketgpt
+Workflow: Auto Update PR Branches
+Trigger: schedule
+Run ID: 20652600569
+Run URL: https://github.com/proteaNirav/rocketgpt/actions/runs/20652600569
+Conclusion: success
+
+---- LOG EXCERPT (first 120 lines) ----
+update-branches	Set up job	∩╗┐2026-01-02T06:44:43.1237765Z ##[debug]Starting: Set up job
+update-branches	Set up job	2026-01-02T06:44:43.1239070Z Current runner version: '2.330.0'
+update-branches	Set up job	2026-01-02T06:44:43.1258004Z ##[group]Runner Image Provisioner
+update-branches	Set up job	2026-01-02T06:44:43.1259059Z Hosted Compute Agent
+update-branches	Set up job	2026-01-02T06:44:43.1259582Z Version: 20251211.462
+update-branches	Set up job	2026-01-02T06:44:43.1260099Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+update-branches	Set up job	2026-01-02T06:44:43.1260768Z Build Date: 2025-12-11T16:28:49Z
+update-branches	Set up job	2026-01-02T06:44:43.1261347Z Worker ID: {d872ecba-2234-4719-93af-89bafb5913e9}
+update-branches	Set up job	2026-01-02T06:44:43.1261944Z ##[endgroup]
+update-branches	Set up job	2026-01-02T06:44:43.1262354Z ##[group]Operating System
+update-branches	Set up job	2026-01-02T06:44:43.1262885Z Ubuntu
+update-branches	Set up job	2026-01-02T06:44:43.1263306Z 24.04.3
+update-branches	Set up job	2026-01-02T06:44:43.1263692Z LTS
+update-branches	Set up job	2026-01-02T06:44:43.1264143Z ##[endgroup]
+update-branches	Set up job	2026-01-02T06:44:43.1264553Z ##[group]Runner Image
+update-branches	Set up job	2026-01-02T06:44:43.1265019Z Image: ubuntu-24.04
+update-branches	Set up job	2026-01-02T06:44:43.1265468Z Version: 20251215.174.1
+update-branches	Set up job	2026-01-02T06:44:43.1266525Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+update-branches	Set up job	2026-01-02T06:44:43.1267801Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+update-branches	Set up job	2026-01-02T06:44:43.1268724Z ##[endgroup]
+update-branches	Set up job	2026-01-02T06:44:43.1269692Z ##[group]GITHUB_TOKEN Permissions
+update-branches	Set up job	2026-01-02T06:44:43.1271500Z Contents: write
+update-branches	Set up job	2026-01-02T06:44:43.1272071Z Metadata: read
+update-branches	Set up job	2026-01-02T06:44:43.1272543Z PullRequests: write
+update-branches	Set up job	2026-01-02T06:44:43.1273031Z ##[endgroup]
+update-branches	Set up job	2026-01-02T06:44:43.1274961Z Secret source: Actions
+update-branches	Set up job	2026-01-02T06:44:43.1275882Z ##[debug]Primary repository: proteaNirav/rocketgpt
+update-branches	Set up job	2026-01-02T06:44:43.1276546Z Prepare workflow directory
+update-branches	Set up job	2026-01-02T06:44:43.1341099Z ##[debug]Creating pipeline directory: '/home/runner/work/rocketgpt'
+update-branches	Set up job	2026-01-02T06:44:43.1343735Z ##[debug]Creating workspace directory: '/home/runner/work/rocketgpt/rocketgpt'
+update-branches	Set up job	2026-01-02T06:44:43.1344930Z ##[debug]Update context data
+update-branches	Set up job	2026-01-02T06:44:43.1347854Z ##[debug]Evaluating job-level environment variables
+update-branches	Set up job	2026-01-02T06:44:43.1547112Z ##[debug]Evaluating job container
+update-branches	Set up job	2026-01-02T06:44:43.1550662Z ##[debug]Evaluating job service containers
+update-branches	Set up job	2026-01-02T06:44:43.1553010Z ##[debug]Evaluating job defaults
+update-branches	Set up job	2026-01-02T06:44:43.1579158Z Prepare all required actions
+update-branches	Set up job	2026-01-02T06:44:43.1635525Z Getting action download info
+update-branches	Set up job	2026-01-02T06:44:43.5126818Z Download action repository 'actions/github-script@v7' (SHA:f28e40c7f34bde8b3046d885e986cb6290c5673b)
+update-branches	Set up job	2026-01-02T06:44:44.3060099Z ##[debug]Download 'https://api.github.com/repos/actions/github-script/tarball/f28e40c7f34bde8b3046d885e986cb6290c5673b' to '/home/runner/work/_actions/_temp_303cbc72-e20e-4a6a-8c68-42643411fa14/2addef5f-3dc4-4378-9d79-d8cea0d86b73.tar.gz'
+update-branches	Set up job	2026-01-02T06:44:44.3959954Z ##[debug]Unwrap 'actions-github-script-f28e40c' to '/home/runner/work/_actions/actions/github-script/v7'
+update-branches	Set up job	2026-01-02T06:44:44.4020617Z ##[debug]Archive '/home/runner/work/_actions/_temp_303cbc72-e20e-4a6a-8c68-42643411fa14/2addef5f-3dc4-4378-9d79-d8cea0d86b73.tar.gz' has been unzipped into '/home/runner/work/_actions/actions/github-script/v7'.
+update-branches	Set up job	2026-01-02T06:44:44.4116856Z ##[debug]action.yml for action: '/home/runner/work/_actions/actions/github-script/v7/action.yml'.
+update-branches	Set up job	2026-01-02T06:44:44.4907510Z ##[debug]Set step '__actions_github-script' display name to: 'Update stale PR branches from same repo'
+update-branches	Set up job	2026-01-02T06:44:44.4909840Z Complete job name: update-branches
+update-branches	Set up job	2026-01-02T06:44:44.4920887Z ##[debug]Collect running processes for tracking orphan processes.
+update-branches	Set up job	2026-01-02T06:44:44.5065426Z ##[debug]Finishing: Set up job
+update-branches	Update stale PR branches from same repo	∩╗┐2026-01-02T06:44:44.5189130Z ##[debug]Evaluating condition for step: 'Update stale PR branches from same repo'
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5224991Z ##[debug]Evaluating: success()
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5230543Z ##[debug]Evaluating success:
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5245980Z ##[debug]=> true
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5252138Z ##[debug]Result: true
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5275462Z ##[debug]Starting: Update stale PR branches from same repo
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5403983Z ##[debug]Loading inputs
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5430168Z ##[debug]Evaluating: github.token
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5431546Z ##[debug]Evaluating Index:
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5433549Z ##[debug]..Evaluating github:
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5434931Z ##[debug]..=> Object
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5441416Z ##[debug]..Evaluating String:
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5442452Z ##[debug]..=> 'token'
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5446830Z ##[debug]=> '***'
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5448868Z ##[debug]Result: '***'
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5454324Z ##[debug]Evaluating: (runner.debug == '1')
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5455120Z ##[debug]Evaluating Equal:
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5456903Z ##[debug]..Evaluating Index:
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5457549Z ##[debug]....Evaluating runner:
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5458356Z ##[debug]....=> Object
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5458991Z ##[debug]....Evaluating String:
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5459662Z ##[debug]....=> 'debug'
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5460485Z ##[debug]..=> '1'
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5461056Z ##[debug]..Evaluating String:
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5461708Z ##[debug]..=> '1'
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5465397Z ##[debug]=> true
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5467247Z ##[debug]Expanded: ('1' == '1')
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5467922Z ##[debug]Result: true
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5479436Z ##[debug]Loading env
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5548738Z ##[group]Run actions/github-script@v7
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5549680Z with:
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5553253Z   script: const bases = ["main","develop"];
+update-branches	Update stale PR branches from same repo	for (const base of bases) {
+update-branches	Update stale PR branches from same repo	  const prs = await github.paginate(github.rest.pulls.list, {
+update-branches	Update stale PR branches from same repo	    owner: context.repo.owner, repo: context.repo.repo, state: "open", base, per_page: 100
+update-branches	Update stale PR branches from same repo	  });
+update-branches	Update stale PR branches from same repo	  for (const pr of prs) {
+update-branches	Update stale PR branches from same repo	    if (!pr.head.repo || pr.head.repo.full_name !== `${context.repo.owner}/${context.repo.repo}`) continue;
+update-branches	Update stale PR branches from same repo	    try {
+update-branches	Update stale PR branches from same repo	      await github.rest.pulls.updateBranch({
+update-branches	Update stale PR branches from same repo	        owner: context.repo.owner, repo: context.repo.repo, pull_number: pr.number
+update-branches	Update stale PR branches from same repo	      });
+update-branches	Update stale PR branches from same repo	      core.notice(`Updated PR #${pr.number} against ${base}`);
+update-branches	Update stale PR branches from same repo	    } catch (e) {
+update-branches	Update stale PR branches from same repo	      core.warning(`PR #${pr.number} not updated: ${e.message}`);
+update-branches	Update stale PR branches from same repo	    }
+update-branches	Update stale PR branches from same repo	  }
+update-branches	Update stale PR branches from same repo	}
+update-branches	Update stale PR branches from same repo	
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5557595Z   github-token: ***
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5558115Z   debug: true
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5558801Z   user-agent: actions/github-script
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5559511Z   result-encoding: json
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5560039Z   retries: 0
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5560598Z   retry-exempt-status-codes: 400,401,403,404,422
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.5561556Z ##[endgroup]
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6480313Z request {
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6481172Z   method: 'GET',
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6482105Z   baseUrl: 'https://api.github.com',
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6482967Z   headers: {
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6483616Z     accept: 'application/vnd.github.v3+json',
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6484873Z     'user-agent': 'actions/github-script octokit-core.js/5.0.1 Node.js/20.19.5 (linux; x64)'
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6485963Z   },
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6486625Z   mediaType: { format: '', previews: [] },
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6487374Z   request: {
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6487999Z     agent: Agent {
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6488976Z       _events: [Object: null prototype],
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6489706Z       _eventsCount: 2,
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6490302Z       _maxListeners: undefined,
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6490887Z       defaultPort: 443,
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6491460Z       protocol: 'https:',
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6492024Z       options: [Object: null prototype],
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6492745Z       requests: [Object: null prototype] {},
+update-branches	Update stale PR branches from same repo	2026-01-02T06:44:44.6493401Z       sockets: [Object: null prototype] {},
