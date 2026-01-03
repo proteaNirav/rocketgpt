@@ -1,205 +1,205 @@
 {
     "runtime_allowlist":  [
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/approvals/create"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/approvals/create"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/approvals/update-status"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/approvals/update-status"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/builder"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/builder"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/core/[...path]"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/core/[...path]"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/core-ai/ledger/ping"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/core-ai/ledger/ping"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/debug-auth"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/debug-auth"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/demo/chat"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/demo/chat"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/demo/orchestrator/status"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/demo/orchestrator/status"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/demo/self-study"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/demo/self-study"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/demo/upload"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/demo/upload"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/edge/[fn]"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/edge/[fn]"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/edge/echo"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/edge/echo"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/edge/ping"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/edge/ping"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/env"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/env"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/guest"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/guest"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/health"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/health"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/limits"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/limits"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/llm"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/llm"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/logs"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/logs"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/admin/safe-mode"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/admin/safe-mode"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/admin/safe-mode/disable"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/admin/safe-mode/disable"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/admin/safe-mode/enable"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/admin/safe-mode/enable"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/auto-advance"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/auto-advance"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/build"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/build"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/builder"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/builder"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/builder/execute-all"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/builder/execute-all"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/builder/execute-next"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/builder/execute-next"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/builder/list"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/builder/list"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/clear-cache"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/clear-cache"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/config"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/config"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/health"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/health"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/health/basic"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/health/basic"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/health/deep"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/health/deep"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/info"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/info"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/logs"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/logs"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/plan"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/plan"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/planner/run"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/planner/run"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/release"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/release"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/run"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/run/builder"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run/builder"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/run/finalize"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run/finalize"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/run/planner"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run/planner"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/run/status"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run/status"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/run/tester"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run/tester"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/run-history"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run-history"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/safe-mode"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/safe-mode"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/start-run"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/start-run"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/status"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/status"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/test"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/test"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/tester/execute"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/tester/execute"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/orchestrator/test-tester"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/test-tester"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/planner"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/planner"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/planner/plan"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/planner/plan"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/plans"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/plans"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/report-error"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/report-error"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/rgpt/runtime-mode"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/rgpt/runtime-mode"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/self-improve/run"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/self-improve/run"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/self-improve/status"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/self-improve/status"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/sessions"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/sessions"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/status"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/status"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/suggest"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/suggest"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/suggestions/[issue]/approve"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/suggestions/[issue]/approve"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/suggestions/[issue]/reject"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/suggestions/[issue]/reject"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/tester/health"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/tester/health"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/tester/run"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/tester/run"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/usage"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/usage"
                               },
                               {
-                                  "route":  "/D:/Projects/RocketGPT/rocketgpt//api/version"
+                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/version"
                               }
                           ]
 }
