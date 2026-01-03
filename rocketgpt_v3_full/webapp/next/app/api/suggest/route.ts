@@ -1,6 +1,7 @@
-﻿export const runtime = "edge";
+﻿export const runtime = "nodejs";
 import { ok, noContent } from "../_lib/cors";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+
 export async function GET(req: Request) {
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const origin = req.headers.get("origin");

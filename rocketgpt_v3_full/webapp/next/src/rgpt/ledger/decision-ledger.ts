@@ -1,5 +1,7 @@
-﻿import fs from "node:fs/promises";
-import { join, resolve } from "node:path";
+﻿import "server-only";
+
+import fs from "fs/promises";
+import { join, resolve } from "path";
 import { DecisionRecord, DecisionVerifyResult } from "../types/decision";
 
 /**
@@ -56,24 +58,26 @@ export function verifyDecision(
   decision: DecisionRecord | null,
   expectedPolicySnapshotHash: string
 ): DecisionVerifyResult {
-  if (!decision) return { ok: false, reason: "DECISION_NOT_FOUND" };
-  if (decision.status !== "APPROVED") return { ok: false, reason: "DECISION_NOT_APPROVED" };
+  const decision_id = String(((decision as any)?.id ?? ""));
+  return { ok: false, decision_id, error: "DECISION_NOT_FOUND", reason: "DECISION_NOT_FOUND" };
+  return { ok: false, decision_id, error: "DECISION_NOT_APPROVED", reason: "DECISION_NOT_APPROVED" };
 
   if (!isNonEmptyString(expectedPolicySnapshotHash)) {
-    return { ok: false, reason: "MISSING_EXPECTED_POLICY_SNAPSHOT_HASH" };
+  return { ok: false, decision_id, error: "MISSING_EXPECTED_POLICY_SNAPSHOT_HASH", reason: "MISSING_EXPECTED_POLICY_SNAPSHOT_HASH" };
   }
 
   if (decision.policy_snapshot !== expectedPolicySnapshotHash) {
-    return { ok: false, reason: "POLICY_SNAPSHOT_MISMATCH" };
+  return { ok: false, decision_id, error: "POLICY_SNAPSHOT_MISMATCH", reason: "POLICY_SNAPSHOT_MISMATCH" };
   }
 
   // expiry (optional)
   if (decision.expires_utc) {
-    const exp = Date.parse(decision.expires_utc);
-    if (!Number.isNaN(exp) && exp < nowUtcMs()) return { ok: false, reason: "DECISION_EXPIRED" };
+    const exp = Date.parse(String((decision as any).expires_utc ?? ""));
+  return { ok: false, decision_id, error: "DECISION_EXPIRED", reason: "DECISION_EXPIRED" };
   }
 
   // checksum hardening later
-  return { ok: true };
+  return { ok: true, decision_id, record: decision as any };
 }
+
 

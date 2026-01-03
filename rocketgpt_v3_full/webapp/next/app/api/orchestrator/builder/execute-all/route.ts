@@ -1,5 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+export const runtime = "nodejs";
+
 
 export interface OrchestratorRouteContext {
   route: string;
@@ -32,7 +34,7 @@ function isSafeModeError(err: unknown): err is SafeModeErrorPayload {
 /**
  * Normalize unknown error objects into a safe JSON payload.
  */
-export function normalizeError(err: unknown): { message: string; name?: string } {
+function normalizeError(err: unknown): { message: string; name?: string } {
   if (err instanceof Error) {
     return {
       message: err.message || "Unexpected error",
@@ -61,9 +63,9 @@ export function normalizeError(err: unknown): { message: string; name?: string }
 /**
  * Wrap a route handler with standardized error logging and response.
  */
-export async function withOrchestratorHandler(
+async function withOrchestratorHandlerLocal(
   ctx: OrchestratorRouteContext,
-  handler: () => Promise<NextResponse> | NextResponse
+  handler: () => Promise<NextResponse>
 ): Promise<NextResponse> {
   try {
     return await handler();
@@ -119,7 +121,7 @@ export async function withOrchestratorHandler(
  */
 export async function POST(req: NextRequest) {
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-  return withOrchestratorHandler(
+  return withOrchestratorHandlerLocal(
     { route: "/api/orchestrator/builder/execute-all" },
     async () => {
       // --- Internal auth ---
@@ -196,3 +198,6 @@ export async function POST(req: NextRequest) {
     }
   );
 }
+
+
+
