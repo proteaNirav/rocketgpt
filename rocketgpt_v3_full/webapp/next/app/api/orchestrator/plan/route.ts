@@ -1,7 +1,8 @@
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { withOrchestratorHandler } from "../_utils/orchestratorError";
 
 const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
@@ -24,6 +25,7 @@ function summarizeBody(body: unknown): string {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const url = new URL(req.url);
 
   const headerRunId = req.headers.get("x-rgpt-run-id") ?? undefined;
@@ -129,3 +131,4 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
   );
 }
+

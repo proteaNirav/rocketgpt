@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 
 export interface OrchestratorRouteContext {
   route: string;
@@ -67,7 +68,7 @@ export async function withOrchestratorHandler(
   try {
     return await handler();
   } catch (err) {
-    // 1) Safe-Mode specific handling – return the error object as-is
+    // 1) Safe-Mode specific handling â€“ return the error object as-is
     if (isSafeModeError(err)) {
       const safeErr = err as SafeModeErrorPayload;
 
@@ -117,6 +118,7 @@ export async function withOrchestratorHandler(
  * - Safe-Mode: if RGPT_SAFE_MODE_ENABLED=true -> return 403 SAFE_MODE_ACTIVE
  */
 export async function POST(req: NextRequest) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   return withOrchestratorHandler(
     { route: "/api/orchestrator/builder/execute-all" },
     async () => {

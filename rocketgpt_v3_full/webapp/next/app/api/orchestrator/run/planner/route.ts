@@ -1,4 +1,5 @@
-import crypto from "crypto";
+﻿import crypto from "crypto";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { writeDecisionEntry, writeDecisionOutcome } from "@/lib/core-ai/decision-ledger/writer";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -30,6 +31,7 @@ function summarizeBody(body: unknown): string {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   // [CONTROL-PLANE] V1 gate (pass-through)
   const executionContext: ExecutionContext = {
     executionId: crypto.randomUUID(),
@@ -99,7 +101,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID();
 
-  // P4-A1: Decision Ledger (local-first JSONL) — planner started (best-effort)
+  // P4-A1: Decision Ledger (local-first JSONL) â€” planner started (best-effort)
   try {
     const __ledgerDecisionId = crypto.randomUUID();
     const __ledgerNow = new Date().toISOString();
@@ -146,7 +148,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   } catch {
     // Never block planner if ledger write fails
   }
-  // Safe-Mode guard – block orchestrator run/planner when enabled
+  // Safe-Mode guard â€“ block orchestrator run/planner when enabled
   try {
     safeModeGuard("run-planner");
   } catch (err: any) {
@@ -251,6 +253,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
   );
 }
+
 
 
 

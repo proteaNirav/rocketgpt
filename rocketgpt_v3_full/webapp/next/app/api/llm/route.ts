@@ -1,8 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { callLLM } from "@/lib/llm/router";
 import { LLMRouterRequest } from "@/lib/llm/types";
 
 export async function POST(req: NextRequest) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   try {
     const body = (await req.json()) as LLMRouterRequest;
 

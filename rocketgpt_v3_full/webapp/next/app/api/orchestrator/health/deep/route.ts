@@ -1,7 +1,8 @@
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 
 /**
  * Deep health diagnostics.
@@ -15,6 +16,7 @@ import { NextRequest, NextResponse } from "next/server";
  * to be called less frequently (e.g., manual checks, scheduled probes).
  */
 export async function GET(_req: NextRequest) {
+  await runtimeGuard(_req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const diagnostics = {
     success: true,
     service: "RocketGPT Orchestrator",

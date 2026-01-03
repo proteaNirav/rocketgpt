@@ -1,7 +1,8 @@
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import crypto from "crypto";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { NextRequest, NextResponse } from "next/server";
 
 import { writeDecisionEntry, writeDecisionOutcome } from "@/lib/core-ai/decision-ledger/writer";
@@ -15,6 +16,7 @@ type StartRunRequest = {
 };
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const url = new URL(req.url);
 
   const headerRunId = req.headers.get("x-rgpt-run-id") ?? undefined;
@@ -44,7 +46,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // Local-first: ensure run folders exist before writing
   await ensureRunDirs(runId);
 
-  // P4-A1: Decision Ledger — Run started (best-effort)
+  // P4-A1: Decision Ledger â€” Run started (best-effort)
   try {
     const decisionId = crypto.randomUUID();
     const now = new Date().toISOString();
@@ -102,3 +104,4 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     message: "Run started (Decision Ledger recorded; JSONL local-first).",
   });
 }
+

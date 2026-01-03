@@ -1,5 +1,6 @@
 ﻿import { DecisionRecord, DecisionVerifyResult } from "../types/decision";
 
+import { join } from "node:path";
 /**
  * Decision Ledger storage model (Phase S4):
  * - File-based JSONL ledger: one decision per line (append-only)
@@ -7,8 +8,13 @@
  *
  * NOTE: This is the "read/verify" client. Writing/append comes in later steps.
  */
-const DEFAULT_LEDGER_PATH = "docs/ops/ledger/DECISIONS.jsonl";
-
+function getDefaultLedgerPath(): string {
+  if (process.env.RGPT_LEDGER_PATH) {
+    return process.env.RGPT_LEDGER_PATH;
+  }
+  const cwd = process.cwd();
+  return join(cwd, "docs/ops/ledger/DECISIONS.jsonl");
+}
 function isNonEmptyString(v: unknown): v is string {
   return typeof v === "string" && v.trim().length > 0;
 }
@@ -24,7 +30,7 @@ function nowUtcMs(): number {
 
 export async function loadDecisionById(
   decision_id: string,
-  ledgerPath: string = DEFAULT_LEDGER_PATH
+  ledgerPath?: string
 ): Promise<DecisionRecord | null> {
   if (!isNonEmptyString(decision_id)) return null;
 
@@ -33,7 +39,7 @@ export async function loadDecisionById(
 
   let data: string;
   try {
-    data = await fs.readFile(ledgerPath, "utf8");
+    data = await fs.readFile(ledgerPath ?? getDefaultLedgerPath(), "utf8");
   } catch {
     return null;
   }
@@ -85,3 +91,4 @@ export function verifyDecision(
 
   return { ok: true, decision };
 }
+

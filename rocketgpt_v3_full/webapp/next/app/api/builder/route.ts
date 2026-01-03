@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 
 type BuilderStep = {
   id?: string;
@@ -8,6 +9,7 @@ type BuilderStep = {
 };
 
 export async function POST(req: Request) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const body = await req.json().catch(() => null);
 
   if (!body || typeof body.goal !== "string") {

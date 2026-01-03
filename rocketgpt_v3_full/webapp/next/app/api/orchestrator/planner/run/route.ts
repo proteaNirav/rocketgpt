@@ -1,9 +1,10 @@
-// ============================================================================
-//  RocketGPT Orchestrator â€“ Planner.Run API
-//  PhaseB StepB7 â€“ Safe-Mode Hardened Implementation
+﻿// ============================================================================
+//  RocketGPT Orchestrator Ã¢â‚¬â€œ Planner.Run API
+//  PhaseB StepB7 Ã¢â‚¬â€œ Safe-Mode Hardened Implementation
 // ============================================================================
 
 import { NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { safeModeGuard } from "../../_core/safeMode";
 import { runPlanner } from "../../_core/plannerEngine";
 
@@ -15,6 +16,7 @@ import { runPlanner } from "../../_core/plannerEngine";
 // ============================================================================
 
 export async function POST(req: Request) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   try {
     // Enforce Safe-Mode protection
     safeModeGuard("planner");

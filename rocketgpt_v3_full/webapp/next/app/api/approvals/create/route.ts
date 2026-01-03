@@ -1,17 +1,19 @@
-export const runtime = "nodejs";
+﻿export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 // app/api/approvals/create/route.ts
 // -----------------------------------------------------------------------------
-// RocketGPT V9 – Approval Orchestration Hub (AOH)
+// RocketGPT V9 â€“ Approval Orchestration Hub (AOH)
 // API: POST /api/approvals/create
 // -----------------------------------------------------------------------------
 
 import { NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { createApproval } from "@/lib/approvals-db";
 import type { CreateApprovalInput } from "@/lib/approvals";
 
 export async function POST(req: Request) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   try {
     const body = (await req.json()) as CreateApprovalInput;
 

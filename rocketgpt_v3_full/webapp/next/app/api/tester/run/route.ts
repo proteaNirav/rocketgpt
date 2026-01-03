@@ -1,9 +1,11 @@
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { runTesterEngine } from "../testerEngine";
 
 export async function POST(req: NextRequest) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   let body: any = null;
   try {
     body = await req.json();

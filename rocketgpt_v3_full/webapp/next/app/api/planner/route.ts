@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { callLLM } from "@/lib/llm/router";
 import { makePlannerGoal } from "@/lib/orchestrator/goal-factory";
 import { resolveRouting } from "@/lib/orchestrator/router";
@@ -32,7 +33,7 @@ Return ONLY valid JSON, no markdown, no commentary.
 
 {
   "plan_title": "Short title for the plan",
-  "goal_summary": "1–3 sentence summary in plain English.",
+  "goal_summary": "1â€“3 sentence summary in plain English.",
   "steps": [
     {
       "step_no": 1,
@@ -61,6 +62,7 @@ function buildUserPrompt(goalTitle: string, goalDescription: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   try {
     const body = await req.json().catch(() => ({}));
 

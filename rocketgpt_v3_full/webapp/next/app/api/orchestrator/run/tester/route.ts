@@ -1,7 +1,8 @@
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { withOrchestratorHandler } from "../../_utils/orchestratorError";
 import { safeModeGuard } from "../../_core/safeMode";
 
@@ -25,6 +26,7 @@ function summarizeBody(body: unknown): string {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const url = new URL(req.url);
 
   const headerRunId = req.headers.get("x-rgpt-run-id") ?? undefined;
@@ -41,7 +43,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID();
 
-  // Safe-Mode guard – block orchestrator run/tester when enabled
+  // Safe-Mode guard â€“ block orchestrator run/tester when enabled
   try {
     safeModeGuard("run-tester");
   } catch (err: any) {
@@ -146,3 +148,4 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
   );
 }
+

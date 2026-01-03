@@ -1,12 +1,13 @@
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { safeModeGuard } from "../../_core/safeMode";
 
 /**
- * RocketGPT Orchestrator – Tester Execute Route (Stub)
- * PhaseB StepB7 – Safe-Mode hardened.
+ * RocketGPT Orchestrator â€“ Tester Execute Route (Stub)
+ * PhaseB StepB7 â€“ Safe-Mode hardened.
  *
  * When Safe-Mode is active:
  *   - Request is blocked with structured SAFE_MODE_ACTIVE error.
@@ -17,6 +18,7 @@ import { safeModeGuard } from "../../_core/safeMode";
  */
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const url = new URL(req.url);
 
   const headerRunId = req.headers.get("x-rgpt-run-id") ?? undefined;
@@ -32,7 +34,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const bodyRunId: string | undefined = body.run_id ?? body.runId ?? undefined;
   const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID();
 
-  // Safe-Mode guard – block high-risk capability when enabled
+  // Safe-Mode guard â€“ block high-risk capability when enabled
   try {
     safeModeGuard("tester-execute");
   } catch (err: any) {
@@ -54,3 +56,4 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     { status: 200 }
   );
 }
+

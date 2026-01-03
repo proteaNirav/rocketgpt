@@ -1,3 +1,4 @@
+﻿import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
@@ -12,6 +13,7 @@ export const fetchCache = "force-no-store";
  * to accept ?runId=... and return run status details.
  */
 export async function GET(req: Request) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const url = new URL(req.url);
   const runId = url.searchParams.get("runId");
 

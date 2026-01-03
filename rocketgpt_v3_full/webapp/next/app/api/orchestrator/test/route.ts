@@ -1,12 +1,14 @@
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 import { ensureCorrelationId, newCorrelationId } from "@/app/api/orchestrator/utils/correlation";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { wrapError } from "@/app/api/orchestrator/utils/errorEnvelope";
 import { respondSuccess, respondError } from "@/app/api/orchestrator/utils/httpResponse";
 
 const STAGE = "orchestrator-test";
 
 export async function GET(request: Request) {
+  await runtimeGuard(request, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const headers = request.headers;
 
   const correlationId = ensureCorrelationId(headers);
