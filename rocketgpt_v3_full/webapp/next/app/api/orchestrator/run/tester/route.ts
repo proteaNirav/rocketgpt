@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { withOrchestratorHandler } from "../../_utils/orchestratorError";
 import { safeModeGuard } from "../../_core/safeMode";
+export const runtime = "nodejs";
+
 
 const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
 const INTERNAL_BASE_URL =

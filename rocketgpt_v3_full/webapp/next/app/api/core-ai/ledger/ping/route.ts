@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { writeDecisionEntry, writeDecisionOutcome } from "@/lib/core-ai/decision-ledger/writer";
 import { ensureRunDirs, getRunLogsDir } from "@/lib/core-ai/run-folders";
+export const runtime = "nodejs";
+
 
 export async function GET(req: NextRequest) {
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route

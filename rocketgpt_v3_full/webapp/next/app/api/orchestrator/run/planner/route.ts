@@ -10,6 +10,8 @@ import { safeModeGuard } from "../../_core/safeMode";
 import { enforceControlPlane } from '@/src/control-plane/control-gate';
 import { recordDecision } from '@/src/decision-ledger/decision-ledger';
 import { ExecutionContext } from '@/src/types/execution-context';
+export const runtime = "nodejs";
+
 
 const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
 const INTERNAL_BASE_URL =

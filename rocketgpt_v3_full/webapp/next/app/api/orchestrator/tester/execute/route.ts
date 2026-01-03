@@ -4,6 +4,8 @@ export const fetchCache = "force-no-store";
 import { NextRequest, NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { safeModeGuard } from "../../_core/safeMode";
+export const runtime = "nodejs";
+
 
 /**
  * RocketGPT Orchestrator â€“ Tester Execute Route (Stub)

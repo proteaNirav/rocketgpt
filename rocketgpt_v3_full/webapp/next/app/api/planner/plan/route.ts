@@ -2,6 +2,8 @@
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { validatePlannerRequest, validatePlannerResponse } from '@/lib/planner/planner-validators';
 import { runPlanner } from '@/lib/planner/planner-engine';
+export const runtime = "nodejs";
+
 
 export const dynamic = 'force-dynamic';
 

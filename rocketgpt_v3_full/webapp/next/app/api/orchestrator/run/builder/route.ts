@@ -6,6 +6,8 @@ import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { NextRequest, NextResponse } from "next/server";
 import { ensureRunDirs } from "@/lib/core-ai/run-folders";
 import { writeDecisionEntry, writeDecisionOutcome } from "@/lib/core-ai/decision-ledger/writer";
+export const runtime = "nodejs";
+
 
 const ROUTE = "/api/orchestrator/run/builder";
 const ALLOWED = ["POST"] as const;

@@ -7,6 +7,8 @@ import { NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { safeModeGuard } from "../../_core/safeMode";
 import { runPlanner } from "../../_core/plannerEngine";
+export const runtime = "nodejs";
+
 
 // ============================================================================
 //  POST /api/orchestrator/planner/run

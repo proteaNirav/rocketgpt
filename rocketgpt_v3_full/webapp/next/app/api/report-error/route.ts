@@ -1,6 +1,8 @@
 ﻿// app/api/report-error/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+export const runtime = "nodejs";
+
 
 const OWNER  = process.env.GITHUB_OWNER!;
 const REPO   = process.env.GITHUB_REPO!;

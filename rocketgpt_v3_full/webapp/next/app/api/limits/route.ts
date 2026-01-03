@@ -3,6 +3,8 @@ export const fetchCache = "force-no-store";
 import { NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+export const runtime = "nodejs";
+
 
 export async function GET() {
   const sb = getSupabaseServerClient();

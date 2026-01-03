@@ -1,6 +1,8 @@
 ﻿import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+export const runtime = "nodejs";
+
 
 export const dynamic = "force-dynamic"; // ensure fresh response on each request
 

@@ -2,6 +2,8 @@
 import { headers } from "next/headers";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { getRunHistory } from "@/lib/orchestrator/history";
+export const runtime = "nodejs";
+
 
 export const dynamic = "force-dynamic";
 

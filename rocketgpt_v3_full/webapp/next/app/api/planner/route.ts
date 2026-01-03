@@ -5,6 +5,8 @@ import { makePlannerGoal } from "@/lib/orchestrator/goal-factory";
 import { resolveRouting } from "@/lib/orchestrator/router";
 import { evaluateApproval } from "@/lib/approvals/v9/evaluator";
 import type { ApprovalInput, ApprovalPacket } from "@/lib/approvals/v9/types";
+export const runtime = "nodejs";
+
 
 type PlannerStep = {
   step_no: number;

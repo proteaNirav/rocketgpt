@@ -2,6 +2,8 @@
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { callLLM } from "@/lib/llm/router";
 import { LLMRouterRequest } from "@/lib/llm/types";
+export const runtime = "nodejs";
+
 
 export async function POST(req: NextRequest) {
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route

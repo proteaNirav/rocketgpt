@@ -4,6 +4,8 @@ import { ensureCorrelationId, newCorrelationId } from "@/app/api/orchestrator/ut
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { wrapError } from "@/app/api/orchestrator/utils/errorEnvelope";
 import { respondSuccess, respondError } from "@/app/api/orchestrator/utils/httpResponse";
+export const runtime = "nodejs";
+
 
 const STAGE = "orchestrator-test";
 

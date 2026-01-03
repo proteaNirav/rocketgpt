@@ -1,82 +1,31 @@
-﻿import { NextResponse } from "next/server";
-import { RuntimePermissions } from "../../../../src/rgpt/runtime/runtime-permissions";
-import { enforceRuntimeDecision } from "../../../../src/rgpt/runtime/runtime-guard";
-import { resolveRuntimeModeFromEnvAndHeaders } from "../../../../src/rgpt/runtime/runtime-mode.context";
+﻿import { NextRequest, NextResponse } from "next/server";
+import { enforceRuntimeDecision } from "@/rgpt/runtime/runtime-guard";
+export const runtime = "nodejs";
+
+
 /**
- * Test endpoint to verify Runtime Mode resolution + enforcement.
- * Usage:
- *  - GET /api/rgpt/runtime-mode
- *  - Optional headers:
- *      x-rgpt-requested-mode: OFFLINE|SAFE|SUPERVISED|AUTONOMOUS
- *      x-rgpt-explicit-confirm: true|false
- *
- * Optional query:
- *   ?action=READ|WRITE|WORKFLOW_TRIGGER|CODE_MUTATION|POLICY_MUTATION|AUTO_HEAL
+ * GET /api/rgpt/runtime-mode
+ * Minimal guard check endpoint.
+ * Requires x-rgpt-decision-id header (fail-closed) and validates via enforceRuntimeDecision.
  */
-export async function GET(req: Request) {
-  // RGPT-S4: Decision Ledger enforcement (FAIL-CLOSED)
-  const decision_id = req.headers.get("x-rgpt-decision-id");
+export async function GET(req: NextRequest) {
+  const decision_id = req.headers.get("x-rgpt-decision-id") ?? "";
+
   if (!decision_id) {
-    return Response.json({ ok: false, error: "MISSING_DECISION_ID" }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: "MISSING_DECISION_ID" },
+      { status: 400 }
+    );
   }
 
   try {
     await enforceRuntimeDecision({ decision_id });
   } catch (e: any) {
-    return Response.json(
+    return NextResponse.json(
       { ok: false, error: "RUNTIME_GUARD_BLOCKED", reason: String(e?.message ?? e) },
       { status: 403 }
     );
   }
-  // TEMP (RGPT-S4): isolate failures beyond guard. Remove after test.
+
   return NextResponse.json({ ok: true, guarded: true, decision_id }, { status: 200 });
-  const url = new URL(req.url);
-  const action = (url.searchParams.get("action") ?? "READ") as any;
-
-  const runtime = resolveRuntimeModeFromEnvAndHeaders({
-    headers: new Headers(req.headers),
-  });
-
-  const permission = (RuntimePermissions as any)[runtime.mode]?.[action];
-  if (!permission) {
-    return NextResponse.json({
-      ok: false,
-      blocked: true,
-      runtimeMode: runtime.mode,
-      requestedAction: action,
-      reason: "ACTION_NOT_PERMITTED",
-    }, { status: 403 });
-  }
-,
-      },
-      { status: 403 }
-    );
-  }
-
-  return NextResponse.json({
-    ok: true,
-    runtimeMode: runtime.mode,
-    requestedAction: action,
-    reason: runtime.reason,
-    warnings: runtime.warnings,
-    blockedTransitions: runtime.blockedTransitions,
-    env: {
-      RGPT_RUNTIME_MODE: process.env.RGPT_RUNTIME_MODE ?? null,
-    },
-  });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

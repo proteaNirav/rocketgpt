@@ -1,6 +1,8 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { getSafeModeEnabled, setSafeModeEnabled } from "@/lib/orchestrator/safeModeState";
+export const runtime = "nodejs";
+
 
 export const dynamic = "force-dynamic";
 

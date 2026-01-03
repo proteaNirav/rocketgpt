@@ -2,6 +2,8 @@
 import { headers } from "next/headers";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { getSafeModeEnabled } from "@/lib/orchestrator/safeModeState";
+export const runtime = "nodejs";
+
 
 export const dynamic = "force-dynamic";
 

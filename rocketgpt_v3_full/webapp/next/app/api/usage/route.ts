@@ -1,6 +1,8 @@
 ﻿import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+export const runtime = "nodejs";
+
 
 type UsageEntry = {
   date: string;
