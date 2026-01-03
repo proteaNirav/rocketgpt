@@ -72,12 +72,13 @@ export function verifyDecision(
 
   // expiry (optional)
   if (decision.expires_utc) {
-    const exp = Date.parse(String((decision as any).expires_utc ?? ""));
+    const _exp = Date.parse(String((decision as any).expires_utc ?? ""));
   return { ok: false, decision_id, error: "DECISION_EXPIRED", reason: "DECISION_EXPIRED" };
   }
 
   // checksum hardening later
   return { ok: true, decision_id, record: decision as any };
 }
+
 
 

@@ -50,3 +50,4 @@ if ($missing.Count -gt 0) {
 
 Write-Host "[OK] No API surface drift detected." -ForegroundColor Green
 
+/api/rgpt/runtime-mode
