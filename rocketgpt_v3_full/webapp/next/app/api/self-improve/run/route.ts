@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+export const runtime = "nodejs";
+
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +12,7 @@ function isTruthyEnv(value: string | undefined): boolean {
 }
 
 export async function POST(req: Request) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   let body: unknown = null;
   try {
     body = await req.json();
@@ -23,13 +27,13 @@ export async function POST(req: Request) {
     accepted: true,
     writeEnabled,
     message:
-      "Self-improve run trigger stub – executor wiring is pending. " +
+      "Self-improve run trigger stub â€“ executor wiring is pending. " +
       "This endpoint currently only acknowledges the request.",
     received: body,
     timestamp: new Date().toISOString(),
   };
 
-  // 202 Accepted – work would normally be queued for async execution
+  // 202 Accepted â€“ work would normally be queued for async execution
   return NextResponse.json(payload, { status: 202 });
 }
 
