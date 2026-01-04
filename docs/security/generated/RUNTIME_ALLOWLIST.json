@@ -1,205 +1,206 @@
-{
+﻿{
     "runtime_allowlist":  [
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/approvals/create"
+                                  "route":  "/api/approvals/create"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/approvals/update-status"
+                                  "route":  "/api/approvals/update-status"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/builder"
+                                  "route":  "/api/builder"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/core/[...path]"
+                                  "route":  "/api/core/[...path]"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/core-ai/ledger/ping"
+                                  "route":  "/api/core-ai/ledger/ping"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/debug-auth"
+                                  "route":  "/api/debug-auth"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/demo/chat"
+                                  "route":  "/api/demo/chat"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/demo/orchestrator/status"
+                                  "route":  "/api/demo/orchestrator/status"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/demo/self-study"
+                                  "route":  "/api/demo/self-study"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/demo/upload"
+                                  "route":  "/api/demo/upload"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/edge/[fn]"
+                                  "route":  "/api/edge/[fn]"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/edge/echo"
+                                  "route":  "/api/edge/echo"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/edge/ping"
+                                  "route":  "/api/edge/ping"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/env"
+                                  "route":  "/api/env"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/guest"
+                                  "route":  "/api/guest"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/health"
+                                  "route":  "/api/health"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/limits"
+                                  "route":  "/api/limits"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/llm"
+                                  "route":  "/api/llm"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/logs"
+                                  "route":  "/api/logs"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/admin/safe-mode"
+                                  "route":  "/api/orchestrator/admin/safe-mode"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/admin/safe-mode/disable"
+                                  "route":  "/api/orchestrator/admin/safe-mode/disable"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/admin/safe-mode/enable"
+                                  "route":  "/api/orchestrator/admin/safe-mode/enable"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/auto-advance"
+                                  "route":  "/api/orchestrator/auto-advance"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/build"
+                                  "route":  "/api/orchestrator/build"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/builder"
+                                  "route":  "/api/orchestrator/builder"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/builder/execute-all"
+                                  "route":  "/api/orchestrator/builder/execute-all"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/builder/execute-next"
+                                  "route":  "/api/orchestrator/builder/execute-next"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/builder/list"
+                                  "route":  "/api/orchestrator/builder/list"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/clear-cache"
+                                  "route":  "/api/orchestrator/clear-cache"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/config"
+                                  "route":  "/api/orchestrator/config"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/health"
+                                  "route":  "/api/orchestrator/health"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/health/basic"
+                                  "route":  "/api/orchestrator/health/basic"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/health/deep"
+                                  "route":  "/api/orchestrator/health/deep"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/info"
+                                  "route":  "/api/orchestrator/info"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/logs"
+                                  "route":  "/api/orchestrator/logs"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/plan"
+                                  "route":  "/api/orchestrator/plan"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/planner/run"
+                                  "route":  "/api/orchestrator/planner/run"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/release"
+                                  "route":  "/api/orchestrator/release"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run"
+                                  "route":  "/api/orchestrator/run"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run/builder"
+                                  "route":  "/api/orchestrator/run/builder"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run/finalize"
+                                  "route":  "/api/orchestrator/run/finalize"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run/planner"
+                                  "route":  "/api/orchestrator/run/planner"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run/status"
+                                  "route":  "/api/orchestrator/run/status"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run/tester"
+                                  "route":  "/api/orchestrator/run/tester"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/run-history"
+                                  "route":  "/api/orchestrator/run-history"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/safe-mode"
+                                  "route":  "/api/orchestrator/safe-mode"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/start-run"
+                                  "route":  "/api/orchestrator/start-run"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/status"
+                                  "route":  "/api/orchestrator/status"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/test"
+                                  "route":  "/api/orchestrator/test"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/tester/execute"
+                                  "route":  "/api/orchestrator/tester/execute"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/orchestrator/test-tester"
+                                  "route":  "/api/orchestrator/test-tester"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/planner"
+                                  "route":  "/api/planner"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/planner/plan"
+                                  "route":  "/api/planner/plan"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/plans"
+                                  "route":  "/api/plans"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/report-error"
+                                  "route":  "/api/report-error"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/rgpt/runtime-mode"
+                                  "route":  "/api/rgpt/runtime-mode"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/self-improve/run"
+                                  "route":  "/api/self-improve/run"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/self-improve/status"
+                                  "route":  "/api/self-improve/status"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/sessions"
+                                  "route":  "/api/sessions"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/status"
+                                  "route":  "/api/status"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/suggest"
+                                  "route":  "/api/suggest"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/suggestions/[issue]/approve"
+                                  "route":  "/api/suggestions/[issue]/approve"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/suggestions/[issue]/reject"
+                                  "route":  "/api/suggestions/[issue]/reject"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/tester/health"
+                                  "route":  "/api/tester/health"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/tester/run"
+                                  "route":  "/api/tester/run"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/usage"
+                                  "route":  "/api/usage"
                               },
                               {
-                                  "route":  "/apitgpt_v3_full/webapp/next/app/api/version"
+                                  "route":  "/api/version"
                               }
                           ]
 }
+
