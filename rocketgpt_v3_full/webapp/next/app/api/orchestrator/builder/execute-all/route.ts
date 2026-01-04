@@ -1,5 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+
+// Safe-Mode detection (CI forces this ON; must short-circuit safely)
+function isSafeMode(): boolean {
+  const v = (process.env.RGPT_SAFE_MODE ?? process.env.SAFE_MODE ?? process.env.RGPT_RUNTIME_MODE ?? "").toString().toLowerCase();
+  return v === "1" || v === "true" || v === "on" || v === "safe" || v === "safemode";
+}
+
 export const runtime = "nodejs";
 
 
@@ -198,6 +205,7 @@ export async function POST(req: NextRequest) {
     }
   );
 }
+
 
 
 
