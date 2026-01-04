@@ -48,7 +48,7 @@ class ApprovalStore {
   /** Internal: remove all expired entries. */
   private pruneExpired(): void {
     const now = Date.now();
-    for (const [key, item] of this.store.entries()) {
+    for (const [key, item] of Array.from(this.store.entries())) {
       const age = now - item.timestamp;
       if (age > this.ttlMs) {
         this.store.delete(key);
@@ -127,7 +127,7 @@ class ApprovalStore {
   }
 
   /**
-   * Return all non-expired values (sorted oldest → newest).
+   * Return all non-expired values (sorted oldest â†’ newest).
    * Primarily intended for diagnostics and API snapshots.
    */
   getAll<T = any>(): T[] {
@@ -178,3 +178,4 @@ class ApprovalStore {
  *  - ttlMs: 30 minutes
  */
 export const approvalStore = new ApprovalStore();
+

@@ -1,0 +1,13 @@
+﻿Runtime test:
+- GET http://localhost:3000/api/rgpt/runtime-mode
+- Header: x-rgpt-decision-id = a1f405f1-405b-49b9-a0f4-1af5be7c08fd
+- Env: RGPT_POLICY_SNAPSHOT_SHA256 = LOCAL_TEST_POLICY_HASH_SET_ENV_RGPT_POLICY_SNAPSHOT_SHA256
+
+Observed:
+VERBOSE: GET with 0-byte payload
+[FAIL] Request failed.
+[HTTP] Status: 500
+[BODY] <empty>
+
+Note:
+- We inserted TEMP early return after enforceRuntimeDecision() in route.ts, but still 500.

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { getSafeModeEnabled, setSafeModeEnabled } from "@/lib/orchestrator/safeModeState";
+export const runtime = "nodejs";
+
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +17,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  await runtimeGuard(request, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   try {
     const body = await request.json().catch(() => ({}));
     const { enabled } = body as { enabled?: boolean };

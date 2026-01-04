@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import fs from "fs/promises";
 import path from "path";
 
@@ -33,6 +34,7 @@ async function countSubdirs(root: string): Promise<number> {
 }
 
 export async function GET(_req: NextRequest) {
+  await runtimeGuard(_req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   try {
     const baseDir = process.cwd();
     const dataRoot = path.join(baseDir, "data");

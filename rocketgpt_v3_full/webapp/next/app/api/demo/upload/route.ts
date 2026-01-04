@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   try {
     const formData = await req.formData();
     const files = formData.getAll("file") ?? [];
@@ -39,7 +41,7 @@ export async function POST(req: NextRequest) {
       receivedFiles: ingested.length,
       ingested,
       message:
-        "Demo ingestion successful. Files are not persisted in this version, but the pipeline from UI → API → orchestrator is wired."
+        "Demo ingestion successful. Files are not persisted in this version, but the pipeline from UI â†’ API â†’ orchestrator is wired."
     });
   } catch (err) {
     console.error("Error in /api/demo/upload:", err);
