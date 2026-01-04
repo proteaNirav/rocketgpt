@@ -2,9 +2,12 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import crypto from "crypto";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { NextRequest, NextResponse } from "next/server";
 import { ensureRunDirs } from "@/lib/core-ai/run-folders";
 import { writeDecisionEntry, writeDecisionOutcome } from "@/lib/core-ai/decision-ledger/writer";
+export const runtime = "nodejs";
+
 
 const ROUTE = "/api/orchestrator/run/builder";
 const ALLOWED = ["POST"] as const;
@@ -60,6 +63,7 @@ function inputInvalidPayload(runId: string, reason: string) {
 }
 
 export async function GET(req: NextRequest) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const runId = crypto.randomUUID();
   const method = req.method ?? null;
 
@@ -81,6 +85,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const runId = crypto.randomUUID();
   const method = req.method ?? "POST";
 

@@ -1,0 +1,18 @@
+{
+  "defaultMode": "SAFE",
+  "allowedTransitions": {
+    "OFFLINE": ["SAFE"],
+    "SAFE": ["OFFLINE", "SUPERVISED"],
+    "SUPERVISED": ["OFFLINE", "SAFE", "AUTONOMOUS"],
+    "AUTONOMOUS": ["OFFLINE", "SAFE"]
+  },
+  "downgradeTriggers": {
+    "policyViolation": "SAFE",
+    "unexpectedDrift": "SAFE",
+    "ciInstability": "SUPERVISED"
+  },
+  "requireExplicitConfirmFor": ["AUTONOMOUS"],
+  "notes": {
+    "SELF_EVOLUTION": "LOCKED (S4+). Not enabled."
+  }
+}

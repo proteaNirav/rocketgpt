@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -17,6 +19,8 @@ function info(name: string, v: string | undefined | null) {
 }
 
 export async function GET() {
+  const req = new Request("http://localhost/_rgpt", { headers: headers() as any });
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const vars = [
     "NEXT_PUBLIC_SUPABASE_URL",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",

@@ -16,6 +16,7 @@ Generated: 2026-01-02 09:35:12
 
 | route | auth | notes |
 |---|---|---|
+| /api/rgpt/runtime-mode | auth | runtime-mode read-only flag for UI |
 | /api/approvals/create | auth |  |
 | /api/approvals/update-status | auth |  |
 | /api/builder | auth |  |
@@ -82,3 +83,4 @@ Generated: 2026-01-02 09:35:12
 | /api/tester/run | auth |  |
 | /api/usage | auth |  |
 | /api/version | auth |  |
+
