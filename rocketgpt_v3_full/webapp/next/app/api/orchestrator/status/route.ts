@@ -1,8 +1,4 @@
 ﻿import { NextResponse } from "next/server";
-import { headers } from "next/headers";
-import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
-import { getSafeModeEnabled } from "@/lib/orchestrator/safeModeState";
-
 // Safe-Mode detection (CI forces this ON; must short-circuit safely)
 function isSafeMode(): boolean {
   const v = (process.env.RGPT_SAFE_MODE ?? process.env.SAFE_MODE ?? process.env.RGPT_RUNTIME_MODE ?? "").toString().toLowerCase();
@@ -32,4 +28,5 @@ export async function GET() {
     }, { status: 200 });
   }
 }
+
 
