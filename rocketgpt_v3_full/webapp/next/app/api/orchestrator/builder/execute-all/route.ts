@@ -2,7 +2,7 @@
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 
 // Safe-Mode detection (CI forces this ON; must short-circuit safely)
-function isSafeMode(): boolean {
+function _isSafeMode(): boolean {
   const v = (process.env.RGPT_SAFE_MODE ?? process.env.SAFE_MODE ?? process.env.RGPT_RUNTIME_MODE ?? "").toString().toLowerCase();
   return v === "1" || v === "true" || v === "on" || v === "safe" || v === "safemode";
 }
@@ -127,6 +127,11 @@ async function withOrchestratorHandlerLocal(
  * - Safe-Mode: if RGPT_SAFE_MODE_ENABLED=true -> return 403 SAFE_MODE_ACTIVE
  */
 export async function POST(req: NextRequest) {
+  // CI forces Safe-Mode ON; must block with clean 4xx (no crashes)
+  if (typeof _isSafeMode === "function" && _isSafeMode()) {
+    return NextResponse.json({ ok: false, error: "SAFE_MODE_ACTIVE" }, { status: 403 });
+  }
+
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   return withOrchestratorHandlerLocal(
     { route: "/api/orchestrator/builder/execute-all" },
@@ -205,9 +210,4 @@ export async function POST(req: NextRequest) {
     }
   );
 }
-
-
-
-
-
 
