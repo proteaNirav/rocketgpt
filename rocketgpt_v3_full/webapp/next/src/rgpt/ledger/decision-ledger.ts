@@ -23,7 +23,7 @@ function isNonEmptyString(v: unknown): v is string {
   return typeof v === "string" && v.trim().length > 0;
 }
 
-function nowUtcMs(): number {
+function _nowUtcMs(): number {
   return Date.now();
 }
 
@@ -79,6 +79,4 @@ export function verifyDecision(
   // checksum hardening later
   return { ok: true, decision_id, record: decision as any };
 }
-
-
 
