@@ -1,0 +1,20 @@
+﻿b178654d chore(security): normalize runtime allowlist routes (/api/*) + cleanup encoding
+0b61cdb1 fix(ci): satisfy eslint strict (rename nowUtcMs -> _nowUtcMs)
+27555927 fix(s4-a1): execute-all returns 403 when runtime guard blocks (Safe-Mode)
+78a9a47f fix(s4-a1): normalize Safe-Mode guard to return 403 (no 500 fallthrough)
+8f1f9044 fix(s4-a1): Safe-Mode returns 403 instead of crashing (no 500)
+b0d02217 fix(s4-a1): add /api/rgpt/runtime-mode to auth surface matrix
+dfcd02cf fix(s4-a1): regenerate runtime_allowlist (normalized /api paths + validator schema)
+3a408793 fix(s4-a1): generate runtime_allowlist in validator schema
+1b19dccb fix(s4-a1): write runtime allowlist in validator-compatible format (routes wrapper + utf8 nobom)
+fbf40661 fix(s4-a1): regenerate runtime API allowlist from app/api surface
+2967b559 fix(s4-a1): update api surface allowlist + make /api/status public (ci/safemode gate)
+0d04f412 fix(s4-a1): unblock ci lint + allowlist runtime-mode + restore immutable ledger + make status public
+0345844e feat(s4-a1): inject runtime guard across API routes + fix execute-all helper + normalize runtime
+47f30ed0 fix(s4): unblock typecheck/build (execute-all helper, runtime dedupe, ledger/store fixes)
+4ea683a8 feat(runtime): enforce runtimeGuard on all non-edge routes (RGPT-S4-A1)
+bcc4a0fa feat(s4-route): gate runtime-mode API behind decision ledger guard
+cd6a5d9c feat(s4-guard): enforce decision ledger approval in runtime guard
+edbefa5a feat(s4-policy): add expected policy snapshot hash provider
+1642b9ab feat(s4-ledger): add decision ledger schema + read/verify client
+d96b09b3 feat(runtime): enforce runtime governance + guard API (RGPT-S3)

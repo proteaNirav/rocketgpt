@@ -2,6 +2,9 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+export const runtime = "nodejs";
+
 
 type OverallStatus = "healthy" | "degraded" | "down";
 
@@ -49,6 +52,7 @@ type OrchestratorHealthResponse = {
  * in later phases (Planner/Builder/Tester/Approvals connectivity, etc.).
  */
 export async function GET(_req: NextRequest) {
+  await runtimeGuard(_req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const safeModeEnabled =
     process.env.RGPT_SAFE_MODE_ENABLED === "true" ||
     process.env.RGPT_SAFE_MODE === "on";

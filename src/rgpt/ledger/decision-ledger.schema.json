@@ -1,0 +1,23 @@
+﻿{
+    "schema_version":  "1.0",
+    "description":  "Authoritative Decision Ledger schema for RocketGPT runtime governance",
+    "decision_record":  {
+                            "source":  "orchestrator | builder | self_heal | self_improve",
+                            "decision_id":  "string (uuid)",
+                            "approved_by":  "system | human | null",
+                            "checksum":  "sha256(decision_record)",
+                            "policy_snapshot":  "sha256 hash",
+                            "created_utc":  "ISO-8601 UTC",
+                            "approved_utc":  "ISO-8601 UTC | null",
+                            "expires_utc":  "ISO-8601 UTC | null",
+                            "status":  "PENDING | APPROVED | REJECTED | REVOKED",
+                            "decision_type":  "ci | runtime | manual"
+                        },
+    "invariants":  [
+                       "append_only",
+                       "immutable",
+                       "decision_id_required",
+                       "policy_hash_must_match",
+                       "status_gate_enforced"
+                   ]
+}

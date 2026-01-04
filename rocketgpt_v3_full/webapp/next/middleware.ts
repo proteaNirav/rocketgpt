@@ -67,7 +67,8 @@ const RUNTIME_ALLOWLIST = new Set<string>([
   "/api/tester/health",
   "/api/tester/run",
   "/api/usage",
-  "/api/version"
+  "/api/version",
+  "/api/rgpt/runtime-mode"
 ]);
 
 export function middleware(req: NextRequest) {
