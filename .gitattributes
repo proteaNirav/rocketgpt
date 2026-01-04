@@ -1,61 +1,17 @@
-# ==========================================================
-# RocketGPT: Line ending + text/binary normalization
-# Goal: stop stray CR (^M) and keep diffs stable across Windows/Linux.
-# ==========================================================
-
-# Auto-detect text files and normalize line endings in repo
+﻿# Enforce consistent line endings in repo
 * text=auto eol=lf
 
-# PowerShell scripts should remain CRLF on Windows for best tooling compatibility
-*.ps1 text eol=crlf
-*.psm1 text eol=crlf
-*.psd1 text eol=crlf
-
-# Windows command files
-*.cmd text eol=crlf
-*.bat text eol=crlf
-
-# Shell scripts
-*.sh  text eol=lf
-
-# YAML/JSON/MD stay LF
-*.yml text eol=lf
-*.yaml text eol=lf
+# Code
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.js   text eol=lf
+*.jsx  text eol=lf
 *.json text eol=lf
-*.md  text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
 
-# TypeScript/JavaScript/CSS stay LF
-*.ts  text eol=lf
-*.tsx text eol=lf
-*.js  text eol=lf
-*.jsx text eol=lf
-*.css text eol=lf
-*.scss text eol=lf
-
-# SQL
-*.sql text eol=lf
-
-# Explicit binaries (never modify)
-*.png  binary
-*.jpg  binary
-*.jpeg binary
-*.gif  binary
-*.webp binary
-*.ico  binary
-*.pdf  binary
-*.zip  binary
-*.7z   binary
-*.gz   binary
-*.rar  binary
-*.exe  binary
-*.dll  binary
-*.pdb  binary
-*.jar  binary
-*.woff  binary
-*.woff2 binary
-*.ttf   binary
-*.eot   binary
-*.mp4  binary
-*.mov  binary
-*.avi  binary
-*.mkv  binary
+# Windows scripts
+*.ps1  text eol=crlf
+*.cmd  text eol=crlf
+*.bat  text eol=crlf

@@ -1,11 +1,15 @@
 // app/api/report-error/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+export const runtime = "nodejs";
+
 
 const OWNER  = process.env.GITHUB_OWNER!;
 const REPO   = process.env.GITHUB_REPO!;
 const GH_PAT = process.env.GH_PAT!;  // injected PAT
 
 export async function POST(req: NextRequest) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   try {
     const body = await req.json().catch(() => ({}));
     const {
@@ -56,7 +60,7 @@ ${stack || "no stack"}
       body: JSON.stringify({
         title,
         body: issueBody,
-        labels: ["self-apply", "codegen:ready"], // ← triggers triage → codegen
+        labels: ["self-apply", "codegen:ready"], // â† triggers triage â†’ codegen
       }),
       cache: "no-store",
     });
