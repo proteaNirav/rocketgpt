@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { completeChatWithFallback, type LLMMessage } from "../../_lib/llmProvider";
 
 export const runtime = "nodejs";
@@ -9,6 +10,7 @@ type ChatMessage = {
 };
 
 export async function POST(req: NextRequest) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   try {
     const body = await req.json().catch(() => ({}));
     const messages = (body as any)?.messages as ChatMessage[] | undefined;

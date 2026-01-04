@@ -1,11 +1,17 @@
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 // webapp/next/app/api/debug-auth/route.ts
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { cookies } from "next/headers";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+export const runtime = "nodejs";
+
 
 export async function GET() {
+  const req = new Request("http://localhost/_rgpt", { headers: headers() as any });
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const cookieStore = cookies();
   const guestId = cookieStore.get("guest_id")?.value ?? null;
 

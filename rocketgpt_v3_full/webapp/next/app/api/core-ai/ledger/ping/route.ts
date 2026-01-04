@@ -1,13 +1,17 @@
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import crypto from "crypto";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { NextRequest, NextResponse } from "next/server";
 
 import { writeDecisionEntry, writeDecisionOutcome } from "@/lib/core-ai/decision-ledger/writer";
 import { ensureRunDirs, getRunLogsDir } from "@/lib/core-ai/run-folders";
+export const runtime = "nodejs";
+
 
 export async function GET(req: NextRequest) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const url = new URL(req.url);
   const runId = url.searchParams.get("runId") ?? crypto.randomUUID();
   const sessionId = url.searchParams.get("sessionId") ?? undefined;

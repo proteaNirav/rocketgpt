@@ -1,8 +1,11 @@
-export const dynamic = "force-dynamic";
+﻿export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import { NextRequest, NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { getSafeMode } from "../../_core/safeMode";
+export const runtime = "nodejs";
+
 
 const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
 
@@ -12,6 +15,7 @@ const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
  * Secured via x-rgpt-internal header.
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   // Internal key enforcement
   if (INTERNAL_KEY) {
     const hdr = req.headers.get("x-rgpt-internal") ?? "";
@@ -36,3 +40,4 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     { status: 200 }
   );
 }
+

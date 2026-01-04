@@ -1,10 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { validatePlannerRequest, validatePlannerResponse } from '@/lib/planner/planner-validators';
 import { runPlanner } from '@/lib/planner/planner-engine';
+export const runtime = "nodejs";
+
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   try {
     const body = await req.json().catch(() => null);
 
