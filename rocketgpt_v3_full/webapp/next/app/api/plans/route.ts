@@ -1,7 +1,10 @@
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 import { NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+export const runtime = "nodejs";
+
 
 export async function GET() {
   const sb = getSupabaseServerClient();
@@ -11,6 +14,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const sb = getSupabaseServerClient();
   const body = await req.json();
   const { error } = await sb.from("rl_plans").upsert(body);
