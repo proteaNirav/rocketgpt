@@ -1,4 +1,4 @@
-﻿# AUTH Surface Matrix
+# AUTH Surface Matrix
 
 Generated: 2026-01-02 09:35:12
 
