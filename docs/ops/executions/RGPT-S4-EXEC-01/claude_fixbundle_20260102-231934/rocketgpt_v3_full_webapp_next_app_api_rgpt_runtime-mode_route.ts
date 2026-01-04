@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { enforceRuntimeDecision } from "../../../../src/rgpt/runtime/runtime-guard";
 import { resolveRuntimeModeFromEnvAndHeaders } from "../../../../src/rgpt/runtime/runtime-mode.context";
 import { assertRuntimePermission } from "../../../../src/rgpt/runtime/runtime-guard";

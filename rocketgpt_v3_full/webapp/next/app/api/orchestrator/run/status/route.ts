@@ -1,4 +1,4 @@
-﻿import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 export const runtime = "nodejs";
 
 export const dynamic = "force-dynamic";

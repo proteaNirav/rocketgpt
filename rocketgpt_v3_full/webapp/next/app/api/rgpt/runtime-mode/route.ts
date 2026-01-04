@@ -1,7 +1,7 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { enforceRuntimeDecision } from "@/rgpt/runtime/runtime-guard";
-export const runtime = "nodejs";
 
+export const runtime = "nodejs";
 
 /**
  * GET /api/rgpt/runtime-mode
@@ -29,3 +29,5 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({ ok: true, guarded: true, decision_id }, { status: 200 });
 }
+
+

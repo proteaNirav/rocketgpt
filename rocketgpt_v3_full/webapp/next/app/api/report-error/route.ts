@@ -1,4 +1,4 @@
-﻿// app/api/report-error/route.ts
+// app/api/report-error/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 export const runtime = "nodejs";

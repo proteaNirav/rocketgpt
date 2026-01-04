@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { callLLM } from "@/lib/llm/router";
 import { LLMRouterRequest } from "@/lib/llm/types";

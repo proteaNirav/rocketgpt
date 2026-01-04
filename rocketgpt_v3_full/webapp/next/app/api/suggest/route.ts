@@ -1,4 +1,4 @@
-﻿export const runtime = "nodejs";
+export const runtime = "nodejs";
 import { ok, noContent } from "../_lib/cors";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 

@@ -1,4 +1,4 @@
-﻿import crypto from "crypto";
+import crypto from "crypto";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { writeDecisionEntry, writeDecisionOutcome } from "@/lib/core-ai/decision-ledger/writer";
 export const dynamic = "force-dynamic";

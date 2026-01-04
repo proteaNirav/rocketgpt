@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { validatePlannerRequest, validatePlannerResponse } from '@/lib/planner/planner-validators';
 import { runPlanner } from '@/lib/planner/planner-engine';

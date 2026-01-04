@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { getRunHistory } from "@/lib/orchestrator/history";
