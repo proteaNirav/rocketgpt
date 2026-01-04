@@ -1,80 +1,42 @@
 import { NextResponse } from "next/server";
+import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 
-export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
-/**
- * Global status endpoint for RocketGPT.
- * Aggregates health from:
- *  - /api/orchestrator/health
- *  - /api/tester/health
- *
- * NOTE:
- * - Uses an internal base URL. For local dev, defaults to http://localhost:3000
- * - Can be extended later with DB, Supabase, queue checks, etc.
- */
-
-const INTERNAL_BASE_URL =
-  process.env.RGPT_INTERNAL_BASE_URL ?? "http://localhost:3000";
-
-type ServiceStatus = {
-  ok: boolean;
-  status: number;
-  body?: unknown;
-  error?: string;
-};
-
-async function safeFetch(path: string): Promise<ServiceStatus> {
-  const url = `${INTERNAL_BASE_URL}${path}`;
-
+function hasDecisionId(request: Request): boolean {
   try {
-    const res = await fetch(url, {
-      cache: "no-store",
-    });
-
-    let json: unknown = undefined;
-    try {
-      json = await res.json();
-    } catch {
-      // ignore JSON parse errors – body may be empty or not JSON
-    }
-
-    return {
-      ok: res.ok,
-      status: res.status,
-      body: json,
-    };
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Unknown error in fetch";
-    return {
-      ok: false,
-      status: 0,
-      error: message,
-    };
+    const h = request.headers;
+    const v = h.get("x-rgpt-decision-id") || h.get("X-RGPT-Decision-Id") || "";
+    return String(v).trim().length > 0;
+  } catch {
+    return false;
   }
 }
 
-export async function GET() {
-  const [orchestrator, tester] = await Promise.all([
-    safeFetch("/api/orchestrator/health"),
-    safeFetch("/api/tester/health"),
-  ]);
-
-  const orchBody: any = orchestrator.body ?? {};
-  const testerBody: any = tester.body ?? {};
-
-  const success =
-    orchestrator.ok &&
-    tester.ok &&
-    orchBody.success === true &&
-    testerBody.success === true;
-
-  return NextResponse.json({
-    success,
-    services: {
-      orchestrator,
-      tester,
-    },
-    timestamp: new Date().toISOString(),
-  });
+function toSafeError(err: any) {
+  const msg = (err && (err.message || String(err))) || "unknown error";
+  const name = (err && err.name) || "Error";
+  const stack = (err && err.stack) ? String(err.stack) : undefined;
+  return { name, message: msg, stack };
 }
+export const dynamic = "force-dynamic";
+
+export async function GET(request: Request) {
+  try {
+    // Infra route: decision optional; enforce only if provided.
+    if (hasDecisionId(request)) {
+      await runtimeGuard(request, { permission: "API_CALL" });
+    }
+
+    return NextResponse.json(
+      { ok: true, name: "rocketgpt-ui", ts: new Date().toISOString() },
+      { status: 200 }
+    );
+  } catch (e: any) {
+    const safe = toSafeError(e);
+    const isDev = process.env.NODE_ENV !== "production";
+    return NextResponse.json({ ok: false, route: "//api/status", error: { name: safe.name, message: safe.message, ...(isDev ? { stack: safe.stack } : {}) } }, { status: 500 });
+  }
+}
+
+

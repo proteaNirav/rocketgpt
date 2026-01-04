@@ -1,0 +1,23 @@
+﻿You are fixing RocketGPT (Next.js app) Decision Ledger Runtime Binding.
+
+Goal:
+- /api/rgpt/runtime-mode must compile and return 200 when a valid decision is provided.
+- It currently returns HTTP 500 even with a TEMP early return after enforceRuntimeDecision().
+
+Constraints:
+- Keep changes minimal and safe.
+- Use existing relative imports (no @ alias).
+- Ensure runtime-guard enforcement works end-to-end.
+
+Please:
+1) Identify why route.ts still 500 even with early return.
+2) Provide a patch (diff) for the real repo paths, not the bundle filenames.
+3) Verify:
+   - route.ts builds
+   - enforceRuntimeDecision import resolves
+   - decision ledger file path resolution works in Next runtime
+   - no double-reading of req body on GET
+4) If ledger path is wrong, propose a robust fix (e.g., resolve from process.cwd() or env RGPT_LEDGER_PATH).
+
+Bundle folder: docs/ops/executions/RGPT-S4-EXEC-01/claude_fixbundle_20260102-231934
+Files copied are prefixed with their original paths (underscored). Use them to reason, but output final patch against real paths.
