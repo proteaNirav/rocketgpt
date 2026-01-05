@@ -34,7 +34,6 @@ async function rgptTryLedger(op: string) {
     console.warn("[rgpt][ledger] runtime-mode ledger write skipped:", e);
   }
 }
-}
 export const runtime = "nodejs";
 
 /**
@@ -66,6 +65,7 @@ const decision_id = req.headers.get("x-rgpt-decision-id") ?? "";
 
   return NextResponse.json({ ok: true, guarded: true, decision_id }, { status: 200 });
 }
+
 
 
 
