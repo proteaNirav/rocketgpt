@@ -57,3 +57,45 @@ This prevents accidental duplication and ensures we refactor safely.
 ## E) Decision
 Chosen option: TBD
 Reason: TBD
+
+---
+
+## A) Database objects (Initial authoritative mapping)
+
+| Object | Purpose today | Used by | Notes |
+|---|---|---|---|
+| rgpt_runtime_executions | Execution tracking | Orchestrator / CI | ⚠️ To be aligned with ExecutionRecord |
+| rgpt_runtime_decisions | Decision outcomes | Policy Gate | ⚠️ Partial, not canonical |
+| rgpt_ci_write_ledger (fn) | CI ledger writes | CI workflows | ✅ Exists |
+| rgpt_block_ledger_mutation | Guard unsafe writes | Runtime guard | ✅ Exists |
+
+---
+
+## B) Server/API write paths (confirmed)
+
+| Route | Writes what | Guarded by | Safe-Mode behavior | Notes |
+|---|---|---|---|---|
+| /api/orchestrator/* | Execution flow | runtime-guard | 403 on block | ✅ |
+| /api/builder/execute-all | Batch execution | RuntimePermissions | Blocked in safe-mode | ✅ |
+| /api/rgpt/runtime-mode | Runtime state | runtime-guard | Read-only | ✅ |
+
+---
+
+## C) Code-level helpers (confirmed)
+
+| File/Module | Purpose | Used by | Notes |
+|---|---|---|---|
+| runtime-guard.ts | Enforce runtime rules | API routes | ✅ |
+| runtime-permissions.ts | Permission snapshot | Builder | ✅ |
+| policy_gate.yml | Decision enforcement | CI | ✅ |
+
+---
+
+## D) Directional decision
+
+Chosen option: **Option 2 — Create canonical ledger tables + migrate**
+Reason:
+- Existing objects are fragmented
+- Canonical contract is now defined
+- Migration cost is low at this stage
+
