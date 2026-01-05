@@ -5,12 +5,18 @@ import { enforceRuntimeDecision } from "@/rgpt/runtime/runtime-guard";
 async function rgptTryLedger(op: string) {
   // RGPT_LEDGER_HOOK
   try {
-    const reqId = (globalThis.crypto && "randomUUID" in globalThis.crypto) ? globalThis.crypto.randomUUID() : ("req_" + Date.now());
-    const rootId = (globalThis.crypto && "randomUUID" in globalThis.crypto) ? globalThis.crypto.randomUUID() : ("root_" + Date.now());
+    const reqId =
+      (globalThis.crypto && "randomUUID" in globalThis.crypto)
+        ? (globalThis.crypto as any).randomUUID()
+        : ("req_" + Date.now());
+
+    const rootId =
+      (globalThis.crypto && "randomUUID" in globalThis.crypto)
+        ? (globalThis.crypto as any).randomUUID()
+        : ("root_" + Date.now());
 
     await ledgerUpsertExecution({
-      idempotency_key: 
-untime-mode::,
+      idempotency_key: "runtime-mode:" + op + ":" + reqId,
       request_id: reqId,
       root_execution_id: rootId,
 
@@ -27,6 +33,7 @@ untime-mode::,
     // Non-breaking: do not fail the route if ledger is unavailable
     console.warn("[rgpt][ledger] runtime-mode ledger write skipped:", e);
   }
+}
 }
 export const runtime = "nodejs";
 
@@ -59,6 +66,7 @@ const decision_id = req.headers.get("x-rgpt-decision-id") ?? "";
 
   return NextResponse.json({ ok: true, guarded: true, decision_id }, { status: 200 });
 }
+
 
 
 
