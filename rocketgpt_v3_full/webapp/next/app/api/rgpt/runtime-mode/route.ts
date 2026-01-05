@@ -9,7 +9,8 @@ async function rgptTryLedger(op: string) {
     const rootId = (globalThis.crypto && "randomUUID" in globalThis.crypto) ? globalThis.crypto.randomUUID() : ("root_" + Date.now());
 
     await ledgerUpsertExecution({
-      idempotency_key: untime-mode::,
+      idempotency_key: 
+untime-mode::,
       request_id: reqId,
       root_execution_id: rootId,
 
@@ -35,6 +36,7 @@ export const runtime = "nodejs";
  * Requires x-rgpt-decision-id header (fail-closed) and validates via enforceRuntimeDecision.
  */
 export async function GET(req: NextRequest) {
+  void rgptTryLedger("GET");
   
   void rgptTryLedger('GET');
 const decision_id = req.headers.get("x-rgpt-decision-id") ?? "";
