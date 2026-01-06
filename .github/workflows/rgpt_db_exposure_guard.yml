@@ -1,4 +1,4 @@
-﻿name: RGPT DB Exposure Guard
+name: RGPT DB Exposure Guard
 
 on:
   pull_request:
