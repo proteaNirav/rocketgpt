@@ -39,6 +39,15 @@ jobs:
           echo "PGSSLMODE=require" >> "$GITHUB_ENV"
           echo "[OK] Exported PGHOSTADDR=${IPV4}"
 
+      - name: Debug Supabase DB host (safe)
+        shell: bash
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          echo "[DEBUG] Extracting host from SUPABASE_DB_URL"
+          echo "$SUPABASE_DB_URL" | sed -E 's#^.+@([^:/]+).*$#HOST=\1#'
+
+
       - name: Run rgpt schema exposure guard (must return zero rows)
         shell: pwsh
         env:
