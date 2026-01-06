@@ -21,29 +21,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
-      - name: Force IPv4 for Supabase DB (pwsh)
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Stop"
-
-          $dbHost = "db.dwlsepbluachmbmixydp.supabase.co"
-          Write-Host "[DNS] Resolving $dbHost" -ForegroundColor Cyan
-
-          $ipv4 = [System.Net.Dns]::GetHostAddresses($dbHost) |
-                  Where-Object { $_.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork } |
-                  Select-Object -First 1 |
-                  ForEach-Object { $_.IPAddressToString }
-
-          if (-not $ipv4) {
-            throw "No IPv4 address found for $dbHost"
-          }
-
-          Write-Host "[IPv4] $dbHost -> $ipv4" -ForegroundColor Green
-
-          "PGHOST=$dbHost"    | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
-          "PGHOSTADDR=$ipv4"  | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
-          "PGSSLMODE=require" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
-
       - name: Run rgpt schema exposure guard (must return zero rows)
         shell: pwsh
         env:
