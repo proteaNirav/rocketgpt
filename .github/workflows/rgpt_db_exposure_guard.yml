@@ -21,6 +21,24 @@ jobs:
           sudo apt-get update
           
 
+      - name: Force IPv4 for Supabase DB (export PGHOSTADDR)
+        shell: bash
+        run: |
+          set -euo pipefail
+          HOST="db.dwlsepbluachmbmixydp.supabase.co"
+          echo "[DNS] $HOST"
+          getent hosts "$HOST" || true
+          IPV4="$(getent ahostsv4 "$HOST" | awk '{print $1}' | head -n 1)"
+          echo "[IPv4] $HOST -> ${IPV4}"
+          if [ -z "${IPV4}" ]; then
+            echo "[FAIL] Could not resolve IPv4 for $HOST"
+            exit 2
+          fi
+          echo "PGHOST=$HOST" >> "$GITHUB_ENV"
+          echo "PGHOSTADDR=${IPV4}" >> "$GITHUB_ENV"
+          echo "PGSSLMODE=require" >> "$GITHUB_ENV"
+          echo "[OK] Exported PGHOSTADDR=${IPV4}"
+
       - name: Run rgpt schema exposure guard (must return zero rows)
         shell: pwsh
         env:
