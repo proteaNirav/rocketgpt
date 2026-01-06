@@ -21,23 +21,47 @@ jobs:
           sudo apt-get update
           
 
-      - name: Force IPv4 for Supabase DB (export PGHOSTADDR)
+      - name: Debug Supabase DB host (safe)
+        shell: bash
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          echo "[DEBUG] Extracting host from SUPABASE_DB_URL"
+          echo "$SUPABASE_DB_URL" | sed -E 's#^.+@([^:/]+).*$#HOST=\1#'
+
+
+      - name: Force IPv4 for Supabase DB (pwsh: export PGHOSTADDR)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $dbHost = "db.dwlsepbluachmbmixydp.supabase.co"
+
+          Write-Host "[DNS] Host=$dbHost" -ForegroundColor Cyan
+
+          # Robust IPv4 resolve (works even when Resolve-DnsName returns SOA first)
+          $ipv4 = [System.Net.Dns]::GetHostAddresses($dbHost) |
+                  Where-Object { name: RGPT DB Exposure Guard
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  rgpt-db-exposure-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install psql
         shell: bash
         run: |
-          set -euo pipefail
-          HOST="db.dwlsepbluachmbmixydp.supabase.co"
-          echo "[DNS] $HOST"
-          getent hosts "$HOST" || true
-          IPV4="$(getent ahostsv4 "$HOST" | awk '{print $1}' | head -n 1)"
-          echo "[IPv4] $HOST -> ${IPV4}"
-          if [ -z "${IPV4}" ]; then
-            echo "[FAIL] Could not resolve IPv4 for $HOST"
-            exit 2
-          fi
-          echo "PGHOST=$HOST" >> "$GITHUB_ENV"
-          echo "PGHOSTADDR=${IPV4}" >> "$GITHUB_ENV"
-          echo "PGSSLMODE=require" >> "$GITHUB_ENV"
-          echo "[OK] Exported PGHOSTADDR=${IPV4}"
+          sudo apt-get update
+          
 
       - name: Debug Supabase DB host (safe)
         shell: bash
@@ -47,6 +71,110 @@ jobs:
           echo "[DEBUG] Extracting host from SUPABASE_DB_URL"
           echo "$SUPABASE_DB_URL" | sed -E 's#^.+@([^:/]+).*$#HOST=\1#'
 
+
+      - name: Run rgpt schema exposure guard (must return zero rows)
+        shell: pwsh
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          if (-not $env:SUPABASE_DB_URL) {
+            throw "Missing secret: SUPABASE_DB_URL"
+          }
+
+          $sqlFile = "docs/ops/guards/rgpt_schema_exposure_assert.sql"
+          if (-not (Test-Path $sqlFile)) {
+            throw "Missing SQL guard file: $sqlFile"
+          }
+
+          Write-Host "[RUN] Guard SQL: $sqlFile" -ForegroundColor Cyan
+
+          # Trim connection string and execute guard SQL
+          $cs = ($env:SUPABASE_DB_URL).Trim()
+
+          $out = psql "$cs" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t
+          if ($LASTEXITCODE -ne 0) { throw "psql failed with exit code $LASTEXITCODE" }
+
+          if ($out -and $out.Trim().Length -gt 0) {
+            Write-Host "[FAIL] Exposure regression detected (rows returned):" -ForegroundColor Red
+            $out | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
+            exit 1
+          }
+
+          Write-Host "[OK] No unsafe grants detected (zero rows)." -ForegroundColor Green.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork } |
+                  Select-Object -First 1 |
+                  ForEach-Object { name: RGPT DB Exposure Guard
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  rgpt-db-exposure-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install psql
+        shell: bash
+        run: |
+          sudo apt-get update
+          
+
+      - name: Debug Supabase DB host (safe)
+        shell: bash
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          echo "[DEBUG] Extracting host from SUPABASE_DB_URL"
+          echo "$SUPABASE_DB_URL" | sed -E 's#^.+@([^:/]+).*$#HOST=\1#'
+
+
+      - name: Run rgpt schema exposure guard (must return zero rows)
+        shell: pwsh
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          if (-not $env:SUPABASE_DB_URL) {
+            throw "Missing secret: SUPABASE_DB_URL"
+          }
+
+          $sqlFile = "docs/ops/guards/rgpt_schema_exposure_assert.sql"
+          if (-not (Test-Path $sqlFile)) {
+            throw "Missing SQL guard file: $sqlFile"
+          }
+
+          Write-Host "[RUN] Guard SQL: $sqlFile" -ForegroundColor Cyan
+
+          # Trim connection string and execute guard SQL
+          $cs = ($env:SUPABASE_DB_URL).Trim()
+
+          $out = psql "$cs" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t
+          if ($LASTEXITCODE -ne 0) { throw "psql failed with exit code $LASTEXITCODE" }
+
+          if ($out -and $out.Trim().Length -gt 0) {
+            Write-Host "[FAIL] Exposure regression detected (rows returned):" -ForegroundColor Red
+            $out | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
+            exit 1
+          }
+
+          Write-Host "[OK] No unsafe grants detected (zero rows)." -ForegroundColor Green.IPAddressToString }
+
+          if (-not $ipv4) { throw "Could not resolve IPv4 for $dbHost" }
+
+          Write-Host "[IPv4] $dbHost -> $ipv4" -ForegroundColor Green
+
+          "PGHOST=$dbHost"    | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "PGHOSTADDR=$ipv4"  | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "PGSSLMODE=require" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Run rgpt schema exposure guard (must return zero rows)
         shell: pwsh
