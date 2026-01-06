@@ -24,6 +24,7 @@ jobs:
       - name: Run rgpt schema exposure guard (must return zero rows)
         shell: pwsh
         env:
+          SUPABASE_DB_POOLER_URL: ${{ secrets.SUPABASE_DB_POOLER_URL }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
           $ErrorActionPreference = "Stop"
