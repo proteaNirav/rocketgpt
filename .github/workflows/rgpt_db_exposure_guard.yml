@@ -41,7 +41,7 @@ jobs:
 
           # -A -t: unaligned + tuples-only => easy output check
           $cs = ($env:SUPABASE_DB_URL).Trim()
-$out = & psql "$cs" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t
+$out = psql "$cs" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t
           if ($LASTEXITCODE -ne 0) { throw "psql failed with exit code $LASTEXITCODE" }
 
           if ($out -and $out.Trim().Length -gt 0) {
