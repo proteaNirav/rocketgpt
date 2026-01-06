@@ -52,3 +52,4 @@ $out = & psql "$cs" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t
 
           Write-Host "[OK] No unsafe grants detected (zero rows)." -ForegroundColor Green
 
+
