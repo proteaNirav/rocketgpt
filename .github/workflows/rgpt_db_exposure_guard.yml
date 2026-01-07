@@ -40,7 +40,13 @@ jobs:
 
           Write-Host "[RUN] Guard SQL: $sqlFile" -ForegroundColor Cyan
 
-          $out = psql "$($env:SUPABASE_DB_URL.Trim())" `
+          $cs = if ($env:SUPABASE_DB_POOLER_URL -and $env:SUPABASE_DB_POOLER_URL.Trim().Length -gt 0) {
+            $env:SUPABASE_DB_POOLER_URL.Trim()
+          } else {
+            $env:SUPABASE_DB_URL.Trim()
+          }
+
+          $out = psql "$cs" `
                  -v ON_ERROR_STOP=1 `
                  -f $sqlFile `
                  -P pager=off `
