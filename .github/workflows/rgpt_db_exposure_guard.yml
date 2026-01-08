@@ -6,8 +6,17 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   rgpt-db-exposure-guard:
+    # Run on push/main + workflow_dispatch always.
+    # On PRs, run only for same-repo branches (fork PRs don't get secrets).
+    if: |
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -28,59 +37,50 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
 
+          # Fork PRs do not receive secrets; skip cleanly to avoid noisy failures
           if (-not $env:SUPABASE_DB_POOLER_URL) {
+            if ($env:GITHUB_EVENT_NAME -eq "pull_request") {
+              Write-Host "[SKIP] SUPABASE_DB_POOLER_URL not available for fork PRs." -ForegroundColor Yellow
+              exit 0
+            }
             throw "Missing SUPABASE_DB_POOLER_URL"
           }
 
-          $cs = $env:SUPABASE_DB_POOLER_URL.Trim()
+          $url = $env:SUPABASE_DB_POOLER_URL.Trim()
           $sqlFile = "docs/ops/guards/rgpt_schema_exposure_assert.sql"
-
-          if (-not (Test-Path $sqlFile)) {
-            throw "Missing SQL guard file: $sqlFile"
-          }
+          if (-not (Test-Path $sqlFile)) { throw "Missing SQL guard file: $sqlFile" }
 
           Write-Host "[RUN] Guard SQL: $sqlFile" -ForegroundColor Cyan
 
-          $outRows = psql "$cs" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t
-          if ($LASTEXITCODE -ne 0) { throw "psql failed with exit code $LASTEXITCODE" }
+          try { $u = [System.Uri]::new($url) } catch { throw "Invalid SUPABASE_DB_POOLER_URL format" }
 
-          if ($outRows -and $outRows.Trim().Length -gt 0) {
-            Write-Host "[FAIL] Exposure regression detected:" -ForegroundColor Red
-            $outRows | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
-            exit 1
+          $host = $u.Host
+          $port = if ($u.Port -gt 0) { $u.Port } else { 5432 }
+          $db   = $u.AbsolutePath.TrimStart("/")
+          if (-not $db) { throw "Database name missing in SUPABASE_DB_POOLER_URL" }
+
+          $userInfo = $u.UserInfo
+          if (-not $userInfo -or -not ($userInfo -match "^(?<user>[^:]+):(?<pass>.+)$")) {
+            throw "User/password missing in SUPABASE_DB_POOLER_URL"
           }
+          $user = $Matches.user
+          $pass = $Matches.pass
 
-          Write-Host "[OK] No unsafe grants detected." -ForegroundColor Green
-      - name: Checkout
-        uses: actions/checkout@v4
+          # Create .pgpass so password is not in args/logs
+          $pgpassPath = Join-Path $env:RUNNER_TEMP ".pgpass"
+          $pgpassLine = "$host`:$port`:$db`:$user`:$pass"
+          Set-Content -Path $pgpassPath -Value $pgpassLine -Encoding ASCII
+          if ($IsLinux -or $IsMacOS) { & chmod 600 $pgpassPath | Out-Null }
 
-      - name: Install psql
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
+          $env:PGPASSFILE = $pgpassPath
+          $env:PGHOST     = $host
+          $env:PGPORT     = "$port"
+          $env:PGDATABASE = $db
+          $env:PGUSER     = $user
 
-      - name: Run rgpt schema exposure guard (must return zero rows)
-        shell: pwsh
-        env:
-          SUPABASE_DB_POOLER_URL: ${{ secrets.SUPABASE_DB_POOLER_URL }}
-        run: |
-          $ErrorActionPreference = "Stop"
+          $conn = "host=$host port=$port dbname=$db user=$user sslmode=require"
 
-          if (-not $env:SUPABASE_DB_POOLER_URL) {
-            throw "Missing SUPABASE_DB_POOLER_URL"
-          }
-
-          $cs = $env:SUPABASE_DB_POOLER_URL.Trim()
-          $sqlFile = "docs/ops/guards/rgpt_schema_exposure_assert.sql"
-
-          if (-not (Test-Path $sqlFile)) {
-            throw "Missing SQL guard file: $sqlFile"
-          }
-
-          Write-Host "[RUN] Guard SQL: $sqlFile" -ForegroundColor Cyan
-
-          $outRows = psql "$cs" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t
+          $outRows = psql "$conn" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t
           if ($LASTEXITCODE -ne 0) { throw "psql failed with exit code $LASTEXITCODE" }
 
           if ($outRows -and $outRows.Trim().Length -gt 0) {
