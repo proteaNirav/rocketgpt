@@ -1,3 +1,4 @@
+import { withApiGuard } from "../../../../src/rgpt/api/api-guard";
 import { NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 export const runtime = "nodejs";
@@ -12,6 +13,7 @@ function isTruthyEnv(value: string | undefined): boolean {
 }
 
 export async function POST(req: Request) {
+  return withApiGuard(req as any, { requireAuth: true, requireRole: ["admin"], rate: { limit: 10, windowMs: 60_000 }, safeModeBlock: true }, async (_ctx) => {
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   let body: unknown = null;
   try {
@@ -27,16 +29,16 @@ export async function POST(req: Request) {
     accepted: true,
     writeEnabled,
     message:
-      "Self-improve run trigger stub â€“ executor wiring is pending. " +
+      "Self-improve run trigger stub Ã¢â‚¬â€œ executor wiring is pending. " +
       "This endpoint currently only acknowledges the request.",
     received: body,
     timestamp: new Date().toISOString(),
   };
 
-  // 202 Accepted â€“ work would normally be queued for async execution
+  // 202 Accepted Ã¢â‚¬â€œ work would normally be queued for async execution
   return NextResponse.json(payload, { status: 202 });
+  });
 }
-
 // Optional: reject GET explicitly for /api/self-improve/run
 export async function GET() {
   return NextResponse.json(
@@ -47,3 +49,4 @@ export async function GET() {
     { status: 405 }
   );
 }
+
