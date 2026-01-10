@@ -3,5 +3,5 @@
  * Must match decision.policy_snapshot in DECISIONS.jsonl.
  */
 export function getExpectedPolicySnapshotHash(): string {
-  return process.env.RGPT_POLICY_SNAPSHOT_SHA256 ?? "";
+  return process.env.RGPT_POLICY_SNAPSHOT_SHA256 ?? ''
 }
