@@ -1,4 +1,4 @@
-type Props = { costINR?: number; minutes?: number; steps?: number };
+type Props = { costINR?: number; minutes?: number; steps?: number }
 
 export default function EstimateBadge({ costINR = 0, minutes = 0, steps = 0 }: Props) {
   return (
@@ -7,5 +7,5 @@ export default function EstimateBadge({ costINR = 0, minutes = 0, steps = 0 }: P
       <span className="badge">⏱️ {minutes} min</span>
       <span className="badge">🧩 {steps} steps</span>
     </div>
-  );
+  )
 }

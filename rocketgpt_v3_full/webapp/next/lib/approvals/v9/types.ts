@@ -1,46 +1,42 @@
-export type ApprovalRisk = "low" | "medium" | "high";
+export type ApprovalRisk = 'low' | 'medium' | 'high'
 
-export type ApprovalCategory = "planner" | "builder" | "tester" | "release";
+export type ApprovalCategory = 'planner' | 'builder' | 'tester' | 'release'
 
-export type ApprovalSuggestedAction =
-  | "auto-approve"
-  | "reject"
-  | "revise"
-  | "ask-human";
+export type ApprovalSuggestedAction = 'auto-approve' | 'reject' | 'revise' | 'ask-human'
 
 export interface ApprovalPacket {
   /** Unique ID for this approval request (per step). */
-  requestId: string;
+  requestId: string
 
   /** Orchestrator run identifier. */
-  runId: string;
+  runId: string
 
   /** Step number within the run (1-based). */
-  step: number;
+  step: number
 
   /** Which stage emitted this packet. */
-  category: ApprovalCategory;
+  category: ApprovalCategory
 
   /** Computed risk level after rules are applied. */
-  risk: ApprovalRisk;
+  risk: ApprovalRisk
 
   /** Whether a human must be involved before proceeding. */
-  requiresHuman: boolean;
+  requiresHuman: boolean
 
   /** Machine-readable reasons explaining risk/decision. */
-  reasons: string[];
+  reasons: string[]
 
   /** Hints for UI and logs (how to improve / what to check). */
-  hints: string[];
+  hints: string[]
 
   /**
    * Free-form payload from Planner/Builder/Tester.
    * Should be JSON-serializable and stable for logging.
    */
-  payload: Record<string, any>;
+  payload: Record<string, any>
 
   /** Engine’s recommended next action. */
-  suggestedAction: ApprovalSuggestedAction;
+  suggestedAction: ApprovalSuggestedAction
 }
 
 /**
@@ -48,46 +44,46 @@ export interface ApprovalPacket {
  * final normalization into ApprovalPacket.
  */
 export interface ApprovalInput {
-  requestId: string;
-  runId: string;
-  step: number;
-  category: ApprovalCategory;
-  payload?: Record<string, any>;
+  requestId: string
+  runId: string
+  step: number
+  category: ApprovalCategory
+  payload?: Record<string, any>
 
-  risk?: ApprovalRisk;
-  requiresHuman?: boolean;
-  reasons?: string[] | string;
-  hints?: string[] | string;
-  suggestedAction?: ApprovalSuggestedAction;
+  risk?: ApprovalRisk
+  requiresHuman?: boolean
+  reasons?: string[] | string
+  hints?: string[] | string
+  suggestedAction?: ApprovalSuggestedAction
 }
 
 /** Result of applying deterministic rules. */
 export interface RuleEvaluationResult {
-  risk: ApprovalRisk;
-  reasons: string[];
-  hints: string[];
+  risk: ApprovalRisk
+  reasons: string[]
+  hints: string[]
 }
 
 /** Utility: ensure any string|string[] becomes a clean string[]. */
 function toStringArray(value?: string | string[]): string[] {
-  if (!value) return [];
+  if (!value) return []
   return Array.isArray(value)
-    ? value.filter((v) => typeof v === "string" && v.trim().length > 0)
+    ? value.filter((v) => typeof v === 'string' && v.trim().length > 0)
     : value.trim().length > 0
-    ? [value.trim()]
-    : [];
+      ? [value.trim()]
+      : []
 }
 
 /** Map risk → suggested action (default opinionated policy). */
 export function computeSuggestedAction(risk: ApprovalRisk): ApprovalSuggestedAction {
   switch (risk) {
-    case "low":
-      return "auto-approve";
-    case "medium":
-      return "revise";
-    case "high":
+    case 'low':
+      return 'auto-approve'
+    case 'medium':
+      return 'revise'
+    case 'high':
     default:
-      return "ask-human";
+      return 'ask-human'
   }
 }
 
@@ -100,18 +96,16 @@ export function computeSuggestedAction(risk: ApprovalRisk): ApprovalSuggestedAct
  *  - requiresHuman defaults based on risk
  */
 export function normalizeApprovalPacket(input: ApprovalInput): ApprovalPacket {
-  const risk: ApprovalRisk = input.risk ?? "low";
+  const risk: ApprovalRisk = input.risk ?? 'low'
 
-  const reasons = toStringArray(input.reasons);
-  const hints = toStringArray(input.hints);
+  const reasons = toStringArray(input.reasons)
+  const hints = toStringArray(input.hints)
 
   const suggestedAction: ApprovalSuggestedAction =
-    input.suggestedAction ?? computeSuggestedAction(risk);
+    input.suggestedAction ?? computeSuggestedAction(risk)
 
   const requiresHuman =
-    typeof input.requiresHuman === "boolean"
-      ? input.requiresHuman
-      : risk === "high";
+    typeof input.requiresHuman === 'boolean' ? input.requiresHuman : risk === 'high'
 
   return {
     requestId: input.requestId,
@@ -124,7 +118,7 @@ export function normalizeApprovalPacket(input: ApprovalInput): ApprovalPacket {
     reasons,
     hints,
     suggestedAction,
-  };
+  }
 }
 
 /**
@@ -132,80 +126,58 @@ export function normalizeApprovalPacket(input: ApprovalInput): ApprovalPacket {
  * The evaluator and API layer can use this for defensive checks.
  */
 export function validateApprovalPacket(packet: ApprovalPacket): {
-  ok: boolean;
-  errors: string[];
+  ok: boolean
+  errors: string[]
 } {
-  const errors: string[] = [];
+  const errors: string[] = []
 
-  if (!packet.requestId || typeof packet.requestId !== "string") {
-    errors.push("requestId must be a non-empty string.");
+  if (!packet.requestId || typeof packet.requestId !== 'string') {
+    errors.push('requestId must be a non-empty string.')
   }
-  if (!packet.runId || typeof packet.runId !== "string") {
-    errors.push("runId must be a non-empty string.");
+  if (!packet.runId || typeof packet.runId !== 'string') {
+    errors.push('runId must be a non-empty string.')
   }
-  if (
-    typeof packet.step !== "number" ||
-    !Number.isFinite(packet.step) ||
-    packet.step <= 0
-  ) {
-    errors.push("step must be a positive number.");
+  if (typeof packet.step !== 'number' || !Number.isFinite(packet.step) || packet.step <= 0) {
+    errors.push('step must be a positive number.')
   }
 
-  const validCategories: ApprovalCategory[] = [
-    "planner",
-    "builder",
-    "tester",
-    "release",
-  ];
+  const validCategories: ApprovalCategory[] = ['planner', 'builder', 'tester', 'release']
   if (!validCategories.includes(packet.category)) {
     errors.push(
-      "category must be one of: " +
-        validCategories.join(", ") +
-        ". Received: " +
-        packet.category
-    );
+      'category must be one of: ' + validCategories.join(', ') + '. Received: ' + packet.category,
+    )
   }
 
-  const validRisks: ApprovalRisk[] = ["low", "medium", "high"];
+  const validRisks: ApprovalRisk[] = ['low', 'medium', 'high']
   if (!validRisks.includes(packet.risk)) {
-    errors.push(
-      "risk must be one of: " +
-        validRisks.join(", ") +
-        ". Received: " +
-        packet.risk
-    );
+    errors.push('risk must be one of: ' + validRisks.join(', ') + '. Received: ' + packet.risk)
   }
 
-  const validActions: ApprovalSuggestedAction[] = [
-    "auto-approve",
-    "reject",
-    "revise",
-    "ask-human",
-  ];
+  const validActions: ApprovalSuggestedAction[] = ['auto-approve', 'reject', 'revise', 'ask-human']
   if (!validActions.includes(packet.suggestedAction)) {
     errors.push(
-      "suggestedAction must be one of: " +
-        validActions.join(", ") +
-        ". Received: " +
-        packet.suggestedAction
-    );
+      'suggestedAction must be one of: ' +
+        validActions.join(', ') +
+        '. Received: ' +
+        packet.suggestedAction,
+    )
   }
 
   if (!Array.isArray(packet.reasons)) {
-    errors.push("reasons must be an array.");
+    errors.push('reasons must be an array.')
   }
   if (!Array.isArray(packet.hints)) {
-    errors.push("hints must be an array.");
+    errors.push('hints must be an array.')
   }
 
-  if (typeof packet.payload !== "object" || packet.payload === null) {
-    errors.push("payload must be a non-null object.");
+  if (typeof packet.payload !== 'object' || packet.payload === null) {
+    errors.push('payload must be a non-null object.')
   }
 
   return {
     ok: errors.length === 0,
     errors,
-  };
+  }
 }
 
 /**
@@ -213,10 +185,8 @@ export function validateApprovalPacket(packet: ApprovalPacket): {
  * Useful at API boundaries or critical pipeline junctions.
  */
 export function assertValidApprovalPacket(packet: ApprovalPacket): void {
-  const result = validateApprovalPacket(packet);
+  const result = validateApprovalPacket(packet)
   if (!result.ok) {
-    throw new Error(
-      "Invalid ApprovalPacket: " + result.errors.join(" | ")
-    );
+    throw new Error('Invalid ApprovalPacket: ' + result.errors.join(' | '))
   }
 }
