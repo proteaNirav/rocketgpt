@@ -15,7 +15,19 @@ const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
  * Secured via x-rgpt-internal header.
  */
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
+  try {
+    await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
+  } catch (e: any) {
+    return NextResponse.json(
+      {
+        success: false,
+        error_code: "RUNTIME_GUARD_BLOCKED",
+        message: "Blocked by runtime guard.",
+        reason: String(e?.message ?? e),
+      },
+      { status: 403 }
+    );
+  }
   // Enforce internal key
   if (INTERNAL_KEY) {
     const hdr = req.headers.get("x-rgpt-internal") ?? "";
@@ -43,4 +55,5 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     { status: 200 }
   );
 }
+
 

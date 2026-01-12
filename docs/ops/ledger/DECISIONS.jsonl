@@ -1,0 +1,1 @@
+{"decision_id":"smoke_3c3ee6e01f13431984f8b04776fbbe5d","approved":true,"status":"approved","policy_snapshot":"localdev_policy_91ee0b18ba084e4a978e16af27209f4f","created_at":"2026-01-12T03:48:13.6403550Z","expires_utc":"2026-01-12T15:48:13.6486228Z","actor_type":"local-dev","actor_id":"smoke","reason":"local dev smoke decision for admin safe-mode"}

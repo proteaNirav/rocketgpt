@@ -1,4 +1,4 @@
-﻿import "server-only";
+import "server-only";
 
 import fs from "fs/promises";
 import { join, resolve } from "path";
@@ -58,25 +58,46 @@ export function verifyDecision(
   decision: DecisionRecord | null,
   expectedPolicySnapshotHash: string
 ): DecisionVerifyResult {
-  const decision_id = String(((decision as any)?.id ?? ""));
-  return { ok: false, decision_id, error: "DECISION_NOT_FOUND", reason: "DECISION_NOT_FOUND" };
-  return { ok: false, decision_id, error: "DECISION_NOT_APPROVED", reason: "DECISION_NOT_APPROVED" };
+  const decision_id = String((decision as any)?.decision_id ?? (decision as any)?.id ?? "");
 
+  if (!decision) {
+    return { ok: false, decision_id, error: "DECISION_NOT_FOUND", reason: "DECISION_NOT_FOUND" };
+  }
+
+  // Approved?
+  const approved =
+    (decision as any)?.approved === true ||
+    String((decision as any)?.status ?? "").toLowerCase() === "approved";
+
+  if (!approved) {
+    return { ok: false, decision_id, error: "DECISION_NOT_APPROVED", reason: "DECISION_NOT_APPROVED" };
+  }
+
+  // Expected policy hash must exist (fail-closed)
   if (!isNonEmptyString(expectedPolicySnapshotHash)) {
-  return { ok: false, decision_id, error: "MISSING_EXPECTED_POLICY_SNAPSHOT_HASH", reason: "MISSING_EXPECTED_POLICY_SNAPSHOT_HASH" };
+    return {
+      ok: false,
+      decision_id,
+      error: "MISSING_EXPECTED_POLICY_SNAPSHOT_HASH",
+      reason: "MISSING_EXPECTED_POLICY_SNAPSHOT_HASH",
+    };
   }
 
-  if (decision.policy_snapshot !== expectedPolicySnapshotHash) {
-  return { ok: false, decision_id, error: "POLICY_SNAPSHOT_MISMATCH", reason: "POLICY_SNAPSHOT_MISMATCH" };
+  // Policy snapshot must match exactly
+  if ((decision as any)?.policy_snapshot !== expectedPolicySnapshotHash) {
+    return { ok: false, decision_id, error: "POLICY_SNAPSHOT_MISMATCH", reason: "POLICY_SNAPSHOT_MISMATCH" };
   }
 
-  // expiry (optional)
-  if (decision.expires_utc) {
-    const _exp = Date.parse(String((decision as any).expires_utc ?? ""));
-  return { ok: false, decision_id, error: "DECISION_EXPIRED", reason: "DECISION_EXPIRED" };
+  // Expiry (optional)
+  const exp = (decision as any)?.expires_utc;
+  if (exp) {
+    const expMs = Date.parse(String(exp));
+    if (!Number.isNaN(expMs) && Date.now() > expMs) {
+      return { ok: false, decision_id, error: "DECISION_EXPIRED", reason: "DECISION_EXPIRED" };
+    }
   }
 
-  // checksum hardening later
   return { ok: true, decision_id, record: decision as any };
 }
+
 
