@@ -54,7 +54,7 @@ jobs:
 
           try { $u = [System.Uri]::new($url) } catch { throw "Invalid SUPABASE_DB_POOLER_URL format" }
 
-          $host = $u.Host
+          $pgHost = $u.Host
           $port = if ($u.Port -gt 0) { $u.Port } else { 5432 }
           $db   = $u.AbsolutePath.TrimStart("/")
           if (-not $db) { throw "Database name missing in SUPABASE_DB_POOLER_URL" }
@@ -68,17 +68,17 @@ jobs:
 
           # Create .pgpass so password is not in args/logs
           $pgpassPath = Join-Path $env:RUNNER_TEMP ".pgpass"
-          $pgpassLine = "$host`:$port`:$db`:$user`:$pass"
+          $pgpassLine = "$pgHost`:$port`:$db`:$user`:$pass"
           Set-Content -Path $pgpassPath -Value $pgpassLine -Encoding ASCII
           if ($IsLinux -or $IsMacOS) { & chmod 600 $pgpassPath | Out-Null }
 
           $env:PGPASSFILE = $pgpassPath
-          $env:PGHOST     = $host
+          $env:PGHOST     = $pgHost
           $env:PGPORT     = "$port"
           $env:PGDATABASE = $db
           $env:PGUSER     = $user
 
-          $conn = "host=$host port=$port dbname=$db user=$user sslmode=require"
+          $conn = "host=$pgHost port=$port dbname=$db user=$user sslmode=require"
 
           $outRows = psql "$conn" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t
           if ($LASTEXITCODE -ne 0) { throw "psql failed with exit code $LASTEXITCODE" }
