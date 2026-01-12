@@ -88,7 +88,7 @@ if (Test-Path $tmpErr) { Remove-Item $tmpErr -Force -ErrorAction SilentlyContinu
 $outRows = psql "$conn" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t 2> $tmpErr
 $code = $LASTEXITCODE
 
-# --- If password auth failed AND SUPABASE_DB_PASSWORD exists, retry once using that password ---
+          # --- If password auth failed AND SUPABASE_DB_PASSWORD exists, retry once using that password ---
 if ($code -ne 0) {
   $errText = ""
   if (Test-Path $tmpErr) { $errText = (Get-Content $tmpErr -Raw) }
@@ -107,8 +107,8 @@ if ($code -ne 0) {
     if (Test-Path $tmpErr) { Remove-Item $tmpErr -Force -ErrorAction SilentlyContinue }
     $outRows = psql "$conn" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t 2> $tmpErr
     $code = $LASTEXITCODE
-  }
-}
+            }
+          }
 
 if ($code -ne 0) { throw "psql failed with exit code $code" }
           if ($LASTEXITCODE -ne 0) { throw "psql failed with exit code $LASTEXITCODE" }
