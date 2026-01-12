@@ -34,6 +34,7 @@ jobs:
         shell: pwsh
         env:
           SUPABASE_DB_POOLER_URL: ${{ secrets.SUPABASE_DB_POOLER_URL }}
+  SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           $ErrorActionPreference = "Stop"
 
@@ -80,7 +81,36 @@ jobs:
 
           $conn = "host=$pgHost port=$port dbname=$db user=$user sslmode=require"
 
-          $outRows = psql "$conn" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t
+          # --- Run psql (capture stderr) ---
+$tmpErr = Join-Path $env:RUNNER_TEMP "rgpt_db_guard_psql_err.txt"
+if (Test-Path $tmpErr) { Remove-Item $tmpErr -Force -ErrorAction SilentlyContinue }
+
+$outRows = psql "$conn" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t 2> $tmpErr
+$code = $LASTEXITCODE
+
+# --- If password auth failed AND SUPABASE_DB_PASSWORD exists, retry once using that password ---
+if ($code -ne 0) {
+  $errText = ""
+  if (Test-Path $tmpErr) { $errText = (Get-Content $tmpErr -Raw) }
+
+  $authFail = ($errText -match "password authentication failed")
+  $hasAltPw = ([string]::IsNullOrWhiteSpace($env:SUPABASE_DB_PASSWORD) -eq $false)
+
+  if ($authFail -and $hasAltPw) {
+    Write-Host "[WARN] psql auth failed using password from URL; retrying with SUPABASE_DB_PASSWORD secret..." -ForegroundColor Yellow
+
+    # Rewrite pgpass using alternate password
+    $altPw = $env:SUPABASE_DB_PASSWORD
+    $pgpassLine2 = "$pgHost`:$port`:$db`:$user`:$altPw"
+    Set-Content -Path $pgpassPath -Value $pgpassLine2 -Encoding ASCII
+
+    if (Test-Path $tmpErr) { Remove-Item $tmpErr -Force -ErrorAction SilentlyContinue }
+    $outRows = psql "$conn" -v ON_ERROR_STOP=1 -f $sqlFile -P pager=off -A -t 2> $tmpErr
+    $code = $LASTEXITCODE
+  }
+}
+
+if ($code -ne 0) { throw "psql failed with exit code $code" }
           if ($LASTEXITCODE -ne 0) { throw "psql failed with exit code $LASTEXITCODE" }
 
           if ($outRows -and $outRows.Trim().Length -gt 0) {
