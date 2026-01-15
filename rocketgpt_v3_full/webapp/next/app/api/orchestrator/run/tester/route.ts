@@ -1,10 +1,10 @@
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
-
 import { NextRequest, NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 import { withOrchestratorHandler } from "../../_utils/orchestratorError";
 import { safeModeGuard } from "../../_core/safeMode";
+import { safeParseJson, pickRunId, buildProxyBody } from "../../_core/dispatchGuard";
 export const runtime = "nodejs";
 
 
@@ -29,23 +29,8 @@ function summarizeBody(body: unknown): string {
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-  const url = new URL(req.url);
-
-  const headerRunId = req.headers.get("x-rgpt-run-id") ?? undefined;
-  const queryRunId = url.searchParams.get("run_id") ?? undefined;
-
-  let body: any = {};
-  try {
-    body = (await req.json()) as any;
-  } catch {
-    body = {};
-  }
-
-  const bodyRunId: string | undefined = body.run_id ?? body.runId ?? undefined;
-
-  const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID();
-
-  // Safe-Mode guard â€“ block orchestrator run/tester when enabled
+  const body = await safeParseJson(req);
+  const runId = pickRunId(req, body);
   try {
     safeModeGuard("run-tester");
   } catch (err: any) {
@@ -88,10 +73,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         bodySummary: summarizeBody(body),
       });
 
-      const testerBody = {
-        ...body,
-        run_id: runId,
-      };
+      const testerBody = buildProxyBody(body, runId);
 
       const testerUrl = `${INTERNAL_BASE_URL}/api/tester/run`;
 
