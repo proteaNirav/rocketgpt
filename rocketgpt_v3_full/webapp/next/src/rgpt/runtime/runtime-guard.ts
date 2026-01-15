@@ -1,5 +1,5 @@
-﻿/* =========================================================
- * RGPT-S4 — Runtime Guard (Decision Ledger Enforcement)
+/* =========================================================
+ * RGPT-S4 Ã¢â‚¬â€ Runtime Guard (Decision Ledger Enforcement)
  * FAIL-CLOSED BY DESIGN
  * ========================================================= */
 import { loadDecisionById, verifyDecision } from "../ledger/decision-ledger";
@@ -12,6 +12,17 @@ export interface RuntimeDecisionContext {
 export async function enforceRuntimeDecision(
   ctx: RuntimeDecisionContext
 ): Promise<void> {
+  // DEV BYPASS (explicitly gated):
+  // Allows local probing with decision ids like dev-probe-* ONLY when RGPT_ALLOW_DEV_DECISIONS=1
+  if (process.env.RGPT_ALLOW_DEV_DECISIONS === "1") {
+    const isDev = (process.env.NODE_ENV !== "production");
+    const did = (ctx?.decision_id ?? "").trim();
+    const isDevProbe = did.startsWith("dev-probe-");
+    if (isDev && isDevProbe) {
+      return; // treat as allowed in local/dev only
+    }
+  }
+
   if (!ctx || !ctx.decision_id) {
     throw new Error("RGPT_GUARD_BLOCK: MISSING_DECISION_ID");
   }
@@ -28,7 +39,7 @@ export async function enforceRuntimeDecision(
     throw new Error(`RGPT_GUARD_BLOCK: ${(result as any).error ?? (result as any).reason}`);
   }
 
-  // Decision is approved and valid — execution may proceed
+  // Decision is approved and valid Ã¢â‚¬â€ execution may proceed
 }
 
 
