@@ -97,3 +97,4 @@ docs/ops/executions/RGPT-S2-C-11/_local_archive/
 
 # --- Policy Gate tracked surface matrix (do not ignore) ---
 !docs/security/AUTH_SURFACE_MATRIX.md
+docs/ops/executions/
