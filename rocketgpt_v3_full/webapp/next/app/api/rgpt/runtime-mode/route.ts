@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ledgerUpsertExecution } from "@/rgpt/ledger/runtime-ledger";
 import { enforceRuntimeDecision } from "@/rgpt/runtime/runtime-guard";
 
@@ -44,8 +44,7 @@ export const runtime = "nodejs";
 export async function GET(req: NextRequest) {
   void rgptTryLedger("GET");
   
-  void rgptTryLedger('GET');
-const decision_id = req.headers.get("x-rgpt-decision-id") ?? "";
+  const decision_id = req.headers.get("x-rgpt-decision-id") ?? "";
 
   if (!decision_id) {
     return NextResponse.json(
@@ -65,9 +64,40 @@ const decision_id = req.headers.get("x-rgpt-decision-id") ?? "";
 
   return NextResponse.json({ ok: true, guarded: true, decision_id }, { status: 200 });
 }
+export async function POST(req: NextRequest) {
+  void rgptTryLedger("POST");
 
+  const decision_id = req.headers.get("x-rgpt-decision-id") ?? "";
+  if (!decision_id) {
+    return NextResponse.json(
+      { ok: false, error: "MISSING_DECISION_ID" },
+      { status: 400 }
+    );
+  }
 
+  try {
+    await enforceRuntimeDecision({ decision_id });
+  } catch (e: any) {
+    return NextResponse.json(
+      { ok: false, error: "RUNTIME_GUARD_BLOCKED", reason: String(e?.message ?? e) },
+      { status: 403 }
+    );
+  }
 
+  let body: any;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: "INVALID_JSON_BODY" },
+      { status: 400 }
+    );
+  }
 
+  // Expect { safeMode: boolean }
+  const safeMode = typeof body?.safeMode === "boolean" ? body.safeMode : false;
 
-
+  // Note: This endpoint is a guard-validated probe/echo.
+  // The actual SAFE toggle is handled by admin routes (safe-mode/enable|disable).
+  return NextResponse.json({ ok: true, safeMode, decision_id }, { status: 200 });
+}
