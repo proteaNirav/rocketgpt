@@ -7,6 +7,7 @@ export const fetchCache = "force-no-store";
 import { NextRequest, NextResponse } from "next/server";
 import { withOrchestratorHandler } from "../../_utils/orchestratorError";
 import { safeModeGuard } from "../../_core/safeMode";
+import { safeParseJson, pickRunId, buildProxyBody } from "../../_core/dispatchGuard";
 import { enforceControlPlane } from '@/src/control-plane/control-gate';
 import { recordDecision } from '@/src/decision-ledger/decision-ledger';
 import { ExecutionContext } from '@/src/types/execution-context';
@@ -86,24 +87,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (!control.allowed) {
     return NextResponse.json({ success: false, error: control.reason ?? 'Blocked by Control Plane' }, { status: 403 });
   }
-
-  const url = new URL(req.url);
-
-  const headerRunId = req.headers.get("x-rgpt-run-id") ?? undefined;
-  const queryRunId = url.searchParams.get("run_id") ?? undefined;
-
-  let body: any = {};
-  try {
-    body = (await req.json()) as any;
-  } catch {
-    body = {};
-  }
-
-  const bodyRunId: string | undefined = body.run_id ?? body.runId ?? undefined;
-
-  const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID();
-
-  // P4-A1: Decision Ledger (local-first JSONL) â€” planner started (best-effort)
+  const body = await safeParseJson(req);
+  const runId = pickRunId(req, body);
   try {
     const __ledgerDecisionId = crypto.randomUUID();
     const __ledgerNow = new Date().toISOString();
@@ -150,7 +135,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   } catch {
     // Never block planner if ledger write fails
   }
-  // Safe-Mode guard â€“ block orchestrator run/planner when enabled
   try {
     safeModeGuard("run-planner");
   } catch (err: any) {
@@ -193,10 +177,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         bodySummary: summarizeBody(body),
       });
 
-      const plannerBody = {
-        ...body,
-        run_id: runId,
-      };
+      const plannerBody = buildProxyBody(body, runId);
 
       const plannerUrl = `${INTERNAL_BASE_URL}/api/planner`;
 
