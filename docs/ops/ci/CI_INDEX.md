@@ -64,13 +64,14 @@ These are known to be phase-specific or placeholders and should be reviewed for 
 
 | Workflow file | Triggers (summary) | Planned action |
 |---|---|---|
-| p3-safemode-gate.yml | push, pull_request, workflow_dispatch | Review overlap with policy_gate + safe-mode |
-| v4_ship_placeholder.yml | workflow_dispatch | Replace or archive |
-| _selfimprove_ingest_ci.yml | workflow_dispatch | Confirm necessity; rename or archive |
+| safemode-gate.yml | push, pull_request, workflow_dispatch | Review overlap with policy_gate + safe-mode |
+| (archived: v4_ship_placeholder.yml) | workflow_dispatch | Replace or archive |
+| selfimprove_ingest_ci.yml | workflow_dispatch | Confirm necessity; rename or archive |
 
 ## Archive Policy
 
 - Backup files (e.g., *.bak*) must not be stored in .github/workflows.
 - Archived workflows must be moved to: docs/ops/ci-archive/RGPT-S16/ with a short rationale note.
+
 
 
