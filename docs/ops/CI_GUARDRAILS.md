@@ -90,7 +90,7 @@ pwsh .github/tools/ci/detect-bom.ps1 -Paths @(".github/workflows") -Fix
 
 ### 5. Safe-Mode Enforcement Gate
 
-**Enforcement**: `p3-safemode-gate.yml` → `Safe-Mode Gate` step
+**Enforcement**: `safemode-gate.yml` → `Safe-Mode Gate` step
 
 **Rule**: When `SAFE_MODE=1`, the `/api/orchestrator/builder/execute-all` endpoint **must** return 4xx (blocked).
 
@@ -338,3 +338,4 @@ Guardrails must be:
 **Last Updated**: 2025-12-23
 **Owner**: RocketGPT DevOps Team
 **Version**: 1.0
+

@@ -26,7 +26,7 @@ These workflows automate repo operations and developer productivity. They must n
 | Workflow file | Purpose | Triggers (summary) |
 |---|---|---|
 | auto_fix_policy.yml | Auto-fix policy (manual) | workflow_dispatch |
-| auto_update_policy.yml | Update policy modes (manual) | workflow_dispatch |
+| auto_fix_policy_update.yml | Update policy modes (manual) | workflow_dispatch |
 | auto-merge.yml | Event-driven merge | repository_dispatch |
 | auto-update-pr.yml | Auto update PR branches | push, schedule |
 | branch-sync.yml | Sync branches | push, schedule |
@@ -72,6 +72,7 @@ These are known to be phase-specific or placeholders and should be reviewed for 
 
 - Backup files (e.g., *.bak*) must not be stored in .github/workflows.
 - Archived workflows must be moved to: docs/ops/ci-archive/RGPT-S16/ with a short rationale note.
+
 
 
 
