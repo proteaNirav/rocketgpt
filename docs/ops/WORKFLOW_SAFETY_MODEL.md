@@ -163,10 +163,10 @@ Write-Host "execution_mode=DIFF_ONLY"
 | notify.yml | 2 | read | N/A | N/A | ❌ | ✅ (Slack/Teams) |
 | _selfimprove_ingest_ci.yml | 3 | read | ✅ | ✅ | ❌ | ✅ (Supabase) |
 | nightly-self-eval.yml | 2 | read | N/A | N/A | ❌ | ✅ (Supabase) |
-| p3-safemode-gate.yml | 1 | read | N/A | N/A | ❌ | ❌ |
+| safemode-gate.yml | 1 | read | N/A | N/A | ❌ | ❌ |
 | pr-checks.yml | 1 | read | N/A | N/A | ❌ | ❌ |
 | self_heal.yml | 4 | read | N/A | N/A | ❌ | ❌ (stub) |
-| self_heal_hooks.yml | 1 | read | N/A | N/A | ❌ | ❌ |
+| self_heal.yml | 1 | read | N/A | N/A | ❌ | ❌ |
 | self_improve.yml | 4 | read+write | N/A | N/A | 🚧 (future) | 🚧 (future) |
 | text-guard.yml | 1 | read | N/A | N/A | ❌ | ❌ |
 | v4_ship_placeholder.yml | 4 | read | N/A | N/A | ❌ | ❌ (stub) |
@@ -222,3 +222,4 @@ This safety model must be:
 **Last Updated**: 2025-12-23
 **Owner**: RocketGPT DevOps Team
 **Version**: 1.0
+

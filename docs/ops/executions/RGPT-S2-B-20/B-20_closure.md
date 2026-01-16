@@ -9,7 +9,8 @@
 - Added workflow_dispatch to ci.yml (manual run enabled)
 
 ## Notes
-- unit-tests.yml / rgpt-ci-with-ledger.yml / _temp_bad.yml are not present in current HEAD; task was re-scoped to current workflows.
+- unit-tests.yml / policy_gate.yml / _temp_bad.yml are not present in current HEAD; task was re-scoped to current workflows.
 
 ## Evidence
 - docs/ops/executions/RGPT-S2-B-20/B-20_evidence.md
+

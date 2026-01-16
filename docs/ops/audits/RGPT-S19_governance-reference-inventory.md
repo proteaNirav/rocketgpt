@@ -198,7 +198,7 @@ Workflow files present: 36
   - L14: group: policy_gate-${{ github.ref }}
   - L149: labels="$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "${api}" | jq -r '.[].name' | tr '\n' ' ')"
   - L18: dependabot_policy_gate:
-  - L187: .github/workflows/auto_update_policy.yml|.github/auto-ops.yml)
+  - L187: .github/workflows/auto_fix_policy_update.yml|.github/auto-ops.yml)
   - L19: name: Dependabot Policy Gate
   - L35: pwsh -NoProfile -File .github/tools/policy_gate/validate_auth_surface_matrix.ps1 -AllowlistJson docs/security/generated/RUNTIME_ALLOWLIST.json -MatrixMd docs/security/AUTH_SURFACE_MATRIX.md
   - L39: run: ./.github/tools/security/check_api_surface_drift.ps1
@@ -265,7 +265,7 @@ Workflow files present: 36
 - refs_top:
   - L1: name: Self-Heal Hooks
   - L12: - ".github/tools/**"
-  - L13: - ".github/workflows/self_heal_hooks.yml"
+  - L13: - ".github/workflows/self_heal.yml"
   - L20: name: Probe self-heal tooling
   - L28: if (Test-Path ".github/tools/README.md") {
   - L29: Get-Content ".github/tools/README.md" | Select-Object -First 20
@@ -463,3 +463,4 @@ Top files (max 25):
 - rocketgpt_v3_full\webapp\next\app\api\orchestrator\run\finalize\route.ts - 3
 - rocketgpt_v3_full\webapp\next\app\api\planner\plan\route.ts - 2
 - rocketgpt_v3_full\webapp\next\app\api\sessions\route.ts - 2
+
