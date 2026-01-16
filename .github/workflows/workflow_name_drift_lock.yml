@@ -1,0 +1,29 @@
+name: workflow_name_drift_lock
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - ".github/tools/workflow_guard/**"
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/**"
+      - ".github/tools/workflow_guard/**"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: workflow_name_drift_lock-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  drift_lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce canonical workflow names
+        shell: pwsh
+        run: pwsh -NoProfile -File .github/tools/workflow_guard/enforce_workflow_canonical_names.ps1 -RepoRoot $PWD
