@@ -57,3 +57,4 @@ generate_safety_labels:
     - safe:auto-merge
     - safe:workflow-edit
     - safe:policy-fix
+

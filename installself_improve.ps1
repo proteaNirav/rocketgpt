@@ -127,7 +127,7 @@ name: Watchdog
 
 on:
   workflow_run:
-    workflows: ["AI Codegen", "RocketGPT Ship Issue", "v4_ship_placeholder"]
+    workflows: ["AI Codegen", "RocketGPT Ship Issue"]
     types: [completed]
 
 jobs:
@@ -297,3 +297,4 @@ if ($body -notmatch "Closes #$Issue") {
 gh pr merge $prNum --auto --squash | Out-Null
 
 Write-Host "`nDONE: self-improve, watchdog and safety locks staged on $Branch (PR #$prNum)." -ForegroundColor Green
+
