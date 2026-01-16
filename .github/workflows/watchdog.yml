@@ -1,4 +1,4 @@
-name: Watchdog
+name: watchdog
 
 on:
   workflow_dispatch:
@@ -48,5 +48,6 @@ jobs:
             } catch (e) {
               core.warning('Redispatch failed: ' + e.message);
             }
+
 
 
