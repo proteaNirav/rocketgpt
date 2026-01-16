@@ -25,10 +25,10 @@ ame: values, and blocks reintroduction of historical drift names.
 
 ### S18-B — Governance-adjacent de-dup (rename / harden)
 Renamed:
-- auto_update_policy.yml -> auto_fix_policy_update.yml
+- auto_fix_policy_update.yml -> auto_fix_policy_update.yml
 - self_innovate.yml -> self_improve_innovate.yml
 - selfimprove_ingest_ci.yml -> self_improve_ingest_ci.yml
-- self_heal_hooks.yml -> self_heal_probe.yml
+- self_heal.yml -> self_heal_probe.yml
 - self-redev.yml -> automation_refactor_pr.yml
 
 Hardened:
@@ -57,3 +57,4 @@ Evidence:
 ## Result
 - Canonical governance surface is stable and regression-protected.
 - Non-governance workflows remain allowed (ci.yml, labels.yml, triage.yml, deploy workflows, etc.).
+

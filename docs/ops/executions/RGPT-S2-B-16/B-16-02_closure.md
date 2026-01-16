@@ -1,7 +1,7 @@
 # B-16 — Closure (self_heal_hooks smoke proof)
 
 ## What was validated
-- Workflow: self_heal_hooks.yml
+- Workflow: self_heal.yml
 - Evidence: strict workflow_dispatch created a NEW run and completed successfully.
 
 ## Proof artifacts
@@ -12,4 +12,5 @@
 - CapturedAt: 2025-12-24 06:45:44 +05:30
 - RunId: 20475441252
 - EvidenceCommit: 611d515b
+
 

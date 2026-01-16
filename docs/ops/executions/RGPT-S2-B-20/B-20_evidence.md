@@ -10,10 +10,11 @@
 
 ## Workflows referenced earlier but absent in HEAD (confirmed)
 - .github/workflows/unit-tests.yml (absent in WT + absent in git HEAD)
-- .github/workflows/rgpt-ci-with-ledger.yml (absent in WT + absent in git HEAD)
+- .github/workflows/policy_gate.yml (absent in WT + absent in git HEAD)
 - .github/workflows/_temp_bad.yml (absent in WT + absent in git HEAD)
 
 ## Verification commands (ran on local machine)
 - git cat-file -e HEAD:.github/workflows/unit-tests.yml  => false
-- git cat-file -e HEAD:.github/workflows/rgpt-ci-with-ledger.yml => false
+- git cat-file -e HEAD:.github/workflows/policy_gate.yml => false
 - git cat-file -e HEAD:.github/workflows/_temp_bad.yml => false
+
