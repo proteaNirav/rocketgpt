@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-13 — Policy Gate Hardening (Matrix Ownership + Auto-Update Workflow)
+# RGPT-S2-C-13 — Policy Gate Hardening (Matrix Ownership + Auto-Update Workflow)
 **UTC:** 2026-01-02T05:51:53Z  
 **SHA:** 54e3d033c9fe8b0c150ff18be5e7757ddd7f9579  
 
@@ -22,9 +22,10 @@
 ## Files
 - docs/ops/policy/POLICY_OWNERSHIP_MATRIX.md
 - .github/workflows/policy_gate.yml
-- .github/workflows/auto_update_policy.yml
+- .github/workflows/auto_fix_policy_update.yml
 
 ## Notes
 - L0 artifacts are immutable by policy_gate enforcement.
 - Auto-update workflow is workflow_dispatch only and blocked from L0 edits.
+
 
