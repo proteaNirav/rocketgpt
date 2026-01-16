@@ -1,4 +1,4 @@
-name: _selfimprove_ingest_ci
+name: Self-Improve Ledger Ingest (CI)
 
 # Safety: Self-improve ledger ingest workflow (disabled by default)
 # - Workflow requires manual dispatch with enable='true' to run
