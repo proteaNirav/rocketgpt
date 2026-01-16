@@ -118,7 +118,7 @@ name: Watchdog
 
 on:
   workflow_run:
-    workflows: ["AI Codegen", "RocketGPT Ship Issue", "v4_ship_placeholder"]
+    workflows: ["AI Codegen", "RocketGPT Ship Issue"]
     types: [completed]
 
 jobs:
@@ -281,3 +281,4 @@ Start-Sleep -Seconds 3
 gh run list --workflow "Self Improve" --limit 1 | Out-Host
 
 Write-Host "`nAll set. Self-Improve + Watchdog + Policy Gate are on '$Branch'.`n" -ForegroundColor Green
+

@@ -3,7 +3,7 @@ name: Watchdog
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["AI Codegen", "RocketGPT Ship Issue", "v4_ship_placeholder"]
+    workflows: ["AI Codegen", "RocketGPT Ship Issue"]
     types: [completed]
 
 jobs:
@@ -48,4 +48,5 @@ jobs:
             } catch (e) {
               core.warning('Redispatch failed: ' + e.message);
             }
+
 
