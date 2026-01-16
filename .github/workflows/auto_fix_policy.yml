@@ -1,4 +1,4 @@
-name: Auto Fix Policy and Merge
+name: auto_fix_policy
 
 on:
   workflow_dispatch:
@@ -62,3 +62,4 @@ jobs:
           echo "::group::Run self_improve.yml as smoke"
           gh workflow run self_improve.yml -f reason="auto_fix_policy smoke" || true
           echo "::endgroup::"
+
