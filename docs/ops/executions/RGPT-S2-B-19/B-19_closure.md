@@ -24,5 +24,6 @@
 
 ## Decision
 Proceed with S2 using gated critical workflows, and schedule follow-up hardening:
-1) Add workflow_dispatch to policy_gate.yml, watchdog.yml, unit-tests.yml, rgpt-ci-with-ledger.yml
+1) Add workflow_dispatch to policy_gate.yml, watchdog.yml, unit-tests.yml, policy_gate.yml
 2) Classify and clean deprecated failing workflows (7 found in snapshot)
+
