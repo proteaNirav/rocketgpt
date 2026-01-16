@@ -1,4 +1,4 @@
-name: Self-Improve (v4 Core AI)
+name: self_improve
 
 # STATUS: STUB - Not Functional
 # This workflow is a placeholder for future v4 self-improve engine.
@@ -42,3 +42,4 @@ jobs:
           echo "- [ ] Approval gates"
           echo "- [ ] Human review workflow"
           echo "- [ ] Limited scope testing (docs-only first)"
+
