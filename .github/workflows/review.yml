@@ -277,7 +277,3 @@ jobs:
           echo "::endgroup::"
           test "$STATUS" = "204" || (echo "ERR: merge dispatch failed"; exit 1)
 
-
-
-
-
