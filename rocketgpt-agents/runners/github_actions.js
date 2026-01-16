@@ -88,15 +88,15 @@ async function reviewWithClaude(input) {
     response_format: { type: 'json_object' }
   };
 
-  const resp = await     // Strip OpenAI-only fields for Anthropic Messages API
-    // Anthropic rejects unknown fields like `response_format`.
-    if (body && typeof body === 'object') {
-      delete body.response_format;
-      delete body.function_call;
-      delete body.functions;
-      delete body.tool_choice;
-    }
-fetchFn('https://api.anthropic.com/v1/messages', {
+  // Strip OpenAI-only fields for Anthropic Messages API
+  // Anthropic rejects unknown fields like `response_format`.
+  if (body && typeof body === 'object') {
+    delete body.response_format;
+    delete body.function_call;
+    delete body.functions;
+    delete body.tool_choice;
+  }
+  const resp = await fetchFn('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -209,5 +209,6 @@ fetchFn('https://api.anthropic.com/v1/messages', {
   console.error(err?.stack || String(err));
   process.exit(1);
 });
+
 
 
