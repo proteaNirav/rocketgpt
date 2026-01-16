@@ -25,6 +25,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Guard — Anthropic key present
+        shell: bash
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          test -n "${ANTHROPIC_API_KEY}" || (echo "ERR: ANTHROPIC_API_KEY missing/empty"; exit 1)
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -270,6 +276,8 @@ jobs:
           (command -v jq >/dev/null && jq -C '.' dispatch.merge.resp.json) || cat dispatch.merge.resp.json
           echo "::endgroup::"
           test "$STATUS" = "204" || (echo "ERR: merge dispatch failed"; exit 1)
+
+
 
 
 
