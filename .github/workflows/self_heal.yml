@@ -1,4 +1,4 @@
-name: Self-Heal (v4 Core AI)
+name: self_heal
 
 # STATUS: STUB - Not Functional
 # This workflow is a placeholder for future self-heal functionality.
@@ -42,3 +42,4 @@ jobs:
           echo "- [ ] PR creation workflow"
           echo "- [ ] Human approval required"
           echo "- [ ] Rollback plan"
+
