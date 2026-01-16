@@ -20,7 +20,7 @@
 - .github/workflows/policy_gate.yml
 - .github/workflows/watchdog.yml
 - .github/workflows/unit-tests.yml
-- .github/workflows/rgpt-ci-with-ledger.yml
+- .github/workflows/policy_gate.yml
 
 Action: add workflow_dispatch to allow on-demand post-merge verification runs.
 
@@ -45,3 +45,4 @@ Action: classify each as (A) deprecated -> disable/archive, or (B) required -> f
 - docs/ops/executions/RGPT-S2-B-19/ci_rerun_proof.md
 - docs/ops/executions/RGPT-S2-B-19/ci_rerun_log.txt
 - docs/ops/executions/RGPT-S2-B-19/ci_dispatch_capability.md
+
