@@ -164,7 +164,7 @@ jobs:
       - run: echo 'Define ship logic for v4 here.'
 "@
 
-$path_wf_ship = ".github/workflows/v4_ship_placeholder.yml"
+$path_wf_ship = "docs/ops/ci-archive/RGPT-S16/workflows/v4_ship_placeholder.yml"
 $wf_ship | Out-File -Encoding utf8 -FilePath $path_wf_ship -Force
 $newFiles += $path_wf_ship
 
@@ -218,3 +218,4 @@ if ($stashes) {
 Write-Step "DONE" "Green"
 Write-Host "Branch: $Branch" -ForegroundColor Green
 if ($prUrl) { Write-Host "PR: $prUrl" -ForegroundColor Green }
+
