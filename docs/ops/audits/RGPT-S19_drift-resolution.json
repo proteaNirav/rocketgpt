@@ -1,0 +1,57 @@
+{
+  "run_at": "2026-01-17 01:02:15",
+  "audit_file": "docs/ops/audits/RGPT-S19_governance-reference-inventory.md",
+  "missing_total": 2,
+  "extra_total": 35,
+  "missing": [
+    {
+      "workflow": "auto_update_policy.yml",
+      "status": "RENAMED",
+      "replacement": "auto_fix_policy_update.yml",
+      "note": "Renamed; intent preserved."
+    },
+    {
+      "workflow": "self_heal_hooks.yml",
+      "status": "EVOLVED",
+      "replacement": "self_heal.yml, self_heal_probe.yml",
+      "note": "Capability evolved into current self-heal workflows; verify hook coverage."
+    }
+  ],
+  "extra_first_50": [
+    "auto_fix_policy_update.yml",
+    "auto_fix_policy.yml",
+    "auto-merge.yml",
+    "auto-update-pr.yml",
+    "automation_refactor_pr.yml",
+    "branch-sync.yml",
+    "chat-intake.yml",
+    "ci.yml",
+    "claude_readonly_review.yml",
+    "codegen.yml",
+    "ecosystem-watcher.yml",
+    "knowledge_library_bootstrap.yml",
+    "labels.yml",
+    "nightly-self-eval.yml",
+    "notify.yml",
+    "pr-checks.yml",
+    "review.yml",
+    "rgpt_db_exposure_guard.yml",
+    "safemode-gate.yml",
+    "self_heal_probe.yml",
+    "self_heal.yml",
+    "self_improve_ingest_ci.yml",
+    "self_improve_innovate.yml",
+    "self_improve.yml",
+    "self_infra_evolve.yml",
+    "self_reasoning.yml",
+    "self_research.yml",
+    "self_study.yml",
+    "ship-issue.yml",
+    "text-guard.yml",
+    "triage.yml",
+    "ui-healer.yml",
+    "vercel-throttled-deploy.yml",
+    "watchdog.yml",
+    "workflow_name_drift_lock.yml"
+  ]
+}
