@@ -80,6 +80,7 @@ async function reviewWithClaude(input) {
   ].join('\n');
 
   const body = {
+    model: "claude-3-5-sonnet-20241022",
     model,
     max_tokens: 1200,
     temperature: 0.2,
@@ -209,6 +210,7 @@ async function reviewWithClaude(input) {
   console.error(err?.stack || String(err));
   process.exit(1);
 });
+
 
 
 
