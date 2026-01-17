@@ -16,13 +16,11 @@ export const createSupabaseServerClient = () => {
       cookies: {
         get: (name: string) => cookieStore.get(name)?.value,
         set: () => {},
-        remove: () => {}
+        remove: () => {},
       },
       global: {
-        headers: { ...(guestId ? { 'x-guest-id': guestId } : {}) }
-      }
-    }
+        headers: { ...(guestId ? { 'x-guest-id': guestId } : {}) },
+      },
+    },
   )
 }
-
-

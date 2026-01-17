@@ -1,19 +1,19 @@
-'use client';
-import { useEffect, useState } from "react";
+'use client'
+import { useEffect, useState } from 'react'
 
 export default function DebugAuth() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<any>(null)
 
   useEffect(() => {
-    fetch("/api/edge/quick-responder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: "whoami" })
+    fetch('/api/edge/quick-responder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: 'whoami' }),
     })
-      .then(r => r.json())
-      .then(j => setData(j))
-      .catch(e => setData({ error: e.message }));
-  }, []);
+      .then((r) => r.json())
+      .then((j) => setData(j))
+      .catch((e) => setData({ error: e.message }))
+  }, [])
 
   return (
     <main className="p-6 space-y-4 text-sm">
@@ -25,7 +25,5 @@ export default function DebugAuth() {
         This shows what <b>x-user-id</b> was sent (guest_id or Supabase user.id)
       </p>
     </main>
-  );
+  )
 }
-
-

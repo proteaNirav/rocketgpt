@@ -5,10 +5,9 @@ import { useEffect } from 'react'
 
 // Minimal, explicit client-side init + expose on window
 export default function SentryClientInit() {
-  const safe =
-    (process.env.NEXT_PUBLIC_RGPT_SAFE_MODE ?? process.env.NEXT_PUBLIC_SAFE_MODE ?? '')
-      .toString()
-      .toLowerCase()
+  const safe = (process.env.NEXT_PUBLIC_RGPT_SAFE_MODE ?? process.env.NEXT_PUBLIC_SAFE_MODE ?? '')
+    .toString()
+    .toLowerCase()
 
   const isSafe =
     safe === '1' || safe === 'true' || safe === 'on' || safe === 'safe' || safe === 'safemode'

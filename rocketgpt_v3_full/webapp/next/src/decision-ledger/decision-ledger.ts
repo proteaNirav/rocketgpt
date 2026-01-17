@@ -1,20 +1,17 @@
-import { ExecutionContext } from '@/src/types/execution-context';
+import { ExecutionContext } from '@/src/types/execution-context'
 
 export interface DecisionRecord {
-  executionId: string;
-  allowed: boolean;
-  reason?: string;
-  recordedAt: string;
+  executionId: string
+  allowed: boolean
+  reason?: string
+  recordedAt: string
 }
 
 /**
  * Decision Ledger – V1 (Console visibility only)
  * This will later be replaced by persistent storage.
  */
-export function recordDecision(
-  context: ExecutionContext,
-  decision: DecisionRecord
-): void {
+export function recordDecision(context: ExecutionContext, decision: DecisionRecord): void {
   console.log('[DECISION-LEDGER]', {
     executionId: decision.executionId,
     tenantId: context.tenantId,
@@ -25,9 +22,6 @@ export function recordDecision(
     allowed: decision.allowed,
     reason: decision.reason,
     recordedAt: decision.recordedAt,
-    purpose: context.purpose
-  });
+    purpose: context.purpose,
+  })
 }
-
-
-
