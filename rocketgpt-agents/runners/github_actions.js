@@ -78,9 +78,10 @@ async function reviewWithClaude(input) {
     '',
     'Respond with JSON only.'
   ].join('\n');
+  const modelId = process.env.ANTHROPIC_MODEL || "claude-3-sonnet-20240229";
 
   const body = {
-    model: "claude-3-5-sonnet-20241022",
+    model: modelId,
     
     max_tokens: 1200,
     temperature: 0.2,
@@ -210,6 +211,7 @@ async function reviewWithClaude(input) {
   console.error(err?.stack || String(err));
   process.exit(1);
 });
+
 
 
 
