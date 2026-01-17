@@ -193,7 +193,6 @@ jobs:
             fs.writeFileSync('review_input.json', JSON.stringify(obj, null, 2));
             core.info('âœ… Created review_input.json');
       - name: Anthropic model probe (200 vs 404)
-        if: ${{ steps.engine.outputs.engine == 'anthropic' }}
         env:
           ANTHROPIC_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
         run: |
@@ -305,6 +304,7 @@ jobs:
           (command -v jq >/dev/null && jq -C '.' dispatch.merge.resp.json) || cat dispatch.merge.resp.json
           echo "::endgroup::"
           test "$STATUS" = "204" || (echo "ERR: merge dispatch failed"; exit 1)
+
 
 
 
