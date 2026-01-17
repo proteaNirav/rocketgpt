@@ -283,10 +283,10 @@ jobs:
           OWNER:  ${{ github.repository_owner }}
           REPO:   ${{ github.event.repository.name }}
           PR:     ${{ steps.pr.outputs.number }}
-          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          [ -n "$GH_PAT" ] || { echo "GH_PAT missing"; exit 1; }
+          [ -n "$GITHUB_TOKEN" ] || { echo "GITHUB_TOKEN missing"; exit 1; }
           echo "::group::Dispatch Merge Request"
           PAYLOAD=$(jq -n --argjson n "$PR" '{event_type:"merge", client_payload:{pr_number:$n}}')
           echo "$PAYLOAD" | jq -C .
@@ -294,7 +294,7 @@ jobs:
           echo "::endgroup::"
 
           STATUS=$(curl -s -o dispatch.merge.resp.json -w "%{http_code}" \
-            -X POST -H "Authorization: Bearer ${GH_PAT}" -H "Accept: application/vnd.github+json" \
+            -X POST -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "https://api.github.com/repos/${OWNER}/${REPO}/dispatches" \
             -d "$PAYLOAD")
@@ -304,10 +304,4 @@ jobs:
           (command -v jq >/dev/null && jq -C '.' dispatch.merge.resp.json) || cat dispatch.merge.resp.json
           echo "::endgroup::"
           test "$STATUS" = "204" || (echo "ERR: merge dispatch failed"; exit 1)
-
-
-
-
-
-
 
