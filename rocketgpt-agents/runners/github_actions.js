@@ -1,4 +1,21 @@
 #!/usr/bin/env node
+
+function resolveAnthropicModelCandidates(preferredModel) {
+  const base = [
+    preferredModel,
+    "claude-3-5-sonnet-latest",
+    "claude-3-5-sonnet-20240620",
+    "claude-3-opus-latest",
+    "claude-3-sonnet-latest",
+    "claude-3-haiku-latest"
+  ].filter(Boolean);
+  return [...new Set(base)];
+}
+
+function isAnthropicModelNotFound(errText) {
+  const t = (errText || "").toLowerCase();
+  return t.includes("not_found_error") || t.includes("404 not found") || t.includes("model:");
+}
 /**
  * RocketGPT GitHub Actions runner
  *
@@ -78,9 +95,11 @@ async function reviewWithClaude(input) {
     '',
     'Respond with JSON only.'
   ].join('\n');
+  const modelId = process.env.ANTHROPIC_MODEL || process.env.CLAUDE_MODEL || "claude-3-5-sonnet-latest";
 
   const body = {
-    model,
+    model: modelId,
+    
     max_tokens: 1200,
     temperature: 0.2,
     system: systemPrompt,
@@ -88,6 +107,14 @@ async function reviewWithClaude(input) {
     response_format: { type: 'json_object' }
   };
 
+  // Strip OpenAI-only fields for Anthropic Messages API
+  // Anthropic rejects unknown fields like `response_format`.
+  if (body && typeof body === 'object') {
+    delete body.response_format;
+    delete body.function_call;
+    delete body.functions;
+    delete body.tool_choice;
+  }
   const resp = await fetchFn('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -195,9 +222,18 @@ async function reviewWithClaude(input) {
       break;
     }
   }
-
-  process.exit(0);
+  return;
 })().catch(err => {
   console.error(err?.stack || String(err));
   process.exit(1);
 });
+
+
+
+
+
+
+
+
+
+
