@@ -48,6 +48,7 @@ jobs:
             exit 1
           fi
           echo "[AUTO-UPDATE] Clean working tree confirmed."
+
       - name: Apply update (L1-only)
         shell: bash
         run: |
@@ -100,6 +101,7 @@ jobs:
           if [ "$bad" -ne 0 ]; then
             exit 1
           fi
+
       - name: Enforce L0 immutability
         shell: bash
         run: |
@@ -145,15 +147,27 @@ jobs:
 
       - name: Commit evidence
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           set -euo pipefail
+
+          # Hard fail if PAT missing (this is the S20C dispatch auth fix)
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::error::GH_TOKEN / secrets.GH_PAT is not set"
+            exit 1
+          fi
+
           if [ -z "$(git status --porcelain)" ]; then
             echo "[AUTO-UPDATE] Nothing to commit."
             exit 0
           fi
+
           git config user.name "rgpt-bot"
           git config user.email "rgpt-bot@users.noreply.github.com"
+
           git add -A
           git commit -m "ops(auto-update): record controlled auto-update evidence"
-          git push
 
+          # Push with PAT-backed GH_TOKEN (prevents auth failure when workflows/dispatch involved)
+          git push
