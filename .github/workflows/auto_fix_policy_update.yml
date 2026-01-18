@@ -1,4 +1,4 @@
-name: Auto Update Policy (Controlled)
+﻿name: Auto Update Policy (Controlled)
 
 on:
   workflow_dispatch:
@@ -30,7 +30,8 @@ jobs:
   auto_update:
     name: Controlled Auto-Update
     runs-on: ubuntu-latest
-
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -202,3 +203,4 @@ jobs:
               --title "${title}" \
               --body "${body}"
           fi
+
