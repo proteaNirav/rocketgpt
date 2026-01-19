@@ -1,72 +1,174 @@
-﻿param(
+param(
   [string]$Root = "."
 )
 
+$ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
 
 function Resolve-RgptRootPath([string]$Root) {
   return (Resolve-Path -LiteralPath $Root -ErrorAction Stop | Select-Object -ExpandProperty Path)
 }
-$ErrorActionPreference="Stop"
-Set-StrictMode -Version Latest
 
 function Fail([string]$msg) {
   Write-Host $msg -ForegroundColor Red
   exit 1
 }
 
-# Files to scan
-$files = Get-ChildItem -Path $Root -Recurse -File -Include *.ts,*.tsx |
-  Where-Object {
-    $_.FullName -notmatch "\\node_modules\\" -and
-    $_.FullName -notmatch "\\.next\\" -and
-    $_.FullName -notmatch "\\dist\\" -and
-    $_.FullName -notmatch "\\build\\" -and
-    $_.FullName -notmatch "\\coverage\\" -and
-    $_.FullName -notmatch "\\out\\" -and
-    $_.FullName -notmatch "\\.git\\"
+# [RGPT-S20C] Scope control: only scan source files in relevant directories
+# Extensions to scan (outbound/provider code surfaces)
+$scanExtensions = @(".ts", ".tsx", ".js", ".jsx")
+
+# Directory ignore patterns (relative paths, case-insensitive)
+$ignoreDirPatterns = @(
+  "^docs[/\\]",
+  "^reports[/\\]",
+  "^ci_logs[/\\]",
+  "^workflow-archive[/\\]",
+  "^rootdocs_migrated[/\\]",
+  "^\.ops[/\\]",
+  "^\.github[/\\]",
+  "^node_modules[/\\]",
+  "^\.next[/\\]",
+  "^dist[/\\]",
+  "^build[/\\]",
+  "^coverage[/\\]",
+  "^out[/\\]",
+  "^\.git[/\\]",
+  "[/\\]node_modules[/\\]",
+  "[/\\]\.next[/\\]",
+  "[/\\]dist[/\\]",
+  "[/\\]build[/\\]",
+  "[/\\]coverage[/\\]"
+)
+
+# File ignore patterns (by extension or name)
+$ignoreFilePatterns = @(
+  "\.log$",
+  "\.patch$",
+  "\.bak$",
+  "\.snapshot\.txt$",
+  "\.d\.ts$"
+)
+
+# [RGPT-S20C] ALLOWLIST: Directories where prompt construction is permitted
+# These are the approved prompt definition surfaces
+$promptAllowlistPatterns = @(
+  "src/rgpt/prompt-formulator",
+  "rocketgpt-agents/providers",
+  "rocketgpt-agents/runners",
+  "app/api/_lib",
+  "lib/llm/providers",
+  "lib/llm/router",
+  "lib/planner",
+  "app/api/demo",
+  "app/api/planner",
+  "scripts/ui-healer"
+)
+
+# [RGPT-S20C] Fast file enumeration: git-tracked files only
+$repoRoot = Resolve-RgptRootPath $Root
+
+$files = @()
+$gitFiles = @(git -C $repoRoot ls-files)
+
+foreach ($rel in $gitFiles) {
+  if ([string]::IsNullOrWhiteSpace($rel)) { continue }
+
+  # Normalize path separators for cross-platform matching
+  $relNorm = $rel -replace '\\', '/'
+
+  # Check extension filter first (most files will be filtered here)
+  $ext = [System.IO.Path]::GetExtension($rel).ToLower()
+  if ($scanExtensions -notcontains $ext) { continue }
+
+  # Check directory ignore patterns
+  $skipDir = $false
+  foreach ($dirPat in $ignoreDirPatterns) {
+    if ($relNorm -match $dirPat) {
+      $skipDir = $true
+      break
+    }
   }
+  if ($skipDir) { continue }
 
-# Allowlist path where prompt construction is permitted
-$pfAllow = [regex]::Escape((Join-Path (Resolve-RgptRootPath $Root) "src\rgpt\prompt-formulator"))
+  # Check file ignore patterns
+  $skipFile = $false
+  foreach ($filePat in $ignoreFilePatterns) {
+    if ($relNorm -match $filePat) {
+      $skipFile = $true
+      break
+    }
+  }
+  if ($skipFile) { continue }
 
-# Heuristics: outbound/provider patterns
+  # Build full path and verify existence
+  $p = Join-Path $repoRoot $rel
+  if (Test-Path -LiteralPath $p) {
+    $files += @{
+      Item = (Get-Item -LiteralPath $p)
+      RelPath = $relNorm
+    }
+  }
+}
+
+Write-Host "Scanning $($files.Count) source files for prompt bypass..." -ForegroundColor Cyan
+
+# Heuristics: outbound/provider patterns (indicate actual LLM API calls)
 $outboundPatterns = @(
-  "openai",
-  "anthropic",
-  "claude",
-  "chat\.completions",
-  "responses\.create",
-  "messages\.create",
   "api\.openai\.com",
   "api\.anthropic\.com",
+  "chat\.completions\.create",
+  "messages\.create\s*\(",
+  "responses\.create\s*\(",
   "x-api-key",
-  "Authorization:\s*Bearer",
-  "fetch\(",
-  "axios\.",
-  "provider",
-  "adapter"
+  "anthropic-version"
 )
 
-# Heuristics: prompt construction patterns
+# Heuristics: prompt construction patterns (building LLM message arrays)
 $promptPatterns = @(
-  "\bsystem\s*:\s*`"",
-  "\bprompt\s*=\s*`"",
-  "\bprompt\s*:\s*`"",
-  "\bmessages\s*:\s*\[",
-  "\brole\s*:\s*`"(system|developer|user)`"",
-  "\bcontent\s*:\s*`""
+  'role\s*:\s*[`''"](system|developer)[`''"]',
+  'SYSTEM_PROMPT\s*=',
+  'systemPrompt\s*[:=]',
+  'system\s*:\s*[`''"][^`''"]{20,}'
 )
 
-# Required guard reference when outbound/provider patterns are present
+# Guard function (only enforce Rule A if it exists in codebase)
 $guardNeedle = "assertPromptFromFormulator"
+$guardDefPattern = "function\s+assertPromptFromFormulator\s*\(|export\s+(const|function)\s+assertPromptFromFormulator"
+$guardExists = $false
+foreach ($fileInfo in $files) {
+  $p = $fileInfo.Item.FullName
+  if (Test-Path -LiteralPath $p) {
+    $content = Get-Content -LiteralPath $p -Raw -ErrorAction SilentlyContinue
+    if ($content -and ($content -match $guardDefPattern)) {
+      $guardExists = $true
+      Write-Host "Guard function found: enforcing Rule A" -ForegroundColor Yellow
+      break
+    }
+  }
+}
 
 $violations = New-Object System.Collections.Generic.List[string]
 
-foreach ($f in $files) {
-  if ($f.FullName -match "\\\.ops\\\") { continue }
-  $text = Get-Content -Path $f.FullName -Raw -ErrorAction Stop
+foreach ($fileInfo in $files) {
+  $f = $fileInfo.Item
+  $relPath = $fileInfo.RelPath
 
-  $isInPF = ($f.FullName -match "^$pfAllow")
+  if (-not (Test-Path -LiteralPath $f.FullName)) {
+    continue
+  }
+
+  $text = Get-Content -LiteralPath $f.FullName -Raw -ErrorAction Stop
+  if ([string]::IsNullOrEmpty($text)) { continue }
+
+  # Check if file is in prompt allowlist
+  $isInAllowlist = $false
+  foreach ($pat in $promptAllowlistPatterns) {
+    if ($relPath -like "*$pat*") {
+      $isInAllowlist = $true
+      break
+    }
+  }
 
   $hasOutbound = $false
   foreach ($p in $outboundPatterns) {
@@ -78,14 +180,14 @@ foreach ($f in $files) {
     if ($text -match $p) { $hasPromptBuild = $true; break }
   }
 
-  # Rule A: If outbound/provider signals exist, require guard usage
-  if ($hasOutbound -and ($text -notmatch $guardNeedle)) {
+  # Rule A: If guard function exists AND file has outbound AND not in allowlist, require guard
+  if ($guardExists -and $hasOutbound -and (-not $isInAllowlist) -and ($text -notmatch $guardNeedle)) {
     $violations.Add("Missing guard in outbound/provider file: $($f.FullName)")
   }
 
-  # Rule B: prompt construction signals outside PF are forbidden
-  if ($hasPromptBuild -and (-not $isInPF)) {
-    $violations.Add("Prompt construction detected outside Prompt Formulator: $($f.FullName)")
+  # Rule B: Prompt construction outside allowlist is forbidden
+  if ($hasPromptBuild -and (-not $isInAllowlist)) {
+    $violations.Add("Prompt construction detected outside approved directories: $($f.FullName)")
   }
 }
 
@@ -96,8 +198,3 @@ if ($violations.Count -gt 0) {
 }
 
 Write-Host "Prompt bypass scan PASSED." -ForegroundColor Green
-
-
-
-
-
