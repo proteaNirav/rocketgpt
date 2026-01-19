@@ -1,0 +1,26 @@
+{
+  "runMode": "SAFE",
+  "defaults": {
+    "max_tokens": 512,
+    "temperature": 0.2,
+    "latency_ms": 4000,
+    "token_budget": 900
+  },
+  "providers": [
+    { "name": "openai", "enabled": true },
+    { "name": "claude", "enabled": true },
+    { "name": "gemini", "enabled": false }
+  ],
+  "tests": [
+    {
+      "id": "P3-BASIC-01",
+      "fixture": "fixtures/prompt.basic.json",
+      "expect": { "min_length": 50, "schema": "plain_text" }
+    },
+    {
+      "id": "P3-GUARDRAIL-01",
+      "fixture": "fixtures/prompt.guardrail.json",
+      "expect": { "min_length": 30, "schema": "plain_text" }
+    }
+  ]
+}
