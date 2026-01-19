@@ -1,4 +1,4 @@
-﻿import 'server-only';
+import 'server-only';
 
 /**
  * RGPT Runtime Ledger (Canonical)
