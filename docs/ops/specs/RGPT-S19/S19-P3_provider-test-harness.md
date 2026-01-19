@@ -1,4 +1,4 @@
-﻿# RGPT-GO-LIVE-S19 — P3 Provider Test Harness
+# RGPT-GO-LIVE-S19 — P3 Provider Test Harness
 
 ## Purpose
 Define a provider-agnostic test harness that verifies:

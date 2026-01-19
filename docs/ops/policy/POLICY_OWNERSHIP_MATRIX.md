@@ -1,4 +1,4 @@
-﻿# POLICY OWNERSHIP MATRIX
+# POLICY OWNERSHIP MATRIX
 **Status:** Authoritative  
 **Enforced By:** policy_gate  
 **Scope:** RocketGPT Core  

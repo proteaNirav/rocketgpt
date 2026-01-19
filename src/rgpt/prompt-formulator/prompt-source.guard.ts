@@ -1,4 +1,4 @@
-﻿import { FormulatedPrompt } from "./prompt-formulator.contract";
+import { FormulatedPrompt } from "./prompt-formulator.contract";
 
 /**
  * Enforces that prompts sent to providers originate from Prompt Formulator.

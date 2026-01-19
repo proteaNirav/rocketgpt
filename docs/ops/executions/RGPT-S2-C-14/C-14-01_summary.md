@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-14 — CI Failure Triage (Non-blocking) + Auto-Update Dispatch Proof
+# RGPT-S2-C-14 — CI Failure Triage (Non-blocking) + Auto-Update Dispatch Proof
 
 ## Status
 - **State:** DONE

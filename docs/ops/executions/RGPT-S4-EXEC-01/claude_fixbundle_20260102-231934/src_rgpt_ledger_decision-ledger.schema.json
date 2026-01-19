@@ -1,4 +1,4 @@
-﻿{
+{
     "schema_version":  "1.0",
     "description":  "Authoritative Decision Ledger schema for RocketGPT runtime governance",
     "decision_record":  {

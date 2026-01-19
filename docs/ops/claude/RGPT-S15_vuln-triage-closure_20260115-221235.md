@@ -1,4 +1,4 @@
-﻿# RGPT-S15 — Vulnerability Triage Closure
+# RGPT-S15 — Vulnerability Triage Closure
 
 stamp: 20260115-221235
 head: 778723ca6b935a5d940b8e503d2cfe6e38bb01cc

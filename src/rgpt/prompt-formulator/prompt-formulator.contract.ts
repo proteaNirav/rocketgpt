@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RGPT-S19-P2 — Prompt Formulator Contract
  *
  * This interface defines the ONLY allowed way to construct prompts in RocketGPT.

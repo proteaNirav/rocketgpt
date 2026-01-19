@@ -1,4 +1,4 @@
-﻿name: Auto Update Policy (Controlled)
+name: Auto Update Policy (Controlled)
 
 on:
   workflow_dispatch:

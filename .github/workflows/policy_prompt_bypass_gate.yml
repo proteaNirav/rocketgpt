@@ -1,4 +1,4 @@
-﻿name: policy_prompt_bypass_gate
+name: policy_prompt_bypass_gate
 
 on:
   pull_request:

@@ -1,4 +1,4 @@
-﻿# RGPT-GO-LIVE-S19 — P1 Provider Capability Matrix
+# RGPT-GO-LIVE-S19 — P1 Provider Capability Matrix
 
 ## Purpose
 Define a single canonical compatibility matrix for AI providers (OpenAI, Claude, future providers).
