@@ -1,10 +1,11 @@
-﻿function Resolve-RgptRootPath([string]$Root) {
-  return (Resolve-Path -LiteralPath $Root -ErrorAction Stop | Select-Object -ExpandProperty Path)
-}
-param(
+﻿param(
   [string]$Root = "."
 )
 
+
+function Resolve-RgptRootPath([string]$Root) {
+  return (Resolve-Path -LiteralPath $Root -ErrorAction Stop | Select-Object -ExpandProperty Path)
+}
 $ErrorActionPreference="Stop"
 Set-StrictMode -Version Latest
 
@@ -94,5 +95,6 @@ if ($violations.Count -gt 0) {
 }
 
 Write-Host "Prompt bypass scan PASSED." -ForegroundColor Green
+
 
 
