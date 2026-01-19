@@ -95,3 +95,4 @@ if ($violations.Count -gt 0) {
 
 Write-Host "Prompt bypass scan PASSED." -ForegroundColor Green
 
+
