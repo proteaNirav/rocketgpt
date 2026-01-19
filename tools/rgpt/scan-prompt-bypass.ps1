@@ -27,7 +27,7 @@ $files = Get-ChildItem -Path $Root -Recurse -File -Include *.ts,*.tsx |
   }
 
 # Allowlist path where prompt construction is permitted
-$pfAllow = [regex]::Escape((Join-Path (Resolve-RgptRootPath $Root) "src\rgpt\prompt-formulator").Path)
+$pfAllow = [regex]::Escape((Join-Path (Resolve-RgptRootPath $Root) "src\rgpt\prompt-formulator"))
 
 # Heuristics: outbound/provider patterns
 $outboundPatterns = @(
@@ -95,6 +95,7 @@ if ($violations.Count -gt 0) {
 }
 
 Write-Host "Prompt bypass scan PASSED." -ForegroundColor Green
+
 
 
 
