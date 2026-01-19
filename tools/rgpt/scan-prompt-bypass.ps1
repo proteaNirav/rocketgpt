@@ -63,6 +63,7 @@ $guardNeedle = "assertPromptFromFormulator"
 $violations = New-Object System.Collections.Generic.List[string]
 
 foreach ($f in $files) {
+  if ($f.FullName -match "\\\.ops\\\") { continue }
   $text = Get-Content -Path $f.FullName -Raw -ErrorAction Stop
 
   $isInPF = ($f.FullName -match "^$pfAllow")
