@@ -23,8 +23,10 @@ jobs:
           $ErrorActionPreference = "Stop"
 
           $must = @(
-            "Dependabot Policy Gate",
-            "L0 Ownership Guard (immutable files)",
+  "policy_gate/Dependabot Policy Gate",
+  "policy_gate/L0 Ownership Guard (immutable files)",
+  "policy_gate/PR Label Enforcement (workflow-edit / auto-merge)"
+)",
             "PR Label Enforcement (workflow-edit / auto-merge)"
           )
 
@@ -71,3 +73,4 @@ jobs:
           }
 
           Write-Error "policy_gate_required: TIMEOUT waiting for sub-checks to complete."
+
