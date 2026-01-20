@@ -209,3 +209,26 @@ jobs:
 
           echo "[OK] PR label enforcement passed."
 
+
+  policy_gate:
+    name: policy_gate
+    runs-on: ubuntu-latest
+    needs: [dependabot_policy_gate, l0_ownership_guard, pr_label_enforcement]
+    if: ${{ always() }}
+    steps:
+      - name: Summarize needed job results
+        run: |
+          echo "dependabot_policy_gate=${{ needs.dependabot_policy_gate.result }}"
+          echo "l0_ownership_guard=${{ needs.l0_ownership_guard.result }}"
+          echo "pr_label_enforcement=${{ needs.pr_label_enforcement.result }}"
+
+      - name: Enforce required outcomes
+        run: |
+          if [ "${{ needs.dependabot_policy_gate.result }}" != "success" ] || \
+             [ "${{ needs.l0_ownership_guard.result }}" != "success" ] || \
+             [ "${{ needs.pr_label_enforcement.result }}" != "success" ]; then
+            echo "policy_gate: FAIL"
+            exit 1
+          fi
+          echo "policy_gate: OK"
+
