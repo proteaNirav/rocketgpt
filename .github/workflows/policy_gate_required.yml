@@ -1,4 +1,4 @@
-name: policy_gate_required
+name: policy_gate
 
 on:
   pull_request:
