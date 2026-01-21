@@ -1,0 +1,86 @@
+name: policy_gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  checks: read
+  contents: read
+
+jobs:
+  policy_gate:
+    name: policy_gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for policy gate sub-jobs to complete and succeed
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA:  ${{ github.sha }}
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $must = @(
+            "Dependabot Policy Gate",
+            "L0 Ownership Guard (immutable files)",
+            "PR Label Enforcement (workflow-edit / auto-merge)"
+          )
+
+          function Get-CheckRuns {
+            # Use PR head SHA (stable) over GITHUB_SHA (merge/synthetic SHA in pull_request workflows)
+            if (-not (Test-Path $env:GITHUB_EVENT_PATH)) {
+              throw "policy_gate_required: GITHUB_EVENT_PATH not found; cannot determine PR number."
+            }
+
+            $evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+            $prNumber = $evt.pull_request.number
+            if (-not $prNumber) { throw "policy_gate_required: could not determine PR number from event payload." }
+
+            $pr = gh api "repos/$env:REPO/pulls/$prNumber" | ConvertFrom-Json
+            $headSha = $pr.head.sha
+            if (-not $headSha) { throw "policy_gate_required: could not determine PR head sha." }
+
+            $json = gh api "repos/$env:REPO/commits/$headSha/check-runs?per_page=100"
+            return ($json | ConvertFrom-Json).check_runs
+          }
+
+          $maxTries = 30
+          $sleepSec = 10
+
+          for ($try=1; $try -le $maxTries; $try++) {
+            $runs = Get-CheckRuns
+
+            $hits = foreach ($n in $must) {
+              $r = $runs | Where-Object { $_.name -eq $n } | Select-Object -First 1
+              [pscustomobject]@{
+                name       = $n
+                status     = $r.status
+                conclusion = $r.conclusion
+                details    = $r.html_url
+                found      = [bool]$r
+              }
+            }
+
+            Write-Host ""
+            Write-Host "Try $try/$maxTries — required sub-checks status:" -ForegroundColor Yellow
+            $hits | Format-Table -AutoSize
+
+            $missing = $hits | Where-Object { -not $_.found }
+            $pending = $hits | Where-Object { $_.found -and $_.status -ne "completed" }
+            $failed  = $hits | Where-Object { $_.found -and $_.status -eq "completed" -and $_.conclusion -ne "success" }
+
+            if ($failed) {
+              Write-Error ("policy_gate_required: FAILED because these checks failed: " + (($failed.name) -join ", "))
+            }
+
+            if ((-not $missing) -and (-not $pending)) {
+              Write-Host "policy_gate_required: OK — all required sub-checks succeeded." -ForegroundColor Green
+              exit 0
+            }
+
+            Start-Sleep -Seconds $sleepSec
+          }
+
+          Write-Error "policy_gate_required: TIMEOUT waiting for sub-checks to complete."

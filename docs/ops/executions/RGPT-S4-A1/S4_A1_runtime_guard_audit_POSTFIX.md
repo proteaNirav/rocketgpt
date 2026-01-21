@@ -1,4 +1,4 @@
-﻿# RGPT-S4-A1 — Runtime Guard Coverage Audit (POST-FIX)
+# RGPT-S4-A1 — Runtime Guard Coverage Audit (POST-FIX)
 
 Generated: 2026-01-03 19:35:48
 
