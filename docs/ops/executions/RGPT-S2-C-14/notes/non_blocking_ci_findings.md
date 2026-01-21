@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-14 — Non-blocking CI Findings
+# RGPT-S2-C-14 — Non-blocking CI Findings
 
 ## Run Set
 - **Selection:** last 5 runs on main
