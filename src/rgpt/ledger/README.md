@@ -1,4 +1,4 @@
-﻿# Decision Ledger (RGPT-S4)
+# Decision Ledger (RGPT-S4)
 
 This directory defines the **authoritative governance ledger** for RocketGPT.
 

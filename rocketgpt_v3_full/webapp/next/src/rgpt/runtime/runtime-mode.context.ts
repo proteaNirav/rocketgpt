@@ -1,4 +1,4 @@
-﻿import type { ResolveInput, ResolveResult, RuntimeMode } from "./runtime-mode.types";
+import type { ResolveInput, ResolveResult, RuntimeMode } from "./runtime-mode.types";
 import { loadRuntimeModeConfig, resolveRuntimeMode } from "./runtime-mode.resolver";
 
 /**
