@@ -1,10 +1,10 @@
-﻿name: policy_gate
+name: policy_gate
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch: {}
 
 permissions:
@@ -21,8 +21,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.RGPT_AUTOMATION_PAT || github.token }}
 
-      - name: Validate routeâ†’auth surface matrix
+      - name: Validate route-auth surface matrix
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -34,14 +36,13 @@ jobs:
           }
           pwsh -NoProfile -File .github/tools/policy_gate/validate_auth_surface_matrix.ps1 -AllowlistJson docs/security/generated/RUNTIME_ALLOWLIST.json -MatrixMd docs/security/AUTH_SURFACE_MATRIX.md
 
-      - name: Security â€” API Surface Drift Check
+      - name: Security - API Surface Drift Check
         shell: pwsh
         run: ./.github/tools/security/check_api_surface_drift.ps1
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          token: ${{ secrets.RGPT_AUTOMATION_PAT }}
           node-version: "20"
 
       - name: Run Dependabot policy gate (path-scoped)
@@ -57,7 +58,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.RGPT_AUTOMATION_PAT }}
+          token: ${{ secrets.RGPT_AUTOMATION_PAT || github.token }}
           fetch-depth: 0
 
       - name: Detect changes
@@ -122,7 +123,7 @@ jobs:
             exit 1
           fi
 
-          echo "[L0] OK â€” no immutable artifacts were modified."
+          echo "[L0] OK - no immutable artifacts were modified."
 
 
   pr_label_enforcement:
@@ -136,14 +137,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.RGPT_AUTOMATION_PAT }}
+          token: ${{ secrets.RGPT_AUTOMATION_PAT || github.token }}
           fetch-depth: 0
 
       - name: Get PR labels
         id: labels
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RGPT_AUTOMATION_PAT || github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
         run: |
@@ -211,6 +212,3 @@ jobs:
           fi
 
           echo "[OK] PR label enforcement passed."
-
-
-
