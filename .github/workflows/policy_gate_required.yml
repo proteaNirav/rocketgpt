@@ -29,7 +29,18 @@ jobs:
           )
 
           function Get-CheckRuns {
-            $json = gh api "repos/$env:REPO/commits/$env:SHA/check-runs?per_page=100"
+            if (-not (Test-Path $env:GITHUB_EVENT_PATH)) {
+              throw "policy_gate_required: GITHUB_EVENT_PATH not found; cannot determine PR number."
+            }
+            $evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+            $prNumber = $evt.pull_request.number
+            if (-not $prNumber) { throw "policy_gate_required: could not determine PR number from event payload." }
+
+            $pr = gh api "repos/$env:REPO/pulls/$prNumber" | ConvertFrom-Json
+            $headSha = $pr.head.sha
+            if (-not $headSha) { throw "policy_gate_required: could not determine PR head sha." }
+
+            $json = gh api "repos/$env:REPO/commits/$headSha/check-runs?per_page=100"
             return ($json | ConvertFrom-Json).check_runs
           }
 
