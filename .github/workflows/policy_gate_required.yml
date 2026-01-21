@@ -23,6 +23,26 @@ jobs:
           $ErrorActionPreference = "Stop"
 
           $must = @(
+
+    - name: Publish policy_gate status context
+      if: ${{ always() }}
+      shell: pwsh
+      run: |
+        $state = if ("${{ job.status }}" -eq "success") { "success" } else { "failure" }
+        $body = @{
+          state       = $state
+          context     = "policy_gate"
+          description = "policy_gate_required => $state"
+          target_url  = "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        } | ConvertTo-Json
+        $headers = @{
+          Authorization = "Bearer ${{ github.token }}"
+          Accept        = "application/vnd.github+json"
+          "X-GitHub-Api-Version" = "2022-11-28"
+        }
+        $url = "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}"
+        Invoke-RestMethod -Method Post -Uri $url -Headers $headers -Body $body | Out-Null
+        Write-Host "Published commit status context policy_gate => $state"
   "policy_gate/Dependabot Policy Gate",
   "policy_gate/L0 Ownership Guard (immutable files)",
   "policy_gate/PR Label Enforcement (workflow-edit / auto-merge)"
