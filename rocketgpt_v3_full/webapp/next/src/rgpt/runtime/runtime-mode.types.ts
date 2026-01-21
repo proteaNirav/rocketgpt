@@ -1,4 +1,4 @@
-﻿export type RuntimeMode =
+export type RuntimeMode =
   | "OFFLINE"
   | "SAFE"
   | "SUPERVISED"
