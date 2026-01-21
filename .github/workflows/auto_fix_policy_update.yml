@@ -1,4 +1,4 @@
-name: Auto Update Policy (Controlled)
+﻿name: Auto Update Policy (Controlled)
 
 on:
   workflow_dispatch:
@@ -36,10 +36,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.RGPT_AUTOMATION_PAT }}
           fetch-depth: 0
           ref: ${{ inputs.target_branch }}
 
-      - name: Preflight — clean repo
+      - name: Preflight â€” clean repo
         shell: bash
         run: |
           set -euo pipefail
@@ -171,7 +172,8 @@ jobs:
           git commit -m "ops(auto-update): record controlled auto-update evidence"
 
           # Push branch (NOT main)
-          git push -u origin "${pr_branch}"
+          git remote set-url origin "https://x-access-token:${{ secrets.RGPT_AUTOMATION_PAT }}@github.com/${{ github.repository }}.git"
+                    
 
           # Create (or re-use) PR back to base
           title="ops(auto-update): controlled update (${base})"
@@ -203,4 +205,6 @@ jobs:
               --title "${title}" \
               --body "${body}"
           fi
+
+
 

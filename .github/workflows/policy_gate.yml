@@ -1,4 +1,4 @@
-name: policy_gate
+﻿name: policy_gate
 
 on:
   pull_request:
@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate route→auth surface matrix
+      - name: Validate routeâ†’auth surface matrix
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -34,13 +34,14 @@ jobs:
           }
           pwsh -NoProfile -File .github/tools/policy_gate/validate_auth_surface_matrix.ps1 -AllowlistJson docs/security/generated/RUNTIME_ALLOWLIST.json -MatrixMd docs/security/AUTH_SURFACE_MATRIX.md
 
-      - name: Security — API Surface Drift Check
+      - name: Security â€” API Surface Drift Check
         shell: pwsh
         run: ./.github/tools/security/check_api_surface_drift.ps1
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
+          token: ${{ secrets.RGPT_AUTOMATION_PAT }}
           node-version: "20"
 
       - name: Run Dependabot policy gate (path-scoped)
@@ -56,6 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          token: ${{ secrets.RGPT_AUTOMATION_PAT }}
           fetch-depth: 0
 
       - name: Detect changes
@@ -120,7 +122,7 @@ jobs:
             exit 1
           fi
 
-          echo "[L0] OK — no immutable artifacts were modified."
+          echo "[L0] OK â€” no immutable artifacts were modified."
 
 
   pr_label_enforcement:
@@ -134,6 +136,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          token: ${{ secrets.RGPT_AUTOMATION_PAT }}
           fetch-depth: 0
 
       - name: Get PR labels
@@ -208,4 +211,6 @@ jobs:
           fi
 
           echo "[OK] PR label enforcement passed."
+
+
 
