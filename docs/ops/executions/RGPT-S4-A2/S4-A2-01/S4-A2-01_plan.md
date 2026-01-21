@@ -1,4 +1,4 @@
-﻿# RGPT-S4-A2-01 — Runtime Ledger Normalization (Plan)
+# RGPT-S4-A2-01 — Runtime Ledger Normalization (Plan)
 
 ## Goal
 Normalize the runtime/execution ledger into a single canonical contract that is append-only, replay-safe, and audit-grade.

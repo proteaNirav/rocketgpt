@@ -1,4 +1,4 @@
-﻿# RGPT-S4-A1 — Post-merge Safe-Mode verification (local)
+# RGPT-S4-A1 — Post-merge Safe-Mode verification (local)
 
 ## Environment
 - Date: 2026-01-04 13:41:40
