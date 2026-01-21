@@ -23,36 +23,17 @@ jobs:
           $ErrorActionPreference = "Stop"
 
           $must = @(
-            "policy_gate/Dependabot Policy Gate",
-            "policy_gate/L0 Ownership Guard (immutable files)",
-            "policy_gate/PR Label Enforcement (workflow-edit / auto-merge)"
+            "Dependabot Policy Gate",
+            "L0 Ownership Guard (immutable files)",
+            "PR Label Enforcement (workflow-edit / auto-merge)"
           )
 
           function Get-CheckRuns {
+            # Use PR head SHA (stable) over GITHUB_SHA (merge/synthetic SHA in pull_request workflows)
             if (-not (Test-Path $env:GITHUB_EVENT_PATH)) {
               throw "policy_gate_required: GITHUB_EVENT_PATH not found; cannot determine PR number."
             }
-            $evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
-            $prNumber = $evt.pull_request.number
-            if (-not $prNumber) { throw "policy_gate_required: could not determine PR number from event payload." }
 
-            $pr = gh api "repos/$env:REPO/pulls/$prNumber" | ConvertFrom-Json
-            $headSha = $pr.head.sha
-            if (-not $headSha) { throw "policy_gate_required: could not determine PR head sha." }
-
-            # Use combined status contexts (covers many workflow/job contexts that don't appear in check-runs)
-            $st = gh api "repos/$env:REPO/commits/$headSha/status" | ConvertFrom-Json
-
-            # Normalize to the same shape we expect downstream
-            return @($st.statuses | ForEach-Object {
-              [pscustomobject]@{
-                name       = $_.context
-                status     = if ($_.state -eq 'pending') { 'in_progress' } else { 'completed' }
-                conclusion = switch ($_.state) { 'success' { 'success' } 'failure' { 'failure' } 'error' { 'failure' } 'pending' { '' } default { '' } }
-                html_url   = $_.target_url
-              }
-            })
-          }
             $evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
             $prNumber = $evt.pull_request.number
             if (-not $prNumber) { throw "policy_gate_required: could not determine PR number from event payload." }
@@ -103,5 +84,3 @@ jobs:
           }
 
           Write-Error "policy_gate_required: TIMEOUT waiting for sub-checks to complete."
-
-
