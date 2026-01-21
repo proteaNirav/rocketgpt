@@ -1,4 +1,4 @@
-﻿# RGPT-S4-A1 — Runtime Guard Coverage Audit (FINAL)
+# RGPT-S4-A1 — Runtime Guard Coverage Audit (FINAL)
 
 Generated: 2026-01-03 20:05:08
 

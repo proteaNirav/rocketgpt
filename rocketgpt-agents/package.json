@@ -1,0 +1,16 @@
+{
+  "name": "rocketgpt-agents",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "dependencies": {
+    "openai": "^6.10.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "@types/node": "^20.14.9"
+  },
+  "scripts": {
+    "harness": "tsx providers/harness/run-harness.ts"
+  }
+}

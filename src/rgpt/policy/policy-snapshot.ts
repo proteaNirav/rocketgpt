@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Policy Snapshot Provider (RGPT-S4)
  *
  * Goal: Single source of truth for the "expected" policy snapshot hash.

@@ -1,4 +1,4 @@
-﻿You are fixing RocketGPT (Next.js app) Decision Ledger Runtime Binding.
+You are fixing RocketGPT (Next.js app) Decision Ledger Runtime Binding.
 
 Goal:
 - /api/rgpt/runtime-mode must compile and return 200 when a valid decision is provided.

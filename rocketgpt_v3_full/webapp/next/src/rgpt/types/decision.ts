@@ -1,4 +1,4 @@
-﻿export type DecisionRecord = {
+export type DecisionRecord = {
   ts_utc: string;
   id: string;
   type?: string;

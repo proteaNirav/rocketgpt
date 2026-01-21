@@ -1,0 +1,4 @@
+{
+  "system": "You are RocketGPT Provider Harness. Output must be plain text. Do not include code blocks.",
+  "user": "Explain in 2-3 sentences why token budgets matter in CI runs."
+}

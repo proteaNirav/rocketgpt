@@ -1,4 +1,4 @@
-﻿ M rocketgpt_v3_full/webapp/next/app/api/health/route.ts
+ M rocketgpt_v3_full/webapp/next/app/api/health/route.ts
  M rocketgpt_v3_full/webapp/next/app/api/logs/route.ts
  M rocketgpt_v3_full/webapp/next/app/api/orchestrator/logs/route.ts
  M rocketgpt_v3_full/webapp/next/app/api/rgpt/runtime-mode/route.ts
