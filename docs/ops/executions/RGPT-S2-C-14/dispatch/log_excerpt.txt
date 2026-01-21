@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-14 — Auto-Update Dispatch Proof (Excerpt)
+# RGPT-S2-C-14 — Auto-Update Dispatch Proof (Excerpt)
 
 Captured (UTC): 2026-01-02T07:06:24Z
 Repo: proteaNirav/rocketgpt
