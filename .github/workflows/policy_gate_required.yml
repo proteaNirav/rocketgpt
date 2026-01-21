@@ -40,6 +40,27 @@ jobs:
             $headSha = $pr.head.sha
             if (-not $headSha) { throw "policy_gate_required: could not determine PR head sha." }
 
+            # Use combined status contexts (covers many workflow/job contexts that don't appear in check-runs)
+            $st = gh api "repos/$env:REPO/commits/$headSha/status" | ConvertFrom-Json
+
+            # Normalize to the same shape we expect downstream
+            return @($st.statuses | ForEach-Object {
+              [pscustomobject]@{
+                name       = $_.context
+                status     = if ($_.state -eq 'pending') { 'in_progress' } else { 'completed' }
+                conclusion = switch ($_.state) { 'success' { 'success' } 'failure' { 'failure' } 'error' { 'failure' } 'pending' { '' } default { '' } }
+                html_url   = $_.target_url
+              }
+            })
+          }
+            $evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+            $prNumber = $evt.pull_request.number
+            if (-not $prNumber) { throw "policy_gate_required: could not determine PR number from event payload." }
+
+            $pr = gh api "repos/$env:REPO/pulls/$prNumber" | ConvertFrom-Json
+            $headSha = $pr.head.sha
+            if (-not $headSha) { throw "policy_gate_required: could not determine PR head sha." }
+
             $json = gh api "repos/$env:REPO/commits/$headSha/check-runs?per_page=100"
             return ($json | ConvertFrom-Json).check_runs
           }
