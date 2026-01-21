@@ -1,4 +1,4 @@
-﻿import type { RuntimeMode } from "./runtime-mode.types";
+import type { RuntimeMode } from "./runtime-mode.types";
 
 /**
  * What each Runtime Mode is allowed to do.

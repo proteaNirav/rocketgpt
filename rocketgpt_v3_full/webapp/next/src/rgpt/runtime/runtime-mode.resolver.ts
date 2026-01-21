@@ -1,4 +1,4 @@
-﻿import type { ResolveInput, ResolveResult, RuntimeMode, RuntimeModeConfig } from "./runtime-mode.types";
+import type { ResolveInput, ResolveResult, RuntimeMode, RuntimeModeConfig } from "./runtime-mode.types";
 import fs from "node:fs";
 import path from "node:path";
 

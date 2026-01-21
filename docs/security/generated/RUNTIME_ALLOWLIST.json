@@ -1,4 +1,4 @@
-﻿{
+{
     "runtime_allowlist":  [
                               {
                                   "route":  "/api/approvals/create"

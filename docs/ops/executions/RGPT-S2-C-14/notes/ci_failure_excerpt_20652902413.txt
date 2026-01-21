@@ -1,4 +1,4 @@
-﻿RGPT-S2-C-14 — CI failure excerpt
+RGPT-S2-C-14 — CI failure excerpt
 Captured (UTC): 
 2026-01-02T07:21:16Z
 Repo: proteaNirav/rocketgpt

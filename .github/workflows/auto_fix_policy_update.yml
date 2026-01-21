@@ -30,7 +30,8 @@ jobs:
   auto_update:
     name: Controlled Auto-Update
     runs-on: ubuntu-latest
-
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,6 +49,7 @@ jobs:
             exit 1
           fi
           echo "[AUTO-UPDATE] Clean working tree confirmed."
+
       - name: Apply update (L1-only)
         shell: bash
         run: |
@@ -100,6 +102,7 @@ jobs:
           if [ "$bad" -ne 0 ]; then
             exit 1
           fi
+
       - name: Enforce L0 immutability
         shell: bash
         run: |
@@ -142,18 +145,62 @@ jobs:
           - Reason: ${{ inputs.reason }}
           - SHA: ${{ github.sha }}
           EOF
-
-      - name: Commit evidence
+      - name: Commit evidence (PR-safe)
         shell: bash
         run: |
           set -euo pipefail
+
+          # If nothing changed, exit cleanly.
           if [ -z "$(git status --porcelain)" ]; then
             echo "[AUTO-UPDATE] Nothing to commit."
             exit 0
           fi
+
           git config user.name "rgpt-bot"
           git config user.email "rgpt-bot@users.noreply.github.com"
+
+          # Create a unique branch off the checked-out target_branch
+          ts="$(date -u +%Y%m%d-%H%M%SZ)"
+          base="${{ inputs.target_branch }}"
+          pr_branch="rgpt/auto-update/${base}/${ts}"
+
+          echo "[AUTO-UPDATE] Creating PR branch: ${pr_branch} (base=${base})"
+          git checkout -b "${pr_branch}"
+
           git add -A
           git commit -m "ops(auto-update): record controlled auto-update evidence"
-          git push
+
+          # Push branch (NOT main)
+          git push -u origin "${pr_branch}"
+
+          # Create (or re-use) PR back to base
+          title="ops(auto-update): controlled update (${base})"
+          body=$(
+            cat <<EOF
+          ### Controlled Auto-Update Evidence
+          - mode: ${{ inputs.mode }}
+          - base: ${base}
+          - actor: ${{ github.actor }}
+          - reason: ${{ inputs.reason }}
+          - sha: ${{ github.sha }}
+
+          This PR is created by Auto Update Policy (Controlled) to satisfy repo rules:
+          - No direct pushes to protected branches
+          - Changes must go through PR + required checks
+          EOF
+          )
+
+          # If PR already exists for this head branch, just print it
+          if gh pr view "${pr_branch}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "[AUTO-UPDATE] PR already exists for ${pr_branch}:"
+            gh pr view "${pr_branch}" --repo "${GITHUB_REPOSITORY}" --json url -q .url
+          else
+            echo "[AUTO-UPDATE] Creating PR -> ${base}"
+            gh pr create \
+              --repo "${GITHUB_REPOSITORY}" \
+              --base "${base}" \
+              --head "${pr_branch}" \
+              --title "${title}" \
+              --body "${body}"
+          fi
 

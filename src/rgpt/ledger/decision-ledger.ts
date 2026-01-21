@@ -1,4 +1,4 @@
-﻿import { DecisionRecord, DecisionVerifyResult } from "../types/decision";
+import { DecisionRecord, DecisionVerifyResult } from "../types/decision";
 
 import { join } from "node:path";
 /**

@@ -1,4 +1,4 @@
-﻿b178654d chore(security): normalize runtime allowlist routes (/api/*) + cleanup encoding
+b178654d chore(security): normalize runtime allowlist routes (/api/*) + cleanup encoding
 0b61cdb1 fix(ci): satisfy eslint strict (rename nowUtcMs -> _nowUtcMs)
 27555927 fix(s4-a1): execute-all returns 403 when runtime guard blocks (Safe-Mode)
 78a9a47f fix(s4-a1): normalize Safe-Mode guard to return 403 (no 500 fallthrough)

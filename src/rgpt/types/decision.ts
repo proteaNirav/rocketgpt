@@ -1,4 +1,4 @@
-﻿export type DecisionType = "ci" | "runtime" | "manual";
+export type DecisionType = "ci" | "runtime" | "manual";
 export type DecisionSource = "orchestrator" | "builder" | "self_heal" | "self_improve";
 export type DecisionStatus = "PENDING" | "APPROVED" | "REJECTED" | "REVOKED";
 

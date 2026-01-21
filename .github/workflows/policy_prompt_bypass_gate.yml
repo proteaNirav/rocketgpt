@@ -1,0 +1,21 @@
+name: policy_prompt_bypass_gate
+
+on:
+  pull_request:
+    branches: [ "**" ]
+  push:
+    branches: [ "**" ]
+  workflow_dispatch: {}
+
+jobs:
+  prompt_bypass_scan:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prompt bypass scan
+        shell: pwsh
+        run: |
+          $ErrorActionPreference="Stop"
+          pwsh -NoProfile -ExecutionPolicy Bypass -File tools/rgpt/scan-prompt-bypass.ps1 -Root .

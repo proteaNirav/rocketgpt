@@ -1,4 +1,4 @@
-﻿param(
+param(
   [Parameter(Mandatory)][string]$AllowlistJson,
   [Parameter(Mandatory)][string]$MatrixMd
 )

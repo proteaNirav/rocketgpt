@@ -1,4 +1,4 @@
-﻿# RGPT-S2-C-15 — Fix BOM detector failures (workflows) + verify CI green
+# RGPT-S2-C-15 — Fix BOM detector failures (workflows) + verify CI green
 
 ## Status
 - **State:** DONE

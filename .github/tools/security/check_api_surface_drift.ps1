@@ -1,4 +1,4 @@
-﻿# RGPT Security â€” API Surface Drift Check
+# RGPT Security â€” API Surface Drift Check
 # Fails if Next.js app/api routes exist on disk but are missing from docs/security/generated/RUNTIME_ALLOWLIST.json
 
 $ErrorActionPreference = "Stop"

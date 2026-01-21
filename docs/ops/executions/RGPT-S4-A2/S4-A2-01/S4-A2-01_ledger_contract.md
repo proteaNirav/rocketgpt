@@ -1,4 +1,4 @@
-﻿# RGPT-S4-A2-01 — Runtime Ledger Contract (Canonical)
+# RGPT-S4-A2-01 — Runtime Ledger Contract (Canonical)
 
 ## Purpose
 A single canonical ledger for **executions** and **decisions** that is:

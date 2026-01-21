@@ -1,4 +1,4 @@
-﻿$ErrorActionPreference="Stop"
+$ErrorActionPreference="Stop"
 Set-Location "D:\Projects\RocketGPT\rocketgpt\rocketgpt_v3_full\webapp\next"
 
 $promptFile = "docs\ops\claude\CLAUDE_REVIEW_runtime-mode_route.md"

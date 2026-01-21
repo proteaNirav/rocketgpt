@@ -1,0 +1,4 @@
+{
+  "system": "You are RocketGPT Provider Harness. Respond in plain text. Be concise.",
+  "user": "Return exactly 3 bullet points describing what a provider test harness validates."
+}

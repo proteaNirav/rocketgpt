@@ -1,4 +1,4 @@
-﻿# RGPT-S4-A2-01 — Mapping Inventory (Current → Canonical Ledger)
+# RGPT-S4-A2-01 — Mapping Inventory (Current → Canonical Ledger)
 
 ## Objective
 List all existing ledger-like tables/files/endpoints and map them to the canonical contract:

@@ -1,4 +1,4 @@
-﻿D:\Projects\RocketGPT\rocketgpt\.ops\claude\staging\next\node_modules\@types\json5\index.d.ts
+D:\Projects\RocketGPT\rocketgpt\.ops\claude\staging\next\node_modules\@types\json5\index.d.ts
 D:\Projects\RocketGPT\rocketgpt\docs\ops\executions\RGPT-S4-EXEC-01\claude_fixbundle_20260102-231934\rocketgpt_v3_full_webapp_next_app_api_rgpt_runtime-mode_route.ts
 D:\Projects\RocketGPT\rocketgpt\docs\ops\executions\RGPT-S4-EXEC-01\claude_fixbundle_20260102-231934\rocketgpt_v3_full_webapp_next_src_rgpt_runtime_runtime-guard.ts
 D:\Projects\RocketGPT\rocketgpt\docs\ops\executions\RGPT-S4-EXEC-01\claude_fixbundle_20260102-231934\src_rgpt_ledger_decision-ledger.ts
