@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
 
 // Safe-Mode detection (CI forces this ON; must short-circuit safely)
