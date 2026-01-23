@@ -2,7 +2,8 @@ name: policy_gate_aggregator
 
 on:
   pull_request:
-  workflow_dispatch:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch: {}
 
 permissions:
   checks: read
@@ -23,53 +24,29 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
 
-          # Required sub-checks from policy_gate.yml workflow
-          # These are job display names (the 'name:' field in each job)
+          # Required sub-checks (check-run names)
           $must = @(
-  "prompt_bypass_scan",
-  "drift_lock",
-  "rgpt-db-exposure-guard",
-  "safemode-gate",
-  "smoke"
-)
-
-          # PR Label Enforcement only runs on pull_request events
-          if ($env:GITHUB_EVENT_NAME -eq "pull_request") {
-            $must += "PR Label Enforcement (workflow-edit / auto-merge)"
-          }
+            "prompt_bypass_scan",
+            "drift_lock",
+            "rgpt-db-exposure-guard",
+            "safemode-gate",
+            "smoke",
+            "build-test"
+          )
 
           function Get-PrHeadSha {
-  if (-not (Test-Path $env:GITHUB_EVENT_PATH)) {
-    throw "GITHUB_EVENT_PATH not found; cannot determine PR."
-  }
-  $evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
-
-  # Prefer direct value from event payload (no API call)
-  $sha = $evt.pull_request.head.sha
-  if (-not $sha) {
-    # Fallback: if structure differs, attempt older path
-    $sha = $evt.pull_request.headRefOid
-  }
-  if (-not $sha) {
-    throw "Could not determine PR head SHA from event payload."
-  }
-  return $sha.Trim()
-}$evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
-            $prNumber = $evt.pull_request.number
-            if (-not $prNumber) {
-              throw "Could not determine PR number from event payload."
+            if (-not (Test-Path $env:GITHUB_EVENT_PATH)) {
+              throw "GITHUB_EVENT_PATH not found; cannot determine PR."
             }
-            $pr = gh api "repos/$env:REPO/pulls/$prNumber" --jq '.head.sha' 2>$null
-            if (-not $pr) {
-              throw "Could not determine PR head SHA."
-            }
-            return $pr.Trim()
+            $evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+            $sha = $evt.pull_request.head.sha
+            if (-not $sha) { throw "Could not determine PR head SHA from event payload." }
+            return $sha.Trim()
           }
 
           function Get-CheckRuns {
             param([string]$sha)
-            $json = gh api "repos/$env:REPO/commits/$sha/check-runs?per_page=100" 2>$null
-            if (-not $json) { return @() }
+            $json = gh api "repos/$env:REPO/commits/$sha/check-runs?per_page=100" -H "Accept: application/vnd.github+json"
             $parsed = $json | ConvertFrom-Json
             return @($parsed.check_runs)
           }
@@ -104,17 +81,15 @@ jobs:
 
             if ($failed.Count -gt 0) {
               Write-Host "FAILED sub-checks: $($failed.name -join ', ')" -ForegroundColor Red
-              # Publish failure status context for branch protection
               $body = @{ state = "failure"; context = "policy_gate"; description = "Sub-check failed: $($failed.name -join ', ')" } | ConvertTo-Json -Compress
-              echo $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input - 2>$null
+              $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input -
               throw "policy_gate: FAILED - sub-checks failed: $($failed.name -join ', ')"
             }
 
             if ($missing.Count -eq 0 -and $pending.Count -eq 0) {
               Write-Host "policy_gate: OK - all required sub-checks succeeded." -ForegroundColor Green
-              # Publish success status context for branch protection
               $body = @{ state = "success"; context = "policy_gate"; description = "All policy gate sub-checks passed" } | ConvertTo-Json -Compress
-              echo $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input - 2>$null
+              $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input -
               exit 0
             }
 
@@ -122,9 +97,6 @@ jobs:
             Start-Sleep -Seconds $sleepSec
           }
 
-          # Timeout - publish failure status context
           $body = @{ state = "failure"; context = "policy_gate"; description = "Timeout waiting for sub-checks" } | ConvertTo-Json -Compress
-          echo $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input - 2>$null
+          $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input -
           throw "policy_gate: TIMEOUT waiting for sub-checks to complete."
-
-
