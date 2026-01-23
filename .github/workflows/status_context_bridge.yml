@@ -1,0 +1,73 @@
+name: status_context_bridge
+
+on:
+  workflow_run:
+    workflows:
+      # We map by workflow_run.path below, but GitHub requires a workflow name list here.
+      # These are common in your repo (adjust only if your gh workflow list shows different names).
+      - ci
+      - text-guard (smoke)
+      - policy_prompt_bypass_gate
+      - workflow_name_drift_lock
+      - RGPT DB Exposure Guard
+      - Safe-Mode CI Gate
+      # If your policy gate aggregator has a different workflow name, we still map by path.
+      - policy_gate_required
+    types: [completed]
+
+permissions:
+  statuses: write
+  actions: read
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish required status contexts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const sha = run.head_sha;
+            const path = (run.path || "").toLowerCase();
+            const conclusion = (run.conclusion || "").toLowerCase();
+
+            // Map workflow_run conclusion -> commit status state
+            const state =
+              conclusion === "success" ? "success" :
+              conclusion === "cancelled" ? "failure" :
+              conclusion === "skipped" ? "success" : // treat skipped as neutral-success for required contexts
+              "failure";
+
+            // Map workflow file path -> required status context name
+            // Adjust these 3 mappings ONLY if your workflow file names differ.
+            let targetContext = null;
+
+            if (path.endsWith("ci.yml") || path.endsWith("ci.yaml")) {
+              // Your PR required context is "build-test"
+              targetContext = "build-test";
+            } else if (path.includes("text") && path.includes("guard") && path.includes("smoke")) {
+              // Your PR required context is "smoke"
+              targetContext = "smoke";
+            } else if (path.endsWith("policy_gate_required.yml") || path.endsWith("policy_gate_required.yaml")) {
+              // Your PR required context is "policy_gate"
+              targetContext = "policy_gate";
+            }
+
+            if (!targetContext) {
+              core.info(`No mapping for workflow path: ${run.path}. Nothing to publish.`);
+              return;
+            }
+
+            core.info(`Publishing status context '${targetContext}' for sha=${sha} state=${state} (conclusion=${conclusion})`);
+
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha,
+              state,
+              context: targetContext,
+              description: `Bridge from ${run.name} (${conclusion})`,
+              target_url: run.html_url
+            });
