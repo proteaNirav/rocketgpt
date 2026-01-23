@@ -3,16 +3,13 @@ name: status_context_bridge
 on:
   workflow_run:
     workflows:
-      # We map by workflow_run.path below, but GitHub requires a workflow name list here.
-      # These are common in your repo (adjust only if your gh workflow list shows different names).
       - ci
       - text-guard (smoke)
       - policy_prompt_bypass_gate
       - workflow_name_drift_lock
       - RGPT DB Exposure Guard
       - Safe-Mode CI Gate
-      # If your policy gate aggregator has a different workflow name, we still map by path.
-      - policy_gate_required
+      - .github/workflows/policy_gate_required.yml
     types: [completed]
 
 permissions:
@@ -71,3 +68,4 @@ jobs:
               description: `Bridge from ${run.name} (${conclusion})`,
               target_url: run.html_url
             });
+
