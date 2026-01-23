@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
   push:
   pull_request:
-
 permissions:
+  statuses: write
   contents: read
 
 jobs:
@@ -114,6 +114,7 @@ jobs:
         with:
           name: qa-report
           path: qa-report.json
+
 
 
 
