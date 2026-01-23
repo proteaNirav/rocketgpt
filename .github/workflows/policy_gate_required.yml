@@ -25,14 +25,12 @@ jobs:
           # Required sub-checks from policy_gate.yml workflow
           # These are job display names (the 'name:' field in each job)
           $must = @(
-  # These must match GitHub CHECK-RUN names on the PR head SHA
   "prompt_bypass_scan",
   "drift_lock",
   "rgpt-db-exposure-guard",
   "safemode-gate",
   "smoke"
-)"
-          )
+)
 
           # PR Label Enforcement only runs on pull_request events
           if ($env:GITHUB_EVENT_NAME -eq "pull_request") {
@@ -139,4 +137,5 @@ jobs:
                 target_url: `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
               });
             }
+
 
