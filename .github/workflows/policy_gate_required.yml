@@ -25,8 +25,13 @@ jobs:
           # Required sub-checks from policy_gate.yml workflow
           # These are job display names (the 'name:' field in each job)
           $must = @(
-            "Dependabot Policy Gate",
-            "L0 Ownership Guard (immutable files)"
+  # These must match GitHub CHECK-RUN names on the PR head SHA
+  "prompt_bypass_scan",
+  "drift_lock",
+  "rgpt-db-exposure-guard",
+  "safemode-gate",
+  "smoke"
+)"
           )
 
           # PR Label Enforcement only runs on pull_request events
@@ -110,3 +115,4 @@ jobs:
           $body = @{ state = "failure"; context = "policy_gate"; description = "Timeout waiting for sub-checks" } | ConvertTo-Json -Compress
           echo $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input - 2>$null
           throw "policy_gate: TIMEOUT waiting for sub-checks to complete."
+
