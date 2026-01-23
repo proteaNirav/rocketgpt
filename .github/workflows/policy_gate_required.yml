@@ -7,6 +7,7 @@ on:
 permissions:
   checks: read
   contents: read
+  pull-requests: read
   statuses: write
 
 jobs:
@@ -38,10 +39,22 @@ jobs:
           }
 
           function Get-PrHeadSha {
-            if (-not (Test-Path $env:GITHUB_EVENT_PATH)) {
-              throw "GITHUB_EVENT_PATH not found; cannot determine PR."
-            }
-            $evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+  if (-not (Test-Path $env:GITHUB_EVENT_PATH)) {
+    throw "GITHUB_EVENT_PATH not found; cannot determine PR."
+  }
+  $evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+
+  # Prefer direct value from event payload (no API call)
+  $sha = $evt.pull_request.head.sha
+  if (-not $sha) {
+    # Fallback: if structure differs, attempt older path
+    $sha = $evt.pull_request.headRefOid
+  }
+  if (-not $sha) {
+    throw "Could not determine PR head SHA from event payload."
+  }
+  return $sha.Trim()
+}$evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
             $prNumber = $evt.pull_request.number
             if (-not $prNumber) {
               throw "Could not determine PR number from event payload."
@@ -113,4 +126,5 @@ jobs:
           $body = @{ state = "failure"; context = "policy_gate"; description = "Timeout waiting for sub-checks" } | ConvertTo-Json -Compress
           echo $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input - 2>$null
           throw "policy_gate: TIMEOUT waiting for sub-checks to complete."
+
 
