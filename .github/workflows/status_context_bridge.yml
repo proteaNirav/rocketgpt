@@ -30,34 +30,36 @@ jobs:
             const path = (run.path || "").toLowerCase();
             const conclusion = (run.conclusion || "").toLowerCase();
 
-            // Map workflow_run conclusion -> commit status state
-            const state =
-              conclusion === "success" ? "success" :
-              conclusion === "cancelled" ? "failure" :
-              conclusion === "skipped" ? "success" : // treat skipped as neutral-success for required contexts
-              "failure";
-
-            // Map workflow file path -> required status context name
-            // Adjust these 3 mappings ONLY if your workflow file names differ.
-            let targetContext = null;
-
-            if (path.endsWith("ci.yml") || path.endsWith("ci.yaml")) {
-              // Your PR required context is "build-test"
-              targetContext = "build-test";
-            } else if (path.includes("text") && path.includes("guard") && path.includes("smoke")) {
-              // Your PR required context is "smoke"
-              targetContext = "smoke";
-            } else if (path.endsWith("policy_gate_required.yml") || path.endsWith("policy_gate_required.yaml")) {
-              // Your PR required context is "policy_gate"
-              targetContext = "policy_gate";
-            }
-
-            if (!targetContext) {
-              core.info(`No mapping for workflow path: ${run.path}. Nothing to publish.`);
+            // Hard fail-safe: only completed workflows
+            if (run.status !== "completed") {
+              core.info(`Workflow not completed yet: ${run.status}`);
               return;
             }
 
-            core.info(`Publishing status context '${targetContext}' for sha=${sha} state=${state} (conclusion=${conclusion})`);
+            // Map workflow_run conclusion -> commit status state
+            let state = "failure";
+            if (conclusion === "success") state = "success";
+            if (conclusion === "skipped") state = "success"; // neutral-safe
+
+            // Determine target context
+            let targetContext = null;
+
+            if (path.endsWith("ci.yml") || path.endsWith("ci.yaml")) {
+              targetContext = "build-test";
+            } else if (path.endsWith("policy_gate_required.yml")) {
+              targetContext = "policy_gate";
+            } else if (path.includes("smoke")) {
+              targetContext = "smoke";
+            }
+
+            if (!targetContext) {
+              core.info(`No required context mapping for ${run.path}`);
+              return;
+            }
+
+            core.info(
+              `Publishing status context '${targetContext}' for ${sha}: ${state}`
+            );
 
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
@@ -65,7 +67,8 @@ jobs:
               sha,
               state,
               context: targetContext,
-              description: `Bridge from ${run.name} (${conclusion})`,
+              description: `Bridge: ${run.name} → ${state}`,
               target_url: run.html_url
             });
+
 
