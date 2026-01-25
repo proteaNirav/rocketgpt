@@ -26,7 +26,6 @@ jobs:
         with:
           script: |
             const run = context.payload.workflow_run;
-
             const sha = run.head_sha;
             const path = (run.path || "").toLowerCase();
             const conclusion = (run.conclusion || "").toLowerCase();
@@ -45,29 +44,22 @@ jobs:
             // Determine target context
             let targetContext = null;
 
-            // Primary mapping by workflow file path
             if (path.endsWith("ci.yml") || path.endsWith("ci.yaml")) {
               targetContext = "build-test";
-            } else if (path.endsWith("policy_gate_required.yml") || path.endsWith("policy_gate_required.yaml")) {
+            } else if (path.endsWith("policy_gate_required.yml")) {
               targetContext = "policy_gate";
             } else if (path.includes("smoke")) {
               targetContext = "smoke";
             }
 
-            // Fallback mapping by workflow name (more reliable than file path drift)
             if (!targetContext) {
-              const n = (run.name || "").toLowerCase();
-              if (n.includes("smoke")) targetContext = "smoke";
-              else if (n.includes("policy gate")) targetContext = "policy_gate";
-              else if (n.includes("build-test") || n.includes("build test")) targetContext = "build-test";
-            }
-
-            if (!targetContext) {
-              core.info(`No required context mapping for ${run.path} (name=${run.name})`);
+              core.info(`No required context mapping for ${run.path}`);
               return;
             }
 
-            core.info(`Publishing status context '${targetContext}' for ${sha}: ${state}`);
+            core.info(
+              `Publishing status context '${targetContext}' for ${sha}: ${state}`
+            );
 
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
@@ -78,49 +70,5 @@ jobs:
               description: `Bridge: ${run.name} → ${state}`,
               target_url: run.html_url
             });
-  core.info(`Workflow not completed yet: ${run.status}`);
-  return;
-}
-
-// Map workflow_run conclusion -> commit status state
-let state = "failure";
-if (conclusion === "success") state = "success";
-if (conclusion === "skipped") state = "success"; // neutral-safe
-
-// Determine target context
-let targetContext = null;
-
-if (path.endsWith("ci.yml") || path.endsWith("ci.yaml")) {
-  targetContext = "build-test";
-} else if (path.endsWith("policy_gate_required.yml") || path.endsWith("policy_gate_required.yaml")) {
-  targetContext = "policy_gate";
-} else if (path.includes("smoke")) {
-  targetContext = "smoke";
-}
-
-// Fallback mapping by workflow name (more reliable than file path)
-if (!targetContext) {
-  const n = (run.name || "").toLowerCase();
-  if (n.includes("smoke")) targetContext = "smoke";
-  else if (n.includes("policy gate")) targetContext = "policy_gate";
-  else if (n.includes("build-test") || n.includes("build test")) targetContext = "build-test";
-}
-
-if (!targetContext) {
-  core.info(`No required context mapping for ${run.path}`);
-  return;
-}
-
-core.info(`Publishing status context '${targetContext}' for ${sha}: ${state}`);
-
-await github.rest.repos.createCommitStatus({
-  owner: context.repo.owner,
-  repo: context.repo.repo,
-  sha,
-  state,
-  context: targetContext,
-  description: `Bridge: ${run.name} → ${state}`,
-  target_url: run.html_url
-});
 
 
