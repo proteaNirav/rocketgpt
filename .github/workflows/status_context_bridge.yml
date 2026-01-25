@@ -45,13 +45,13 @@ jobs:
 
             // Prefer mapping by workflow *name* (most stable)
             if (name.includes("smoke")) targetContext = "smoke";
-            else if (name.includes("policy gate") || name.includes("policy_gate")) targetContext = "policy_gate";
+            else if (name.includes("policy_gate_aggregator") || name.includes("policy gate") || name.includes("policy_gate")) targetContext = "policy_gate";
             else if (name === "ci" || name.includes("build-test") || name.includes("build test")) targetContext = "build-test";
 
             // Fallback mapping by file path (secondary)
             if (!targetContext) {
               if (path.endsWith("ci.yml") || path.endsWith("ci.yaml")) targetContext = "build-test";
-              else if (path.includes("policy_gate_required")) targetContext = "policy_gate";
+              else if (path.includes("policy_gate_aggregator") || path.includes("policy_gate_required")) targetContext = "policy_gate";
               else if (path.includes("smoke")) targetContext = "smoke";
             }
 
