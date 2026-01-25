@@ -31,15 +31,17 @@ jobs:
     name: Controlled Auto-Update
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ github.token }}
+      # Use PAT for gh CLI to allow PRs to trigger workflows
+      GH_TOKEN: ${{ secrets.RGPT_AUTOMATION_PAT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.RGPT_AUTOMATION_PAT }}
           fetch-depth: 0
           ref: ${{ inputs.target_branch }}
 
-      - name: Preflight — clean repo
+      - name: Preflight - clean repo
         shell: bash
         run: |
           set -euo pipefail
@@ -138,14 +140,15 @@ jobs:
           dir="docs/ops/executions/RGPT-S2-C-13"
           mkdir -p "$dir"
           cat > "$dir/AUTO_UPDATE_RUN_$ts.md" <<EOF
-          # Auto-Update Policy Run
-          - UTC: $ts
-          - Branch: ${{ inputs.target_branch }}
-          - Actor: ${{ github.actor }}
-          - Reason: ${{ inputs.reason }}
-          - SHA: ${{ github.sha }}
-          EOF
-      - name: Commit evidence (PR-safe)
+# Auto-Update Policy Run
+- UTC: $ts
+- Branch: ${{ inputs.target_branch }}
+- Actor: ${{ github.actor }}
+- Reason: ${{ inputs.reason }}
+- SHA: ${{ github.sha }}
+EOF
+
+      - name: Commit and create PR
         shell: bash
         run: |
           set -euo pipefail
@@ -170,25 +173,24 @@ jobs:
           git add -A
           git commit -m "ops(auto-update): record controlled auto-update evidence"
 
-          # Push branch (NOT main)
+          # Push branch using PAT (triggers workflows on the PR)
           git push -u origin "${pr_branch}"
 
           # Create (or re-use) PR back to base
           title="ops(auto-update): controlled update (${base})"
-          body=$(
-            cat <<EOF
-          ### Controlled Auto-Update Evidence
-          - mode: ${{ inputs.mode }}
-          - base: ${base}
-          - actor: ${{ github.actor }}
-          - reason: ${{ inputs.reason }}
-          - sha: ${{ github.sha }}
+          body="$(cat <<'EOF'
+### Controlled Auto-Update Evidence
+- mode: ${{ inputs.mode }}
+- base: ${base}
+- actor: ${{ github.actor }}
+- reason: ${{ inputs.reason }}
+- sha: ${{ github.sha }}
 
-          This PR is created by Auto Update Policy (Controlled) to satisfy repo rules:
-          - No direct pushes to protected branches
-          - Changes must go through PR + required checks
-          EOF
-          )
+This PR is created by Auto Update Policy (Controlled) to satisfy repo rules:
+- No direct pushes to protected branches
+- Changes must go through PR + required checks
+EOF
+)"
 
           # If PR already exists for this head branch, just print it
           if gh pr view "${pr_branch}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
@@ -203,4 +205,3 @@ jobs:
               --title "${title}" \
               --body "${body}"
           fi
-
