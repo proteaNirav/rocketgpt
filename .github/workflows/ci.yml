@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
   push:
   pull_request:
-
 permissions:
+  statuses: write
   contents: read
 
 jobs:
@@ -114,7 +114,26 @@ jobs:
         with:
           name: qa-report
           path: qa-report.json
+      - name: Publish status context (build-test)
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          JOB_STATUS: ${{ job.status }}
+        with:
+          script: |
+            const sha = context.payload.pull_request?.head?.sha || context.sha;
+            const st  = (process.env.JOB_STATUS || "").toLowerCase();
+            const state = (st === "success") ? "success" : "failure";
+            const desc  = "ci build-test => " + (st || "unknown");
+            const url   = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
-
-
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha,
+              state,
+              context: "build-test",
+              description: desc,
+              target_url: url
+            });
 
