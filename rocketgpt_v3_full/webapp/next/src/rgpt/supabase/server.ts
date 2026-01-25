@@ -1,4 +1,4 @@
-﻿import 'server-only';
+import 'server-only';
 
 // Auto-created by RGPT-S4-A2 to satisfy ../supabase/server imports.
 // Uses service role key for server-side writes (RLS bypass).

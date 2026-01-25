@@ -1,4 +1,4 @@
-﻿
+
 # RGPT local agent (keep out of main)
 .rgpt/
 
@@ -103,3 +103,16 @@ docs/ops/executions/
 docs/ops/audits/*_raw*.md
 docs/ops/audits/*inventory*.md.large
 
+!tools/
+!tools/rgpt/
+!tools/rgpt/**
+!.github/
+!.github/workflows/
+!.github/workflows/**
+
+# Local / generated junk (do not commit)
+.ops/_ci_logs/
+.ops/_merge_conflicts/
+.ops/claude/fixbundle/
+scan-local.stderr.txt
+scan-local.stdout.txt

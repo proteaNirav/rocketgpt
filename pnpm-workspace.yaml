@@ -1,0 +1,3 @@
+packages:
+  - "rocketgpt_v3_full/webapp/next"
+  - "rocketgpt-agents"
