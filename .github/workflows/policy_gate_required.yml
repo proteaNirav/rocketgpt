@@ -1,16 +1,19 @@
-name: policy_gate
+name: policy_gate_aggregator
 
 on:
   pull_request:
-  workflow_dispatch:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch: {}
 
 permissions:
   checks: read
   contents: read
+  pull-requests: read
+  statuses: write
 
 jobs:
-  policy_gate:
-    name: policy_gate
+  aggregator:
+    name: Policy Gate Aggregator
     runs-on: ubuntu-latest
     steps:
       - name: Wait for policy gate sub-jobs to complete and succeed
@@ -18,39 +21,44 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          SHA:  ${{ github.sha }}
         run: |
           $ErrorActionPreference = "Stop"
 
+          # Required sub-checks (check-run names)
           $must = @(
-            "Dependabot Policy Gate",
-            "L0 Ownership Guard (immutable files)",
-            "PR Label Enforcement (workflow-edit / auto-merge)"
+            "prompt_bypass_scan",
+            "drift_lock",
+            "rgpt-db-exposure-guard",
+            "safemode-gate",
+            "smoke",
+            "build-test"
           )
 
-          function Get-CheckRuns {
-            # Use PR head SHA (stable) over GITHUB_SHA (merge/synthetic SHA in pull_request workflows)
+          function Get-PrHeadSha {
             if (-not (Test-Path $env:GITHUB_EVENT_PATH)) {
-              throw "policy_gate_required: GITHUB_EVENT_PATH not found; cannot determine PR number."
+              throw "GITHUB_EVENT_PATH not found; cannot determine PR."
             }
-
             $evt = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
-            $prNumber = $evt.pull_request.number
-            if (-not $prNumber) { throw "policy_gate_required: could not determine PR number from event payload." }
-
-            $pr = gh api "repos/$env:REPO/pulls/$prNumber" | ConvertFrom-Json
-            $headSha = $pr.head.sha
-            if (-not $headSha) { throw "policy_gate_required: could not determine PR head sha." }
-
-            $json = gh api "repos/$env:REPO/commits/$headSha/check-runs?per_page=100"
-            return ($json | ConvertFrom-Json).check_runs
+            $sha = $evt.pull_request.head.sha
+            if (-not $sha) { throw "Could not determine PR head SHA from event payload." }
+            return $sha.Trim()
           }
+
+          function Get-CheckRuns {
+            param([string]$sha)
+            $json = gh api "repos/$env:REPO/commits/$sha/check-runs?per_page=100" -H "Accept: application/vnd.github+json"
+            $parsed = $json | ConvertFrom-Json
+            return @($parsed.check_runs)
+          }
+
+          $headSha = Get-PrHeadSha
+          Write-Host "PR head SHA: $headSha"
 
           $maxTries = 30
           $sleepSec = 10
 
-          for ($try=1; $try -le $maxTries; $try++) {
-            $runs = Get-CheckRuns
+          for ($try = 1; $try -le $maxTries; $try++) {
+            $runs = Get-CheckRuns -sha $headSha
 
             $hits = foreach ($n in $must) {
               $r = $runs | Where-Object { $_.name -eq $n } | Select-Object -First 1
@@ -64,23 +72,31 @@ jobs:
             }
 
             Write-Host ""
-            Write-Host "Try $try/$maxTries — required sub-checks status:" -ForegroundColor Yellow
+            Write-Host "Try $try/$maxTries - required sub-checks status:" -ForegroundColor Yellow
             $hits | Format-Table -AutoSize
 
-            $missing = $hits | Where-Object { -not $_.found }
-            $pending = $hits | Where-Object { $_.found -and $_.status -ne "completed" }
-            $failed  = $hits | Where-Object { $_.found -and $_.status -eq "completed" -and $_.conclusion -ne "success" }
+            $missing = @($hits | Where-Object { -not $_.found })
+            $pending = @($hits | Where-Object { $_.found -and $_.status -ne "completed" })
+            $failed  = @($hits | Where-Object { $_.found -and $_.status -eq "completed" -and $_.conclusion -ne "success" })
 
-            if ($failed) {
-              Write-Error ("policy_gate_required: FAILED because these checks failed: " + (($failed.name) -join ", "))
+            if ($failed.Count -gt 0) {
+              Write-Host "FAILED sub-checks: $($failed.name -join ', ')" -ForegroundColor Red
+              $body = @{ state = "failure"; context = "policy_gate"; description = "Sub-check failed: $($failed.name -join ', ')" } | ConvertTo-Json -Compress
+              $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input -
+              throw "policy_gate: FAILED - sub-checks failed: $($failed.name -join ', ')"
             }
 
-            if ((-not $missing) -and (-not $pending)) {
-              Write-Host "policy_gate_required: OK — all required sub-checks succeeded." -ForegroundColor Green
+            if ($missing.Count -eq 0 -and $pending.Count -eq 0) {
+              Write-Host "policy_gate: OK - all required sub-checks succeeded." -ForegroundColor Green
+              $body = @{ state = "success"; context = "policy_gate"; description = "All policy gate sub-checks passed" } | ConvertTo-Json -Compress
+              $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input -
               exit 0
             }
 
+            Write-Host "Waiting... missing=$($missing.Count) pending=$($pending.Count)"
             Start-Sleep -Seconds $sleepSec
           }
 
-          Write-Error "policy_gate_required: TIMEOUT waiting for sub-checks to complete."
+          $body = @{ state = "failure"; context = "policy_gate"; description = "Timeout waiting for sub-checks" } | ConvertTo-Json -Compress
+          $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input -
+          throw "policy_gate: TIMEOUT waiting for sub-checks to complete."

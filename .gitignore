@@ -109,3 +109,10 @@ docs/ops/audits/*inventory*.md.large
 !.github/
 !.github/workflows/
 !.github/workflows/**
+
+# Local / generated junk (do not commit)
+.ops/_ci_logs/
+.ops/_merge_conflicts/
+.ops/claude/fixbundle/
+scan-local.stderr.txt
+scan-local.stdout.txt

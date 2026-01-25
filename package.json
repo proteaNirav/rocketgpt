@@ -1,5 +1,16 @@
 {
   "devDependencies": {
     "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "ws:build": "pnpm -r --if-present run build",
+    "ws:lint": "pnpm -r --if-present run lint",
+    "ws:test": "pnpm -r --if-present run test"
+  },
+  "name": "rocketgpt-workspace",
+  "private": true,
+  "pnpm": {
+    "overrides": {}
   }
 }
+
