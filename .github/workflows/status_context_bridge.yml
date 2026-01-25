@@ -75,7 +75,7 @@ jobs:
               sha,
               state,
               context: targetContext,
-              description: `Bridge: ${run.name} → ${state}`,
+              description: `Bridge: ${run.name} ΓåÆ ${state}`,
               target_url: run.html_url
             });
 
