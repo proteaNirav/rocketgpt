@@ -6,6 +6,9 @@ name: text-guard (smoke)
 # - Permissions: read-only
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
   pull_request:
     branches: [ main ]
@@ -25,16 +28,17 @@ jobs:
 
       - name: Show Phase-2 flag
         run: |
-          echo "🛡 Text-Guard Phase-2 preview"
+          echo "≡ƒ¢í Text-Guard Phase-2 preview"
           echo "Config path: $TEXTGUARD_PHASE2_CONFIG"
           if [ -f "$TEXTGUARD_PHASE2_CONFIG" ]; then
             echo "Config file found. Contents:"
             cat "$TEXTGUARD_PHASE2_CONFIG"
           else
-            echo "⚠ Config file NOT found"
+            echo "ΓÜá Config file NOT found"
           fi
 
           echo "Smoke OK"
           echo "sha="
 # phase2-preview marker: 2025-11-12T21:19:37.5322797+05:30
 # ensure-diff: 2025-11-13T00:45:06.0638518+05:30
+
