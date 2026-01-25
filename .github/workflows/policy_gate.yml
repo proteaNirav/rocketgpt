@@ -3,11 +3,14 @@ name: policy_gate
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
   pull-requests: read
+  statuses: write
 
 concurrency:
   group: policy_gate-${{ github.ref }}
@@ -15,8 +18,9 @@ concurrency:
 
 jobs:
   policy_gate:
-    if: ${{ github.event.pull_request.draft != true }}
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft != true }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,21 +41,72 @@ jobs:
             supabase/**
 
       - name: Policy gate summary
+        shell: bash
         run: |
+          set -euo pipefail
           echo "Changed files:"
           echo "${{ steps.diff.outputs.all_changed_files }}"
 
-      # --- HARD RULES (fail fast) ---
+      # --- HARD RULE: Block workflow edits unless allowlisted (allow self only) ---
       - name: Block workflow edits unless allowlisted
-        if: ${{ contains(steps.diff.outputs.all_changed_files, '.github/workflows/') }}
+        shell: bash
         run: |
-          echo "Workflow file changes detected."
-      # Allow policy_gate to modify itself (bootstrap / maintenance)
-      if [ -n "$CHANGED_WORKFLOWS" ]; then
-        CHANGED_WORKFLOWS=$(printf "%s\n" "$CHANGED_WORKFLOWS" | grep -v '^.github/workflows/policy_gate\.yml          echo "If this is intentional, ensure the PR has the required safety label(s) and allowlist entry."
-          exit 1
- || true)
-      fi
-          echo "If this is intentional, ensure the PR has the required safety label(s) and allowlist entry."
-          exit 1
+          set -euo pipefail
+          CHANGED="${{ steps.diff.outputs.all_changed_files }}"
+          # changed-files returns a space-separated list; normalize to one-per-line
+          WF=$(printf "%s\n" "$CHANGED" | tr ' ' '\n' | grep -E '^\.github/workflows/' || true)
 
+          if [ -z "$WF" ]; then
+            echo "No workflow file changes detected."
+            exit 0
+          fi
+
+          echo "Workflow file changes detected:"
+          echo "$WF"
+
+          # Allow policy_gate.yml to modify itself; block any other workflow edits
+          BLOCK=$(printf "%s\n" "$WF" | grep -vE '^\.github/workflows/policy_gate\.yml$' || true)
+
+          if [ -n "$BLOCK" ]; then
+            echo "::error::Blocked workflow edits (not allowlisted):"
+            echo "$BLOCK"
+            exit 1
+          fi
+
+          echo "Only policy_gate.yml changed (allowed)."
+
+      - name: Publish status context (policy_gate)
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          JOB_STATUS: ${{ job.status }}
+        with:
+          script: |
+            const sha = context.payload.pull_request?.head?.sha || context.sha;
+            const st  = (process.env.JOB_STATUS || "").toLowerCase();
+            const state = (st === "success") ? "success" : "failure";
+            const desc  = "policy_gate => " + (st || "unknown");
+            const url   = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            // Retry on transient GitHub errors
+            async function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+            const max = 5;
+            for (let i=1; i<=max; i++){
+              try{
+                await github.rest.repos.createCommitStatus({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  sha,
+                  state,
+                  context: "policy_gate",
+                  description: desc,
+                  target_url: url
+                });
+                core.info(`Published policy_gate status (${state}) on ${sha}`);
+                break;
+              } catch (e) {
+                core.warning(`Attempt ${i}/${max} failed: ${e.status || ''} ${e.message}`);
+                if (i === max) throw e;
+                await sleep(1500 * i);
+              }
+            }
