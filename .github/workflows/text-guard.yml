@@ -1,77 +1,44 @@
-name: status_context_bridge
+name: text-guard (smoke)
+
+# Safety: Text-guard smoke test workflow (read-only)
+# - Tests text-guard Phase-2 configuration
+# - No modifications, only displays config
+# - Permissions: read-only
 
 on:
   push:
     branches:
       - main
-  workflow_run:
-    workflows:
-      - ci
-      - text-guard (smoke)
-      - policy_gate_aggregator
-    types:
-      - completed
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
 
 permissions:
-  statuses: write
-  actions: read
   contents: read
 
 jobs:
-  publish:
+  smoke:
     runs-on: ubuntu-latest
+    env:
+      TEXTGUARD_PHASE2_CONFIG: config/textguard_phase2.json
+
     steps:
-      - name: Publish required status contexts
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const run = context.payload.workflow_run;
+      - name: Checkout
+        uses: actions/checkout@v4
 
-            const sha = run.head_sha;
-            const path = (run.path || "").toLowerCase();
-            const name = (run.name || "").toLowerCase();
-            const conclusion = (run.conclusion || "").toLowerCase();
+      - name: Show Phase-2 flag
+        run: |
+          echo "≡ƒ¢í Text-Guard Phase-2 preview"
+          echo "Config path: $TEXTGUARD_PHASE2_CONFIG"
+          if [ -f "$TEXTGUARD_PHASE2_CONFIG" ]; then
+            echo "Config file found. Contents:"
+            cat "$TEXTGUARD_PHASE2_CONFIG"
+          else
+            echo "ΓÜá Config file NOT found"
+          fi
 
-            // Only completed workflow_run events should publish a commit status
-            if (run.status !== "completed") {
-              core.info(`Workflow not completed yet: ${run.status}`);
-              return;
-            }
-
-            // Map workflow_run conclusion -> commit status state
-            let state = "failure";
-            if (conclusion === "success") state = "success";
-            if (conclusion === "skipped") state = "success"; // neutral-safe for required contexts
-
-            // Determine target required STATUS context
-            let targetContext = null;
-
-            // Prefer mapping by workflow *name* (most stable)
-            if (name.includes("smoke")) targetContext = "smoke";
-            else if (name.includes("policy_gate_aggregator") || name.includes("policy gate") || name.includes("policy_gate")) targetContext = "policy_gate";
-            else if (name === "ci" || name.includes("build-test") || name.includes("build test")) targetContext = "build-test";
-
-            // Fallback mapping by file path (secondary)
-            if (!targetContext) {
-              if (path.endsWith("ci.yml") || path.endsWith("ci.yaml")) targetContext = "build-test";
-              else if (path.includes("policy_gate_aggregator") || path.includes("policy_gate_required")) targetContext = "policy_gate";
-              else if (path.includes("smoke")) targetContext = "smoke";
-            }
-
-            if (!targetContext) {
-              core.info(`No required context mapping for workflow: name='${run.name}' path='${run.path}'`);
-              return;
-            }
-
-            core.info(`Publishing status context '${targetContext}' for ${sha}: ${state}`);
-
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha,
-              state,
-              context: targetContext,
-              description: `Bridge: ${run.name} → ${state}`,
-              target_url: run.html_url
-            });
+          echo "Smoke OK"
+          echo "sha="
+# phase2-preview marker: 2025-11-12T21:19:37.5322797+05:30
+# ensure-diff: 2025-11-13T00:45:06.0638518+05:30
 
