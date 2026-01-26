@@ -36,6 +36,9 @@ This index links all major architectural, AI, safety, and improvement documents.
 - **RocketGPT v4 Core AI (Self-Healing, Self-Improving)**  
   `docs/roadmap/v4-core-ai.md`
 
+<!-- Phase-1 validation: PR-1 baseline -->
+
+
 ---
 
 *This file will keep expanding as RocketGPT grows.*
