@@ -13,6 +13,8 @@ permissions:
 
 jobs:
   ui-check-and-heal:
+    env:
+      NEXT_PUBLIC_CORE_API_BASE: ${{ vars.NEXT_PUBLIC_CORE_API_BASE }}
     runs-on: ubuntu-latest
 
     steps:
@@ -46,3 +48,4 @@ jobs:
             --head "${{ github.event.pull_request.head.sha }}" \
             --pr "${{ github.event.pull_request.number }}"
         working-directory: .
+
