@@ -6,16 +6,16 @@ name: ci
 # - BOM detection enforces UTF-8 no-BOM policy
 
 permissions:
-  checks: write
   contents: read
-
+  checks: write
+  statuses: write
 on:  workflow_dispatch:
   push:
   pull_request:
 permissions:
-  statuses: write
   contents: read
-
+  checks: write
+  statuses: write
 jobs:
   bom_check:
     env:
@@ -198,6 +198,7 @@ jobs:
               description: desc,
               target_url: url
             });
+
 
 
 
