@@ -27,8 +27,6 @@ jobs:
         run: |
           pwsh .github/tools/ci/detect-bom.ps1 -Paths @(".github/workflows",".github/tools","docs","rocketgpt_v3_full")
   build-test:
-    env:
-      NEXT_PUBLIC_CORE_API_BASE: ${{ vars.NEXT_PUBLIC_CORE_API_BASE }}`r
     runs-on: ubuntu-latest
     env:
       CORE_API_BASE: https://rocketgpt-core-api.onrender.com
@@ -140,6 +138,7 @@ jobs:
               description: desc,
               target_url: url
             });
+
 
 
 
