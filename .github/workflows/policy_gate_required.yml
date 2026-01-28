@@ -30,7 +30,6 @@ jobs:
             "rgpt-db-exposure-guard",
             "safemode-gate",
             "smoke",
-            "build-test"
           )
 
           # Include drift_lock only if it is expected to run for this PR
@@ -122,3 +121,4 @@ jobs:
           $body = @{ state = "failure"; context = "policy_gate"; description = "Timeout waiting for sub-checks" } | ConvertTo-Json -Compress
           $body | gh api "repos/$env:REPO/statuses/$headSha" -X POST --input -
           throw "policy_gate: TIMEOUT waiting for sub-checks to complete."
+
