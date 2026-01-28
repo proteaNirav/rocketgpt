@@ -16,7 +16,7 @@ permissions:
 jobs:
   bom_check:
     env:
-      NEXT_PUBLIC_CORE_API_BASE: ${{ vars.NEXT_PUBLIC_CORE_API_BASE }}
+
     name: Detect UTF-8 BOM
     runs-on: ubuntu-latest
     steps:
@@ -29,6 +29,7 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     env:
+      NEXT_PUBLIC_CORE_API_BASE: ${{ vars.NEXT_PUBLIC_CORE_API_BASE }}
       CORE_API_BASE: https://rocketgpt-core-api.onrender.com
       NODE_OPTIONS: --max_old_space_size=4096
 
@@ -138,6 +139,7 @@ jobs:
               description: desc,
               target_url: url
             });
+
 
 
 

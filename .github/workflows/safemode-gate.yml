@@ -61,7 +61,8 @@ jobs:
             "SAFE_MODE=1",
             "RGPT_SAFE_MODE=1",
             "ROCKETGPT_SAFE_MODE=1",
-            "NEXT_PUBLIC_SAFE_MODE=1"
+            "NEXT_PUBLIC_SAFE_MODE=1",
+            "NEXT_PUBLIC_CORE_API_BASE=${{ vars.NEXT_PUBLIC_CORE_API_BASE }}"
           )
           $lines | Set-Content -Path $envFile -Encoding UTF8
           Write-Host "Wrote ${envFile}:"
@@ -153,6 +154,7 @@ jobs:
               Write-Host "Stopped PID $env:NEXT_PID"
             } catch {}
           }
+
 
 
 
