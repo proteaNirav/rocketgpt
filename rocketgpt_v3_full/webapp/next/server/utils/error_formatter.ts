@@ -4,17 +4,14 @@
  */
 
 export function formatApiError(err: any) {
-  const message =
-    typeof err?.message === "string"
-      ? err.message
-      : "Unexpected server error";
+  const message = typeof err?.message === 'string' ? err.message : 'Unexpected server error'
 
-  const errorName = err?.name || "ServerError";
+  const errorName = err?.name || 'ServerError'
 
   return {
     success: false,
     error: errorName,
     message,
-    stack: process.env.NODE_ENV === "development" ? err?.stack : undefined,
-  };
+    stack: process.env.NODE_ENV === 'development' ? err?.stack : undefined,
+  }
 }

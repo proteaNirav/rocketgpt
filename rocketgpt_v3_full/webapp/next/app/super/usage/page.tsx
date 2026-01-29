@@ -1,29 +1,29 @@
-'use client';
-import { useEffect, useState } from 'react';
+'use client'
+import { useEffect, useState } from 'react'
 
 type Row = {
-  user_id: string;
-  email: string;
-  endpoint: string;
-  allowed_hits: number;
-  blocked_hits: number;
-  last_call: string;
-};
+  user_id: string
+  email: string
+  endpoint: string
+  allowed_hits: number
+  blocked_hits: number
+  last_call: string
+}
 
 export default function UsagePage() {
-  const [rows, setRows] = useState<Row[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState<Row[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch('/api/usage')
-      .then(r => r.json())
-      .then(j => {
-        setRows(j.data || []);
-        setLoading(false);
-      });
-  }, []);
+      .then((r) => r.json())
+      .then((j) => {
+        setRows(j.data || [])
+        setLoading(false)
+      })
+  }, [])
 
-  if (loading) return <div className="p-6">Loading usageâ€¦</div>;
+  if (loading) return <div className="p-6">Loading usageâ€¦</div>
 
   return (
     <main className="p-6 space-y-4">
@@ -46,14 +46,14 @@ export default function UsagePage() {
                 <td className="px-3 py-2">{r.endpoint}</td>
                 <td className="px-3 py-2 text-green-400 text-center">{r.allowed_hits}</td>
                 <td className="px-3 py-2 text-red-400 text-center">{r.blocked_hits}</td>
-                <td className="px-3 py-2 text-gray-400">{new Date(r.last_call).toLocaleString()}</td>
+                <td className="px-3 py-2 text-gray-400">
+                  {new Date(r.last_call).toLocaleString()}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
     </main>
-  );
+  )
 }
-
-

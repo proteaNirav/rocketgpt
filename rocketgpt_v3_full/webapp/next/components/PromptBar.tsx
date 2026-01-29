@@ -15,7 +15,9 @@ export default function PromptBar({ onSend, loading }: any) {
   }
 
   function onStop() {
-    try { controller?.abort() } catch {}
+    try {
+      controller?.abort()
+    } catch {}
   }
 
   return (
@@ -24,20 +26,27 @@ export default function PromptBar({ onSend, loading }: any) {
         className="input min-h-[56px]"
         placeholder="Describe what you want. Iâ€™ll build the cheapest + fastest pathâ€¦"
         value={text}
-        onChange={(e)=>setText(e.target.value)}
+        onChange={(e) => setText(e.target.value)}
       />
       {!loading ? (
-        <button className="btn shrink-0 flex items-center gap-2" type="submit" aria-label="Run" title="Run">
+        <button
+          className="btn shrink-0 flex items-center gap-2"
+          type="submit"
+          aria-label="Run"
+          title="Run"
+        >
           <span className="inline-block rounded-full border border-border p-2">ðŸŸ¢</span>
           Run
         </button>
       ) : (
-        <button type="button" className="btn shrink-0 flex items-center gap-2 border-error/50" onClick={onStop}>
-          <Spinner/> Stop
+        <button
+          type="button"
+          className="btn shrink-0 flex items-center gap-2 border-error/50"
+          onClick={onStop}
+        >
+          <Spinner /> Stop
         </button>
       )}
     </form>
   )
 }
-
-
