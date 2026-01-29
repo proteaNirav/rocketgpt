@@ -1,11 +1,10 @@
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 
-import { NextRequest, NextResponse } from "next/server";
-import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
-import { safeModeGuard } from "../../_core/safeMode";
-export const runtime = "nodejs";
-
+import { NextRequest, NextResponse } from 'next/server'
+import { runtimeGuard } from '@/rgpt/runtime/runtime-guard'
+import { safeModeGuard } from '../../_core/safeMode'
+export const runtime = 'nodejs'
 
 /**
  * RocketGPT Orchestrator â€“ Tester Execute Route (Stub)
@@ -20,42 +19,40 @@ export const runtime = "nodejs";
  */
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-  const url = new URL(req.url);
+  await runtimeGuard(req, { permission: 'API_CALL' }) // TODO(S4): tighten permission per route
+  const url = new URL(req.url)
 
-  const headerRunId = req.headers.get("x-rgpt-run-id") ?? undefined;
-  const queryRunId = url.searchParams.get("run_id") ?? undefined;
+  const headerRunId = req.headers.get('x-rgpt-run-id') ?? undefined
+  const queryRunId = url.searchParams.get('run_id') ?? undefined
 
-  let body: any = {};
+  let body: any = {}
   try {
-    body = (await req.json()) as any;
+    body = (await req.json()) as any
   } catch {
-    body = {};
+    body = {}
   }
 
-  const bodyRunId: string | undefined = body.run_id ?? body.runId ?? undefined;
-  const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID();
+  const bodyRunId: string | undefined = body.run_id ?? body.runId ?? undefined
+  const runId = headerRunId ?? queryRunId ?? bodyRunId ?? crypto.randomUUID()
 
   // Safe-Mode guard â€“ block high-risk capability when enabled
   try {
-    safeModeGuard("tester-execute");
+    safeModeGuard('tester-execute')
   } catch (err: any) {
-    const statusCode = typeof err?.status === "number" ? err.status : 503;
-    return NextResponse.json(err, { status: statusCode });
+    const statusCode = typeof err?.status === 'number' ? err.status : 503
+    return NextResponse.json(err, { status: statusCode })
   }
 
   // Stubbed behaviour (no heavy side effects)
   return NextResponse.json(
     {
       success: true,
-      message: "Orchestrator tester execute endpoint (stub).",
-      route: "/api/orchestrator/tester/execute",
+      message: 'Orchestrator tester execute endpoint (stub).',
+      route: '/api/orchestrator/tester/execute',
       runId,
       received_input: body ?? null,
-      note:
-        "PhaseB StepB7 placeholder. Wire to real tester engine in a future step.",
+      note: 'PhaseB StepB7 placeholder. Wire to real tester engine in a future step.',
     },
-    { status: 200 }
-  );
+    { status: 200 },
+  )
 }
-
