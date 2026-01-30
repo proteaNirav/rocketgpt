@@ -10,7 +10,8 @@
     "start": "next start",
     "dev": "next dev",
     "format": "prettier -w .",
-    "rgpt:provider-harness": "pnpm --filter rocketgpt-agents harness"
+    "rgpt:provider-harness": "pnpm --filter rocketgpt-agents harness",
+    "prebuild": "node -e \"if(!process.env.NEXT_PUBLIC_CORE_API_BASE){console.error('Missing NEXT_PUBLIC_CORE_API_BASE');process.exit(1)}\""
   },
   "engines": {
     "node": "20.x"
@@ -57,4 +58,3 @@
   },
   "pnpm": {}
 }
-
