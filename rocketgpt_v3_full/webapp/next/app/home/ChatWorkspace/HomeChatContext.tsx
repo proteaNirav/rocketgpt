@@ -18,6 +18,7 @@ export interface UseHomeChatResult {
   error: string | null;
   sendMessage: (text: string) => Promise<void>;
   clearMessages: () => void;
+  resetChat: () => void;
 }
 
 type HomeChatContextValue = UseHomeChatResult;
@@ -126,9 +127,19 @@ export function HomeChatProvider({ children }: { children: ReactNode }) {
     setError(null);
   };
 
+  /**
+   * resetChat - Full reset for New Chat button
+   * Clears messages, error, and sending state.
+   */
+  const resetChat = (): void => {
+    setMessages([]);
+    setError(null);
+    setSending(false);
+  };
+
   return (
     <HomeChatContext.Provider
-      value={{ messages, sending, error, sendMessage, clearMessages }}
+      value={{ messages, sending, error, sendMessage, clearMessages, resetChat }}
     >
       {children}
     </HomeChatContext.Provider>

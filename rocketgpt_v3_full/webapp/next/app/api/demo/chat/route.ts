@@ -1,50 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
-import { completeChatWithFallback, type LLMMessage } from "../../_lib/llmProvider";
+import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-type ChatMessage = {
-  role: "user" | "assistant" | "system";
-  content: string;
-};
+/**
+ * POST /api/demo/chat
+ * Phase-1: Returns a stub reply. Always 200, never 500.
+ * Real LLM integration will be wired in a future phase.
+ */
+export async function POST() {
+  // Phase-1: Return stub reply to avoid 500 errors
+  const reply =
+    "Hello! I'm RocketGPT running in Phase-1 demo mode. " +
+    "Full chat functionality will be enabled soon. " +
+    "For now, this is a placeholder response.";
 
-export async function POST(req: NextRequest) {
-  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-  try {
-    const body = await req.json().catch(() => ({}));
-    const messages = (body as any)?.messages as ChatMessage[] | undefined;
-
-    const safeMessages: ChatMessage[] = Array.isArray(messages)
-      ? messages.map((m) => ({
-          role:
-            m.role === "assistant" || m.role === "system" ? m.role : "user",
-          content: String(m.content ?? ""),
-        }))
-      : [];
-
-    const systemMessage: ChatMessage = {
-      role: "system",
-      content:
-        "You are RocketGPT, an AI Orchestrator assistant. Be concise, helpful, and safe. You are running in a demo environment wired through Next.js.",
-    };
-
-    const providerMessages: LLMMessage[] = [systemMessage, ...safeMessages].map(
-      (m) => ({
-        role: m.role,
-        content: m.content,
-      })
-    );
-
-    const reply = await completeChatWithFallback(providerMessages);
-
-    return NextResponse.json({ reply });
-  } catch (err: any) {
-    console.error("Error in /api/demo/chat:", err);
-    const message =
-      err && typeof err.message === "string"
-        ? err.message
-        : "Internal error in /api/demo/chat";
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+  return NextResponse.json({ reply });
 }
