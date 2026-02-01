@@ -27,6 +27,7 @@ const HomeChatContext = createContext<HomeChatContextValue | null>(null);
 /**
  * HomeChatProvider
  * Provides shared chat state across the Home workspace.
+ * Phase-1: Messages start empty (no demo seeding).
  */
 export function HomeChatProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<HomeChatMessage[]>([]);
