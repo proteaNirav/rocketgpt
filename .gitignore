@@ -119,3 +119,7 @@ scan-local.stdout.txt
 
 ci_logs/
 
+
+# Ignore Windows reserved device file accidentally created
+nul
+
