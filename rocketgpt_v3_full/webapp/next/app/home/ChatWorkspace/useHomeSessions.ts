@@ -24,20 +24,26 @@ interface UseHomeSessionsResult {
   error: string | null;
   activeSessionId: string | null;
   selectSession: (id: string) => void;
+  isAuthenticated: boolean;
 }
 
 /**
  * useHomeSessions
  * ---------------
- * STEP-9: Returns mock data shaped as groups for the Home sidebar.
- * STEP-9-E: Also tracks locally which session is active.
- * Later, only this hook needs to change to call a real /api/sessions endpoint.
+ * Phase-1: Sessions are only shown for authenticated users.
+ * Anonymous users see an empty state with sign-in prompt.
+ *
+ * TODO: Wire to real auth provider (Supabase/NextAuth).
  */
 export function useHomeSessions(): UseHomeSessionsResult {
   const [groups, setGroups] = useState<HomeSessionGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+
+  // Phase-1: Default to NOT authenticated - safer for privacy
+  // TODO: Replace with real auth check (e.g., useSession from next-auth or Supabase)
+  const [isAuthenticated] = useState<boolean>(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -47,12 +53,21 @@ export function useHomeSessions(): UseHomeSessionsResult {
         setLoading(true);
         setError(null);
 
-        // STEP-9: mock data.
-        // TODO (later): Replace this block with a real fetch to your sessions API.
+        // Phase-1 Privacy Rule: Do NOT show historical sessions for anonymous users
+        if (!isAuthenticated) {
+          if (!cancelled) {
+            setGroups([]);
+            setActiveSessionId(null);
+          }
+          return;
+        }
+
+        // Only load sessions when authenticated
+        // TODO: Replace mock data with real /api/sessions call
         const mockSessions: HomeSession[] = [
           {
             id: "home-chat-rgpt",
-            title: "Home Chat — RocketGPT workspace",
+            title: "Home Chat - RocketGPT workspace",
             subtitle: "UI: Collapsible panes, sessions sidebar",
             badge: "Active",
             group: "today",
@@ -69,18 +84,6 @@ export function useHomeSessions(): UseHomeSessionsResult {
             title: "Self-Improve pipeline review",
             subtitle: "Review auto-heal + AI codegen paths",
             group: "thisWeek",
-          },
-          {
-            id: "sql-tooling-ideas",
-            title: "SQL tooling ideas",
-            subtitle: "World-class SQL monitor & dev tool",
-            group: "thisWeek",
-          },
-          {
-            id: "ai-test-flow-crawl",
-            title: "AI-Test Flow crawl setup",
-            subtitle: "Demo crawl, safe-mode & RCA hooks",
-            group: "earlier",
           },
         ];
 
@@ -103,9 +106,8 @@ export function useHomeSessions(): UseHomeSessionsResult {
         ].filter((g) => g.sessions.length > 0);
 
         if (!cancelled) {
-          setGroups(grouped as any);
+          setGroups(grouped as HomeSessionGroup[]);
 
-          // If no active session yet, default to the first available session
           if (!activeSessionId) {
             const first = grouped.flatMap((g) => g.sessions)[0];
             if (first) {
@@ -115,7 +117,7 @@ export function useHomeSessions(): UseHomeSessionsResult {
         }
       } catch (e) {
         if (!cancelled) {
-          setError("Failed to load sessions (mock).");
+          setError("Failed to load sessions.");
         }
       } finally {
         if (!cancelled) {
@@ -129,12 +131,12 @@ export function useHomeSessions(): UseHomeSessionsResult {
     return () => {
       cancelled = true;
     };
-  }, [activeSessionId]);
+  }, [activeSessionId, isAuthenticated]);
 
   const selectSession = (id: string) => {
     setActiveSessionId(id);
   };
 
-  return { groups, loading, error, activeSessionId, selectSession };
+  return { groups, loading, error, activeSessionId, selectSession, isAuthenticated };
 }
 
