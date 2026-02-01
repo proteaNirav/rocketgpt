@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { useHomeChat } from "./useHomeChat";
 
 export function CenterChatPane() {
-  const { messages, sending, error, sendMessage } = useHomeChat();
+  const { messages, sending, error, sendMessage, resetKey } = useHomeChat();
   const [input, setInput] = useState("");
 
   const handleSubmit = async (e: FormEvent) => {
@@ -17,6 +17,11 @@ export function CenterChatPane() {
 
   return (
     <section className="flex h-full min-h-[420px] flex-col gap-4">
+      {/* Demo mode banner */}
+      <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+        Demo mode: RocketGPT is running with placeholder responses for Phase-1 UAT.
+      </div>
+
       {/* Welcome / info card */}
       <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-sm">
         <h2 className="text-sm font-semibold">
@@ -74,8 +79,8 @@ export function CenterChatPane() {
           )}
         </div>
 
-        {/* Composer area pinned to bottom */}
-        <div className="border-t border-border bg-background/80 px-4 py-3">
+        {/* Composer area pinned to bottom - key resets input on New Chat */}
+        <div key={resetKey} className="border-t border-border bg-background/80 px-4 py-3">
           <form onSubmit={handleSubmit} className="flex flex-col gap-2">
             <div className="flex gap-2">
               <textarea

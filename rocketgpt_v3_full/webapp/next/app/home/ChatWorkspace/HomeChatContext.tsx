@@ -19,6 +19,8 @@ export interface UseHomeChatResult {
   sendMessage: (text: string) => Promise<void>;
   clearMessages: () => void;
   resetChat: () => void;
+  /** Increments on resetChat(); use as key to hard-reset child components */
+  resetKey: number;
 }
 
 type HomeChatContextValue = UseHomeChatResult;
@@ -34,6 +36,7 @@ export function HomeChatProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<HomeChatMessage[]>([]);
   const [sending, setSending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [resetKey, setResetKey] = useState<number>(0);
 
   const sendMessage = async (text: string): Promise<void> => {
     const trimmed = text.trim();
@@ -129,17 +132,19 @@ export function HomeChatProvider({ children }: { children: ReactNode }) {
 
   /**
    * resetChat - Full reset for New Chat button
-   * Clears messages, error, and sending state.
+   * Clears messages, error, sending state, and increments resetKey
+   * so child components (like composer input) can hard-reset.
    */
   const resetChat = (): void => {
     setMessages([]);
     setError(null);
     setSending(false);
+    setResetKey((k) => k + 1);
   };
 
   return (
     <HomeChatContext.Provider
-      value={{ messages, sending, error, sendMessage, clearMessages, resetChat }}
+      value={{ messages, sending, error, sendMessage, clearMessages, resetChat, resetKey }}
     >
       {children}
     </HomeChatContext.Provider>
