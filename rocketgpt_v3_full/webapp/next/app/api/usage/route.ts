@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
-import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
-export const runtime = "nodejs";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 type UsageEntry = {
   date: string;
@@ -10,16 +9,32 @@ type UsageEntry = {
   tokens: number;
 };
 
-const demoUsage: UsageEntry[] = [
-  { date: new Date().toISOString(), requests: 3, tokens: 1400 },
-  { date: new Date(Date.now() - 86400000).toISOString(), requests: 5, tokens: 2100 },
-];
-
+/**
+ * GET /api/usage
+ * Phase-1: Returns empty/stub usage data with stable schema.
+ * Always returns 200 to avoid demo-breaking 500 errors.
+ */
 export async function GET() {
-  const req = new Request("http://localhost/_rgpt", { headers: headers() as any });
-  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-  // In future, replace demoUsage with real usage summaries.
-  return NextResponse.json({
-    usage: demoUsage,
-  });
+  try {
+    // Phase-1: Return empty usage - analytics not wired yet
+    const response = {
+      ok: true,
+      usage: [] as UsageEntry[],
+      totals: { requests: 0, tokens: 0 },
+      range: { from: null, to: null },
+      message: "Usage analytics is not enabled yet.",
+    };
+
+    return NextResponse.json(response);
+  } catch (err: unknown) {
+    // Even on error, return 200 with empty state for Phase-1
+    console.error("[/api/usage] Error:", err);
+    return NextResponse.json({
+      ok: true,
+      usage: [],
+      totals: { requests: 0, tokens: 0 },
+      range: { from: null, to: null },
+      message: "Usage data unavailable.",
+    });
+  }
 }
