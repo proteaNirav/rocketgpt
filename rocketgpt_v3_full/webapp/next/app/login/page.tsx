@@ -3,6 +3,17 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getSupabaseBrowserClient } from '@/lib/supabase/browser'
 
+/**
+ * Get the site URL for OAuth redirects.
+ * Uses NEXT_PUBLIC_SITE_URL if set, otherwise derives from window.location.origin.
+ */
+function getSiteUrl(): string {
+  if (typeof window !== 'undefined') {
+    return process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+  }
+  return process.env.NEXT_PUBLIC_SITE_URL || ''
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [otpSent, setOtpSent] = useState(false)
@@ -12,9 +23,10 @@ export default function LoginPage() {
   const supabase = useMemo(() => getSupabaseBrowserClient(), [])
 
   async function sendOtp() {
+    const siteUrl = getSiteUrl()
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/account` },
+      options: { emailRedirectTo: `${siteUrl}/auth/callback?next=/account` },
     })
     if (error) alert(error.message)
     else setOtpSent(true)
@@ -31,9 +43,10 @@ export default function LoginPage() {
   }
 
   async function oauth(provider: 'google' | 'azure') {
+    const siteUrl = getSiteUrl()
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/account` },
+      options: { redirectTo: `${siteUrl}/auth/callback?next=/account` },
     })
     if (error) alert(error.message)
   }
