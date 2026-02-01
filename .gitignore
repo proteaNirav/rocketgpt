@@ -116,3 +116,6 @@ docs/ops/audits/*inventory*.md.large
 .ops/claude/fixbundle/
 scan-local.stderr.txt
 scan-local.stdout.txt
+
+ci_logs/
+
