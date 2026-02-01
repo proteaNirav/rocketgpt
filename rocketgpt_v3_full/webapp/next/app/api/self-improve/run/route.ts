@@ -1,9 +1,8 @@
 import { withApiGuard } from "../../../../src/rgpt/api/api-guard";
 import { NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+
 export const runtime = "nodejs";
-
-
 export const dynamic = "force-dynamic";
 
 function isTruthyEnv(value: string | undefined): boolean {
@@ -12,9 +11,13 @@ function isTruthyEnv(value: string | undefined): boolean {
   return v === "1" || v === "true" || v === "yes";
 }
 
-export async function POST(req: Request) {
-  return withApiGuard(req as any, { requireAuth: true, requireRole: ["admin"], rate: { limit: 10, windowMs: 60_000 }, safeModeBlock: true }, async (_ctx) => {
+/**
+ * POST /api/self-improve/run
+ * Trigger stub for self-improvement executor (admin-only, SAFE_MODE gated).
+ */
+export const POST = withApiGuard(async (req: Request) => {
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
+
   let body: unknown = null;
   try {
     body = await req.json();
@@ -29,16 +32,15 @@ export async function POST(req: Request) {
     accepted: true,
     writeEnabled,
     message:
-      "Self-improve run trigger stub Ã¢â‚¬â€œ executor wiring is pending. " +
+      "Self-improve run trigger stub - executor wiring is pending. " +
       "This endpoint currently only acknowledges the request.",
     received: body,
     timestamp: new Date().toISOString(),
   };
 
-  // 202 Accepted Ã¢â‚¬â€œ work would normally be queued for async execution
+  // 202 Accepted - work would normally be queued for async execution
   return NextResponse.json(payload, { status: 202 });
-  });
-}
+});
 // Optional: reject GET explicitly for /api/self-improve/run
 export async function GET() {
   return NextResponse.json(
