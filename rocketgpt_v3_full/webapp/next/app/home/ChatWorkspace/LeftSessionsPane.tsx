@@ -7,7 +7,7 @@ import { useHomeChat } from "./useHomeChat";
 export default function LeftSessionsPane() {
   const { groups, loading, error, activeSessionId, selectSession, isAuthenticated } =
     useHomeSessions();
-  const { clearMessages } = useHomeChat();
+  const { resetChat } = useHomeChat();
 
   return (
     <aside className="h-full bg-slate-950/60 border-r border-slate-900/80 flex flex-col">
@@ -23,7 +23,7 @@ export default function LeftSessionsPane() {
         </div>
         <button
           type="button"
-          onClick={clearMessages}
+          onClick={resetChat}
           className="inline-flex items-center rounded-full border border-emerald-500/70 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-200 hover:bg-emerald-500/20 focus:outline-none focus:ring-1 focus:ring-emerald-500"
         >
           <span className="mr-1 text-[13px] leading-none">＋</span>
