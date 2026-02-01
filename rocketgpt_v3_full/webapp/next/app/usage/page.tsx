@@ -9,7 +9,10 @@ type UsageEntry = {
 };
 
 type UsageResponse = {
+  ok?: boolean;
   usage: UsageEntry[];
+  totals?: { requests: number; tokens: number };
+  message?: string;
 };
 
 export default function UsagePage() {
@@ -93,9 +96,14 @@ export default function UsagePage() {
           </div>
 
           {usage.length === 0 ? (
-            <p className="text-xs text-gray-600 dark:text-gray-400">
-              No usage entries recorded yet.
-            </p>
+            <div className="text-center py-8">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                No usage data yet.
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                Usage analytics will appear here once enabled.
+              </p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-xs">
