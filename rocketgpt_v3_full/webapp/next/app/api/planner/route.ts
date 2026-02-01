@@ -35,7 +35,7 @@ Return ONLY valid JSON, no markdown, no commentary.
 
 {
   "plan_title": "Short title for the plan",
-  "goal_summary": "1â€“3 sentence summary in plain English.",
+  "goal_summary": "1-3 sentence summary in plain English.",
   "steps": [
     {
       "step_no": 1,
@@ -64,9 +64,11 @@ function buildUserPrompt(goalTitle: string, goalDescription: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
+  // Parse body outside try so it's accessible in catch for stable response
+  const body = await req.json().catch(() => ({}));
+
   try {
-    const body = await req.json().catch(() => ({}));
+    await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
 
     const goalTitle: string =
       body.goal_title ?? body.goalTitle ?? "Untitled Goal";
@@ -188,18 +190,29 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error("[Planner] Error:", err);
 
-    const message =
-      err?.message || "Unexpected error while generating plan.";
-
-    const status = (err as any)?.status || 500;
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: "PlannerError",
-        message,
+    // Phase-1: Return 200 with "not enabled" stub instead of 500
+    // This prevents demo-breaking errors when backend is not wired
+    return NextResponse.json({
+      success: true,
+      enabled: false,
+      model: null,
+      goal_title: body?.goal_title ?? body?.goalTitle ?? "Untitled Goal",
+      goal_description: body?.goal_description ?? body?.goalDescription ?? "",
+      plan: {
+        plan_title: "Planner Not Enabled",
+        goal_summary: "The planner backend is not fully wired yet.",
+        steps: [
+          {
+            step_no: 1,
+            title: "Placeholder step",
+            description: "This is a placeholder response. Planner will be enabled in a future phase.",
+            acceptance_criteria: "Planner backend is connected.",
+          },
+        ],
       },
-      { status }
-    );
+      rawText: null,
+      usage: null,
+      message: "Planner is not enabled yet. This is a placeholder response.",
+    });
   }
 }

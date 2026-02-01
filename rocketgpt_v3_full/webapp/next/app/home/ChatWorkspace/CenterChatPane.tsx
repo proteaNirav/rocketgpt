@@ -37,28 +37,41 @@ export function CenterChatPane() {
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-background/60">
         {/* Transcript area */}
         <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-          {messages.map((m) => (
-            <div
-              key={m.id}
-              className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[78%] rounded-2xl px-3 py-2 text-sm shadow-sm ${
-                  m.role === "user"
-                    ? "bg-emerald-600 text-emerald-50"
-                    : "bg-muted text-foreground"
-                }`}
-              >
-                <div className="mb-1 text-[10px] font-medium opacity-70">
-                  {m.name}
-                  {m.time ? " · " + m.time : ""}
-                </div>
-                <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                  {m.content}
+          {messages.length === 0 ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">
+                  Start typing to chat with RocketGPT
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground/60">
+                  Your conversation will appear here
                 </p>
               </div>
             </div>
-          ))}
+          ) : (
+            messages.map((m) => (
+              <div
+                key={m.id}
+                className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-[78%] rounded-2xl px-3 py-2 text-sm shadow-sm ${
+                    m.role === "user"
+                      ? "bg-emerald-600 text-emerald-50"
+                      : "bg-muted text-foreground"
+                  }`}
+                >
+                  <div className="mb-1 text-[10px] font-medium opacity-70">
+                    {m.name}
+                    {m.time ? " · " + m.time : ""}
+                  </div>
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed">
+                    {m.content}
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
         {/* Composer area pinned to bottom */}

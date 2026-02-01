@@ -2,10 +2,12 @@
 
 import React from "react";
 import { useHomeSessions } from "./useHomeSessions";
+import { useHomeChat } from "./useHomeChat";
 
 export default function LeftSessionsPane() {
-  const { groups, loading, error, activeSessionId, selectSession } =
+  const { groups, loading, error, activeSessionId, selectSession, isAuthenticated } =
     useHomeSessions();
+  const { clearMessages } = useHomeChat();
 
   return (
     <aside className="h-full bg-slate-950/60 border-r border-slate-900/80 flex flex-col">
@@ -21,6 +23,7 @@ export default function LeftSessionsPane() {
         </div>
         <button
           type="button"
+          onClick={clearMessages}
           className="inline-flex items-center rounded-full border border-emerald-500/70 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-200 hover:bg-emerald-500/20 focus:outline-none focus:ring-1 focus:ring-emerald-500"
         >
           <span className="mr-1 text-[13px] leading-none">＋</span>
@@ -59,7 +62,9 @@ export default function LeftSessionsPane() {
 
         {!loading && !error && groups.length === 0 && (
           <div className="px-2 pt-2 text-[11px] text-slate-500">
-            No sessions yet. New conversations will appear here.
+            {isAuthenticated
+              ? "No sessions yet. New conversations will appear here."
+              : "Sign in to see your chat history."}
           </div>
         )}
 
