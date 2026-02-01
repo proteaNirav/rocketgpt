@@ -1,11 +1,6 @@
-export type AgentKind =
-  | "planner"
-  | "builder"
-  | "tester"
-  | "research"
-  | "safety";
+export type AgentKind = 'planner' | 'builder' | 'tester' | 'research' | 'safety'
 
-export type AgentRiskLevel = "low" | "medium" | "high";
+export type AgentRiskLevel = 'low' | 'medium' | 'high'
 
 /**
  * High-level description of what an Agent can do.
@@ -14,29 +9,29 @@ export type AgentRiskLevel = "low" | "medium" | "high";
  */
 export interface AgentDefinition {
   /** Unique ID used internally and in routing. */
-  id: string;
+  id: string
 
   /** Human-friendly name for UI. */
-  label: string;
+  label: string
 
   /** Short description for logs / tooltips. */
-  description: string;
+  description: string
 
   /** High-level functional role (planner, builder, tester, etc.). */
-  kind: AgentKind;
+  kind: AgentKind
 
   /** List of capability tags for routing (e.g., "nextjs", "sql", "lint"). */
-  capabilities: string[];
+  capabilities: string[]
 
   /** Risk profile used for approvals routing. */
-  riskLevel: AgentRiskLevel;
+  riskLevel: AgentRiskLevel
 
   /** Default LLM / backend this agent prefers. */
-  defaultModel: string;
+  defaultModel: string
 
   /** Whether this agent is currently enabled. */
-  enabled: boolean;
+  enabled: boolean
 
   /** Optional extra metadata for future expansion. */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, any>
 }

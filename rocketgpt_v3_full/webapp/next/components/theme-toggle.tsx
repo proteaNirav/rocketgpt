@@ -1,16 +1,16 @@
-"use client";
+'use client'
 
-import React from "react";
-import { useTheme } from "@/components/theme-provider";
+import React from 'react'
+import { useTheme } from '@/components/theme-provider'
 
 const THEME_OPTIONS = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "system", label: "System (Auto)" },
-] as const;
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'system', label: 'System (Auto)' },
+] as const
 
 export function ThemeToggle() {
-  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme()
 
   return (
     <section
@@ -45,7 +45,7 @@ export function ThemeToggle() {
 
       <div className="flex flex-wrap gap-2">
         {THEME_OPTIONS.map((opt) => {
-          const isActive = theme === opt.value;
+          const isActive = theme === opt.value
 
           return (
             <button
@@ -53,18 +53,18 @@ export function ThemeToggle() {
               type="button"
               onClick={() => setTheme(opt.value as any)}
               className={[
-                "inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition",
+                'inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition',
 
                 isActive
-                  ? "border-blue-500 bg-blue-600 text-white shadow-sm"
-                  : "border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800",
-              ].join(" ")}
+                  ? 'border-blue-500 bg-blue-600 text-white shadow-sm'
+                  : 'border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800',
+              ].join(' ')}
             >
               {opt.label}
             </button>
-          );
+          )
         })}
       </div>
     </section>
-  );
+  )
 }

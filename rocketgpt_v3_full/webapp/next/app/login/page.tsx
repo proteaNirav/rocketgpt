@@ -14,7 +14,9 @@ export default function LoginPage() {
   async function sendOtp() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/account` },
+      options: {
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/account`,
+      },
     })
     if (error) alert(error.message)
     else setOtpSent(true)
@@ -89,5 +91,3 @@ function getCookie(name: string) {
   const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')
   return m ? m.pop() : ''
 }
-
-

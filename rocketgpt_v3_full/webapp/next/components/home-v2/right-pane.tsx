@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 export function HomeV2RightPane() {
   return (
@@ -6,16 +6,12 @@ export function HomeV2RightPane() {
       <h2 className="text-lg font-semibold">Tools</h2>
       <div className="rounded border border-border p-3 bg-card text-sm">
         <div className="font-medium mb-1">Context</div>
-        <div className="text-xs text-muted-foreground">
-          Context features will appear here.
-        </div>
+        <div className="text-xs text-muted-foreground">Context features will appear here.</div>
       </div>
 
       <div className="rounded border border-border p-3 bg-card text-sm">
         <div className="font-medium mb-1">Prompts</div>
-        <div className="text-xs text-muted-foreground">
-          Quick prompt access will live here.
-        </div>
+        <div className="text-xs text-muted-foreground">Quick prompt access will live here.</div>
       </div>
 
       <div className="rounded border border-border p-3 bg-card text-sm">
@@ -25,5 +21,5 @@ export function HomeV2RightPane() {
         </div>
       </div>
     </div>
-  );
+  )
 }
