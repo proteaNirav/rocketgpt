@@ -1,0 +1,77 @@
+name: governance_check
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: "30 3 * * *"  # 09:00 IST
+  workflow_dispatch:
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install psql
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Run governance integrity checks
+        shell: pwsh
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          Set-StrictMode -Version Latest
+
+          if (-not $env:SUPABASE_DB_URL) { throw "Missing SUPABASE_DB_URL" }
+
+          psql $env:SUPABASE_DB_URL -v ON_ERROR_STOP=1 `
+            -c "select rgpt_audit.run_integrity_checks('ci');"
+
+          psql $env:SUPABASE_DB_URL -v ON_ERROR_STOP=1 -c @"
+          select check_name, status, details, checked_at
+          from rgpt_audit.data_integrity_checks
+          order by checked_at desc
+          limit 20;
+          "@
+
+          psql $env:SUPABASE_DB_URL -v ON_ERROR_STOP=1 `
+            -c "select * from rgpt_governance.v_health;"
+
+      - name: Fail if critical checks failed
+        shell: pwsh
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          Set-StrictMode -Version Latest
+
+          $q = @"
+          with latest as (
+            select *
+            from rgpt_audit.data_integrity_checks
+            where checked_at = (select max(checked_at)
+                                from rgpt_audit.data_integrity_checks)
+          )
+          select count(*)::int
+          from latest
+          where status = 'fail'
+            and check_name in (
+              'policy_version_uniqueness',
+              'execution_orphans',
+              'ledger_immutability_triggers'
+            );
+          "@
+
+          $fails = psql $env:SUPABASE_DB_URL -t -A -v ON_ERROR_STOP=1 -c $q
+          if ([int]$fails -gt 0) {
+            throw "Governance integrity checks FAILED"
+          }
+
+          "Governance integrity checks PASSED"
