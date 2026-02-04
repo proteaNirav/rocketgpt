@@ -140,7 +140,7 @@ if ($ipv4) {
         if: always()
         shell: pwsh
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = "Stop"
           Set-StrictMode -Version Latest
@@ -168,11 +168,12 @@ if ($ipv4) {
           $api = "https://api.github.com/repos/$repo/statuses/$sha"
 
           Invoke-RestMethod -Method Post -Uri $api -Headers @{
-            Authorization = "token $env:GH_TOKEN"
+            Authorization = "Bearer $env:GH_TOKEN"
             "User-Agent"  = "rgpt-db-exposure-guard"
             Accept        = "application/vnd.github+json"
           } -Body $body | Out-Null
 
           Write-Host "[OK] Published status context rgpt-db-exposure-guard => $state" -ForegroundColor Green
+
 
 
