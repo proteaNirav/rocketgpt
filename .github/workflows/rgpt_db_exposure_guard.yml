@@ -68,7 +68,7 @@ jobs:
             $env:PGHOSTADDR = $ipv4
           } else {
             Write-Host "[WARN] IPv4 not resolved for $pgHost (will use hostname)" -ForegroundColor Yellow
-}
+          }
           $port = if ($u.Port -gt 0) { $u.Port } else { 5432 }
           $db   = $u.AbsolutePath.TrimStart("/")
           if (-not $db) { throw "Database name missing in SUPABASE_DB_POOLER_URL" }
@@ -93,10 +93,10 @@ jobs:
           $env:PGUSER     = $user
 
           $conn = if ($ipv4) {
-  "host=$pgHost hostaddr=$ipv4 port=$port dbname=$db user=$user sslmode=require"
-} else {
-  "host=$pgHost port=$port dbname=$db user=$user sslmode=require"
-}
+          "host=$pgHost hostaddr=$ipv4 port=$port dbname=$db user=$user sslmode=require"
+          } else {
+          "host=$pgHost port=$port dbname=$db user=$user sslmode=require"
+          }
 
           # --- Run psql (capture stderr) ---
           $tmpErr = Join-Path $env:RUNNER_TEMP "rgpt_db_guard_psql_err.txt"
