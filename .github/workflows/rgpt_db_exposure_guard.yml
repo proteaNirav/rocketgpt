@@ -55,8 +55,9 @@ jobs:
           Write-Host "[RUN] Guard SQL: $sqlFile" -ForegroundColor Cyan
 
           try { $u = [System.Uri]::new($url) } catch { throw "Invalid SUPABASE_DB_POOLER_URL format" }
-
           $pgHost = $u.Host
+
+          # Resolve IPv4 (optional) to avoid any DNS/AAAA quirks on runners
           $ipv4 = $null
           try {
             $line = (getent ahostsv4 $pgHost | Select-Object -First 1)
@@ -69,6 +70,7 @@ jobs:
           } else {
             Write-Host "[WARN] IPv4 not resolved for $pgHost (will use hostname)" -ForegroundColor Yellow
           }
+
           $port = if ($u.Port -gt 0) { $u.Port } else { 5432 }
           $db   = $u.AbsolutePath.TrimStart("/")
           if (-not $db) { throw "Database name missing in SUPABASE_DB_POOLER_URL" }
@@ -92,10 +94,10 @@ jobs:
           $env:PGDATABASE = $db
           $env:PGUSER     = $user
 
-          $conn = if ($ipv4) {
-          "host=$pgHost hostaddr=$ipv4 port=$port dbname=$db user=$user sslmode=require"
-          } else {
-          "host=$pgHost port=$port dbname=$db user=$user sslmode=require"
+          # Keep connection string single-line (YAML-safe)
+          $conn = "host=$pgHost port=$port dbname=$db user=$user sslmode=require"
+          if ($ipv4) {
+            $conn = "host=$pgHost hostaddr=$ipv4 port=$port dbname=$db user=$user sslmode=require"
           }
 
           # --- Run psql (capture stderr) ---
@@ -174,6 +176,7 @@ jobs:
           } -Body $body | Out-Null
 
           Write-Host "[OK] Published status context rgpt-db-exposure-guard => $state" -ForegroundColor Green
+
 
 
 
