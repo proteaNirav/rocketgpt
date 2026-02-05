@@ -57,17 +57,17 @@ jobs:
           try { $u = [System.Uri]::new($url) } catch { throw "Invalid SUPABASE_DB_POOLER_URL format" }
 
           $pgHost = $u.Host
-$ipv4 = $null
-try {
-  $line = (getent ahostsv4 $pgHost | Select-Object -First 1)
-  if ($line) { $ipv4 = ($line -split "\s+")[0] }
-} catch { }
+          $ipv4 = $null
+          try {
+            $line = (getent ahostsv4 $pgHost | Select-Object -First 1)
+            if ($line) { $ipv4 = ($line -split "\s+")[0] }
+          } catch { }
 
-if ($ipv4) {
-  Write-Host "[INFO] IPv4 resolved: $pgHost -> $ipv4" -ForegroundColor Green
-  $env:PGHOSTADDR = $ipv4
-} else {
-  Write-Host "[WARN] IPv4 not resolved for $pgHost (will use hostname)" -ForegroundColor Yellow
+          if ($ipv4) {
+            Write-Host "[INFO] IPv4 resolved: $pgHost -> $ipv4" -ForegroundColor Green
+            $env:PGHOSTADDR = $ipv4
+          } else {
+            Write-Host "[WARN] IPv4 not resolved for $pgHost (will use hostname)" -ForegroundColor Yellow
 }
           $port = if ($u.Port -gt 0) { $u.Port } else { 5432 }
           $db   = $u.AbsolutePath.TrimStart("/")
