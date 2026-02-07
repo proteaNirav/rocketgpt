@@ -1,4 +1,4 @@
-name: RGPT DB Exposure Guard
+name: rgpt-db-exposure-guard
 
 on:
   pull_request:
@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  statuses: write
   contents: read
 
 jobs:
@@ -23,7 +24,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
       - name: Install psql
         shell: bash
         run: |
@@ -34,6 +37,7 @@ jobs:
         shell: pwsh
         env:
           SUPABASE_DB_POOLER_URL: ${{ secrets.SUPABASE_DB_POOLER_URL }}
+          SUPABASE_DB_USER: ${{ secrets.SUPABASE_DB_USER }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           $ErrorActionPreference = "Stop"
@@ -54,20 +58,58 @@ jobs:
           Write-Host "[RUN] Guard SQL: $sqlFile" -ForegroundColor Cyan
 
           try { $u = [System.Uri]::new($url) } catch { throw "Invalid SUPABASE_DB_POOLER_URL format" }
-
           $pgHost = $u.Host
+
+          # Resolve IPv4 (optional) to avoid any DNS/AAAA quirks on runners
+          $ipv4 = $null
+          try {
+            $line = (getent ahostsv4 $pgHost | Select-Object -First 1)
+            if ($line) { $ipv4 = ($line -split "\s+")[0] }
+          } catch { }
+
+          if ($ipv4) {
+            Write-Host "[INFO] IPv4 resolved: $pgHost -> $ipv4" -ForegroundColor Green
+            $env:PGHOSTADDR = $ipv4
+          } else {
+            Write-Host "[WARN] IPv4 not resolved for $pgHost (will use hostname)" -ForegroundColor Yellow
+          }
+
           $port = if ($u.Port -gt 0) { $u.Port } else { 5432 }
           $db   = $u.AbsolutePath.TrimStart("/")
           if (-not $db) { throw "Database name missing in SUPABASE_DB_POOLER_URL" }
-
           $userInfo = $u.UserInfo
-          if (-not $userInfo -or -not ($userInfo -match "^(?<user>[^:]+):(?<pass>.+)$")) {
-            throw "User/password missing in SUPABASE_DB_POOLER_URL"
-          }
-          $user = $Matches.user
-          $pass = $Matches.pass
+          $user = $null
+          $pass = $null
+          $passSource = "none"   # url | secret | none
 
-          # Create .pgpass so password is not in args/logs
+          if (-not [string]::IsNullOrWhiteSpace($userInfo)) {
+            # userInfo can be "user:pass" OR just "user"
+            $parts = $userInfo.Split(":", 2)
+            $user = [Uri]::UnescapeDataString($parts[0])
+
+            if ($parts.Count -ge 2 -and -not [string]::IsNullOrWhiteSpace($parts[1])) {
+              $pass = [Uri]::UnescapeDataString($parts[1])
+              $passSource = "url"
+            }
+          }
+          if ([string]::IsNullOrWhiteSpace($user)) {
+            if (-not [string]::IsNullOrWhiteSpace($env:SUPABASE_DB_USER)) {
+              $user = $env:SUPABASE_DB_USER
+              Write-Host "[INFO] Using SUPABASE_DB_USER secret for username (URL contained no user)." -ForegroundColor Yellow
+            } else {
+              throw "User missing in SUPABASE_DB_POOLER_URL and SUPABASE_DB_USER not provided"
+            }
+          }
+          # If URL does not contain password, use SUPABASE_DB_PASSWORD secret
+          if ([string]::IsNullOrWhiteSpace($pass)) {
+            if (-not [string]::IsNullOrWhiteSpace($env:SUPABASE_DB_PASSWORD)) {
+              $pass = $env:SUPABASE_DB_PASSWORD
+              $passSource = "secret"
+              Write-Host "[INFO] Using SUPABASE_DB_PASSWORD secret for password (URL contained no password)." -ForegroundColor Yellow
+            } else {
+              throw "Password missing in SUPABASE_DB_POOLER_URL and SUPABASE_DB_PASSWORD not provided"
+            }
+          }          # Create .pgpass so password is not in args/logs
           $pgpassPath = Join-Path $env:RUNNER_TEMP ".pgpass"
           $pgpassLine = "$pgHost`:$port`:$db`:$user`:$pass"
           Set-Content -Path $pgpassPath -Value $pgpassLine -Encoding ASCII
@@ -79,7 +121,11 @@ jobs:
           $env:PGDATABASE = $db
           $env:PGUSER     = $user
 
+          # Keep connection string single-line (YAML-safe)
           $conn = "host=$pgHost port=$port dbname=$db user=$user sslmode=require"
+          if ($ipv4) {
+            $conn = "host=$pgHost hostaddr=$ipv4 port=$port dbname=$db user=$user sslmode=require"
+          }
 
           # --- Run psql (capture stderr) ---
           $tmpErr = Join-Path $env:RUNNER_TEMP "rgpt_db_guard_psql_err.txt"
@@ -95,8 +141,7 @@ jobs:
 
             $authFail = ($errText -match "password authentication failed")
             $hasAltPw = -not [string]::IsNullOrWhiteSpace($env:SUPABASE_DB_PASSWORD)
-
-            if ($authFail -and $hasAltPw) {
+            if ($authFail -and $hasAltPw -and $passSource -eq "url") {
               Write-Host "[WARN] psql auth failed using password from URL; retrying with SUPABASE_DB_PASSWORD secret..." -ForegroundColor Yellow
 
               # Rewrite pgpass using alternate password
@@ -119,3 +164,48 @@ jobs:
           }
 
           Write-Host "[OK] No unsafe grants detected." -ForegroundColor Green
+      - name: Publish status context (rgpt-db-exposure-guard)
+        if: always()
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          Set-StrictMode -Version Latest
+
+          # job.status is: success | failure | cancelled
+          $jobStatus = "${{ job.status }}"
+
+          switch ($jobStatus) {
+            "success"   { $state = "success"; $desc = "DB exposure guard passed" }
+            "failure"   { $state = "failure"; $desc = "DB exposure guard failed" }
+            default     { $state = "error";   $desc = "DB exposure guard cancelled/unknown" }
+          }
+
+          $repo  = "${{ github.repository }}"
+          $sha   = "${{ github.sha }}"
+          $runUrl = "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          $body = @{
+            state       = $state
+            context     = "rgpt-db-exposure-guard"
+            description = $desc
+            target_url  = $runUrl
+          } | ConvertTo-Json -Compress
+
+          $api = "https://api.github.com/repos/$repo/statuses/$sha"
+
+          Invoke-RestMethod -Method Post -Uri $api -Headers @{
+            Authorization = "Bearer $env:GH_TOKEN"
+            "User-Agent"  = "rgpt-db-exposure-guard"
+            Accept        = "application/vnd.github+json"
+          } -Body $body | Out-Null
+
+          Write-Host "[OK] Published status context rgpt-db-exposure-guard => $state" -ForegroundColor Green
+
+
+
+
+
+
+
