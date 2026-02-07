@@ -37,6 +37,7 @@ jobs:
         shell: pwsh
         env:
           SUPABASE_DB_POOLER_URL: ${{ secrets.SUPABASE_DB_POOLER_URL }}
+          SUPABASE_DB_USER: ${{ secrets.SUPABASE_DB_USER }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           $ErrorActionPreference = "Stop"
@@ -91,11 +92,14 @@ jobs:
               $passSource = "url"
             }
           }
-
           if ([string]::IsNullOrWhiteSpace($user)) {
-            throw "User missing in SUPABASE_DB_POOLER_URL"
+            if (-not [string]::IsNullOrWhiteSpace($env:SUPABASE_DB_USER)) {
+              $user = $env:SUPABASE_DB_USER
+              Write-Host "[INFO] Using SUPABASE_DB_USER secret for username (URL contained no user)." -ForegroundColor Yellow
+            } else {
+              throw "User missing in SUPABASE_DB_POOLER_URL and SUPABASE_DB_USER not provided"
+            }
           }
-
           # If URL does not contain password, use SUPABASE_DB_PASSWORD secret
           if ([string]::IsNullOrWhiteSpace($pass)) {
             if (-not [string]::IsNullOrWhiteSpace($env:SUPABASE_DB_PASSWORD)) {
@@ -198,6 +202,7 @@ jobs:
           } -Body $body | Out-Null
 
           Write-Host "[OK] Published status context rgpt-db-exposure-guard => $state" -ForegroundColor Green
+
 
 
 
