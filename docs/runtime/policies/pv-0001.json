@@ -1,0 +1,45 @@
+{
+  "policy_version": "pv-0001",
+  "effective_at": "2026-02-10T00:00:00+05:30",
+  "description": "Baseline runtime policy-gate: provider/tool allowlists + budgets + fail-closed.",
+  "defaults": {
+    "fail_closed": true,
+    "max_tokens_per_request": 4000,
+    "allowed_providers": ["openai", "claude", "gemini"],
+    "allowed_tool_intents": ["none", "read", "write", "search"]
+  },
+  "overrides": {
+    "org": {
+      "org_demo": {
+        "max_tokens_per_request": 2000,
+        "allowed_providers": ["openai", "claude"]
+      }
+    },
+    "cat": {
+      "cat_demo": {
+        "allowed_providers": ["openai"],
+        "allowed_tool_intents": ["none", "read"]
+      }
+    }
+  },
+  "rules": [
+    {
+      "rule_id": "R1_PROVIDER_ALLOWED",
+      "type": "provider_allowlist",
+      "action": "DENY",
+      "message": "Requested provider is not allowed by active policy."
+    },
+    {
+      "rule_id": "R2_MAX_TOKENS",
+      "type": "max_tokens_per_request",
+      "action": "DENY",
+      "message": "Token estimate exceeds active policy max_tokens_per_request."
+    },
+    {
+      "rule_id": "R3_TOOL_INTENTS",
+      "type": "tool_intents_allowlist",
+      "action": "DENY",
+      "message": "Tool intent is not allowed by active policy."
+    }
+  ]
+}
