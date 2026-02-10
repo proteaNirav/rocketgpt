@@ -1,0 +1,19 @@
+{
+  "ts":"2026-02-10T06:00:00+05:30",
+  "request_id":"req_...",
+  "org_id":"org_...",
+  "user_id":"usr_...",
+  "workflow_id":"wf_...",
+  "cat_id":"cat_...",
+  "cat_version":"v1.2.0",
+  "provider_requested":"openai",
+  "verdict":"ALLOW",
+  "deny_reason_code":null,
+  "policy_version":"pv_...",
+  "policy_hash":"sha256:...",
+  "limits":{"max_tokens":4000,"max_cost_usd":0.10},
+  "estimates":{"tokens":2100,"cost_usd":0.05},
+  "actions":[]
+}
+{"ts":"2026-02-10T08:35:31.308Z","request_id":"req_smoke_002","org_id":"org_demo","user_id":"usr_demo","workflow_id":"wf_demo","cat_id":"cat_demo","cat_version":"v0.0.1","cat_status":"active","provider_requested":"openai","cat_allowed_providers":["openai","claude"],"token_estimate":1200,"max_tokens":2000,"policy_version":"pv_demo","policy_hash":"sha256:demo","verdict":"ALLOW","deny_reason_code":null}
+{"ts":"2026-02-10T08:38:50.865Z","request_id":"req_smoke_003","org_id":"org_demo","user_id":"usr_demo","workflow_id":"wf_demo","cat_id":"cat_demo","cat_version":"v0.0.1","cat_status":"active","provider_requested":"gemini","cat_allowed_providers":["openai","claude"],"token_estimate":1200,"max_tokens":2000,"policy_version":"pv_demo","policy_hash":"sha256:demo","verdict":"DENY","deny_reason_code":"PROVIDER_NOT_ALLOWED"}
