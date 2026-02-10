@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CommissionerStageReport",
+  "type": "object",
+  "required": ["stage", "decision", "denial_reasons", "timestamp_utc"],
+  "properties": {
+    "stage": { "const": "commissioner" },
+    "decision": { "enum": ["ALLOW", "DENY"] },
+    "denial_reasons": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "policy_references": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "timestamp_utc": { "type": "string", "format": "date-time" }
+  }
+}
