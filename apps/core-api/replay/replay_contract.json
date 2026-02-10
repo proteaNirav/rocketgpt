@@ -1,0 +1,78 @@
+{
+  "contract_version": "1.1",
+
+  "replay": {
+    "mode": "strict_from_stage_3",
+
+    "target_execution_id": "",
+
+    "window": {
+      "from_event_idx": 0,
+      "to_event_idx": null
+    },
+
+    "inputs": {
+      "execution_ledger_path": "",
+      "decision_ledger_path": "",
+      "artifacts_manifest_path": ""
+    },
+
+    "pipeline": {
+      "stages_enabled": [
+        "collector",
+        "inspector",
+        "commissioner",
+        "judge",
+        "archivist"
+      ],
+
+      "stage_modes": {
+        "collector": "best_effort",
+        "inspector": "best_effort",
+        "commissioner": "strict",
+        "judge": "strict",
+        "archivist": "strict"
+      },
+
+      "gates": {
+        "judge_requires": [
+          "commissioner:PASS"
+        ],
+        "archivist_requires": [
+          "commissioner:PASS"
+        ]
+      }
+    },
+
+    "determinism": {
+      "freeze_time_utc": true,
+      "freeze_random_seed": true,
+      "freeze_locale": true
+    },
+
+    "side_effects": {
+      "network": "blocked",
+      "providers": "recorded_only",
+      "filesystem": "sandbox_only"
+    },
+
+    "outputs": {
+      "evidence_dir": "",
+      "stage_reports_dir": "",
+      "diff_report_path": "",
+      "replay_result_path": ""
+    },
+
+    "commissioner_requirements": {
+      "must_have": [
+        "ledger_hash_chain_valid",
+        "artifact_hashes_valid",
+        "schema_versions_compatible",
+        "tenant_org_scope_valid",
+        "user_permission_valid",
+        "redaction_policy_satisfied"
+      ],
+      "deny_if_missing_inputs": true
+    }
+  }
+}
