@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rocketgpt.dev/schemas/runtime_timeline_event.schema.json",
+  "title": "RocketGPT Runtime Timeline Event",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "execution_id",
+    "event_id",
+    "sequence_no",
+    "event_type",
+    "layer",
+    "event_time_utc",
+    "actor_type",
+    "authority",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "string", "minLength": 1 },
+    "execution_id": { "type": "string", "minLength": 10 },
+    "event_id": { "type": "string", "minLength": 10 },
+    "sequence_no": { "type": "integer", "minimum": 1 },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "EXECUTION_CREATED",
+        "EXECUTION_CONTEXT_LOCKED",
+        "EXECUTION_FINALIZED",
+        "PLAN_REQUESTED",
+        "PLAN_GENERATED",
+        "PLAN_VALIDATED",
+        "PLAN_REJECTED",
+        "ORCHESTRATION_STARTED",
+        "CAT_SELECTED",
+        "PROVIDER_ROUTED",
+        "FALLBACK_TRIGGERED",
+        "RETRY_SCHEDULED",
+        "RETRY_STARTED",
+        "CAT_INVOKED",
+        "CAT_CONTEXT_BOUND",
+        "CAT_ACTION_EXECUTED",
+        "CAT_ACTION_ABORTED",
+        "PROVIDER_CALL_SENT",
+        "PROVIDER_RESPONSE_RECEIVED",
+        "PROVIDER_ERROR",
+        "PROVIDER_TIMEOUT",
+        "POLICY_GATE_EVALUATED",
+        "POLICY_GATE_BLOCKED",
+        "RUNTIME_GUARD_TRIGGERED",
+        "SAFE_MODE_ENTERED",
+        "HUMAN_OVERRIDE_APPLIED",
+        "RESULT_COMMITTED",
+        "RESULT_REDACTED",
+        "EXECUTION_ABORTED",
+        "EXECUTION_COMPLETED"
+      ]
+    },
+    "layer": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6,
+      "description": "0=Envelope, 1=Planning, 2=Orchestration, 3=CAT, 4=Provider, 5=Guard/Policy, 6=Resolution"
+    },
+    "event_time_utc": { "type": "string", "format": "date-time" },
+    "parent_event_id": { "type": ["string", "null"] },
+    "caused_by_event_id": { "type": ["string", "null"] },
+    "trigger_reason": { "type": ["string", "null"], "maxLength": 500 },
+    "decision_ref": { "type": ["string", "null"], "description": "Pointer to DECISIONS ledger entry id/hash" },
+    "actor_type": {
+      "type": "string",
+      "enum": ["user", "system", "planner", "orchestrator", "cat", "guard", "policy_gate", "provider"]
+    },
+    "actor_id": { "type": ["string", "null"] },
+    "authority": {
+      "type": "object",
+      "required": ["auth_context_hash", "policy_profile"],
+      "additionalProperties": false,
+      "properties": {
+        "auth_context_hash": { "type": "string", "minLength": 16 },
+        "policy_profile": { "type": "string", "minLength": 1 },
+        "roles": { "type": ["array", "null"], "items": { "type": "string" } },
+        "org_id": { "type": ["string", "null"] },
+        "user_id": { "type": ["string", "null"] }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "blocked", "partial", "error", "timeout", "aborted"]
+    },
+    "cat": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "cat_id": { "type": "string" },
+        "wrapper_cat_id": { "type": ["string", "null"] },
+        "origin_cat_id": { "type": ["string", "null"] },
+        "cat_version": { "type": ["string", "null"] }
+      }
+    },
+    "provider": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "provider_name": { "type": "string" },
+        "model_name": { "type": ["string", "null"] },
+        "model_version": { "type": ["string", "null"] },
+        "request_id": { "type": ["string", "null"] },
+        "latency_ms": { "type": ["integer", "null"], "minimum": 0 },
+        "tokens_in": { "type": ["integer", "null"], "minimum": 0 },
+        "tokens_out": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "guards": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "guard_name": { "type": ["string", "null"] },
+        "policy_gate_name": { "type": ["string", "null"] },
+        "verdict": { "type": ["string", "null"] },
+        "risk_score": { "type": ["number", "null"] }
+      }
+    },
+    "payload": {
+      "type": ["object", "null"],
+      "description": "Non-sensitive structured payload only. No raw secrets. No PII. No full prompts unless explicitly allowed.",
+      "additionalProperties": true
+    },
+    "integrity": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "event_hash": { "type": ["string", "null"] },
+        "prev_event_hash": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
