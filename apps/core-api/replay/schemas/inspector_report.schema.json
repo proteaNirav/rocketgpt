@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InspectorStageReport",
+  "type": "object",
+  "required": ["stage", "checks", "status", "timestamp_utc"],
+  "properties": {
+    "stage": { "const": "inspector" },
+    "checks": {
+      "type": "object",
+      "properties": {
+        "ledger_hash_chain_valid": { "enum": ["PASS", "FAIL", "UNKNOWN"] },
+        "artifact_hashes_valid": { "enum": ["PASS", "FAIL", "UNKNOWN"] },
+        "schema_versions_compatible": { "enum": ["PASS", "FAIL", "UNKNOWN"] }
+      },
+      "additionalProperties": false
+    },
+    "status": { "enum": ["PASS", "FAIL"] },
+    "timestamp_utc": { "type": "string", "format": "date-time" }
+  }
+}
