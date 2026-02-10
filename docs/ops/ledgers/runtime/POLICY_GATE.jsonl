@@ -1,0 +1,2 @@
+{"ts":"2026-02-10T10:05:31.180Z","request_id":"req_pg_001","org_id":"org_demo","user_id":"usr_demo","cat_id":"cat_demo","provider_requested":"openai","token_estimate":1500,"tool_intents":["read"],"verdict":"ALLOW","policy_version":"pv-0001","rule_id":null}
+{"ts":"2026-02-10T10:05:31.202Z","request_id":"req_pg_002","org_id":"org_demo","user_id":"usr_demo","cat_id":"cat_demo","provider_requested":"claude","token_estimate":1500,"tool_intents":["read"],"verdict":"DENY","policy_version":"pv-0001","rule_id":"R1_PROVIDER_ALLOWED"}
