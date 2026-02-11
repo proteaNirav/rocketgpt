@@ -1,16 +1,34 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
-from .commissioner.decision_engine import CommissionerInputs, decide
-from .models import ReplayConfig, ReplayContext, ReplayPaths, TriState
-from .utils.io import read_json, write_json
-from .validators.artifact_manifest_validator import validate_artifacts_manifest
-from .validators.hash_chain_validator import validate_hash_chain
-from .validators.schema_compat_validator import validate_schema_compatibility
+try:
+    from .commissioner.decision_engine import CommissionerInputs, decide
+    from .models import ReplayConfig, ReplayContext, ReplayPaths, TriState
+    from .utils.io import read_json, write_json
+    from .validators.artifact_manifest_validator import validate_artifacts_manifest
+    from .validators.hash_chain_validator import validate_hash_chain
+    from .validators.schema_compat_validator import validate_schema_compatibility
+except ImportError:  # pragma: no cover - local execution fallback
+    package_root = Path(__file__).resolve().parents[1]
+    if str(package_root) not in sys.path:
+        sys.path.insert(0, str(package_root))
+    try:
+        from replay.commissioner.decision_engine import CommissionerInputs, decide
+        from replay.models import ReplayConfig, ReplayContext, ReplayPaths, TriState
+        from replay.utils.io import read_json, write_json
+        from replay.validators.artifact_manifest_validator import validate_artifacts_manifest
+        from replay.validators.hash_chain_validator import validate_hash_chain
+        from replay.validators.schema_compat_validator import validate_schema_compatibility
+    except ImportError as exc:
+        raise SystemExit(
+            "Replay runner import failed. Ensure PYTHONPATH includes 'apps/core-api' "
+            "or run from that directory: `python -m replay --contract apps/core-api/replay/replay_contract.json`."
+        ) from exc
 
 
 def _utc_now_iso() -> str:
@@ -25,6 +43,13 @@ def _default_run_dir(base: str, execution_id: str) -> str:
 
 def _ensure_dir(p: str) -> None:
     Path(p).mkdir(parents=True, exist_ok=True)
+
+
+def _normalize_output_path(raw: str | None, evidence_dir: str, filename: str) -> str:
+    candidate = (raw or "").strip()
+    if not candidate or candidate in {".", "./"}:
+        return str(Path(evidence_dir) / filename)
+    return candidate
 
 
 def _collector_stage(ctx: ReplayContext) -> Dict[str, Any]:
@@ -145,8 +170,8 @@ def build_context(contract: Dict[str, Any]) -> ReplayContext:
         artifacts_manifest_path=r["inputs"].get("artifacts_manifest_path", ""),
         evidence_dir=evidence_dir,
         stage_reports_dir=stage_reports_dir,
-        diff_report_path=outputs.get("diff_report_path", str(Path(evidence_dir) / "diff_report.json")),
-        replay_result_path=outputs.get("replay_result_path", str(Path(evidence_dir) / "replay_result.json")),
+        diff_report_path=_normalize_output_path(outputs.get("diff_report_path"), evidence_dir, "diff_report.json"),
+        replay_result_path=_normalize_output_path(outputs.get("replay_result_path"), evidence_dir, "replay_result.json"),
     )
 
     return ReplayContext(
