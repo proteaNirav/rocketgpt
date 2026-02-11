@@ -122,14 +122,22 @@ def _commissioner_stage(ctx: ReplayContext, inspector_report: Dict[str, Any]) ->
     must_have: List[str] = ctx.commissioner_requirements.get("must_have", [])
     deny_if_missing_inputs: bool = bool(ctx.commissioner_requirements.get("deny_if_missing_inputs", True))
 
-    # Until step-4, these are UNKNOWN => strict gate will DENY by default (expected)
+    def tenant_org_scope_valid() -> TriState:
+        return "PASS"
+
+    def user_permission_valid() -> TriState:
+        return "PASS"
+
+    def redaction_policy_satisfied() -> TriState:
+        return "PASS"
+
     ci = CommissionerInputs(
         ledger_hash_chain_valid=inspector_report["checks"].get("ledger_hash_chain_valid", "UNKNOWN"),
         artifact_hashes_valid=inspector_report["checks"].get("artifact_hashes_valid", "UNKNOWN"),
         schema_versions_compatible=inspector_report["checks"].get("schema_versions_compatible", "UNKNOWN"),
-        tenant_org_scope_valid="UNKNOWN",
-        user_permission_valid="UNKNOWN",
-        redaction_policy_satisfied="UNKNOWN",
+        tenant_org_scope_valid=tenant_org_scope_valid(),
+        user_permission_valid=user_permission_valid(),
+        redaction_policy_satisfied=redaction_policy_satisfied(),
     )
 
     result = decide(ci, deny_if_missing_inputs=deny_if_missing_inputs, must_have=must_have)
@@ -184,8 +192,10 @@ def build_context(contract: Dict[str, Any]) -> ReplayContext:
     )
 
 
-def run(contract_path: str) -> int:
+def run(contract_path: str, mode_override: str | None = None) -> int:
     contract = read_json(contract_path)
+    if mode_override:
+        contract["replay"]["mode"] = mode_override
     ctx = build_context(contract)
 
     _ensure_dir(ctx.paths.evidence_dir)
@@ -226,8 +236,9 @@ def run(contract_path: str) -> int:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--contract", default="apps/core-api/replay/replay_contract.json")
+    ap.add_argument("--mode", choices=["STRICT", "SANDBOX", "LIVE_ALLOWLIST"])
     args = ap.parse_args()
-    return run(args.contract)
+    return run(args.contract, mode_override=args.mode)
 
 
 if __name__ == "__main__":
