@@ -123,3 +123,15 @@ ci_logs/
 # Ignore Windows reserved device file accidentally created
 nul
 
+# ---- Python noise ----
+__pycache__/
+*.pyc
+
+# ---- Local replay artifacts ----
+apps/core-api/replay/evidence/
+
+# ---- Codex operational notes ----
+docs/ops/codex/
+
+# ---- Local tooling experiments ----
+tools/ops/runtime_unified_timeline.js
