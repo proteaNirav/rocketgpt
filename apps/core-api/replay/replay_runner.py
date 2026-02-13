@@ -10,6 +10,7 @@ try:
     from .commissioner.decision_engine import CommissionerInputs, decide
     from .models import ReplayConfig, ReplayContext, ReplayPaths, TriState
     from .utils.io import read_json, write_json
+from .judge.judge_engine import compare_ledgers
     from .validators.artifact_manifest_validator import (
         validate_artifacts_manifest,
     )
@@ -408,6 +409,11 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
         commissioner,
     )
 
+    judge = _judge_stage(ctx, collector, commissioner, frozen_ts)
+    write_json(
+        str(Path(ctx.paths.stage_reports_dir) / "04_judge_report.json"),
+        judge,
+    )
     if commissioner["decision"] != "ALLOW":
         write_json(
             str(Path(ctx.paths.replay_result_path)),
@@ -443,3 +449,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
