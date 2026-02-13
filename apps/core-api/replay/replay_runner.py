@@ -221,6 +221,106 @@ def _commissioner_stage(
     }
 
 
+def _judge_stage(
+    ctx: ReplayContext,
+    collector_report: Dict[str, Any],
+    commissioner_report: Dict[str, Any],
+    frozen_ts: datetime | None = None,
+) -> Dict[str, Any]:
+    """
+    Judge (Phase-E3-D):
+    - Minimal deterministic diff between execution ledger and decision ledger.
+    - Writes diff_report.json (path from ctx.paths.diff_report_path).
+    """
+    stage_enabled = "judge" in (ctx.pipeline.get("stages_enabled", []) or [])
+    if not stage_enabled:
+        return {
+            "stage": "judge",
+            "status": "SKIPPED",
+            "timestamp_utc": _utc_now_iso(frozen_ts),
+            "diff_report_path": ctx.paths.diff_report_path,
+            "diff": {
+                "compared": False,
+                "mismatched": False,
+                "notes": "judge_disabled",
+            },
+            "errors": [],
+        }
+
+    # Gate: if commissioner denied, judge is skipped (per contract gates)
+    if commissioner_report.get("decision") != "ALLOW":
+        return {
+            "stage": "judge",
+            "status": "SKIPPED",
+            "timestamp_utc": _utc_now_iso(frozen_ts),
+            "diff_report_path": ctx.paths.diff_report_path,
+            "diff": {
+                "compared": False,
+                "mismatched": False,
+                "notes": "commissioner_denied",
+            },
+            "errors": [],
+        }
+
+    missing_inputs = collector_report.get("missing_inputs", [])
+    need_exec = "execution_ledger_path"
+    need_dec = "decision_ledger_path"
+    if (need_exec in missing_inputs) or (need_dec in missing_inputs):
+        diff_obj = {
+            "compared": False,
+            "mismatched": False,
+            "notes": "missing_inputs_for_judge",
+            "mismatch_fields": [],
+        }
+        write_json(str(Path(ctx.paths.diff_report_path)), diff_obj)
+        return {
+            "stage": "judge",
+            "status": "UNKNOWN",
+            "timestamp_utc": _utc_now_iso(frozen_ts),
+            "diff_report_path": ctx.paths.diff_report_path,
+            "diff": diff_obj,
+            "errors": [],
+        }
+
+    errors: List[str] = []
+
+    try:
+        exec_ledger = read_json(ctx.paths.execution_ledger_path)
+        dec_ledger = read_json(ctx.paths.decision_ledger_path)
+        mismatched, mismatch_fields, notes = compare_ledgers(
+            exec_ledger, dec_ledger
+        )
+        diff_obj = {
+            "compared": True,
+            "mismatched": bool(mismatched),
+            "notes": notes,
+            "mismatch_fields": mismatch_fields,
+        }
+    except Exception as exc:  # pragma: no cover
+        errors.append(f"judge:{type(exc).__name__}:{exc}")
+        diff_obj = {
+            "compared": False,
+            "mismatched": False,
+            "notes": "judge_exception",
+            "mismatch_fields": [],
+        }
+
+    write_json(str(Path(ctx.paths.diff_report_path)), diff_obj)
+
+    status = "FAIL" if diff_obj.get("mismatched") else "PASS"
+    if len(errors) > 0:
+        status = "FAIL"
+
+    return {
+        "stage": "judge",
+        "status": status,
+        "timestamp_utc": _utc_now_iso(frozen_ts),
+        "diff_report_path": ctx.paths.diff_report_path,
+        "diff": diff_obj,
+        "errors": errors,
+    }
+
+
 def build_context(
     contract: Dict[str, Any], frozen_ts: datetime | None = None
 ) -> ReplayContext:
