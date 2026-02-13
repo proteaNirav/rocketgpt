@@ -7,7 +7,7 @@ from typing import Any, Dict
 
 def read_json(path: str) -> Dict[str, Any]:
     p = Path(path)
-    return json.loads(p.read_text(encoding="utf-8"))
+    return json.loads(p.read_text(encoding="utf-8-sig"))
 
 
 def write_json(path: str, obj: Dict[str, Any]) -> None:
