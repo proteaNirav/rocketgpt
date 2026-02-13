@@ -135,3 +135,13 @@ docs/ops/codex/
 
 # ---- Local tooling experiments ----
 tools/ops/runtime_unified_timeline.js
+.aider*
+# Aider (local-only)
+.aider*
+# Local env
+.env
+.env.*
+# OS / editor
+.vscode/
+.idea/
+.DS_Store
