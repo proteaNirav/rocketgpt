@@ -10,7 +10,7 @@ try:
     from .commissioner.decision_engine import CommissionerInputs, decide
     from .models import ReplayConfig, ReplayContext, ReplayPaths, TriState
     from .utils.io import read_json, write_json
-from .judge.judge_engine import compare_ledgers
+    from .judge.judge_engine import compare_ledgers
     from .validators.artifact_manifest_validator import (
         validate_artifacts_manifest,
     )
@@ -449,4 +449,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
