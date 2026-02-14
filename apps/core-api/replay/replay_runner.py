@@ -10,7 +10,7 @@ try:
     from .commissioner.decision_engine import CommissionerInputs, decide
     from .models import ReplayConfig, ReplayContext, ReplayPaths, TriState
     from .utils.io import read_json, write_json
-    from .judge.judge_engine import compare_ledgers
+    from .judge.judge_engine import compare_ledgers_semantic
     from .validators.artifact_manifest_validator import (
         validate_artifacts_manifest,
     )
@@ -290,14 +290,15 @@ def _judge_stage(
     try:
         exec_ledger = read_json(ctx.paths.execution_ledger_path)
         dec_ledger = read_json(ctx.paths.decision_ledger_path)
-        mismatched, mismatch_fields, notes = compare_ledgers(
-            exec_ledger, dec_ledger
+        mismatched, mismatch_fields, notes, semantic_details = compare_ledgers_semantic(
+        exec_ledger, dec_ledger
         )
         diff_obj = {
             "compared": True,
             "mismatched": bool(mismatched),
             "notes": notes,
             "mismatch_fields": mismatch_fields,
+            "semantic": semantic_details,
         }
     except Exception as exc:  # pragma: no cover
         errors.append(f"judge:{type(exc).__name__}:{exc}")
