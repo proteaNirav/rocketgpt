@@ -1,0 +1,16 @@
+{
+  "events": [
+    {
+      "idx": 0,
+      "ts_utc": "2026-02-13T00:00:00Z",
+      "type": "START"
+    },
+    {
+      "idx": 1,
+      "ts_utc": "2026-02-13T00:00:01Z",
+      "type": "END"
+    }
+  ],
+  "execution_id": "sample-exec-001",
+  "schema_version": "rgpt.replay.ledger.v1"
+}
