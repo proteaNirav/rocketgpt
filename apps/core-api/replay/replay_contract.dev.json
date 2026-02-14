@@ -1,22 +1,17 @@
 {
   "contract_version": "1.1",
-
   "replay": {
     "mode": "strict_from_stage_3",
-
     "target_execution_id": "",
-
     "window": {
       "from_event_idx": 0,
       "to_event_idx": null
     },
-
     "inputs": {
-      "execution_ledger_path": "",
-      "decision_ledger_path": "",
-      "artifacts_manifest_path": ""
+      "execution_ledger_path": "replay\\sample_inputs\\execution_ledger.sample.json",
+      "decision_ledger_path": "replay\\sample_inputs\\decision_ledger.sample.json",
+      "artifacts_manifest_path": "replay\\sample_inputs\\artifacts_manifest.sample.json"
     },
-
     "pipeline": {
       "stages_enabled": [
         "collector",
@@ -25,7 +20,6 @@
         "judge",
         "archivist"
       ],
-
       "stage_modes": {
         "collector": "best_effort",
         "inspector": "best_effort",
@@ -33,7 +27,6 @@
         "judge": "strict",
         "archivist": "strict"
       },
-
       "gates": {
         "judge_requires": [
           "commissioner:PASS"
@@ -43,26 +36,22 @@
         ]
       }
     },
-
     "determinism": {
       "freeze_time_utc": true,
       "freeze_random_seed": true,
       "freeze_locale": true
     },
-
     "side_effects": {
       "network": "blocked",
       "providers": "recorded_only",
       "filesystem": "sandbox_only"
     },
-
     "outputs": {
       "evidence_dir": "",
       "stage_reports_dir": "",
       "diff_report_path": "",
       "replay_result_path": ""
     },
-
     "commissioner_requirements": {
       "must_have": [
         "ledger_hash_chain_valid",
@@ -76,4 +65,3 @@
     }
   }
 }
-
