@@ -37,3 +37,30 @@ class ReplayContext:
     determinism: Dict[str, Any] = field(default_factory=dict)
     pipeline: Dict[str, Any] = field(default_factory=dict)
     commissioner_requirements: Dict[str, Any] = field(default_factory=dict)
+
+# -------------------------------
+# Phase-E3-D: Judge stage models
+# -------------------------------
+
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+
+
+@dataclass
+class DiffSummary:
+    """Minimal diff summary for deterministic replay comparisons."""
+    compared: bool
+    mismatched: bool
+    notes: str
+    mismatch_fields: List[str]
+
+
+@dataclass
+class JudgeReport:
+    stage: str
+    status: str
+    timestamp_utc: str
+    diff_report_path: str
+    diff: Dict[str, Any]
+    errors: List[str]
+
