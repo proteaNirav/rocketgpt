@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 type UsageEntry = {
-  date: string;
-  requests: number;
-  tokens: number;
-};
+  date: string
+  requests: number
+  tokens: number
+}
 
 /**
  * GET /api/usage
@@ -22,19 +22,19 @@ export async function GET() {
       usage: [] as UsageEntry[],
       totals: { requests: 0, tokens: 0 },
       range: { from: null, to: null },
-      message: "Usage analytics is not enabled yet.",
-    };
+      message: 'Usage analytics is not enabled yet.',
+    }
 
-    return NextResponse.json(response);
+    return NextResponse.json(response)
   } catch (err: unknown) {
     // Even on error, return 200 with empty state for Phase-1
-    console.error("[/api/usage] Error:", err);
+    console.error('[/api/usage] Error:', err)
     return NextResponse.json({
       ok: true,
       usage: [],
       totals: { requests: 0, tokens: 0 },
       range: { from: null, to: null },
-      message: "Usage data unavailable.",
-    });
+      message: 'Usage data unavailable.',
+    })
   }
 }

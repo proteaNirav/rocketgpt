@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import ThemeToggle from "./ThemeToggle";
+import ThemeToggle from './ThemeToggle'
 
 export function ModeToggle() {
-  return <ThemeToggle />;
+  return <ThemeToggle />
 }

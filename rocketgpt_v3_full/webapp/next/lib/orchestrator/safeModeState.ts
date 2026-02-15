@@ -12,20 +12,20 @@
  * but env still takes precedence to avoid drift in distributed runtimes.
  */
 
-let safeModeEnabled = false;
+let safeModeEnabled = false
 
 function envSafeModeEnabled(): boolean {
-  const a = (process.env.RGPT_SAFE_MODE_ENABLED || "").toLowerCase();
-  const b = (process.env.RGPT_SAFE_MODE || "").toLowerCase();
-  return a === "true" || b === "on";
+  const a = (process.env.RGPT_SAFE_MODE_ENABLED || '').toLowerCase()
+  const b = (process.env.RGPT_SAFE_MODE || '').toLowerCase()
+  return a === 'true' || b === 'on'
 }
 
 export function getSafeModeEnabled(): boolean {
   // Env wins to prevent UI/status drift from real enforcement.
-  if (envSafeModeEnabled()) return true;
-  return safeModeEnabled;
+  if (envSafeModeEnabled()) return true
+  return safeModeEnabled
 }
 
 export function setSafeModeEnabled(enabled: boolean): void {
-  safeModeEnabled = enabled;
+  safeModeEnabled = enabled
 }
