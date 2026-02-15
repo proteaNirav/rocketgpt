@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
+from replay.side_effect_tracker import SideEffectTracker
+
 try:
     from .commissioner.decision_engine import CommissionerInputs, decide
     from .models import ReplayConfig, ReplayContext, ReplayPaths, TriState
@@ -24,7 +26,6 @@ except ImportError:  # pragma: no cover - local execution fallback
         sys.path.insert(0, str(package_root))
     try:
         from replay.commissioner.decision_engine import (
-from replay.side_effect_tracker import SideEffectTracker
             CommissionerInputs,
             decide,
         )
