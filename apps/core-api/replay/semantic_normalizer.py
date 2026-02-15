@@ -115,3 +115,41 @@ def canonicalize_execution(raw: JsonDict, opt: Optional[CanonicalizeOptions] = N
         csm["meta"]["execution_fingerprint_sha256"] = _sha256(_stable_json(csm["execution"]))
 
     return csm
+
+def canonicalize_intent_outcome_pair(
+    execution_ledger: JsonDict,
+    decision_ledger: JsonDict,
+    opt: Optional[CanonicalizeOptions] = None,
+) -> JsonDict:
+    """
+    Canonicalize ledgers into separated Intent and Outcome layers.
+
+    Intent Layer  -> decision_ledger (what was planned / decided)
+    Outcome Layer -> execution_ledger (what actually executed)
+
+    Returns Canonical Semantic Model v2:
+    {
+        meta: {...},
+        intent_layer: {...},
+        outcome_layer: {...}
+    }
+    """
+
+    opt = opt or CanonicalizeOptions()
+
+    intent_clean = _clean(copy.deepcopy(decision_ledger), path="$intent", opt=opt) or {}
+    outcome_clean = _clean(copy.deepcopy(execution_ledger), path="$outcome", opt=opt) or {}
+
+    csm = {
+        "meta": {
+            "schema": "rgpt.csm.v2",
+        },
+        "intent_layer": intent_clean,
+        "outcome_layer": outcome_clean,
+    }
+
+    if opt.hash_blocks:
+        csm["meta"]["intent_fingerprint_sha256"] = _sha256(_stable_json(intent_clean))
+        csm["meta"]["outcome_fingerprint_sha256"] = _sha256(_stable_json(outcome_clean))
+
+    return csm

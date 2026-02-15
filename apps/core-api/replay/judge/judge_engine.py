@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Tuple
-from ..semantic_normalizer import canonicalize_execution
+from ..semantic_normalizer import canonicalize_intent_outcome_pair
 from ..semantic_diff import semantic_diff
 
 
@@ -74,10 +74,8 @@ def compare_ledgers_semantic(
       notes: str
       details: dict (full semantic diff details)
     """
-    csm_a = canonicalize_execution(execution_ledger)
-    csm_b = canonicalize_execution(decision_ledger)
-
-    res = semantic_diff(csm_a, csm_b)
+    csm = canonicalize_intent_outcome_pair(execution_ledger, decision_ledger)
+    res = semantic_diff(csm, csm)
 
     mismatch_fields = list(res.drift_classes)  # drift classes as fields
     notes = f"semantic_diff(equivalent={res.equivalent}, confidence={res.confidence:.2f})"
