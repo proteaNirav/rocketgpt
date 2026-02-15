@@ -42,6 +42,8 @@ except ImportError:  # pragma: no cover - local execution fallback
         )
         from replay.validators.hash_chain_validator import validate_hash_chain
         from replay.validators.schema_compat_validator import (
+from replay.side_effect_tracker import SideEffectTracker
+
             validate_schema_compatibility,
         )
         from replay.side_effect_tracker import SideEffectTracker
@@ -442,17 +444,10 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
         )
         return 2
 
-                    # RGPT Phase-E3-E (log-only): Side Effect Drift report (no enforcement)
-                try:
-                    drift_report = SideEffectTracker.validate(ctx)
-                    drift_dict = drift_report.to_dict() if hasattr(drift_report, "to_dict") else drift_report
-                except Exception:
-                    drift_dict = {"mode": "UNKNOWN", "drift_class": "D0", "verdict": "PASS", "notes": "tracker_error"}
-write_json(
+    write_json(
         str(Path(ctx.paths.replay_result_path)),
         {
             "status": "ALLOWED_STAGE_1_3",
-                "drift_report": drift_dict,
             "timestamp_utc": _utc_now_iso(frozen_ts),
             "evidence_dir": ctx.paths.evidence_dir,
             "drift_report": drift_report_dict,
@@ -468,9 +463,16 @@ def main() -> int:
     )
     ap.add_argument("--mode", choices=["STRICT", "SANDBOX", "LIVE_ALLOWLIST"])
     args = ap.parse_args()
+    # RGPT Phase-E3-E (Step-2B): Side Effect Drift — log-only tracker (no enforcement)
+    try:
+        drift_report = SideEffectTracker.validate(ctx)
+        ctx.drift_report = drift_report.to_dict() if hasattr(drift_report, "to_dict") else drift_report
+    except Exception:
+        # Never fail replay in log-only mode
+        ctx.drift_report = {"mode": "UNKNOWN", "drift_class": "D0", "verdict": "PASS", "notes": "tracker_error"}
+
     return run(args.contract, mode_override=args.mode)
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
