@@ -22,12 +22,10 @@ def _event_count(doc: Dict[str, Any]) -> int | None:
     return None
 
 
-def compare_ledgers_semantic(
+def compare_ledgers(
     execution_ledger: Dict[str, Any],
     decision_ledger: Dict[str, Any],
-    inspector_report: Dict[str, Any] | None = None,
-    commissioner_report: Dict[str, Any] | None = None,
-) -> Tuple[bool, List[str], str, Dict[str, Any]]:
+) -> Tuple[bool, List[str], str]:
     """
     Minimal deterministic comparison for Phase-E3-D.
 
@@ -76,14 +74,7 @@ def compare_ledgers_semantic(
       notes: str
       details: dict (full semantic diff details)
     """
-   
-    csm = canonicalize_intent_outcome_pair(
-        execution_ledger,
-        decision_ledger,
-        inspector_report=inspector_report,
-        commissioner_report=commissioner_report,
-    )
-
+    csm = canonicalize_intent_outcome_pair(execution_ledger, decision_ledger)
     res = semantic_diff(csm, csm)
 
     mismatch_fields = list(res.drift_classes)  # drift classes as fields
