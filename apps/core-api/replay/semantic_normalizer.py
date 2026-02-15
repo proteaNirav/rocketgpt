@@ -119,8 +119,11 @@ def canonicalize_execution(raw: JsonDict, opt: Optional[CanonicalizeOptions] = N
 def canonicalize_intent_outcome_pair(
     execution_ledger: JsonDict,
     decision_ledger: JsonDict,
+    inspector_report: Optional[JsonDict] = None,
+    commissioner_report: Optional[JsonDict] = None,
     opt: Optional[CanonicalizeOptions] = None,
 ) -> JsonDict:
+
     """
     Canonicalize ledgers into separated Intent and Outcome layers.
 
@@ -140,12 +143,19 @@ def canonicalize_intent_outcome_pair(
     intent_clean = _clean(copy.deepcopy(decision_ledger), path="$intent", opt=opt) or {}
     outcome_clean = _clean(copy.deepcopy(execution_ledger), path="$outcome", opt=opt) or {}
 
+    policy_layer = {
+        "inspector": _clean(copy.deepcopy(inspector_report), path="$policy.inspector", opt=opt) if inspector_report else None,
+        "commissioner": _clean(copy.deepcopy(commissioner_report), path="$policy.commissioner", opt=opt) if commissioner_report else None,
+    }
+
+
     csm = {
         "meta": {
             "schema": "rgpt.csm.v2",
         },
         "intent_layer": intent_clean,
         "outcome_layer": outcome_clean,
+        "policy_layer": policy_layer,
     }
 
     if opt.hash_blocks:

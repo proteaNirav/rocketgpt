@@ -291,8 +291,10 @@ def _judge_stage(
         exec_ledger = read_json(ctx.paths.execution_ledger_path)
         dec_ledger = read_json(ctx.paths.decision_ledger_path)
         mismatched, mismatch_fields, notes, semantic_details = compare_ledgers_semantic(
-        exec_ledger, dec_ledger
+        exec_ledger, dec_ledger, inspector_report=None, commissioner_report=commissioner_report
         )
+
+
         diff_obj = {
             "compared": True,
             "mismatched": bool(mismatched),

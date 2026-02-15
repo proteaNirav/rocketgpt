@@ -114,6 +114,23 @@ def semantic_diff(csm_a: JsonDict, csm_b: JsonDict) -> DiffResult:
                 "only_in_outcome": sorted(list(k_o - k_i)),
             }
 
+                # --- Policy Drift (Commissioner) ---
+        policy = csm_a.get("policy_layer") or {}
+        comm = policy.get("commissioner") or {}
+
+        # Expect commissioner_report shape: {stage, status, decision, denial_reasons, ...}
+        comm_decision = comm.get("decision")
+        comm_denials = comm.get("denial_reasons") or []
+
+        # Policy drift signal: commissioner denied or had denial reasons
+        if comm_decision == "DENY" or (isinstance(comm_denials, list) and len(comm_denials) > 0):
+            drift.append("POLICY_DRIFT")
+            details["commissioner_policy"] = {
+                "decision": comm_decision,
+                "denial_reasons": comm_denials,
+            }
+
+
         equivalent = len(drift) == 0
         critical = "OUTCOME_DRIFT" in drift
         confidence = 0.90 if equivalent else 0.65
