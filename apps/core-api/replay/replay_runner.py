@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from replay.side_effect_tracker import SideEffectTracker
+
 import argparse
 import sys
 from datetime import datetime, timezone
@@ -222,7 +224,15 @@ def _commissioner_stage(
     }
 
 
-def _judge_stage(
+def _judge_stage
+
+    # RGPT Phase-E3-E (Step-2): Side Effect Drift — log-only tracker
+    try:
+        drift_report = SideEffectTracker.validate(ctx)
+        setattr(ctx, "drift_report", drift_report.to_dict() if hasattr(drift_report, "to_dict") else drift_report)
+    except Exception as _e:
+        # Never fail replay in Step-2
+        setattr(ctx, "drift_report", {"mode": "UNKNOWN", "drift_class": "D0", "verdict": "PASS", "notes": "tracker_error"})(
     ctx: ReplayContext,
     collector_report: Dict[str, Any],
     commissioner_report: Dict[str, Any],
@@ -412,7 +422,15 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
         commissioner,
     )
 
-    judge = _judge_stage(ctx, collector, commissioner, frozen_ts)
+    judge = _judge_stage
+
+    # RGPT Phase-E3-E (Step-2): Side Effect Drift — log-only tracker
+    try:
+        drift_report = SideEffectTracker.validate(ctx)
+        setattr(ctx, "drift_report", drift_report.to_dict() if hasattr(drift_report, "to_dict") else drift_report)
+    except Exception as _e:
+        # Never fail replay in Step-2
+        setattr(ctx, "drift_report", {"mode": "UNKNOWN", "drift_class": "D0", "verdict": "PASS", "notes": "tracker_error"})(ctx, collector, commissioner, frozen_ts)
     write_json(
         str(Path(ctx.paths.stage_reports_dir) / "04_judge_report.json"),
         judge,
@@ -452,3 +470,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
