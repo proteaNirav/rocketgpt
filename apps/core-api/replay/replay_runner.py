@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-    # E3E: allow SideEffectTracker to load side_effects from contract
-    ctx.contract_path = contract_path
-
 import argparse
 import sys
 from datetime import datetime, timezone
