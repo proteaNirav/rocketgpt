@@ -419,7 +419,7 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
 
     # Phase-E3-E: Compute side effect drift report (log-only, no enforcement)
     try:
-        drift_report = SideEffectTracker.validate(ctx)
+        drift_report = SideEffectTracker.validate(ctx, contract_path=contract_path)
         drift_report_dict = drift_report.to_dict() if hasattr(drift_report, "to_dict") else drift_report
     except Exception:
         drift_report_dict = {"mode": "UNKNOWN", "drift_class": "D0", "verdict": "PASS", "notes": "tracker_error"}
@@ -461,3 +461,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
