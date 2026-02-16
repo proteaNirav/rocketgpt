@@ -389,9 +389,6 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
         frozen_ts = datetime.now(timezone.utc)
 
     ctx = build_context(contract, frozen_ts)
-    # E3E: allow SideEffectTracker to load side_effects from contract
-    ctx.contract_path = contract_path
-
 
     _ensure_dir(ctx.paths.evidence_dir)
     _ensure_dir(ctx.paths.stage_reports_dir)
