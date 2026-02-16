@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Tuple
+from ..semantic_normalizer import canonicalize_intent_outcome_pair
+from ..semantic_diff import semantic_diff
+
 
 
 def _safe_get(d: Dict[str, Any], path: List[str]) -> Any:
@@ -19,10 +22,12 @@ def _event_count(doc: Dict[str, Any]) -> int | None:
     return None
 
 
-def compare_ledgers(
+def compare_ledgers_semantic(
     execution_ledger: Dict[str, Any],
     decision_ledger: Dict[str, Any],
-) -> Tuple[bool, List[str], str]:
+    inspector_report: Dict[str, Any] | None = None,
+    commissioner_report: Dict[str, Any] | None = None,
+) -> Tuple[bool, List[str], str, Dict[str, Any]]:
     """
     Minimal deterministic comparison for Phase-E3-D.
 
@@ -54,3 +59,50 @@ def compare_ledgers(
 
     notes = "minimal_compare(schema_version, execution_id, events.count)"
     return (len(mismatch_fields) > 0), mismatch_fields, notes
+
+def compare_ledgers_semantic(
+    execution_ledger: Dict[str, Any],
+    decision_ledger: Dict[str, Any],
+) -> Tuple[bool, List[str], str, Dict[str, Any]]:
+    """
+    Semantic comparison (Judge v2 foundation):
+    - Canonicalize both ledgers into CSM
+    - Run deterministic semantic diff
+    - Return mismatch + structured details
+
+    Returns:
+      mismatched: bool
+      mismatch_fields: list[str]  (drift classes)
+      notes: str
+      details: dict (full semantic diff details)
+    """
+   
+    csm = canonicalize_intent_outcome_pair(
+        execution_ledger,
+        decision_ledger,
+        inspector_report=inspector_report,
+        commissioner_report=commissioner_report,
+    )
+
+    res = semantic_diff(csm, csm)
+
+    mismatch_fields = list(res.drift_classes)  # drift classes as fields
+    notes = f"semantic_diff(equivalent={res.equivalent}, confidence={res.confidence:.2f})"
+
+    # Judge v2 considers mismatched == not equivalent OR critical
+    mismatched = (not res.equivalent) or bool(res.critical)
+
+    details = {
+        "equivalent": res.equivalent,
+        "confidence": res.confidence,
+        "critical": res.critical,
+        "drift_classes": list(res.drift_classes),
+        "summary": res.summary,
+        "details": res.details,
+        "fingerprints": {
+            "a": (csm_a.get("meta") or {}).get("execution_fingerprint_sha256"),
+            "b": (csm_b.get("meta") or {}).get("execution_fingerprint_sha256"),
+        },
+    }
+
+    return mismatched, mismatch_fields, notes, details
