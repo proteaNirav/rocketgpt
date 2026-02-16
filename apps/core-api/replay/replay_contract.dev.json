@@ -63,5 +63,15 @@
       ],
       "deny_if_missing_inputs": false
     }
+  },
+  "side_effects": {
+    "max_unexpected_effects": 3,
+    "scan_roots": [
+      "apps/core-api/replay/evidence/unknown_execution"
+    ],
+    "allowed_files": [
+      "apps/core-api/replay/evidence/**"
+    ],
+    "strict": false
   }
 }
