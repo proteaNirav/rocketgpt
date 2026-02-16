@@ -62,7 +62,7 @@ def _safe_get_mode(ctx: Any) -> str:
     return "DEV"
 
 
-def _load_contract_side_effects(ctx: Any) -> Dict[str, Any]:
+def _load_contract_side_effects(ctx: Any, contract_path: str | None = None) -> Dict[str, Any]:
     """
     Best-effort read of contract's side_effects policy.
 
@@ -94,7 +94,7 @@ def _load_contract_side_effects(ctx: Any) -> Dict[str, Any]:
         pass
 
     # 2) contract path variants
-    contract_path = None
+
     for key in ("contract_path",):
         try:
             p = getattr(ctx, key, None)
@@ -278,4 +278,5 @@ class SideEffectTracker:
             generated_at_utc=_utc_now_iso(),
             notes=note,
         )
+
 
