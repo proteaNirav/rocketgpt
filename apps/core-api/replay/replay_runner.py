@@ -6,13 +6,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
-from replay.side_effect_tracker import SideEffectTracker
-
 try:
     from .commissioner.decision_engine import CommissionerInputs, decide
     from .models import ReplayConfig, ReplayContext, ReplayPaths, TriState
     from .utils.io import read_json, write_json
-    from .judge.judge_engine import compare_ledgers_semantic
+    from .judge.judge_engine import compare_ledgers
     from .validators.artifact_manifest_validator import (
         validate_artifacts_manifest,
     )
@@ -41,8 +39,6 @@ except ImportError:  # pragma: no cover - local execution fallback
         )
         from replay.validators.hash_chain_validator import validate_hash_chain
         from replay.validators.schema_compat_validator import (
-from replay.side_effect_tracker import SideEffectTracker
-
             validate_schema_compatibility,
         )
     except ImportError as exc:
@@ -292,17 +288,14 @@ def _judge_stage(
     try:
         exec_ledger = read_json(ctx.paths.execution_ledger_path)
         dec_ledger = read_json(ctx.paths.decision_ledger_path)
-        mismatched, mismatch_fields, notes, semantic_details = compare_ledgers_semantic(
-        exec_ledger, dec_ledger, inspector_report=None, commissioner_report=commissioner_report
+        mismatched, mismatch_fields, notes = compare_ledgers(
+            exec_ledger, dec_ledger
         )
-
-
         diff_obj = {
             "compared": True,
             "mismatched": bool(mismatched),
             "notes": notes,
             "mismatch_fields": mismatch_fields,
-            "semantic": semantic_details,
         }
     except Exception as exc:  # pragma: no cover
         errors.append(f"judge:{type(exc).__name__}:{exc}")
@@ -451,14 +444,6 @@ def main() -> int:
     )
     ap.add_argument("--mode", choices=["STRICT", "SANDBOX", "LIVE_ALLOWLIST"])
     args = ap.parse_args()
-    # RGPT Phase-E3-E (Step-2B): Side Effect Drift — log-only tracker (no enforcement)
-    try:
-        drift_report = SideEffectTracker.validate(ctx)
-        ctx.drift_report = drift_report.to_dict() if hasattr(drift_report, "to_dict") else drift_report
-    except Exception:
-        # Never fail replay in log-only mode
-        ctx.drift_report = {"mode": "UNKNOWN", "drift_class": "D0", "verdict": "PASS", "notes": "tracker_error"}
-
     return run(args.contract, mode_override=args.mode)
 
 
