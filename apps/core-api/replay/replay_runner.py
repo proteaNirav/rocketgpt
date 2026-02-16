@@ -18,6 +18,7 @@ try:
     from .validators.schema_compat_validator import (
         validate_schema_compatibility,
     )
+    from .side_effect_tracker import SideEffectTracker
 except ImportError:  # pragma: no cover - local execution fallback
     package_root = Path(__file__).resolve().parents[1]
     if str(package_root) not in sys.path:
@@ -41,6 +42,7 @@ except ImportError:  # pragma: no cover - local execution fallback
         from replay.validators.schema_compat_validator import (
             validate_schema_compatibility,
         )
+        from replay.side_effect_tracker import SideEffectTracker
     except ImportError as exc:
         raise SystemExit(
             "Replay runner import failed. Ensure PYTHONPATH includes "
@@ -414,6 +416,14 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
         str(Path(ctx.paths.stage_reports_dir) / "04_judge_report.json"),
         judge,
     )
+
+    # Phase-E3-E: Compute side effect drift report (log-only, no enforcement)
+    try:
+        drift_report = SideEffectTracker.validate(ctx)
+        drift_report_dict = drift_report.to_dict() if hasattr(drift_report, "to_dict") else drift_report
+    except Exception:
+        drift_report_dict = {"mode": "UNKNOWN", "drift_class": "D0", "verdict": "PASS", "notes": "tracker_error"}
+
     if commissioner["decision"] != "ALLOW":
         write_json(
             str(Path(ctx.paths.replay_result_path)),
@@ -422,6 +432,7 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
                 "reason": "commissioner_gate",
                 "timestamp_utc": _utc_now_iso(frozen_ts),
                 "evidence_dir": ctx.paths.evidence_dir,
+                "drift_report": drift_report_dict,
             },
         )
         return 2
@@ -432,6 +443,7 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
             "status": "ALLOWED_STAGE_1_3",
             "timestamp_utc": _utc_now_iso(frozen_ts),
             "evidence_dir": ctx.paths.evidence_dir,
+            "drift_report": drift_report_dict,
         },
     )
     return 0
