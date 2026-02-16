@@ -226,9 +226,9 @@ class SideEffectTracker:
     """
 
     @staticmethod
-    def validate(ctx: Any) -> DriftReport:
+    def validate(ctx: Any, contract_path: str | None = None) -> DriftReport:
         mode = _safe_get_mode(ctx)
-        policy = _load_contract_side_effects(ctx)
+        policy = _load_contract_side_effects(ctx, contract_path)
 
         allowed_files = list(policy.get("allowed_files", []) or [])
         blocked_files = list(policy.get("blocked_files", []) or [])
@@ -278,3 +278,4 @@ class SideEffectTracker:
             generated_at_utc=_utc_now_iso(),
             notes=note,
         )
+
