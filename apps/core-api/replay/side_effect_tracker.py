@@ -138,7 +138,7 @@ def _scan_files(roots: List[str]) -> Dict[str, str]:
     Returns mapping of relative posix path -> sha256.
     Uses current working directory as base for relative paths.
     """
-    base = Path.cwd().resolve()
+    base = Path(__file__).resolve().parents[3]  # repo root
     out: Dict[str, str] = {}
     for r in roots:
         root = (base / r).resolve() if not Path(r).is_absolute() else Path(r).resolve()
@@ -278,5 +278,6 @@ class SideEffectTracker:
             generated_at_utc=_utc_now_iso(),
             notes=note,
         )
+
 
 
