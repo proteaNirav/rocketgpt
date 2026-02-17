@@ -81,22 +81,44 @@ def collect_snapshot(ctx: Any, files_root: str = "docs/ops/executions") -> Snaps
     )
 
 
+def _classify_drift(ledger_drift: bool, file_drift: bool, context_drift: bool) -> Dict[str, Any]:
+    """
+    Drift classes:
+      D0: No drift
+      D1: File drift only (execution artifact surface)
+      D2: Ledger drift (append-only state changed unexpectedly)
+      D3: Context drift (runtime/policy/contract identity changed)  -> critical
+    """
+    side_effects_detected = bool(ledger_drift or file_drift or context_drift)
+
+    if not side_effects_detected:
+        return {"drift_class": "D0", "severity": "NONE", "severity_score": 0}
+
+    if context_drift:
+        return {"drift_class": "D3", "severity": "HIGH", "severity_score": 90}
+
+    if ledger_drift:
+        return {"drift_class": "D2", "severity": "HIGH", "severity_score": 70}
+
+    # file drift only
+    return {"drift_class": "D1", "severity": "MEDIUM", "severity_score": 40}
+
+
 def diff_snapshots(begin: Snapshot, end: Snapshot) -> Dict[str, Any]:
-    drift = {
-        "ledger_drift": begin.ledger_hash != end.ledger_hash,
-        "file_drift": begin.file_hash != end.file_hash,
-        "context_drift": begin.context_hash != end.context_hash,
+    ledger_drift = begin.ledger_hash != end.ledger_hash
+    file_drift = begin.file_hash != end.file_hash
+    context_drift = begin.context_hash != end.context_hash
+
+    cls = _classify_drift(ledger_drift, file_drift, context_drift)
+
+    drift: Dict[str, Any] = {
+        "ledger_drift": ledger_drift,
+        "file_drift": file_drift,
+        "context_drift": context_drift,
+        "side_effects_detected": bool(ledger_drift or file_drift or context_drift),
+        "drift_class": cls["drift_class"],
+        "severity": cls["severity"],
+        "severity_score": cls["severity_score"],
     }
-
-    drift["side_effects_detected"] = any(drift.values())
-
-    if not drift["side_effects_detected"]:
-        drift["severity"] = "NONE"
-    elif drift["context_drift"]:
-        drift["severity"] = "HIGH"
-    elif drift["file_drift"]:
-        drift["severity"] = "MEDIUM"
-    else:
-        drift["severity"] = "LOW"
 
     return drift
