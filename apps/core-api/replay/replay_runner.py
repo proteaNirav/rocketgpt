@@ -427,6 +427,22 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
         # Phase-E3-F: Begin/End snapshot drift (begin/end diff)
         end_snapshot = collect_snapshot(ctx)
         snapshot_drift = diff_snapshots(begin_snapshot, end_snapshot)
+        # STRICT snapshot drift gate (Phase-E3-F)
+        if getattr(ctx, "runtime_mode", None) == "STRICT":
+            if bool(snapshot_drift.get("side_effects_detected")):
+                write_json(
+                    str(Path(ctx.paths.replay_result_path)),
+                    {
+                        "status": "DENIED",
+                        "reason": "snapshot_drift_strict",
+                        "timestamp_utc": _utc_now_iso(frozen_ts),
+                        "evidence_dir": ctx.paths.evidence_dir,
+                        "drift_report": drift_report_dict,
+                        "snapshot_drift": snapshot_drift,
+                    },
+                )
+                return 2
+
         drift_report_dict = drift_report.to_dict() if hasattr(drift_report, "to_dict") else drift_report
     except Exception:
         snapshot_drift = {"side_effects_detected": False, "severity": "UNKNOWN", "notes": "tracker_error"}
@@ -471,6 +487,7 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 
 
 
