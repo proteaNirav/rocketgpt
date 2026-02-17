@@ -19,6 +19,7 @@ try:
         validate_schema_compatibility,
     )
     from .side_effect_tracker import SideEffectTracker
+    from .side_effects_snapshot import collect_snapshot, diff_snapshots
 except ImportError:  # pragma: no cover - local execution fallback
     package_root = Path(__file__).resolve().parents[1]
     if str(package_root) not in sys.path:
@@ -35,6 +36,7 @@ except ImportError:  # pragma: no cover - local execution fallback
             TriState,
         )
         from replay.utils.io import read_json, write_json
+        from replay.judge.judge_engine import compare_ledgers
         from replay.validators.artifact_manifest_validator import (
             validate_artifacts_manifest,
         )
@@ -43,6 +45,7 @@ except ImportError:  # pragma: no cover - local execution fallback
             validate_schema_compatibility,
         )
         from replay.side_effect_tracker import SideEffectTracker
+        from replay.side_effects_snapshot import collect_snapshot, diff_snapshots
     except ImportError as exc:
         raise SystemExit(
             "Replay runner import failed. Ensure PYTHONPATH includes "
@@ -390,6 +393,7 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
 
     ctx = build_context(contract, frozen_ts)
 
+    begin_snapshot = collect_snapshot(ctx)
     _ensure_dir(ctx.paths.evidence_dir)
     _ensure_dir(ctx.paths.stage_reports_dir)
 
@@ -420,8 +424,12 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
     # Phase-E3-E: Compute side effect drift report (log-only, no enforcement)
     try:
         drift_report = SideEffectTracker.validate(ctx, contract_path=contract_path)
+        # Phase-E3-F: Begin/End snapshot drift (begin/end diff)
+        end_snapshot = collect_snapshot(ctx)
+        snapshot_drift = diff_snapshots(begin_snapshot, end_snapshot)
         drift_report_dict = drift_report.to_dict() if hasattr(drift_report, "to_dict") else drift_report
     except Exception:
+        snapshot_drift = {"side_effects_detected": False, "severity": "UNKNOWN", "notes": "tracker_error"}
         drift_report_dict = {"mode": "UNKNOWN", "drift_class": "D0", "verdict": "PASS", "notes": "tracker_error"}
 
     if commissioner["decision"] != "ALLOW":
@@ -433,6 +441,7 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
                 "timestamp_utc": _utc_now_iso(frozen_ts),
                 "evidence_dir": ctx.paths.evidence_dir,
                 "drift_report": drift_report_dict,
+                "snapshot_drift": snapshot_drift,
             },
         )
         return 2
@@ -444,6 +453,7 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
             "timestamp_utc": _utc_now_iso(frozen_ts),
             "evidence_dir": ctx.paths.evidence_dir,
             "drift_report": drift_report_dict,
+            "snapshot_drift": snapshot_drift,
         },
     )
     return 0
@@ -461,4 +471,8 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+
+
 
