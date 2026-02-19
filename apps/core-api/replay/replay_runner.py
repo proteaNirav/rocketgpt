@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
@@ -382,8 +384,6 @@ def build_context(
 
 def run(contract_path: str, mode_override: str | None = None) -> int:
     contract = read_json(contract_path)
-    if mode_override:
-        contract["replay"]["mode"] = mode_override
 
     # Determine frozen timestamp if determinism.freeze_time_utc is enabled
     determinism = contract.get("replay", {}).get("determinism", {})
@@ -393,7 +393,18 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
 
     ctx = build_context(contract, frozen_ts)
 
-    begin_snapshot = collect_snapshot(ctx)
+    # Compute effective_runtime_mode without mutating ctx
+    effective_runtime_mode = (
+        mode_override
+        or contract["replay"].get("mode")
+        or getattr(ctx, "runtime_mode", None)
+    )
+
+    # Deterministic snapshot files root (independent of CWD)
+    repo_root = Path(__file__).resolve().parents[3]
+    snapshot_files_root = str(repo_root / "docs" / "ops" / "executions")
+
+    begin_snapshot = collect_snapshot(ctx, files_root=snapshot_files_root)
     _ensure_dir(ctx.paths.evidence_dir)
     _ensure_dir(ctx.paths.stage_reports_dir)
 
@@ -424,11 +435,19 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
     # Phase-E3-E: Compute side effect drift report (log-only, no enforcement)
     try:
         drift_report = SideEffectTracker.validate(ctx, contract_path=contract_path)
+        drift_report_dict = drift_report.to_dict() if hasattr(drift_report, "to_dict") else drift_report
+
+        # TEST HOOK: Allow injecting delay before end snapshot for testing
+        test_sleep_ms = int(os.environ.get("RGPT_SNAPSHOT_TEST_SLEEP_MS", "0"))
+        if test_sleep_ms > 0:
+            time.sleep(test_sleep_ms / 1000.0)
+
         # Phase-E3-F: Begin/End snapshot drift (begin/end diff)
-        end_snapshot = collect_snapshot(ctx)
+        end_snapshot = collect_snapshot(ctx, files_root=snapshot_files_root)
         snapshot_drift = diff_snapshots(begin_snapshot, end_snapshot)
+
         # STRICT snapshot drift gate (Phase-E3-F)
-        if getattr(ctx, "runtime_mode", None) == "STRICT":
+        if effective_runtime_mode == "STRICT":
             if bool(snapshot_drift.get("side_effects_detected")):
                 write_json(
                     str(Path(ctx.paths.replay_result_path)),
@@ -442,8 +461,6 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
                     },
                 )
                 return 2
-
-        drift_report_dict = drift_report.to_dict() if hasattr(drift_report, "to_dict") else drift_report
     except Exception:
         snapshot_drift = {"side_effects_detected": False, "severity": "UNKNOWN", "notes": "tracker_error"}
         drift_report_dict = {"mode": "UNKNOWN", "drift_class": "D0", "verdict": "PASS", "notes": "tracker_error"}
