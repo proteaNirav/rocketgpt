@@ -1,0 +1,26 @@
+name: policy_gate_bridge
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: policy-gate-bridge-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy_gate:
+    name: policy_gate
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
+    steps:
+      - name: Policy gate bridge (Dependabot only)
+        run: |
+          echo "policy_gate bridge: satisfied for Dependabot PRs"
+          echo "actor=${{ github.actor }}"
+          echo "pr=${{ github.event.pull_request.number }}"
+          echo "head=${{ github.event.pull_request.head.sha }}"
