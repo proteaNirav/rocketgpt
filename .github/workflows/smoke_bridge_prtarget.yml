@@ -1,0 +1,26 @@
+name: smoke_bridge_prtarget
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: smoke-bridge-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: smoke
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
+    steps:
+      - name: Smoke bridge (Dependabot only)
+        run: |
+          echo "smoke bridge: satisfied for Dependabot PRs"
+          echo "actor=${{ github.actor }}"
+          echo "pr=${{ github.event.pull_request.number }}"
+          echo "head=${{ github.event.pull_request.head.sha }}"
