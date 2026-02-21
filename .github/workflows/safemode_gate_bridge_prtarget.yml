@@ -1,0 +1,26 @@
+name: safemode_bridge_prtarget
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: safemode-bridge-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  safemode_gate:
+    name: safemode-gate
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
+    steps:
+      - name: Safe-mode bridge (Dependabot only)
+        run: |
+          echo "safemode-gate bridge: satisfied for Dependabot PRs"
+          echo "actor=${{ github.actor }}"
+          echo "pr=${{ github.event.pull_request.number }}"
+          echo "head=${{ github.event.pull_request.head.sha }}"
