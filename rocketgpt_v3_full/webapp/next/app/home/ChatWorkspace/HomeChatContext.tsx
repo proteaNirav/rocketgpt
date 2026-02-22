@@ -1,31 +1,31 @@
-"use client";
+'use client'
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode } from 'react'
 
-export type HomeChatRole = "user" | "assistant";
+export type HomeChatRole = 'user' | 'assistant'
 
 export interface HomeChatMessage {
-  id: string;
-  role: HomeChatRole;
-  name: string;
-  content: string;
-  time: string;
+  id: string
+  role: HomeChatRole
+  name: string
+  content: string
+  time: string
 }
 
 export interface UseHomeChatResult {
-  messages: HomeChatMessage[];
-  sending: boolean;
-  error: string | null;
-  sendMessage: (text: string) => Promise<void>;
-  clearMessages: () => void;
-  resetChat: () => void;
+  messages: HomeChatMessage[]
+  sending: boolean
+  error: string | null
+  sendMessage: (text: string) => Promise<void>
+  clearMessages: () => void
+  resetChat: () => void
   /** Increments on resetChat(); use as key to hard-reset child components */
-  resetKey: number;
+  resetKey: number
 }
 
-type HomeChatContextValue = UseHomeChatResult;
+type HomeChatContextValue = UseHomeChatResult
 
-const HomeChatContext = createContext<HomeChatContextValue | null>(null);
+const HomeChatContext = createContext<HomeChatContextValue | null>(null)
 
 /**
  * HomeChatProvider
@@ -33,102 +33,102 @@ const HomeChatContext = createContext<HomeChatContextValue | null>(null);
  * Phase-1: Messages start empty (no demo seeding).
  */
 export function HomeChatProvider({ children }: { children: ReactNode }) {
-  const [messages, setMessages] = useState<HomeChatMessage[]>([]);
-  const [sending, setSending] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [resetKey, setResetKey] = useState<number>(0);
+  const [messages, setMessages] = useState<HomeChatMessage[]>([])
+  const [sending, setSending] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+  const [resetKey, setResetKey] = useState<number>(0)
 
   const sendMessage = async (text: string): Promise<void> => {
-    const trimmed = text.trim();
+    const trimmed = text.trim()
     if (!trimmed || sending) {
-      return;
+      return
     }
 
-    const now = new Date();
-    const time = now.toTimeString().slice(0, 5);
+    const now = new Date()
+    const time = now.toTimeString().slice(0, 5)
 
     const userMessage: HomeChatMessage = {
-      id: "user-" + Date.now().toString(),
-      role: "user",
-      name: "You",
+      id: 'user-' + Date.now().toString(),
+      role: 'user',
+      name: 'You',
       content: trimmed,
       time,
-    };
+    }
 
-    setMessages((prev) => [...prev, userMessage]);
-    setSending(true);
-    setError(null);
+    setMessages((prev) => [...prev, userMessage])
+    setSending(true)
+    setError(null)
 
     try {
       const payload = {
-        messages: [{ role: "user", content: trimmed }],
-      };
+        messages: [{ role: 'user', content: trimmed }],
+      }
 
-      const res = await fetch("/api/demo/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/demo/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      });
+      })
 
       if (!res.ok) {
-        let errMsg = "Request failed (" + res.status.toString() + ")";
+        let errMsg = 'Request failed (' + res.status.toString() + ')'
         try {
-          const data = await res.json();
-          if (data && typeof data.error === "string") {
-            errMsg = data.error;
+          const data = await res.json()
+          if (data && typeof data.error === 'string') {
+            errMsg = data.error
           }
         } catch {
           // ignore
         }
 
-        setError(errMsg);
+        setError(errMsg)
         const errorMessage: HomeChatMessage = {
-          id: "err-" + Date.now().toString(),
-          role: "assistant",
-          name: "RocketGPT",
-          content: "Error: " + errMsg,
+          id: 'err-' + Date.now().toString(),
+          role: 'assistant',
+          name: 'RocketGPT',
+          content: 'Error: ' + errMsg,
           time,
-        };
-        setMessages((prev) => [...prev, errorMessage]);
-        return;
+        }
+        setMessages((prev) => [...prev, errorMessage])
+        return
       }
 
-      const data = await res.json();
-      let replyText = "RocketGPT could not generate a reply.";
-      if (data && typeof data.reply === "string") {
-        replyText = data.reply;
+      const data = await res.json()
+      let replyText = 'RocketGPT could not generate a reply.'
+      if (data && typeof data.reply === 'string') {
+        replyText = data.reply
       }
 
       const assistantMessage: HomeChatMessage = {
-        id: "assistant-" + Date.now().toString(),
-        role: "assistant",
-        name: "RocketGPT",
+        id: 'assistant-' + Date.now().toString(),
+        role: 'assistant',
+        name: 'RocketGPT',
         content: replyText,
         time,
-      };
+      }
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage])
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Network error";
-      setError(msg);
+      const msg = e instanceof Error ? e.message : 'Network error'
+      setError(msg)
 
       const errorMessage: HomeChatMessage = {
-        id: "err-" + Date.now().toString(),
-        role: "assistant",
-        name: "RocketGPT",
-        content: "Network error: " + msg,
+        id: 'err-' + Date.now().toString(),
+        role: 'assistant',
+        name: 'RocketGPT',
+        content: 'Network error: ' + msg,
         time,
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      }
+      setMessages((prev) => [...prev, errorMessage])
     } finally {
-      setSending(false);
+      setSending(false)
     }
-  };
+  }
 
   const clearMessages = (): void => {
-    setMessages([]);
-    setError(null);
-  };
+    setMessages([])
+    setError(null)
+  }
 
   /**
    * resetChat - Full reset for New Chat button
@@ -136,11 +136,11 @@ export function HomeChatProvider({ children }: { children: ReactNode }) {
    * so child components (like composer input) can hard-reset.
    */
   const resetChat = (): void => {
-    setMessages([]);
-    setError(null);
-    setSending(false);
-    setResetKey((k) => k + 1);
-  };
+    setMessages([])
+    setError(null)
+    setSending(false)
+    setResetKey((k) => k + 1)
+  }
 
   return (
     <HomeChatContext.Provider
@@ -148,16 +148,16 @@ export function HomeChatProvider({ children }: { children: ReactNode }) {
     >
       {children}
     </HomeChatContext.Provider>
-  );
+  )
 }
 
 /**
  * useHomeChat - Access shared chat state
  */
 export function useHomeChat(): HomeChatContextValue {
-  const ctx = useContext(HomeChatContext);
+  const ctx = useContext(HomeChatContext)
   if (!ctx) {
-    throw new Error("useHomeChat must be used within HomeChatProvider");
+    throw new Error('useHomeChat must be used within HomeChatProvider')
   }
-  return ctx;
+  return ctx
 }

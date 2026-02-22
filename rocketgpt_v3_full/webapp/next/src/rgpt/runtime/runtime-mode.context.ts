@@ -1,5 +1,5 @@
-import type { ResolveInput, ResolveResult, RuntimeMode } from "./runtime-mode.types";
-import { loadRuntimeModeConfig, resolveRuntimeMode } from "./runtime-mode.resolver";
+import type { ResolveInput, ResolveResult, RuntimeMode } from './runtime-mode.types'
+import { loadRuntimeModeConfig, resolveRuntimeMode } from './runtime-mode.resolver'
 
 /**
  * Server-side runtime mode resolution:
@@ -11,29 +11,30 @@ import { loadRuntimeModeConfig, resolveRuntimeMode } from "./runtime-mode.resolv
  * currentMode should typically come from your DB/ledger (later step).
  */
 export function resolveRuntimeModeFromEnvAndHeaders(opts?: {
-  headers?: Headers;
-  currentMode?: RuntimeMode;
-  triggers?: ResolveInput["triggers"];
+  headers?: Headers
+  currentMode?: RuntimeMode
+  triggers?: ResolveInput['triggers']
 }): ResolveResult {
-  const cfg = loadRuntimeModeConfig();
+  const cfg = loadRuntimeModeConfig()
 
-  const envModeRaw = process.env.RGPT_RUNTIME_MODE?.toUpperCase().trim();
-  const envMode = (envModeRaw as RuntimeMode) || undefined;
+  const envModeRaw = process.env.RGPT_RUNTIME_MODE?.toUpperCase().trim()
+  const envMode = (envModeRaw as RuntimeMode) || undefined
 
-  const h = opts?.headers;
-  const requestedRaw = h?.get("x-rgpt-requested-mode")?.toUpperCase().trim();
-  const requestedMode = (requestedRaw as RuntimeMode) || undefined;
+  const h = opts?.headers
+  const requestedRaw = h?.get('x-rgpt-requested-mode')?.toUpperCase().trim()
+  const requestedMode = (requestedRaw as RuntimeMode) || undefined
 
-  const confirmRaw = h?.get("x-rgpt-explicit-confirm")?.toLowerCase().trim();
-  const hasExplicitConfirmation = confirmRaw === "true" || confirmRaw === "1" || confirmRaw === "yes";
+  const confirmRaw = h?.get('x-rgpt-explicit-confirm')?.toLowerCase().trim()
+  const hasExplicitConfirmation =
+    confirmRaw === 'true' || confirmRaw === '1' || confirmRaw === 'yes'
 
   const input: ResolveInput = {
     requestedMode,
     currentMode: opts?.currentMode,
     envMode,
     hasExplicitConfirmation,
-    triggers: opts?.triggers
-  };
+    triggers: opts?.triggers,
+  }
 
-  return resolveRuntimeMode(input, cfg);
+  return resolveRuntimeMode(input, cfg)
 }
