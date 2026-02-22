@@ -1,9 +1,9 @@
 // components/console/app-shell.tsx
-"use client";
+'use client'
 
-import type { ReactNode } from "react";
-import { ConsoleSidebar } from "./sidebar";
-import { ConsoleTopbar } from "./topbar";
+import type { ReactNode } from 'react'
+import { ConsoleSidebar } from './sidebar'
+import { ConsoleTopbar } from './topbar'
 
 export function ConsoleAppShell({ children }: { children: ReactNode }) {
   return (
@@ -14,5 +14,5 @@ export function ConsoleAppShell({ children }: { children: ReactNode }) {
         <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
     </div>
-  );
+  )
 }
