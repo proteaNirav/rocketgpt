@@ -5,12 +5,9 @@ on:
     workflows:
       - ci
       - text-guard (smoke)
-      - policy_prompt_bypass_gate
-      - workflow_name_drift_lock
-      - RGPT DB Exposure Guard
-      - Safe-Mode CI Gate
-      - .github/workflows/policy_gate_required.yml
-    types: [completed]
+      - policy_gate_aggregator
+    types:
+      - completed
 
 permissions:
   statuses: write
@@ -29,9 +26,10 @@ jobs:
 
             const sha = run.head_sha;
             const path = (run.path || "").toLowerCase();
+            const name = (run.name || "").toLowerCase();
             const conclusion = (run.conclusion || "").toLowerCase();
 
-            // Hard fail-safe: only completed workflows
+            // Only completed workflow_run events should publish a commit status
             if (run.status !== "completed") {
               core.info(`Workflow not completed yet: ${run.status}`);
               return;
@@ -40,30 +38,25 @@ jobs:
             // Map workflow_run conclusion -> commit status state
             let state = "failure";
             if (conclusion === "success") state = "success";
-            if (conclusion === "skipped") state = "success"; // neutral-safe
+            if (conclusion === "skipped") state = "success"; // neutral-safe for required contexts
 
-            // Determine target context
+            // Determine target required STATUS context
             let targetContext = null;
 
-            // Primary mapping by workflow file path
-            if (path.endsWith("ci.yml") || path.endsWith("ci.yaml")) {
-              targetContext = "build-test";
-            } else if (path.endsWith("policy_gate_required.yml") || path.endsWith("policy_gate_required.yaml")) {
-              targetContext = "policy_gate";
-            } else if (path.includes("smoke")) {
-              targetContext = "smoke";
-            }
+            // Prefer mapping by workflow *name* (most stable)
+            if (name.includes("smoke")) targetContext = "smoke";
+            else if (name.includes("policy_gate_aggregator") || name.includes("policy gate") || name.includes("policy_gate")) targetContext = "policy_gate";
+            else if (name === "ci" || name.includes("build-test") || name.includes("build test")) targetContext = "build-test";
 
-            // Fallback mapping by workflow name (more reliable than file path drift)
+            // Fallback mapping by file path (secondary)
             if (!targetContext) {
-              const n = (run.name || "").toLowerCase();
-              if (n.includes("smoke")) targetContext = "smoke";
-              else if (n.includes("policy gate")) targetContext = "policy_gate";
-              else if (n.includes("build-test") || n.includes("build test")) targetContext = "build-test";
+              if (path.endsWith("ci.yml") || path.endsWith("ci.yaml")) targetContext = "build-test";
+              else if (path.includes("policy_gate_aggregator") || path.includes("policy_gate_required")) targetContext = "policy_gate";
+              else if (path.includes("smoke")) targetContext = "smoke";
             }
 
             if (!targetContext) {
-              core.info(`No required context mapping for ${run.path} (name=${run.name})`);
+              core.info(`No required context mapping for workflow: name='${run.name}' path='${run.path}'`);
               return;
             }
 
@@ -78,6 +71,3 @@ jobs:
               description: `Bridge: ${run.name} ΓåÆ ${state}`,
               target_url: run.html_url
             });
-
-
-
