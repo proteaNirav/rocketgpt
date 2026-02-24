@@ -35,9 +35,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "pnpm"
-          cache-dependency-path: |
-            rocketgpt_v3_full/webapp/next/pnpm-lock.yaml
       
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
