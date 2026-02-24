@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 
-function absoluteUrl(path: string) {
-  const h = headers();
+async function absoluteUrl(path: string) {
+  const h = await headers();
   const host = h.get("host");
   const proto = h.get("x-forwarded-proto") ?? "https";
   return `${proto}://${host}${path}`;
@@ -17,7 +17,7 @@ export async function getJSON<T>(
 
   // Server Component: build absolute URL based on incoming request
   if (typeof window === "undefined" && url.startsWith("/")) {
-    finalUrl = absoluteUrl(url);
+    finalUrl = await absoluteUrl(url);
   }
 
   const controller = new AbortController();

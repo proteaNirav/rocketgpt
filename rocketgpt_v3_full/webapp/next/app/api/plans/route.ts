@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 
 
 export async function GET() {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const { data, error } = await sb.from("rl_plans").select("*").order("monthly_price_inr");
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json(data);
@@ -15,12 +15,13 @@ export async function GET() {
 
 export async function POST(req: Request) {
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const body = await req.json();
   const { error } = await sb.from("rl_plans").upsert(body);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
+
 
 
 
