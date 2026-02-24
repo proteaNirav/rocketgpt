@@ -6,10 +6,10 @@ import DebugAuthClient from "@/components/DebugAuthClient";
 export const dynamic = "force-dynamic";
 
 export default async function DebugAuthPage() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const guestId = cookieStore.get("guest_id")?.value ?? null;
 
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const { data } = await sb.auth.getUser();
   const userId = data.user?.id ?? null;
 

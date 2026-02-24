@@ -5,8 +5,8 @@ import { createServerClient } from '@supabase/ssr'
  * Server-side Supabase client (Next.js App Router).
  * It forwards the guest_id cookie as x-guest-id header for RLS on guest rows.
  */
-export const createSupabaseServerClient = () => {
-  const cookieStore = cookies()
+export const createSupabaseServerClient = async () => {
+  const cookieStore = await cookies()
   const guestId = cookieStore.get('guest_id')?.value
 
   return createServerClient(
@@ -24,5 +24,4 @@ export const createSupabaseServerClient = () => {
     }
   )
 }
-
 
