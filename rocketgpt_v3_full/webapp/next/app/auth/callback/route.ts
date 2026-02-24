@@ -13,7 +13,7 @@ export async function GET(req: Request) {
   console.log("[auth/callback] hit", { hasCode: !!code, next });
 
   // Construct client (Node runtime)
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   console.log("[auth/callback] client ready");
 
   if (code) {
@@ -36,3 +36,4 @@ export async function GET(req: Request) {
   console.log("[auth/callback] no code in URL");
   return NextResponse.redirect(new URL("/login?error=nocode", url));
 }
+
