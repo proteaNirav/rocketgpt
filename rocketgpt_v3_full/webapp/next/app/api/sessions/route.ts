@@ -32,7 +32,7 @@ const demoSessions: SessionSummary[] = [
 ];
 
 export async function GET() {
-  const req = new Request("http://localhost/_rgpt", { headers: headers() as any });
+  const req = new Request("http://localhost/_rgpt", { headers: await headers() as any });
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   // TODO (R-UI-1 / later steps):
   //  - Replace demoSessions with real data from Supabase / DB / logs
@@ -40,3 +40,4 @@ export async function GET() {
     sessions: demoSessions,
   });
 }
+
