@@ -11,7 +11,7 @@ export const runtime = "nodejs";
 export async function POST(_req: NextRequest) {
   await runtimeGuard(_req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     let guestId = cookieStore.get('guest_id')?.value
 
     // Prepare response we can attach cookies to
@@ -56,6 +56,5 @@ export async function POST(_req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'internal_error' }, { status: 500 })
   }
 }
-
 
 

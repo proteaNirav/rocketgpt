@@ -6,8 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 const EDGE_BASE =
   (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/\/$/, "") + "/functions/v1";
 
-async function forward(req: NextRequest, fn: string) {
-  const cookieStore = cookies();
+async function forward(req: Request, fn: string) {
+  const cookieStore = await cookies();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -65,16 +65,7 @@ async function forward(req: NextRequest, fn: string) {
   });
 }
 
-export async function GET(
-  req: NextRequest,
-  ctx: { params: { fn: string } }
-) {
-  return forward(req, ctx.params.fn);
-}
-
-export async function POST(
-  req: NextRequest,
-  ctx: { params: { fn: string } }
-) {
-  return forward(req, ctx.params.fn);
+export async function GET(req: Request, ctx: { params: Promise<{ fn: string }> }) {
+  const { fn } = await ctx.params;
+  return forward(req, fn);
 }
