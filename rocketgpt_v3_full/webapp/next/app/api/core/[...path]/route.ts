@@ -27,10 +27,12 @@ async function forward(req: Request, method: 'GET'|'POST', path: string[]) {
   return new Response(text, { status: res.status, headers: { 'content-type': ct } });
 }
 
-export async function GET(req: Request, { params }: { params: { path: string[] } }) {
-  return forward(req, 'GET', params.path);
+export async function GET(req: Request, ctx: { params: Promise<{ path: string[] }> }) {
+  const { path } = await ctx.params;
+  return forward(req, 'GET', path);
 }
 
-export async function POST(req: Request, { params }: { params: { path: string[] } }) {
-  return forward(req, 'POST', params.path);
+export async function POST(req: Request, ctx: { params: Promise<{ path: string[] }> }) {
+  const { path } = await ctx.params;
+  return forward(req, 'POST', path);
 }

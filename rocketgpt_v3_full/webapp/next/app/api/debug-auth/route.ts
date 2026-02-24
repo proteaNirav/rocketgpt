@@ -10,12 +10,12 @@ export const runtime = "nodejs";
 
 
 export async function GET() {
-  const req = new Request("http://localhost/_rgpt", { headers: headers() as any });
+  const req = new Request("http://localhost/_rgpt", { headers: await headers() as any });
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const guestId = cookieStore.get("guest_id")?.value ?? null;
 
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const { data } = await sb.auth.getUser();
   const userId = data.user?.id ?? null;
 
@@ -28,6 +28,7 @@ export async function GET() {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || null,
   });
 }
+
 
 
 

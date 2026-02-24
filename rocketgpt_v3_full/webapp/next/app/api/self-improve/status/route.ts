@@ -15,7 +15,7 @@ function isTruthyEnv(value: string | undefined): boolean {
 }
 
 export async function GET() {
-  const req = new Request("http://localhost/_rgpt", { headers: headers() as any });
+  const req = new Request("http://localhost/_rgpt", { headers: await headers() as any });
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const writeEnabled = isTruthyEnv(process.env.SELF_IMPROVE_WRITE);
   const mode: SelfImproveMode = writeEnabled ? "write-enabled" : "simulation";
@@ -32,3 +32,4 @@ export async function GET() {
 
   return NextResponse.json(payload, { status: 200 });
 }
+
