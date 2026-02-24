@@ -19,7 +19,7 @@ function info(name: string, v: string | undefined | null) {
 }
 
 export async function GET() {
-  const req = new Request("http://localhost/_rgpt", { headers: headers() as any });
+  const req = new Request("http://localhost/_rgpt", { headers: await headers() as any });
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const vars = [
     "NEXT_PUBLIC_SUPABASE_URL",
@@ -36,3 +36,4 @@ export async function GET() {
   const items = vars.map((k) => info(k, process.env[k]));
   return NextResponse.json({ ok: true, items }, { status: 200, headers: { "Cache-Control": "no-store" } });
 }
+

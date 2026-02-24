@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 
 
 export async function GET() {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
 
   const [usageRes, plansRes, userPlansRes] = await Promise.all([
     sb.from("v_rl_usage")
@@ -27,7 +27,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const { user_id, plan_code } = await req.json().catch(() => ({}));
 
   if (!user_id || !plan_code) {
@@ -55,6 +55,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ok: true });
 }
+
 
 
 
