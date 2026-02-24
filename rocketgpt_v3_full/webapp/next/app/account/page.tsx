@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AccountPage() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user }} = await supabase.auth.getUser();
 
   console.log("ACCOUNT USER:", user);
@@ -17,3 +17,4 @@ export default async function AccountPage() {
     </div>
   );
 }
+
