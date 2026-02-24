@@ -7,9 +7,9 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
  * Also updates last_seen via RPC on each call.
  */
 export async function ensureGuest() {
-  const jar = cookies()
+  const jar = await cookies()
   let guestId = jar.get('guest_id')?.value
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
 
   if (!guestId) {
     guestId = randomUUID()
@@ -23,11 +23,10 @@ export async function ensureGuest() {
   } else {
     await supabase.rpc('touch_guest', {
       p_guest_id: guestId,
-      p_user_agent: headers().get('user-agent') ?? null
+      p_user_agent: (await headers()).get('user-agent') ?? null
     })
   }
 
   return guestId
 }
-
 
