@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const req = new Request("http://localhost/_rgpt", { headers: headers() as any });
+  const req = new Request("http://localhost/_rgpt", { headers: await headers() as any });
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   return NextResponse.json({
     success: true,
@@ -19,3 +19,4 @@ export async function GET() {
     }
   });
 }
+
