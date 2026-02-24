@@ -6,8 +6,8 @@ import { createServerClient } from "@supabase/ssr";
  * Read cookies normally; swallow cookie writes when we're not in a Server Action/Route Handler
  * to avoid: "Cookies can only be modified in a Server Action or Route Handler".
  */
-export function createSupabaseServerClient() {
-  const cookieStore = cookies();
+export async function createSupabaseServerClient() {
+  const cookieStore = await cookies();
 
   const safeSet = (name: string, value: string, options: any) => {
     try { cookieStore.set({ name, value, ...options }); } catch { /* no-op outside actions/handlers */ }
