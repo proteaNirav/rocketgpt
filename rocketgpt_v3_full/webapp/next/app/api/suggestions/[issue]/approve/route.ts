@@ -3,7 +3,8 @@ import { Octokit } from '@octokit/rest';
 
 const [OWNER, REPO] = (process.env.GITHUB_REPOSITORY || '').split('/');
 
-export async function POST(req: NextRequest, { params }: { params: { issue: string } }) {
+export async function POST(req: NextRequest, ctx: { params: Promise<{ issue: string }> }) {
+  const params = await ctx.params;
   if (!process.env.GH_PAT || !OWNER || !REPO) {
     return NextResponse.json({ ok: false, error: 'server not configured' }, { status: 500 });
   }
@@ -30,4 +31,3 @@ export async function POST(req: NextRequest, { params }: { params: { issue: stri
 
   return NextResponse.json({ ok: true });
 }
-

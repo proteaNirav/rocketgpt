@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST() {
-  const req = new Request("http://localhost/_rgpt", { headers: headers() as any });
+  const req = new Request("http://localhost/_rgpt", { headers: await headers() as any });
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   await clearOrchestratorCache();
 
@@ -17,3 +17,4 @@ export async function POST() {
     message: "Orchestrator cache cleared."
   });
 }
+
