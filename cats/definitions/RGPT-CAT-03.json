@@ -1,0 +1,20 @@
+{
+  "runtime_mode": "demo",
+  "description": "Creates an improvement proposal (consortium-style) and submits it into governance via ledger.",
+  "version": "0.1.0",
+  "cat_id": "RGPT-CAT-03",
+  "tags": [
+    "demo",
+    "consortium",
+    "proposal"
+  ],
+  "entrypoint": "apps/core-api/cats/cat_03_proposal_generator.ts",
+  "name": "Proposal Generator CAT",
+  "requires_approval": true,
+  "owner": "system",
+  "allowed_side_effects": [
+    "ledger_write",
+    "read_only"
+  ],
+  "type": "demo"
+}
