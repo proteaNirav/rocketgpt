@@ -161,6 +161,45 @@ function verifyRegistryEntry(def, registry) {
       `Registry mismatch for ${def.cat_id}: registry maps '${canonical}' to '${entry.cat_id}'`
     );
   }
+
+  const publisherNamespace = typeof entry.publisher_namespace === "string"
+    ? entry.publisher_namespace
+    : "";
+  if (!publisherNamespace) {
+    failWithCode(
+      "REGISTRY_MISMATCH",
+      `Registry mismatch for ${def.cat_id}: registry entry missing publisher_namespace`
+    );
+  }
+  if (!canonical.startsWith(`${publisherNamespace}/`)) {
+    failWithCode(
+      "REGISTRY_MISMATCH",
+      `Registry mismatch for ${def.cat_id}: canonical_name '${canonical}' must start with '${publisherNamespace}/'`
+    );
+  }
+
+  const publisherOwners = registry && typeof registry === "object" ? registry.publisher_owners : null;
+  const publisherOwner = publisherOwners && typeof publisherOwners === "object"
+    ? publisherOwners[publisherNamespace]
+    : null;
+  const publisherOwnerStatus = publisherOwner && typeof publisherOwner === "object"
+    && typeof publisherOwner.status === "string"
+    ? publisherOwner.status
+    : "MISSING";
+  if (publisherOwnerStatus !== "ACTIVE") {
+    failWithCode(
+      "REGISTRY_PUBLISHER_NOT_ACTIVE",
+      `Registry publisher namespace '${publisherNamespace}' is ${publisherOwnerStatus}`
+    );
+  }
+
+  const entryStatus = typeof entry.status === "string" ? entry.status : "MISSING";
+  if (entryStatus !== "ACTIVE") {
+    failWithCode(
+      "REGISTRY_ENTRY_NOT_ACTIVE",
+      `Registry entry '${canonical}' is ${entryStatus}`
+    );
+  }
   return entry;
 }
 

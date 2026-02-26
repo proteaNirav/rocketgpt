@@ -1,28 +1,38 @@
 {
   "version": 1,
+  "publisher_owners": {
+    "protea": {
+      "owner_type": "org",
+      "owner_id": "protea",
+      "status": "ACTIVE"
+    }
+  },
   "namespaces": {
     "protea/policy-validator": {
       "cat_id": "RGPT-CAT-01",
-      "passport_required": true,
-      "passport_id": "RGPT-CAT-01-PASS-20260226",
-      "issuer": "rgpt-police-dept",
       "publisher_namespace": "protea",
+      "status": "ACTIVE",
+      "passport_id": "RGPT-CAT-01-PASS-20260226",
+      "passport_required": true,
+      "issuer": "rgpt-police-dept",
       "created_at_utc": "2026-02-26T00:00:00Z"
     },
     "protea/ledger-summary": {
       "cat_id": "RGPT-CAT-02",
-      "passport_required": true,
-      "passport_id": "RGPT-CAT-02-PASS-20260226",
-      "issuer": "rgpt-police-dept",
       "publisher_namespace": "protea",
+      "status": "ACTIVE",
+      "passport_id": "RGPT-CAT-02-PASS-20260226",
+      "passport_required": true,
+      "issuer": "rgpt-police-dept",
       "created_at_utc": "2026-02-26T00:00:00Z"
     },
     "protea/proposal-generator": {
       "cat_id": "RGPT-CAT-03",
-      "passport_required": true,
-      "passport_id": "RGPT-CAT-03-PASS-20260226",
-      "issuer": "rgpt-police-dept",
       "publisher_namespace": "protea",
+      "status": "ACTIVE",
+      "passport_id": "RGPT-CAT-03-PASS-20260226",
+      "passport_required": true,
+      "issuer": "rgpt-police-dept",
       "created_at_utc": "2026-02-26T00:00:00Z"
     }
   }
