@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "namespaces": {
+    "protea/policy-validator": {
+      "cat_id": "RGPT-CAT-01",
+      "publisher_namespace": "protea",
+      "created_at_utc": "2026-02-26T00:00:00Z"
+    },
+    "protea/ledger-summary": {
+      "cat_id": "RGPT-CAT-02",
+      "publisher_namespace": "protea",
+      "created_at_utc": "2026-02-26T00:00:00Z"
+    },
+    "protea/proposal-generator": {
+      "cat_id": "RGPT-CAT-03",
+      "publisher_namespace": "protea",
+      "created_at_utc": "2026-02-26T00:00:00Z"
+    }
+  }
+}

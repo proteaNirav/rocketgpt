@@ -116,6 +116,25 @@ def _parse_utc_datetime(raw: str | None) -> datetime | None:
     return dt.astimezone(timezone.utc)
 
 
+def _verify_cat_registry_entry(
+    registry: Dict[str, Any], canonical_name: Any, cat_id: Any
+) -> str | None:
+    if not isinstance(canonical_name, str):
+        return "CAT canonical_name missing or invalid for registry check."
+    namespaces = registry.get("namespaces", {}) if isinstance(registry, dict) else {}
+    if not isinstance(namespaces, dict):
+        return "CAT registry namespaces map is invalid."
+    entry = namespaces.get(canonical_name)
+    if not isinstance(entry, dict):
+        return f"canonical_name '{canonical_name}' is not registered."
+    if str(entry.get("cat_id", "")) != str(cat_id or ""):
+        return (
+            f"registry maps '{canonical_name}' to "
+            f"'{entry.get('cat_id', '')}', not '{cat_id}'."
+        )
+    return None
+
+
 def _cats_demo_stub_output(cat_id: str, payload: Any) -> Dict[str, Any]:
     if cat_id == "RGPT-CAT-01":
         return {
@@ -153,6 +172,7 @@ def _run_cats_demo_execution(
     repo_root = Path(__file__).resolve().parents[3]
     cat_def_path = repo_root / "cats" / "definitions" / f"{cat_id}.json"
     police_register_path = repo_root / "cats" / "police_register.demo.json"
+    registry_index_path = repo_root / "cats" / "registry_index.json"
 
     canonical_name = None
     passport_status = None
@@ -189,6 +209,30 @@ def _run_cats_demo_execution(
         )
         passport_required = bool(cat_def.get("passport_required"))
         passport_id = cat_def.get("passport_id")
+
+        try:
+            registry_index = read_json(str(registry_index_path))
+            registry_error = _verify_cat_registry_entry(
+                registry_index, canonical_name, cat_def.get("cat_id")
+            )
+            if registry_error:
+                record_failure(
+                    "REGISTRY_MISMATCH",
+                    f"CAT registry mismatch: {registry_error}",
+                    "registry_mismatch",
+                )
+        except FileNotFoundError as exc:
+            record_failure(
+                "REGISTRY_MISMATCH",
+                f"CAT registry missing: {exc.filename}",
+                f"registry_missing:{exc.filename}",
+            )
+        except Exception as exc:
+            record_failure(
+                "REGISTRY_MISMATCH",
+                f"CAT registry verification exception: {type(exc).__name__}",
+                f"registry_exception:{type(exc).__name__}:{exc}",
+            )
 
         if not isinstance(canonical_name, str) or not re.fullmatch(
             r"[a-z0-9-]+/[a-z0-9-]+", canonical_name
@@ -765,6 +809,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
 

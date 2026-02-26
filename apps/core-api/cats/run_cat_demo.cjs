@@ -27,6 +27,30 @@ function loadPoliceRegister(root) {
   return JSON.parse(fs.readFileSync(registerPath, "utf8"));
 }
 
+function loadRegistryIndex(root) {
+  const registryPath = path.join(root, "cats", "registry_index.json");
+  if (!fs.existsSync(registryPath)) {
+    throw new Error(`CAT registry missing: ${registryPath}`);
+  }
+  return JSON.parse(fs.readFileSync(registryPath, "utf8"));
+}
+
+function verifyRegistryEntry(def, registry) {
+  const namespaces = registry && typeof registry === "object" ? registry.namespaces : null;
+  const canonical = typeof def.canonical_name === "string" ? def.canonical_name : "";
+  const entry = namespaces && typeof namespaces === "object" ? namespaces[canonical] : null;
+  if (!entry) {
+    throw new Error(
+      `Registry mismatch for ${def.cat_id}: canonical_name '${canonical}' is not registered`
+    );
+  }
+  if (entry.cat_id !== def.cat_id) {
+    throw new Error(
+      `Registry mismatch for ${def.cat_id}: registry maps '${canonical}' to '${entry.cat_id}'`
+    );
+  }
+}
+
 function hashBundle(raw) {
   return crypto.createHash("sha256").update(raw, "utf8").digest("hex");
 }
@@ -112,6 +136,7 @@ function main() {
   const input = jsonArg ? JSON.parse(jsonArg) : { demo: true, ts: new Date().toISOString() };
 
   const root = repoRootFromHere();
+  const registry = loadRegistryIndex(root);
   const cats = loadCats(root);
   const canonicalIndex = new Map();
   for (const cat of cats) {
@@ -134,6 +159,7 @@ function main() {
   }
 
   const def = entry.def;
+  verifyRegistryEntry(def, registry);
   const bundleDigest = hashBundle(entry.raw);
   const register = loadPoliceRegister(root);
   const passportVerification = verifyPassport(def, bundleDigest, register);
