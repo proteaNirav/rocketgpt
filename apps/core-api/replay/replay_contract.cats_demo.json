@@ -1,7 +1,9 @@
 {
-  "mode": "dev",
-  "run_id": "cats_demo",
-  "notes": "Demo contract: routes CAT execution through Replay Engine for parity (Collector→Inspector→Commissioner→Judge→Archivist).",
+  "replay": {
+    "mode": "dev",
+    "run_id": "cats_demo",
+    "notes": "Demo contract: routes CAT execution through Replay Engine for parity (Collector→Inspector→Commissioner→Judge→Archivist)."
+  },
   "inputs": {
     "source": "cats-demo",
     "cat_id": "RGPT-CAT-01",
