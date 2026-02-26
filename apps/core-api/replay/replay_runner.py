@@ -204,6 +204,52 @@ def _get_cat_registry_record(
     return entry if isinstance(entry, dict) else None
 
 
+def _verify_cat_registry_namespace_binding(
+    registry_entry: Dict[str, Any] | None, canonical_name: Any
+) -> str | None:
+    if not isinstance(registry_entry, dict):
+        return None
+    if not isinstance(canonical_name, str):
+        return "CAT canonical_name missing or invalid for registry namespace binding."
+    publisher_namespace = registry_entry.get("publisher_namespace")
+    if not isinstance(publisher_namespace, str) or not publisher_namespace:
+        return "registry entry missing publisher_namespace."
+    expected_prefix = f"{publisher_namespace}/"
+    if not canonical_name.startswith(expected_prefix):
+        return (
+            f"canonical_name '{canonical_name}' must start with '{expected_prefix}'."
+        )
+    return None
+
+
+def _cat_registry_non_active_block(
+    registry: Dict[str, Any], registry_entry: Dict[str, Any] | None
+) -> str | None:
+    if not isinstance(registry_entry, dict):
+        return None
+
+    publisher_namespace = registry_entry.get("publisher_namespace")
+    if not isinstance(publisher_namespace, str) or not publisher_namespace:
+        return None
+
+    publisher_owners = registry.get("publisher_owners", {}) if isinstance(registry, dict) else {}
+    if not isinstance(publisher_owners, dict):
+        publisher_owners = {}
+    owner = publisher_owners.get(publisher_namespace)
+    owner_status = None
+    if isinstance(owner, dict):
+        owner_status = owner.get("status")
+    owner_status_str = str(owner_status or "MISSING")
+    if owner_status_str != "ACTIVE":
+        return f"publisher namespace '{publisher_namespace}' status {owner_status_str}"
+
+    entry_status_str = str(registry_entry.get("status") or "MISSING")
+    if entry_status_str != "ACTIVE":
+        return f"registry entry status {entry_status_str}"
+
+    return None
+
+
 def _verify_passport_cross_links(
     *,
     cat_def: Dict[str, Any],
@@ -370,6 +416,27 @@ def _run_cats_demo_execution(
                     "registry_mismatch",
                 )
             registry_entry = _get_cat_registry_record(registry_index, canonical_name)
+            registry_binding_error = _verify_cat_registry_namespace_binding(
+                registry_entry, canonical_name
+            )
+            if registry_binding_error:
+                record_failure(
+                    "PASSPORT_MISMATCH",
+                    (
+                        "Passport cross-verification failed (registry<->def): "
+                        f"{registry_binding_error}"
+                    ),
+                    "registry_mismatch",
+                )
+            registry_non_active = _cat_registry_non_active_block(
+                registry_index, registry_entry
+            )
+            if registry_non_active:
+                record_failure(
+                    "REGISTRY_NOT_ACTIVE",
+                    f"Registry not active: {registry_non_active}. Side effects downgraded to read_only.",
+                    "registry_not_active",
+                )
         except FileNotFoundError as exc:
             record_failure(
                 "PASSPORT_MISMATCH",
