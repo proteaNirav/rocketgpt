@@ -3,6 +3,10 @@
   "description": "Validates governance/policy constraints for a request and records a verdict to the ledger.",
   "version": "0.1.0",
   "cat_id": "RGPT-CAT-01",
+  "publisher_namespace": "protea",
+  "canonical_name": "protea/policy-validator",
+  "passport_required": true,
+  "passport_id": "RGPT-CAT-01-PASS-20260226",
   "tags": [
     "demo",
     "governance",

@@ -1,5 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const crypto = require("node:crypto");
 
 function repoRootFromHere() {
   // apps/core-api/cats -> repo root
@@ -12,7 +13,92 @@ function loadCats(root) {
   return fs.readdirSync(defsDir)
     .filter((f) => f.toLowerCase().endsWith(".json"))
     .sort()
-    .map((f) => JSON.parse(fs.readFileSync(path.join(defsDir, f), "utf8")));
+    .map((f) => {
+      const filePath = path.join(defsDir, f);
+      const raw = fs.readFileSync(filePath, "utf8");
+      const def = JSON.parse(raw);
+      return { def, filePath, raw };
+    });
+}
+
+function loadPoliceRegister(root) {
+  const registerPath = path.join(root, "cats", "police_register.demo.json");
+  if (!fs.existsSync(registerPath)) return null;
+  return JSON.parse(fs.readFileSync(registerPath, "utf8"));
+}
+
+function hashBundle(raw) {
+  return crypto.createHash("sha256").update(raw, "utf8").digest("hex");
+}
+
+function verifyPassport(def, bundleDigest, register) {
+  const base = {
+    status: "UNVERIFIED",
+    note: "Police register missing.",
+    expires_at_utc: null,
+    bundle_digest: bundleDigest
+  };
+
+  if (!register || !Array.isArray(register.passports)) return base;
+
+  if (!def.passport_id) {
+    return {
+      status: "MISSING_ID",
+      note: "CAT definition missing passport_id.",
+      expires_at_utc: null,
+      bundle_digest: bundleDigest
+    };
+  }
+
+  const passport = register.passports.find((p) => p.passport_id === def.passport_id);
+  if (!passport) {
+    return {
+      status: "MISSING",
+      note: "Passport not found in police register.",
+      expires_at_utc: null,
+      bundle_digest: bundleDigest
+    };
+  }
+
+  const result = {
+    status: "OK",
+    note: "Passport verified.",
+    expires_at_utc: passport.expires_at_utc ?? null,
+    bundle_digest: passport.bundle_digest ?? bundleDigest
+  };
+
+  if (passport.status !== "ACTIVE") {
+    result.status = "INACTIVE";
+    result.note = `Passport status ${passport.status || "MISSING"}.`;
+    return result;
+  }
+
+  const expiresMs = Date.parse(passport.expires_at_utc);
+  if (!Number.isFinite(expiresMs)) {
+    result.status = "EXPIRED";
+    result.note = "Passport expiry invalid.";
+    return result;
+  }
+
+  if (expiresMs <= Date.now()) {
+    result.status = "EXPIRED";
+    result.note = "Passport expired.";
+    return result;
+  }
+
+  if (typeof passport.bundle_digest !== "string") {
+    result.status = "DIGEST_MISMATCH";
+    result.note = "Passport bundle_digest missing.";
+    return result;
+  }
+
+  if (passport.bundle_digest.toLowerCase() !== bundleDigest.toLowerCase()) {
+    result.status = "DIGEST_MISMATCH";
+    result.note = "Passport bundle_digest does not match definition.";
+    return result;
+  }
+
+  return result;
 }
 
 function main() {
@@ -27,22 +113,50 @@ function main() {
 
   const root = repoRootFromHere();
   const cats = loadCats(root);
-  const def = cats.find((c) => c.cat_id === catId);
+  const canonicalIndex = new Map();
+  for (const cat of cats) {
+    const canonical = cat.def.canonical_name;
+    if (!canonical) continue;
+    const key = String(canonical).toLowerCase();
+    const existing = canonicalIndex.get(key);
+    if (existing) {
+      console.error(`Duplicate canonical_name: ${canonical} (also in ${existing})`);
+      process.exit(5);
+    }
+    canonicalIndex.set(key, cat.filePath);
+  }
 
-  if (!def) {
+  const entry = cats.find((c) => c.def.cat_id === catId);
+
+  if (!entry) {
     console.error(`CAT not found: ${catId}`);
     process.exit(3);
   }
+
+  const def = entry.def;
+  const bundleDigest = hashBundle(entry.raw);
+  const register = loadPoliceRegister(root);
+  const passportVerification = verifyPassport(def, bundleDigest, register);
+  const allowedSideEffectsDeclared = Array.isArray(def.allowed_side_effects)
+    ? def.allowed_side_effects
+    : [];
+  const requiresPassport = Boolean(def.passport_required);
+  const allowedSideEffectsEffective = (requiresPassport && passportVerification.status !== "OK")
+    ? ["read_only"]
+    : allowedSideEffectsDeclared;
 
   // Demo-safe scaffold output (Step 6 will wire into actual core-api execution + ledger)
   const output = {
     ok: true,
     cat_id: def.cat_id,
+    canonical_name: def.canonical_name,
     name: def.name,
     entrypoint: def.entrypoint,
     runtime_mode: def.runtime_mode,
     requires_approval: def.requires_approval,
-    allowed_side_effects: def.allowed_side_effects,
+    passport_verification: passportVerification,
+    allowed_side_effects_declared: allowedSideEffectsDeclared,
+    allowed_side_effects_effective: allowedSideEffectsEffective,
     input,
     note: "CJS demo runner executed without TS/ESM runtime. Step-6 will connect to real execution + ledger envelope."
   };

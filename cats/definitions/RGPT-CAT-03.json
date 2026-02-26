@@ -3,6 +3,10 @@
   "description": "Creates an improvement proposal (consortium-style) and submits it into governance via ledger.",
   "version": "0.1.0",
   "cat_id": "RGPT-CAT-03",
+  "publisher_namespace": "protea",
+  "canonical_name": "protea/proposal-generator",
+  "passport_required": true,
+  "passport_id": "RGPT-CAT-03-PASS-20260226",
   "tags": [
     "demo",
     "consortium",
