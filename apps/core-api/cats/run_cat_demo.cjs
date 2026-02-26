@@ -35,18 +35,82 @@ function loadRegistryIndex(root) {
   return JSON.parse(fs.readFileSync(registryPath, "utf8"));
 }
 
+function failWithCode(code, message) {
+  const err = new Error(message);
+  err.code = code;
+  throw err;
+}
+
 function verifyRegistryEntry(def, registry) {
   const namespaces = registry && typeof registry === "object" ? registry.namespaces : null;
   const canonical = typeof def.canonical_name === "string" ? def.canonical_name : "";
   const entry = namespaces && typeof namespaces === "object" ? namespaces[canonical] : null;
   if (!entry) {
-    throw new Error(
+    failWithCode(
+      "REGISTRY_MISMATCH",
       `Registry mismatch for ${def.cat_id}: canonical_name '${canonical}' is not registered`
     );
   }
   if (entry.cat_id !== def.cat_id) {
-    throw new Error(
+    failWithCode(
+      "REGISTRY_MISMATCH",
       `Registry mismatch for ${def.cat_id}: registry maps '${canonical}' to '${entry.cat_id}'`
+    );
+  }
+  return entry;
+}
+
+function enforcePassportCrossVerification(def, registryEntry, register) {
+  if (!registryEntry || !registryEntry.passport_required) return;
+
+  const registryPassportId = typeof registryEntry.passport_id === "string"
+    ? registryEntry.passport_id
+    : "";
+  if (!def.passport_id) {
+    failWithCode(
+      "PASSPORT_MISMATCH_REGISTRY_DEF",
+      `Passport mismatch (registry<->def) for ${def.cat_id}: definition passport_id missing`
+    );
+  }
+  if (!registryPassportId) {
+    failWithCode(
+      "PASSPORT_MISMATCH_REGISTRY_DEF",
+      `Passport mismatch (registry<->def) for ${def.cat_id}: registry passport_id missing`
+    );
+  }
+  if (registryPassportId !== def.passport_id) {
+    failWithCode(
+      "PASSPORT_MISMATCH_REGISTRY_DEF",
+      `Passport mismatch (registry<->def) for ${def.cat_id}: registry '${registryPassportId}' != definition '${def.passport_id}'`
+    );
+  }
+
+  if (!register || !Array.isArray(register.passports)) {
+    failWithCode(
+      "PASSPORT_MISMATCH_POLICE_REGISTRY",
+      `Passport mismatch (police<->registry) for ${def.cat_id}: police register missing or invalid`
+    );
+  }
+
+  const passport = register.passports.find((p) => p && p.passport_id === registryPassportId);
+  if (!passport) {
+    failWithCode(
+      "PASSPORT_MISMATCH_POLICE_REGISTRY",
+      `Passport mismatch (police<->registry) for ${def.cat_id}: passport '${registryPassportId}' not found`
+    );
+  }
+
+  if (passport.canonical_name !== def.canonical_name) {
+    failWithCode(
+      "PASSPORT_MISMATCH_POLICE_REGISTRY",
+      `Passport mismatch (police<->registry) for ${def.cat_id}: police canonical_name '${passport.canonical_name}' != registry '${def.canonical_name}'`
+    );
+  }
+
+  if (passport.cat_id != null && String(passport.cat_id) !== String(def.cat_id)) {
+    failWithCode(
+      "PASSPORT_MISMATCH_POLICE_DEF",
+      `Passport mismatch (police<->def) for ${def.cat_id}: police cat_id '${passport.cat_id}' != definition '${def.cat_id}'`
     );
   }
 }
@@ -159,9 +223,16 @@ function main() {
   }
 
   const def = entry.def;
-  verifyRegistryEntry(def, registry);
-  const bundleDigest = hashBundle(entry.raw);
   const register = loadPoliceRegister(root);
+  let registryEntry;
+  try {
+    registryEntry = verifyRegistryEntry(def, registry);
+    enforcePassportCrossVerification(def, registryEntry, register);
+  } catch (err) {
+    console.error(`${err.code || "CAT_DEMO_VERIFICATION_ERROR"}: ${err.message}`);
+    process.exit(6);
+  }
+  const bundleDigest = hashBundle(entry.raw);
   const passportVerification = verifyPassport(def, bundleDigest, register);
   const allowedSideEffectsDeclared = Array.isArray(def.allowed_side_effects)
     ? def.allowed_side_effects

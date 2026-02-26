@@ -135,6 +135,83 @@ def _verify_cat_registry_entry(
     return None
 
 
+def _get_cat_registry_record(
+    registry: Dict[str, Any], canonical_name: Any
+) -> Dict[str, Any] | None:
+    if not isinstance(canonical_name, str):
+        return None
+    namespaces = registry.get("namespaces", {}) if isinstance(registry, dict) else {}
+    if not isinstance(namespaces, dict):
+        return None
+    entry = namespaces.get(canonical_name)
+    return entry if isinstance(entry, dict) else None
+
+
+def _verify_passport_cross_links(
+    *,
+    cat_def: Dict[str, Any],
+    registry_entry: Dict[str, Any] | None,
+    police_register: Dict[str, Any] | None,
+) -> tuple[str | None, str | None]:
+    if not isinstance(registry_entry, dict):
+        return (
+            "registry<->def",
+            "registry entry unavailable for passport cross-verification.",
+        )
+
+    if not bool(registry_entry.get("passport_required")):
+        return None, None
+
+    def_passport_id = cat_def.get("passport_id")
+    registry_passport_id = registry_entry.get("passport_id")
+    if not isinstance(def_passport_id, str) or not def_passport_id:
+        return "registry<->def", "definition passport_id missing."
+    if not isinstance(registry_passport_id, str) or not registry_passport_id:
+        return "registry<->def", "registry passport_id missing."
+    if registry_passport_id != def_passport_id:
+        return (
+            "registry<->def",
+            f"registry passport_id '{registry_passport_id}' != definition '{def_passport_id}'.",
+        )
+
+    passports = []
+    if isinstance(police_register, dict):
+        raw_passports = police_register.get("passports", []) or []
+        if isinstance(raw_passports, list):
+            passports = raw_passports
+    passport = next(
+        (
+            p
+            for p in passports
+            if isinstance(p, dict)
+            and str(p.get("passport_id", "")) == registry_passport_id
+        ),
+        None,
+    )
+    if passport is None:
+        return (
+            "police<->registry",
+            f"passport '{registry_passport_id}' not found in police register.",
+        )
+
+    registry_canonical = str(cat_def.get("canonical_name", "") or "")
+    police_canonical = passport.get("canonical_name")
+    if str(police_canonical or "") != registry_canonical:
+        return (
+            "police<->registry",
+            f"police canonical_name '{police_canonical}' != registry '{registry_canonical}'.",
+        )
+
+    police_cat_id = passport.get("cat_id")
+    if police_cat_id is not None and str(police_cat_id) != str(cat_def.get("cat_id", "")):
+        return (
+            "police<->def",
+            f"police cat_id '{police_cat_id}' != definition '{cat_def.get('cat_id')}'.",
+        )
+
+    return None, None
+
+
 def _cats_demo_stub_output(cat_id: str, payload: Any) -> Dict[str, Any]:
     if cat_id == "RGPT-CAT-01":
         return {
@@ -183,6 +260,7 @@ def _run_cats_demo_execution(
     allowed_side_effects_effective: List[str] = ["read_only"]
     verification_ok = False
     passport_required = False
+    registry_entry = None
     passport_verification_status = "MISSING"
     passport_verification_note = "Passport verification did not run."
 
@@ -217,20 +295,21 @@ def _run_cats_demo_execution(
             )
             if registry_error:
                 record_failure(
-                    "REGISTRY_MISMATCH",
-                    f"CAT registry mismatch: {registry_error}",
+                    "PASSPORT_MISMATCH",
+                    f"Passport cross-verification failed (registry<->def): {registry_error}",
                     "registry_mismatch",
                 )
+            registry_entry = _get_cat_registry_record(registry_index, canonical_name)
         except FileNotFoundError as exc:
             record_failure(
-                "REGISTRY_MISMATCH",
-                f"CAT registry missing: {exc.filename}",
+                "PASSPORT_MISMATCH",
+                f"Passport cross-verification failed (registry<->def): registry missing: {exc.filename}",
                 f"registry_missing:{exc.filename}",
             )
         except Exception as exc:
             record_failure(
-                "REGISTRY_MISMATCH",
-                f"CAT registry verification exception: {type(exc).__name__}",
+                "PASSPORT_MISMATCH",
+                f"Passport cross-verification failed (registry<->def): {type(exc).__name__}",
                 f"registry_exception:{type(exc).__name__}:{exc}",
             )
 
@@ -246,6 +325,17 @@ def _run_cats_demo_execution(
         register = read_json(str(police_register_path))
         passports = register.get("passports", []) or []
         passport = None
+        cross_link, cross_link_detail = _verify_passport_cross_links(
+            cat_def=cat_def,
+            registry_entry=registry_entry,
+            police_register=register,
+        )
+        if cross_link:
+            record_failure(
+                "PASSPORT_MISMATCH",
+                f"Passport cross-verification failed ({cross_link}): {cross_link_detail}",
+                f"passport_mismatch:{cross_link}",
+            )
         if passport_required:
             if not passport_id:
                 record_failure(
@@ -809,5 +899,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
