@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import os
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -99,6 +102,152 @@ def _normalize_output_path(
     if not candidate or candidate in {".", "./"}:
         return str(Path(evidence_dir) / filename)
     return candidate
+
+
+def _parse_utc_datetime(raw: str | None) -> datetime | None:
+    if not raw:
+        return None
+    try:
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def _cats_demo_stub_output(cat_id: str, payload: Any) -> Dict[str, Any]:
+    if cat_id == "RGPT-CAT-01":
+        return {
+            "decision": "ALLOW",
+            "reasons": ["demo-stub"],
+            "input": payload,
+        }
+    if cat_id == "RGPT-CAT-02":
+        return {"summary": "ledger-summary-demo", "input": payload}
+    if cat_id == "RGPT-CAT-03":
+        return {"proposal": "proposal-demo", "input": payload}
+    return {"error": "unknown_cat_id_demo_stub", "input": payload}
+
+
+def _run_cats_demo_execution(
+    contract: Dict[str, Any],
+    ctx: ReplayContext,
+    frozen_ts: datetime | None = None,
+) -> tuple[Dict[str, Any] | None, str | None]:
+    inputs = contract.get("replay", {}).get("inputs", {}) or {}
+    if inputs.get("source") != "cats-demo":
+        return None, None
+
+    now_utc = frozen_ts or datetime.now(timezone.utc)
+    cat_id = str(inputs.get("cat_id", "") or "")
+    payload_raw = inputs.get("payload_json", "{}")
+    notes: List[str] = []
+
+    try:
+        payload = json.loads(payload_raw)
+    except Exception as exc:
+        payload = {"_raw": payload_raw}
+        notes.append(f"payload_json_parse_failed:{type(exc).__name__}")
+
+    repo_root = Path(__file__).resolve().parents[3]
+    cat_def_path = repo_root / "cats" / "definitions" / f"{cat_id}.json"
+    police_register_path = repo_root / "cats" / "police_register.demo.json"
+
+    canonical_name = None
+    passport_status = None
+    passport_expires = None
+    passport_bundle_digest = None
+    computed_bundle_digest = None
+    allowed_side_effects_declared: List[str] = []
+    allowed_side_effects_effective: List[str] = ["read_only"]
+    verification_ok = False
+
+    try:
+        cat_bytes = cat_def_path.read_bytes()
+        computed_bundle_digest = hashlib.sha256(cat_bytes).hexdigest()
+        cat_def = json.loads(cat_bytes.decode("utf-8"))
+        canonical_name = cat_def.get("canonical_name")
+        allowed_side_effects_declared = list(
+            cat_def.get("allowed_side_effects", []) or []
+        )
+        passport_required = bool(cat_def.get("passport_required"))
+        passport_id = cat_def.get("passport_id")
+
+        if not isinstance(canonical_name, str) or not re.fullmatch(
+            r"[a-z0-9-]+/[a-z0-9-]+", canonical_name
+        ):
+            notes.append("canonical_name_invalid")
+
+        register = read_json(str(police_register_path))
+        passports = register.get("passports", []) or []
+        passport = None
+        if passport_required:
+            passport = next(
+                (
+                    p
+                    for p in passports
+                    if str(p.get("passport_id", "")) == str(passport_id)
+                ),
+                None,
+            )
+            if passport is None:
+                notes.append("passport_missing")
+            else:
+                passport_status = passport.get("status")
+                passport_expires = passport.get("expires_at_utc")
+                passport_bundle_digest = passport.get("bundle_digest")
+                if passport_status != "ACTIVE":
+                    notes.append("passport_not_active")
+                expires_dt = _parse_utc_datetime(passport_expires)
+                if expires_dt is None:
+                    notes.append("passport_expiry_invalid")
+                elif expires_dt <= now_utc:
+                    notes.append("passport_expired")
+                if passport_bundle_digest != computed_bundle_digest:
+                    notes.append("bundle_digest_mismatch")
+        else:
+            passport = None
+
+        verification_ok = len(notes) == 0
+        if verification_ok:
+            allowed_side_effects_effective = allowed_side_effects_declared
+    except FileNotFoundError as exc:
+        notes.append(f"missing_file:{exc.filename}")
+    except Exception as exc:  # pragma: no cover - demo safety fallback
+        notes.append(f"verification_exception:{type(exc).__name__}:{exc}")
+
+    artifact = {
+        "artifact_type": "cats_demo_replay_execution",
+        "timestamp_utc": _utc_now_iso(frozen_ts),
+        "cat_id": cat_id,
+        "canonical_name": canonical_name,
+        "passport_verification": {
+            "ok": verification_ok,
+            "status": passport_status,
+            "expires_at_utc": passport_expires,
+            "bundle_digest": passport_bundle_digest,
+            "bundle_digest_computed": computed_bundle_digest,
+            "notes": notes,
+        },
+        "allowed_side_effects_effective": allowed_side_effects_effective,
+        "output": _cats_demo_stub_output(cat_id, payload),
+    }
+    if allowed_side_effects_declared:
+        artifact["allowed_side_effects_declared"] = allowed_side_effects_declared
+
+    artifact_path = str(Path(ctx.paths.evidence_dir) / "cats_demo_artifact.json")
+    write_json(artifact_path, artifact)
+    return artifact, artifact_path
+
+
+def _print_cats_demo_artifact(
+    artifact: Dict[str, Any] | None, artifact_path: str | None
+) -> None:
+    if not artifact or not artifact_path:
+        return
+    print(f"CATS demo artifact: {artifact_path}")
+    print(json.dumps(artifact, indent=2, sort_keys=True))
 
 
 def _collector_stage(
@@ -407,6 +556,9 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
     begin_snapshot = collect_snapshot(ctx, files_root=snapshot_files_root)
     _ensure_dir(ctx.paths.evidence_dir)
     _ensure_dir(ctx.paths.stage_reports_dir)
+    cats_demo_artifact, cats_demo_artifact_path = _run_cats_demo_execution(
+        contract, ctx, frozen_ts
+    )
 
     collector = _collector_stage(ctx, frozen_ts)
     write_json(
@@ -462,7 +614,11 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
                         "evidence_dir": ctx.paths.evidence_dir,
                         "drift_report": drift_report_dict,
                         "snapshot_drift": snapshot_drift,
+                        "cats_demo_artifact_path": cats_demo_artifact_path,
                     },
+                )
+                _print_cats_demo_artifact(
+                    cats_demo_artifact, cats_demo_artifact_path
                 )
                 return 2
     except Exception:
@@ -485,8 +641,10 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
                 "evidence_dir": ctx.paths.evidence_dir,
                 "drift_report": drift_report_dict,
                 "snapshot_drift": snapshot_drift,
+                "cats_demo_artifact_path": cats_demo_artifact_path,
             },
         )
+        _print_cats_demo_artifact(cats_demo_artifact, cats_demo_artifact_path)
         return 2
 
     write_json(
@@ -497,8 +655,10 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
             "evidence_dir": ctx.paths.evidence_dir,
             "drift_report": drift_report_dict,
             "snapshot_drift": snapshot_drift,
+            "cats_demo_artifact_path": cats_demo_artifact_path,
         },
     )
+    _print_cats_demo_artifact(cats_demo_artifact, cats_demo_artifact_path)
     return 0
 
 
@@ -514,7 +674,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
 
 
