@@ -162,6 +162,22 @@ def _run_cats_demo_execution(
     allowed_side_effects_declared: List[str] = []
     allowed_side_effects_effective: List[str] = ["read_only"]
     verification_ok = False
+    passport_required = False
+    passport_verification_status = "MISSING"
+    passport_verification_note = "Passport verification did not run."
+
+    failure_status: str | None = None
+    failure_note: str | None = None
+
+    def record_failure(
+        status: str, note: str, internal_note: str | None = None
+    ) -> None:
+        nonlocal failure_status, failure_note
+        if internal_note:
+            notes.append(internal_note)
+        if failure_status is None:
+            failure_status = status
+            failure_note = note
 
     try:
         cat_bytes = cat_def_path.read_bytes()
@@ -177,12 +193,22 @@ def _run_cats_demo_execution(
         if not isinstance(canonical_name, str) or not re.fullmatch(
             r"[a-z0-9-]+/[a-z0-9-]+", canonical_name
         ):
-            notes.append("canonical_name_invalid")
+            record_failure(
+                "INVALID_NAME",
+                "CAT canonical_name is invalid.",
+                "canonical_name_invalid",
+            )
 
         register = read_json(str(police_register_path))
         passports = register.get("passports", []) or []
         passport = None
         if passport_required:
+            if not passport_id:
+                record_failure(
+                    "MISSING",
+                    "CAT definition missing passport_id.",
+                    "passport_id_missing",
+                )
             passport = next(
                 (
                     p
@@ -192,30 +218,82 @@ def _run_cats_demo_execution(
                 None,
             )
             if passport is None:
-                notes.append("passport_missing")
+                record_failure(
+                    "MISSING",
+                    "Passport not found in police register.",
+                    "passport_missing",
+                )
             else:
                 passport_status = passport.get("status")
                 passport_expires = passport.get("expires_at_utc")
                 passport_bundle_digest = passport.get("bundle_digest")
                 if passport_status != "ACTIVE":
-                    notes.append("passport_not_active")
+                    if passport_status == "REVOKED":
+                        record_failure(
+                            "REVOKED",
+                            "Passport status REVOKED.",
+                            "passport_revoked",
+                        )
+                    elif passport_status == "SUSPENDED":
+                        record_failure(
+                            "SUSPENDED",
+                            "Passport status SUSPENDED.",
+                            "passport_suspended",
+                        )
+                    else:
+                        record_failure(
+                            "REVOKED",
+                            f"Passport status {passport_status or 'MISSING'}.",
+                            "passport_not_active",
+                        )
                 expires_dt = _parse_utc_datetime(passport_expires)
                 if expires_dt is None:
-                    notes.append("passport_expiry_invalid")
+                    record_failure(
+                        "EXPIRED",
+                        "Passport expiry invalid.",
+                        "passport_expiry_invalid",
+                    )
                 elif expires_dt <= now_utc:
-                    notes.append("passport_expired")
+                    record_failure(
+                        "EXPIRED",
+                        "Passport expired.",
+                        "passport_expired",
+                    )
                 if passport_bundle_digest != computed_bundle_digest:
-                    notes.append("bundle_digest_mismatch")
+                    record_failure(
+                        "DIGEST_MISMATCH",
+                        "Passport bundle_digest does not match definition.",
+                        "bundle_digest_mismatch",
+                    )
         else:
             passport = None
 
-        verification_ok = len(notes) == 0
+        verification_ok = failure_status is None
         if verification_ok:
+            passport_verification_status = "OK"
+            passport_verification_note = (
+                "Passport verified."
+                if passport_required
+                else "Passport not required."
+            )
             allowed_side_effects_effective = allowed_side_effects_declared
+        else:
+            passport_verification_status = str(failure_status)
+            passport_verification_note = str(failure_note)
     except FileNotFoundError as exc:
-        notes.append(f"missing_file:{exc.filename}")
+        record_failure(
+            "MISSING",
+            f"Required verification file missing: {exc.filename}",
+            f"missing_file:{exc.filename}",
+        )
     except Exception as exc:  # pragma: no cover - demo safety fallback
-        notes.append(f"verification_exception:{type(exc).__name__}:{exc}")
+        record_failure(
+            "MISSING",
+            f"Verification exception: {type(exc).__name__}",
+            f"verification_exception:{type(exc).__name__}:{exc}",
+        )
+
+    primary_bundle_digest = passport_bundle_digest or computed_bundle_digest
 
     artifact = {
         "artifact_type": "cats_demo_replay_execution",
@@ -223,8 +301,15 @@ def _run_cats_demo_execution(
         "cat_id": cat_id,
         "canonical_name": canonical_name,
         "passport_verification": {
+            "status": passport_verification_status,
+            "note": passport_verification_note,
+            "expires_at_utc": passport_expires,
+            "bundle_digest": primary_bundle_digest,
+        },
+        "passport_verification_internal": {
             "ok": verification_ok,
             "status": passport_status,
+            "note": passport_verification_note,
             "expires_at_utc": passport_expires,
             "bundle_digest": passport_bundle_digest,
             "bundle_digest_computed": computed_bundle_digest,
@@ -482,6 +567,7 @@ def build_context(
     contract: Dict[str, Any], frozen_ts: datetime | None = None
 ) -> ReplayContext:
     r = contract["replay"]
+    inputs = r.get("inputs", {}) or {}
 
     cfg = ReplayConfig(
         target_execution_id=r.get("target_execution_id", ""),
@@ -499,16 +585,21 @@ def build_context(
     )
 
     if not evidence_dir:
+        evidence_execution_id = cfg.target_execution_id
+        if inputs.get("source") == "cats-demo":
+            cats_demo_cat_id = str(inputs.get("cat_id", "") or "").strip()
+            if cats_demo_cat_id:
+                evidence_execution_id = cats_demo_cat_id
         evidence_dir = _default_run_dir(
-            base_evidence_root, cfg.target_execution_id, frozen_ts
+            base_evidence_root, evidence_execution_id, frozen_ts
         )
     if not stage_reports_dir:
         stage_reports_dir = str(Path(evidence_dir) / "stage_reports")
 
     paths = ReplayPaths(
-        execution_ledger_path=r["inputs"].get("execution_ledger_path", ""),
-        decision_ledger_path=r["inputs"].get("decision_ledger_path", ""),
-        artifacts_manifest_path=r["inputs"].get("artifacts_manifest_path", ""),
+        execution_ledger_path=inputs.get("execution_ledger_path", ""),
+        decision_ledger_path=inputs.get("decision_ledger_path", ""),
+        artifacts_manifest_path=inputs.get("artifacts_manifest_path", ""),
         evidence_dir=evidence_dir,
         stage_reports_dir=stage_reports_dir,
         diff_report_path=_normalize_output_path(
@@ -674,7 +765,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
 
 
