@@ -226,6 +226,15 @@ def _cats_demo_stub_output(cat_id: str, payload: Any) -> Dict[str, Any]:
     return {"error": "unknown_cat_id_demo_stub", "input": payload}
 
 
+def _demo_deny_status(reason: Any) -> str | None:
+    return {
+        "expired": "EXPIRED",
+        "digest": "DIGEST_MISMATCH",
+        "registry": "REGISTRY_MISMATCH",
+        "passport": "PASSPORT_MISMATCH",
+    }.get(str(reason or "").strip().lower())
+
+
 def _run_cats_demo_execution(
     contract: Dict[str, Any],
     ctx: ReplayContext,
@@ -238,6 +247,7 @@ def _run_cats_demo_execution(
     now_utc = frozen_ts or datetime.now(timezone.utc)
     cat_id = str(inputs.get("cat_id", "") or "")
     payload_raw = inputs.get("payload_json", "{}")
+    demo_deny_reason = inputs.get("demo_deny")
     notes: List[str] = []
 
     try:
@@ -426,6 +436,16 @@ def _run_cats_demo_execution(
             f"Verification exception: {type(exc).__name__}",
             f"verification_exception:{type(exc).__name__}:{exc}",
         )
+
+    forced_status = _demo_deny_status(demo_deny_reason)
+    if forced_status:
+        verification_ok = False
+        passport_verification_status = forced_status
+        passport_verification_note = f"Forced demo denial: {str(demo_deny_reason).strip().lower()}"
+        allowed_side_effects_effective = ["read_only"]
+        notes.append(f"forced_demo_denial:{str(demo_deny_reason).strip().lower()}")
+    elif demo_deny_reason not in (None, ""):
+        notes.append(f"ignored_invalid_demo_deny:{demo_deny_reason}")
 
     primary_bundle_digest = passport_bundle_digest or computed_bundle_digest
 
@@ -899,4 +919,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

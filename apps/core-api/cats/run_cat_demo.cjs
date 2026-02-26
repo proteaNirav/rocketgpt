@@ -41,6 +41,57 @@ function failWithCode(code, message) {
   throw err;
 }
 
+const DEMO_DENY_STATUS_BY_REASON = {
+  expired: "EXPIRED",
+  digest: "DIGEST_MISMATCH",
+  registry: "REGISTRY_MISMATCH",
+  passport: "PASSPORT_MISMATCH"
+};
+
+function parseCliArgs(argv) {
+  const args = argv.slice(2);
+  let catId = null;
+  let jsonArg = null;
+  let denyReason = null;
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === "--deny") {
+      const next = args[i + 1];
+      if (!next) {
+        failWithCode(
+          "INVALID_ARGS",
+          "Missing value for --deny (expected: expired|digest|registry|passport)"
+        );
+      }
+      denyReason = next;
+      i += 1;
+      continue;
+    }
+    if (!catId) {
+      catId = arg;
+      continue;
+    }
+    if (!jsonArg) {
+      jsonArg = arg;
+      continue;
+    }
+    failWithCode(
+      "INVALID_ARGS",
+      `Unexpected extra argument: ${arg}`
+    );
+  }
+
+  if (denyReason && !DEMO_DENY_STATUS_BY_REASON[denyReason]) {
+    failWithCode(
+      "INVALID_DEMO_DENY_REASON",
+      `Invalid --deny reason '${denyReason}' (expected: expired|digest|registry|passport)`
+    );
+  }
+
+  return { catId, jsonArg, denyReason };
+}
+
 function verifyRegistryEntry(def, registry) {
   const namespaces = registry && typeof registry === "object" ? registry.namespaces : null;
   const canonical = typeof def.canonical_name === "string" ? def.canonical_name : "";
@@ -190,14 +241,28 @@ function verifyPassport(def, bundleDigest, register) {
 }
 
 function main() {
-  const catId = process.argv[2];
-  if (!catId) {
-    console.error("Usage: node run_cat_demo.cjs <RGPT-CAT-XX> [jsonInput]");
+  let parsedArgs;
+  try {
+    parsedArgs = parseCliArgs(process.argv);
+  } catch (err) {
+    console.error(`${err.code || "CAT_DEMO_ARG_ERROR"}: ${err.message}`);
     process.exit(2);
   }
 
-  const jsonArg = process.argv[3];
-  const input = jsonArg ? JSON.parse(jsonArg) : { demo: true, ts: new Date().toISOString() };
+  const { catId, jsonArg, denyReason } = parsedArgs;
+  if (!catId) {
+    console.error(
+      "Usage: node run_cat_demo.cjs <RGPT-CAT-XX> [jsonInput] [--deny expired|digest|registry|passport]"
+    );
+    process.exit(2);
+  }
+  let input;
+  try {
+    input = jsonArg ? JSON.parse(jsonArg) : { demo: true, ts: new Date().toISOString() };
+  } catch (err) {
+    console.error(`INVALID_JSON_INPUT: ${err.message}`);
+    process.exit(2);
+  }
 
   const root = repoRootFromHere();
   const registry = loadRegistryIndex(root);
@@ -224,6 +289,28 @@ function main() {
 
   const def = entry.def;
   const register = loadPoliceRegister(root);
+  const bundleDigest = hashBundle(entry.raw);
+
+  if (denyReason) {
+    const status = DEMO_DENY_STATUS_BY_REASON[denyReason];
+    const passportVerification = {
+      status,
+      note: `Forced demo denial: ${denyReason}`,
+      expires_at_utc: null,
+      bundle_digest: bundleDigest
+    };
+    const payload = {
+      ok: false,
+      cat_id: def.cat_id,
+      canonical_name: def.canonical_name,
+      denial_reason: denyReason,
+      passport_verification: passportVerification
+    };
+    console.error(`FORCED_DEMO_DENIAL_${status}: Forced demo denial: ${denyReason}`);
+    console.log(JSON.stringify(payload, null, 2));
+    process.exit(6);
+  }
+
   let registryEntry;
   try {
     registryEntry = verifyRegistryEntry(def, registry);
@@ -232,7 +319,6 @@ function main() {
     console.error(`${err.code || "CAT_DEMO_VERIFICATION_ERROR"}: ${err.message}`);
     process.exit(6);
   }
-  const bundleDigest = hashBundle(entry.raw);
   const passportVerification = verifyPassport(def, bundleDigest, register);
   const allowedSideEffectsDeclared = Array.isArray(def.allowed_side_effects)
     ? def.allowed_side_effects

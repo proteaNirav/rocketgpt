@@ -2,22 +2,28 @@ import json
 import os
 import subprocess
 import sys
+import argparse
 from pathlib import Path
+
+VALID_DEMO_DENY_REASONS = {"expired", "digest", "registry", "passport"}
 
 
 def main() -> int:
-    if len(sys.argv) < 2:
-        print(
-            "Usage: python cats_demo_replay.py <RGPT-CAT-XX> [jsonInput]",
-            file=sys.stderr,
-        )
-        return 2
+    ap = argparse.ArgumentParser()
+    ap.add_argument("cat_id")
+    ap.add_argument("json_input", nargs="?")
+    ap.add_argument(
+        "--deny",
+        choices=sorted(VALID_DEMO_DENY_REASONS),
+        help="Force demo denial status in replay artifact",
+    )
+    args = ap.parse_args()
 
-    cat_id = sys.argv[1]
+    cat_id = args.cat_id
     payload = {"demo": True}
-    if len(sys.argv) >= 3:
+    if args.json_input is not None:
         try:
-            payload = json.loads(sys.argv[2])
+            payload = json.loads(args.json_input)
         except json.JSONDecodeError as exc:
             print(f"Invalid JSON payload: {exc}", file=sys.stderr)
             return 2
@@ -29,6 +35,10 @@ def main() -> int:
     # Patch replay.inputs dynamically (this matches replay_runner expectations)
     data["replay"]["inputs"]["cat_id"] = cat_id
     data["replay"]["inputs"]["payload_json"] = json.dumps(payload, separators=(",", ":"))
+    if args.deny:
+        data["replay"]["inputs"]["demo_deny"] = args.deny
+    else:
+        data["replay"]["inputs"].pop("demo_deny", None)
 
     tmp_contract = Path(os.getenv("TEMP", ".")) / f"replay_contract.cats_demo.{cat_id}.json"
     tmp_contract.write_text(json.dumps(data, indent=2), encoding="utf-8")
