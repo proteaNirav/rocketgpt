@@ -53,9 +53,14 @@ function parseCliArgs(argv) {
   let catId = null;
   let jsonArg = null;
   let denyReason = null;
+  let renew = false;
 
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i];
+    if (arg === "--renew") {
+      renew = true;
+      continue;
+    }
     if (arg === "--deny") {
       const next = args[i + 1];
       if (!next) {
@@ -89,7 +94,55 @@ function parseCliArgs(argv) {
     );
   }
 
-  return { catId, jsonArg, denyReason };
+  return { catId, jsonArg, denyReason, renew };
+}
+
+function getRenewalPolicy(register) {
+  const raw = register && typeof register === "object" ? register.renewal_policy : null;
+  const fallbackTtl = Number(register && register.default_ttl_days);
+  const defaultTtl = Number(raw && raw.default_ttl_days);
+  const graceDays = Number(raw && raw.renewal_grace_days);
+  return {
+    default_ttl_days: Number.isFinite(defaultTtl) ? defaultTtl : (Number.isFinite(fallbackTtl) ? fallbackTtl : 90),
+    renewal_grace_days: Number.isFinite(graceDays) ? graceDays : 15
+  };
+}
+
+function findPassportById(register, passportId) {
+  if (!register || !Array.isArray(register.passports) || !passportId) return null;
+  return register.passports.find((p) => p && p.passport_id === passportId) || null;
+}
+
+function buildRenewalRequest(def, passport, bundleDigest, register, reason) {
+  const policy = getRenewalPolicy(register);
+  return {
+    cat_id: def.cat_id,
+    canonical_name: def.canonical_name,
+    passport_id: passport && passport.passport_id ? passport.passport_id : (def.passport_id || null),
+    current_expires_at_utc: passport ? (passport.expires_at_utc ?? null) : null,
+    requested_ttl_days: policy.default_ttl_days,
+    bundle_digest: bundleDigest,
+    reason
+  };
+}
+
+function getRenewalEligibility(passport, register) {
+  if (!passport) {
+    return { eligible: false, reason: null };
+  }
+  const expiresMs = Date.parse(passport.expires_at_utc);
+  if (!Number.isFinite(expiresMs)) {
+    return { eligible: true, reason: "expired" };
+  }
+  if (expiresMs <= Date.now()) {
+    return { eligible: true, reason: "expired" };
+  }
+  const policy = getRenewalPolicy(register);
+  const graceMs = Math.max(0, policy.renewal_grace_days) * 24 * 60 * 60 * 1000;
+  return {
+    eligible: (expiresMs - Date.now()) <= graceMs,
+    reason: "expiring_soon"
+  };
 }
 
 function verifyRegistryEntry(def, registry) {
@@ -249,10 +302,10 @@ function main() {
     process.exit(2);
   }
 
-  const { catId, jsonArg, denyReason } = parsedArgs;
+  const { catId, jsonArg, denyReason, renew } = parsedArgs;
   if (!catId) {
     console.error(
-      "Usage: node run_cat_demo.cjs <RGPT-CAT-XX> [jsonInput] [--deny expired|digest|registry|passport]"
+      "Usage: node run_cat_demo.cjs <RGPT-CAT-XX> [jsonInput] [--renew] [--deny expired|digest|registry|passport]"
     );
     process.exit(2);
   }
@@ -291,7 +344,7 @@ function main() {
   const register = loadPoliceRegister(root);
   const bundleDigest = hashBundle(entry.raw);
 
-  if (denyReason) {
+  if (denyReason && !(renew && denyReason === "expired")) {
     const status = DEMO_DENY_STATUS_BY_REASON[denyReason];
     const passportVerification = {
       status,
@@ -320,6 +373,39 @@ function main() {
     process.exit(6);
   }
   const passportVerification = verifyPassport(def, bundleDigest, register);
+  const passport = findPassportById(register, def.passport_id);
+
+  if (renew) {
+    if (denyReason === "expired") {
+      const renewalRequest = buildRenewalRequest(def, passport, bundleDigest, register, "expired");
+      console.log(JSON.stringify(renewalRequest, null, 2));
+      process.exit(0);
+    }
+
+    if (passportVerification.status === "OK") {
+      const renewalEligibility = getRenewalEligibility(passport, register);
+      if (renewalEligibility.eligible) {
+        const renewalRequest = buildRenewalRequest(
+          def,
+          passport,
+          bundleDigest,
+          register,
+          renewalEligibility.reason || "expiring_soon"
+        );
+        console.log(JSON.stringify(renewalRequest, null, 2));
+        process.exit(0);
+      }
+      console.log("Not eligible for renewal yet");
+      process.exit(0);
+    }
+
+    if (passportVerification.status === "EXPIRED") {
+      const renewalRequest = buildRenewalRequest(def, passport, bundleDigest, register, "expired");
+      console.log(JSON.stringify(renewalRequest, null, 2));
+      process.exit(0);
+    }
+  }
+
   const allowedSideEffectsDeclared = Array.isArray(def.allowed_side_effects)
     ? def.allowed_side_effects
     : [];

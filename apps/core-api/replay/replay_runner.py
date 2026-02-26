@@ -7,7 +7,7 @@ import os
 import re
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -114,6 +114,63 @@ def _parse_utc_datetime(raw: str | None) -> datetime | None:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
     return dt.astimezone(timezone.utc)
+
+
+def _cats_demo_renewal_policy(register: Dict[str, Any] | None) -> Dict[str, int]:
+    raw = register if isinstance(register, dict) else {}
+    nested = raw.get("renewal_policy", {}) if isinstance(raw.get("renewal_policy"), dict) else {}
+
+    def _int_or(value: Any, default: int) -> int:
+        try:
+            parsed = int(value)
+        except (TypeError, ValueError):
+            return default
+        return parsed
+
+    default_ttl = _int_or(nested.get("default_ttl_days"), _int_or(raw.get("default_ttl_days"), 90))
+    grace_days = _int_or(nested.get("renewal_grace_days"), 15)
+    return {
+        "default_ttl_days": max(default_ttl, 0),
+        "renewal_grace_days": max(grace_days, 0),
+    }
+
+
+def _cats_demo_renewal_request(
+    *,
+    cat_id: str,
+    canonical_name: Any,
+    passport: Dict[str, Any] | None,
+    bundle_digest: str | None,
+    police_register: Dict[str, Any] | None,
+    reason: str,
+) -> Dict[str, Any]:
+    policy = _cats_demo_renewal_policy(police_register)
+    return {
+        "cat_id": cat_id,
+        "canonical_name": canonical_name,
+        "passport_id": (passport or {}).get("passport_id"),
+        "current_expires_at_utc": (passport or {}).get("expires_at_utc"),
+        "requested_ttl_days": policy["default_ttl_days"],
+        "bundle_digest": bundle_digest,
+        "reason": reason,
+    }
+
+
+def _cats_demo_renewal_eligibility(
+    *,
+    passport: Dict[str, Any] | None,
+    police_register: Dict[str, Any] | None,
+    now_utc: datetime,
+) -> tuple[bool, str | None]:
+    if not isinstance(passport, dict):
+        return False, None
+    expires_dt = _parse_utc_datetime(passport.get("expires_at_utc"))
+    if expires_dt is None or expires_dt <= now_utc:
+        return True, "expired"
+    policy = _cats_demo_renewal_policy(police_register)
+    if expires_dt <= (now_utc + timedelta(days=policy["renewal_grace_days"])):
+        return True, "expiring_soon"
+    return False, None
 
 
 def _verify_cat_registry_entry(
@@ -248,6 +305,7 @@ def _run_cats_demo_execution(
     cat_id = str(inputs.get("cat_id", "") or "")
     payload_raw = inputs.get("payload_json", "{}")
     demo_deny_reason = inputs.get("demo_deny")
+    demo_renew = bool(inputs.get("demo_renew"))
     notes: List[str] = []
 
     try:
@@ -271,6 +329,8 @@ def _run_cats_demo_execution(
     verification_ok = False
     passport_required = False
     registry_entry = None
+    passport: Dict[str, Any] | None = None
+    register: Dict[str, Any] | None = None
     passport_verification_status = "MISSING"
     passport_verification_note = "Passport verification did not run."
 
@@ -334,7 +394,6 @@ def _run_cats_demo_execution(
 
         register = read_json(str(police_register_path))
         passports = register.get("passports", []) or []
-        passport = None
         cross_link, cross_link_detail = _verify_passport_cross_links(
             cat_def=cat_def,
             registry_entry=registry_entry,
@@ -448,6 +507,61 @@ def _run_cats_demo_execution(
         notes.append(f"ignored_invalid_demo_deny:{demo_deny_reason}")
 
     primary_bundle_digest = passport_bundle_digest or computed_bundle_digest
+    renewal_request_path: str | None = None
+    renewal_request_obj: Dict[str, Any] | None = None
+
+    if demo_renew:
+        if forced_status == "EXPIRED":
+            renewal_request_obj = _cats_demo_renewal_request(
+                cat_id=cat_id,
+                canonical_name=canonical_name,
+                passport=passport,
+                bundle_digest=primary_bundle_digest,
+                police_register=register,
+                reason="expired",
+            )
+        elif passport_verification_status == "EXPIRED":
+            renewal_request_obj = _cats_demo_renewal_request(
+                cat_id=cat_id,
+                canonical_name=canonical_name,
+                passport=passport,
+                bundle_digest=primary_bundle_digest,
+                police_register=register,
+                reason="expired",
+            )
+        elif passport_verification_status == "OK":
+            eligible, renew_reason = _cats_demo_renewal_eligibility(
+                passport=passport,
+                police_register=register,
+                now_utc=now_utc,
+            )
+            if eligible and renew_reason:
+                renewal_request_obj = _cats_demo_renewal_request(
+                    cat_id=cat_id,
+                    canonical_name=canonical_name,
+                    passport=passport,
+                    bundle_digest=primary_bundle_digest,
+                    police_register=register,
+                    reason=renew_reason,
+                )
+            else:
+                notes.append("demo_renew_not_eligible_yet")
+
+        renewal_request_path = str(
+            Path(ctx.paths.evidence_dir) / "cats_demo_renewal_request.json"
+        )
+        if renewal_request_obj is None:
+            renewal_request_obj = _cats_demo_renewal_request(
+                cat_id=cat_id,
+                canonical_name=canonical_name,
+                passport=passport,
+                bundle_digest=primary_bundle_digest,
+                police_register=register,
+                reason="expiring_soon",
+            )
+            renewal_request_obj["eligible"] = False
+            renewal_request_obj["message"] = "Not eligible for renewal yet"
+        write_json(renewal_request_path, renewal_request_obj)
 
     artifact = {
         "artifact_type": "cats_demo_replay_execution",
@@ -470,8 +584,18 @@ def _run_cats_demo_execution(
             "notes": notes,
         },
         "allowed_side_effects_effective": allowed_side_effects_effective,
-        "output": _cats_demo_stub_output(cat_id, payload),
     }
+    if demo_renew:
+        artifact["renewal_mode"] = True
+        artifact["renewal_eligible"] = bool(renewal_request_obj) and bool(
+            renewal_request_obj.get("eligible", True)
+        )
+        if artifact["renewal_eligible"] is False:
+            artifact["renewal_message"] = "Not eligible for renewal yet"
+        if renewal_request_path:
+            artifact["renewal_request_artifact_path"] = renewal_request_path
+    else:
+        artifact["output"] = _cats_demo_stub_output(cat_id, payload)
     if allowed_side_effects_declared:
         artifact["allowed_side_effects_declared"] = allowed_side_effects_declared
 

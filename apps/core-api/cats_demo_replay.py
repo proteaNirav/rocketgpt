@@ -17,6 +17,11 @@ def main() -> int:
         choices=sorted(VALID_DEMO_DENY_REASONS),
         help="Force demo denial status in replay artifact",
     )
+    ap.add_argument(
+        "--renew",
+        action="store_true",
+        help="Generate demo renewal request artifact instead of stub CAT output",
+    )
     args = ap.parse_args()
 
     cat_id = args.cat_id
@@ -39,6 +44,10 @@ def main() -> int:
         data["replay"]["inputs"]["demo_deny"] = args.deny
     else:
         data["replay"]["inputs"].pop("demo_deny", None)
+    if args.renew:
+        data["replay"]["inputs"]["demo_renew"] = True
+    else:
+        data["replay"]["inputs"].pop("demo_renew", None)
 
     tmp_contract = Path(os.getenv("TEMP", ".")) / f"replay_contract.cats_demo.{cat_id}.json"
     tmp_contract.write_text(json.dumps(data, indent=2), encoding="utf-8")
