@@ -3,10 +3,13 @@
   "description": "Summarizes recent ledger events into a narrative/timeline for demo and audit.",
   "version": "0.1.0",
   "cat_id": "RGPT-CAT-02",
+<<<<<<< HEAD
   "publisher_namespace": "protea",
   "canonical_name": "protea/ledger-summary",
   "passport_required": true,
   "passport_id": "RGPT-CAT-02-PASS-20260226",
+=======
+>>>>>>> b8e51093 (demo(d5): scaffold CAT definitions + loader + demo runner)
   "tags": [
     "demo",
     "ledger",
