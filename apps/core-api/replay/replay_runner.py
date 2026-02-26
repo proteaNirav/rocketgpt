@@ -449,6 +449,10 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
         # STRICT snapshot drift gate (Phase-E3-F)
         if effective_runtime_mode == "STRICT":
             if bool(snapshot_drift.get("side_effects_detected")):
+                print(
+                    "Replay denied: strict snapshot drift detected.",
+                    file=sys.stderr,
+                )
                 write_json(
                     str(Path(ctx.paths.replay_result_path)),
                     {
@@ -466,6 +470,12 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
         drift_report_dict = {"mode": "UNKNOWN", "drift_class": "D0", "verdict": "PASS", "notes": "tracker_error"}
 
     if commissioner["decision"] != "ALLOW":
+        denial_reasons = commissioner.get("denial_reasons", [])
+        reasons_msg = ", ".join(str(x) for x in denial_reasons) or "unknown"
+        print(
+            f"Replay denied by commissioner gate: {reasons_msg}",
+            file=sys.stderr,
+        )
         write_json(
             str(Path(ctx.paths.replay_result_path)),
             {
@@ -504,7 +514,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
 
 
