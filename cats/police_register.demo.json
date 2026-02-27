@@ -1,0 +1,46 @@
+{
+  "issuer": "rgpt-police-dept",
+  "default_ttl_days": 90,
+  "renewal_policy": {
+    "default_ttl_days": 90,
+    "renewal_grace_days": 15
+  },
+  "passports": [
+    {
+      "passport_id": "RGPT-CAT-01-PASS-20260226",
+      "cat_id": "RGPT-CAT-01",
+      "canonical_name": "protea/policy-validator",
+      "bundle_digest": "3885728bc6dc3d45249e916b16a77d47b1e970db8ce433e98b8a5dd7549cdf2d",
+      "status": "ACTIVE",
+      "issued_at_utc": "2026-02-26T00:00:00Z",
+      "last_renewed_at_utc": null,
+      "expires_at_utc": "2026-05-27T00:00:00Z",
+      "governance_policy_version_at_issue": "demo",
+      "notes": "Demo D5 police passport issuance."
+    },
+    {
+      "passport_id": "RGPT-CAT-02-PASS-20260226",
+      "cat_id": "RGPT-CAT-02",
+      "canonical_name": "protea/ledger-summary",
+      "bundle_digest": "d2a9b3bab6fcb7115ac05088b750da45840a4b56e5c641584c72e1a0086c2185",
+      "status": "ACTIVE",
+      "issued_at_utc": "2026-02-26T00:00:00Z",
+      "last_renewed_at_utc": null,
+      "expires_at_utc": "2026-05-27T00:00:00Z",
+      "governance_policy_version_at_issue": "demo",
+      "notes": "Demo D5 police passport issuance."
+    },
+    {
+      "passport_id": "RGPT-CAT-03-PASS-20260226",
+      "cat_id": "RGPT-CAT-03",
+      "canonical_name": "protea/proposal-generator",
+      "bundle_digest": "bd21c7393142d6c065294b866234a70025c5c4a465df1c4da9333948f9431216",
+      "status": "ACTIVE",
+      "issued_at_utc": "2026-02-26T00:00:00Z",
+      "last_renewed_at_utc": null,
+      "expires_at_utc": "2026-05-27T00:00:00Z",
+      "governance_policy_version_at_issue": "demo",
+      "notes": "Demo D5 police passport issuance."
+    }
+  ]
+}
