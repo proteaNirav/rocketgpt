@@ -1,0 +1,24 @@
+{
+  "runtime_mode": "demo",
+  "description": "Summarizes recent ledger events into a narrative/timeline for demo and audit.",
+  "version": "0.1.0",
+  "cat_id": "RGPT-CAT-02",
+  "publisher_namespace": "protea",
+  "canonical_name": "protea/ledger-summary",
+  "passport_required": true,
+  "passport_id": "RGPT-CAT-02-PASS-20260226",
+  "tags": [
+    "demo",
+    "ledger",
+    "timeline"
+  ],
+  "entrypoint": "apps/core-api/cats/cat_02_ledger_summary.ts",
+  "name": "Ledger Summary CAT",
+  "requires_approval": false,
+  "owner": "system",
+  "allowed_side_effects": [
+    "read_only",
+    "ledger_write"
+  ],
+  "type": "analysis"
+}

@@ -1,0 +1,25 @@
+{
+  "replay": {
+    "mode": "dev",
+    "target_execution_id": "RGPT-CAT-01",
+    "run_id": "cats_demo",
+    "notes": "Demo contract: routes CAT execution through Replay Engine for parity (Collector→Inspector→Commissioner→Judge→Archivist).",
+    "inputs": {
+      "execution_ledger_path": "replay\\sample_inputs\\execution_ledger.sample.json",
+      "decision_ledger_path": "replay\\sample_inputs\\decision_ledger.sample.json",
+      "artifacts_manifest_path": "replay\\sample_inputs\\artifacts_manifest.sample.json",
+      "source": "cats-demo",
+      "cat_id": "RGPT-CAT-01",
+      "payload_json": "{\"demo\":true}"
+    },
+    "commissioner_requirements": {
+      "deny_if_missing_inputs": false,
+      "must_have": [
+        "ledger_hash_chain_valid",
+        "artifact_hashes_valid",
+        "schema_versions_compatible"
+      ],
+      "auto_approve": true
+    }
+  }
+}
