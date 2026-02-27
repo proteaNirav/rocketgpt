@@ -1,0 +1,235 @@
+<#
+.SYNOPSIS
+One-command CATS demo: registry API -> passport -> replay evidence.
+
+.EXAMPLE
+pwsh -File .\scripts\demo\d6_cats_end_to_end.ps1
+
+.EXAMPLE
+pwsh -File .\scripts\demo\d6_cats_end_to_end.ps1 -CatId RGPT-CAT-01 -Port 8080
+
+.EXAMPLE
+pwsh -File .\scripts\demo\d6_cats_end_to_end.ps1 -DenyReason expired
+#>
+[CmdletBinding()]
+param(
+    [string]$CatId = "RGPT-CAT-01",
+    [int]$Port = 8080,
+    [ValidateSet("expired", "digest", "registry", "passport")]
+    [string]$DenyReason
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
+$CoreApiDir = Join-Path $RepoRoot "apps\core-api"
+$BaseUrl = "http://localhost:$Port"
+$LoopbackBaseUrl = "http://127.0.0.1:$Port"
+
+function Test-CatsRegistryHealth {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Url,
+        [string]$FallbackUrl
+    )
+    try {
+        $null = Invoke-RestMethod -Uri "$Url/cats/registry" -Method Get -TimeoutSec 2
+        return $true
+    } catch {
+        if ($FallbackUrl) {
+            try {
+                $null = Invoke-RestMethod -Uri "$FallbackUrl/cats/registry" -Method Get -TimeoutSec 2
+                return $true
+            } catch {
+                return $false
+            }
+        }
+        return $false
+    }
+}
+
+function Wait-CatsRegistryHealth {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Url,
+        [string]$FallbackUrl,
+        [int]$MaxAttempts = 20,
+        [int]$DelaySeconds = 1
+    )
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        if (Test-CatsRegistryHealth -Url $Url -FallbackUrl $FallbackUrl) {
+            return $true
+        }
+        Start-Sleep -Seconds $DelaySeconds
+    }
+    return $false
+}
+
+function Ensure-CatsRegistryApi {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Url,
+        [string]$FallbackUrl,
+        [Parameter(Mandatory = $true)]
+        [string]$WorkingDir,
+        [int]$PortNumber
+    )
+
+    if (Test-CatsRegistryHealth -Url $Url -FallbackUrl $FallbackUrl) {
+        Write-Host "Registry API already listening on port $PortNumber."
+        return $null
+    }
+
+    $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
+    $logPrefix = Join-Path ([System.IO.Path]::GetTempPath()) "cats_registry_uvicorn_${PortNumber}_$stamp"
+    $stdoutLog = "${logPrefix}.stdout.log"
+    $stderrLog = "${logPrefix}.stderr.log"
+
+    $startCommand = "Set-Location -LiteralPath `"$WorkingDir`"; python -m uvicorn main:app --app-dir `"$WorkingDir`" --host 127.0.0.1 --port $PortNumber"
+
+    Write-Host "Starting registry API via uvicorn on port $PortNumber..."
+    $proc = Start-Process -FilePath "pwsh" `
+        -ArgumentList @("-NoProfile", "-Command", $startCommand) `
+        -WorkingDirectory $WorkingDir `
+        -PassThru `
+        -RedirectStandardOutput $stdoutLog `
+        -RedirectStandardError $stderrLog
+
+    if (-not (Wait-CatsRegistryHealth -Url $Url -FallbackUrl $FallbackUrl -MaxAttempts 25 -DelaySeconds 1)) {
+        $procId = if ($proc) { $proc.Id } else { "unknown" }
+        throw "Registry API failed health-check on $Url/cats/registry. pid=$procId stdout=$stdoutLog stderr=$stderrLog"
+    }
+
+    Write-Host "Registry API started (pid=$($proc.Id))."
+    Write-Host "uvicorn stdout: $stdoutLog"
+    Write-Host "uvicorn stderr: $stderrLog"
+    return $proc
+}
+
+function Show-EndpointJson {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Url,
+        [string]$FallbackUrl
+    )
+    Write-Host ""
+    Write-Host "GET $Url"
+    try {
+        $payload = Invoke-RestMethod -Uri $Url -Method Get -TimeoutSec 10
+    } catch {
+        if (-not $FallbackUrl) { throw }
+        Write-Host "Primary URL failed; retrying via $FallbackUrl"
+        $payload = Invoke-RestMethod -Uri $FallbackUrl -Method Get -TimeoutSec 10
+    }
+    $payload | ConvertTo-Json -Depth 100
+}
+
+function Invoke-CatsReplay {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$CoreDir,
+        [Parameter(Mandatory = $true)]
+        [string]$ReplayCatId,
+        [string]$ReplayDenyReason
+    )
+
+    $cmdArgs = @(".\cats_demo_replay.py", $ReplayCatId)
+    $label = "normal"
+    if ($ReplayDenyReason) {
+        $cmdArgs += @("--deny", $ReplayDenyReason)
+        $label = "forced-denial:$ReplayDenyReason"
+    }
+
+    Write-Host ""
+    Write-Host "Replay run ($label): python $($cmdArgs -join ' ')"
+
+    Push-Location $CoreDir
+    try {
+        $lines = @(& python @cmdArgs 2>&1)
+        $exitCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+
+    foreach ($line in $lines) {
+        $text = [string]$line
+        if ($text.Length -gt 0) {
+            Write-Host $text
+        }
+    }
+
+    if ($exitCode -ne 0) {
+        throw "Replay command failed ($label) with exit code $exitCode."
+    }
+
+    $artifactPaths = New-Object System.Collections.Generic.List[string]
+    $renewalPaths = New-Object System.Collections.Generic.List[string]
+    foreach ($line in $lines) {
+        $text = [string]$line
+        if ($text -match "CATS demo artifact:\s*(.+)$") {
+            $artifactPaths.Add($matches[1].Trim())
+        }
+        if ($text -match '"renewal_request_artifact_path"\s*:\s*"([^"]+)"') {
+            $renewalPaths.Add($matches[1])
+        }
+    }
+
+    [pscustomobject]@{
+        Label         = $label
+        ArtifactPaths = @($artifactPaths)
+        RenewalPaths  = @($renewalPaths | Select-Object -Unique)
+    }
+}
+
+Write-Host "Repo root: $RepoRoot"
+Write-Host "CAT ID: $CatId"
+Write-Host "Registry base URL: $BaseUrl"
+
+$null = Ensure-CatsRegistryApi -Url $BaseUrl -FallbackUrl $LoopbackBaseUrl -WorkingDir $CoreApiDir -PortNumber $Port
+
+Show-EndpointJson -Url "$BaseUrl/cats/registry" -FallbackUrl "$LoopbackBaseUrl/cats/registry"
+Show-EndpointJson -Url "$BaseUrl/cats/$CatId/passport" -FallbackUrl "$LoopbackBaseUrl/cats/$CatId/passport"
+Show-EndpointJson -Url "$BaseUrl/cats/$CatId/definition" -FallbackUrl "$LoopbackBaseUrl/cats/$CatId/definition"
+
+$runs = New-Object System.Collections.Generic.List[object]
+$runs.Add((Invoke-CatsReplay -CoreDir $CoreApiDir -ReplayCatId $CatId))
+
+if ($DenyReason) {
+    $runs.Add((Invoke-CatsReplay -CoreDir $CoreApiDir -ReplayCatId $CatId -ReplayDenyReason $DenyReason))
+}
+
+$allArtifacts = @()
+$allRenewals = @()
+foreach ($run in $runs) {
+    if ($run.ArtifactPaths) {
+        $allArtifacts += $run.ArtifactPaths
+    }
+    if ($run.RenewalPaths) {
+        $allRenewals += $run.RenewalPaths
+    }
+}
+$allRenewals = @($allRenewals | Select-Object -Unique)
+
+Write-Host ""
+Write-Host "Final summary"
+foreach ($run in $runs) {
+    if ($run.ArtifactPaths.Count -gt 0) {
+        Write-Host ("- {0} artifact(s): {1}" -f $run.Label, ($run.ArtifactPaths -join ", "))
+    } else {
+        Write-Host ("- {0} artifact(s): none detected" -f $run.Label)
+    }
+    if ($run.RenewalPaths.Count -gt 0) {
+        Write-Host ("- {0} renewal artifact(s): {1}" -f $run.Label, ($run.RenewalPaths -join ", "))
+    }
+}
+
+if ($allArtifacts.Count -gt 0) {
+    Write-Host ("Latest artifact path: {0}" -f $allArtifacts[-1])
+} else {
+    Write-Host "Latest artifact path: (not found in replay output)"
+}
+
+if ($allRenewals.Count -gt 0) {
+    Write-Host ("Renewal artifact paths: {0}" -f ($allRenewals -join ", "))
+}
