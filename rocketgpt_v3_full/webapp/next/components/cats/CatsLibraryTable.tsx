@@ -1,227 +1,234 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { CatLibraryRow, getCatsLibraryRows } from "@/lib/cats-api";
-import { buildEvidenceLocateCommand, buildReplayCommand } from "@/lib/cats-replay";
+import { buildReplayCommand } from "@/lib/cats-replay";
+import { CatCatalogItem, SEED_CATS } from "@/lib/cats-seed";
+import { isDemoMode } from "@/lib/demo-mode";
 
-type ReplaySelection = {
-  catId: string;
-  mode: "normal" | "expired";
-};
+type SideEffect = CatCatalogItem["allowed_side_effects"][number];
+type Status = CatCatalogItem["status"];
+type SortBy = "name" | "status" | "last_updated";
 
-function JsonPanel({ title, data }: { title: string; data: unknown }) {
-  return (
-    <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-neutral-800 dark:bg-neutral-950/50">
-      <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
-        {title}
-      </h4>
-      <pre className="overflow-x-auto text-[11px] leading-5 text-gray-800 dark:text-gray-200">
-        {JSON.stringify(data, null, 2)}
-      </pre>
-    </div>
-  );
+const STATUS_OPTIONS: Array<"all" | Status> = ["all", "proposed", "draft", "approved", "blocked", "deprecated"];
+const EFFECT_OPTIONS: Array<"all" | SideEffect> = ["all", "none", "read_only", "ledger_write", "workflow_dispatch"];
+
+function downloadJson(filename: string, payload: unknown) {
+  const blob = new Blob([`${JSON.stringify(payload, null, 2)}\n`], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
-function ReplayCommands({ catId, mode }: ReplaySelection) {
-  const replay = buildReplayCommand(catId, mode === "expired" ? "expired" : undefined);
-  const locate = buildEvidenceLocateCommand(catId);
-
-  return (
-    <div className="space-y-2 rounded-lg border border-sky-200 bg-sky-50 p-3 dark:border-sky-900/70 dark:bg-sky-950/40">
-      <div className="text-xs font-semibold text-sky-800 dark:text-sky-200">
-        Demo Replay Command ({mode === "expired" ? "forced denial: expired" : "normal"})
-      </div>
-      <pre className="overflow-x-auto rounded border border-sky-200 bg-white p-2 text-[11px] text-sky-900 dark:border-sky-900 dark:bg-neutral-950 dark:text-sky-100">
-        {replay}
-      </pre>
-      <div className="text-xs font-semibold text-sky-800 dark:text-sky-200">Locate latest evidence artifact</div>
-      <pre className="overflow-x-auto rounded border border-sky-200 bg-white p-2 text-[11px] text-sky-900 dark:border-sky-900 dark:bg-neutral-950 dark:text-sky-100">
-        {locate}
-      </pre>
-    </div>
-  );
+function statusBadgeClass(status: Status): string {
+  switch (status) {
+    case "approved":
+      return "border-green-300 bg-green-50 text-green-800 dark:border-green-900/70 dark:bg-green-950/30 dark:text-green-200";
+    case "draft":
+      return "border-sky-300 bg-sky-50 text-sky-800 dark:border-sky-900/70 dark:bg-sky-950/30 dark:text-sky-200";
+    case "blocked":
+      return "border-red-300 bg-red-50 text-red-800 dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-200";
+    case "deprecated":
+      return "border-neutral-300 bg-neutral-100 text-neutral-800 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200";
+    default:
+      return "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-200";
+  }
 }
 
 export default function CatsLibraryTable() {
-  const [rows, setRows] = useState<CatLibraryRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [openDefinition, setOpenDefinition] = useState<string | null>(null);
-  const [openPassport, setOpenPassport] = useState<string | null>(null);
-  const [replaySelection, setReplaySelection] = useState<ReplaySelection | null>(null);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | Status>("all");
+  const [effectFilter, setEffectFilter] = useState<"all" | SideEffect>("all");
+  const [sortBy, setSortBy] = useState<SortBy>("name");
+  const [jsonItem, setJsonItem] = useState<CatCatalogItem | null>(null);
+  const [copiedCatId, setCopiedCatId] = useState<string | null>(null);
 
-  async function load() {
-    setLoading(true);
-    setError(null);
+  const demoMode = isDemoMode();
+
+  const rows = useMemo(() => {
+    const q = query.trim().toLowerCase();
+
+    const filtered = SEED_CATS.filter((item) => {
+      if (statusFilter !== "all" && item.status !== statusFilter) return false;
+      if (effectFilter !== "all" && !item.allowed_side_effects.includes(effectFilter)) return false;
+      if (!q) return true;
+
+      const haystack = [item.name, item.canonical_name, item.purpose, item.tags.join(" ")].join(" ").toLowerCase();
+      return haystack.includes(q);
+    });
+
+    const sorted = [...filtered].sort((a, b) => {
+      if (sortBy === "status") return a.status.localeCompare(b.status);
+      if (sortBy === "last_updated") return b.last_updated.localeCompare(a.last_updated);
+      return a.name.localeCompare(b.name);
+    });
+
+    return sorted;
+  }, [effectFilter, query, sortBy, statusFilter]);
+
+  async function copyReplayCommand(item: CatCatalogItem) {
+    const cmd = buildReplayCommand(item.cat_id);
     try {
-      const data = await getCatsLibraryRows();
-      setRows(data);
-    } catch (err: any) {
-      setError(err?.message || "Failed to load CATS library.");
-    } finally {
-      setLoading(false);
+      await navigator.clipboard.writeText(cmd);
+      setCopiedCatId(item.cat_id);
+      window.setTimeout(() => setCopiedCatId((current) => (current === item.cat_id ? null : current)), 1400);
+    } catch {
+      setCopiedCatId(null);
+      window.alert("Unable to copy command from this browser context.");
     }
-  }
-
-  useEffect(() => {
-    void load();
-  }, []);
-
-  const sortedRows = useMemo(
-    () =>
-      [...rows].sort((a, b) => {
-        const left = a.registryEntry.cat_id || "";
-        const right = b.registryEntry.cat_id || "";
-        return left.localeCompare(right);
-      }),
-    [rows]
-  );
-
-  if (loading) {
-    return <div className="rounded-lg border border-gray-200 p-4 text-sm dark:border-neutral-800">Loading CATS registry...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="space-y-3">
-        <div className="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-200">
-          {error}
-        </div>
-        <button
-          onClick={() => void load()}
-          className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
-        >
-          Retry
-        </button>
-      </div>
-    );
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600 dark:text-gray-300">
-          Read-only source: <code>/api/core/cats/*</code> proxy to core-api.
-        </p>
-        <button
-          onClick={() => void load()}
-          className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
-        >
-          Refresh
-        </button>
+      {demoMode ? (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-200">
+          Demo mode (Supabase not configured) — showing seed catalog
+        </div>
+      ) : null}
+
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+        <label className="text-sm md:col-span-2">
+          <div className="mb-1 text-xs text-gray-600 dark:text-gray-300">Search</div>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search name, canonical, purpose, tags"
+            className="w-full rounded border border-gray-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900"
+          />
+        </label>
+
+        <label className="text-sm">
+          <div className="mb-1 text-xs text-gray-600 dark:text-gray-300">Status</div>
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value as "all" | Status)}
+            className="w-full rounded border border-gray-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900"
+          >
+            {STATUS_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="text-sm">
+          <div className="mb-1 text-xs text-gray-600 dark:text-gray-300">Side-effect</div>
+          <select
+            value={effectFilter}
+            onChange={(event) => setEffectFilter(event.target.value as "all" | SideEffect)}
+            className="w-full rounded border border-gray-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900"
+          >
+            {EFFECT_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
+        <span>{rows.length} of {SEED_CATS.length} catalog items</span>
+        <label className="inline-flex items-center gap-2">
+          <span>Sort by</span>
+          <select
+            value={sortBy}
+            onChange={(event) => setSortBy(event.target.value as SortBy)}
+            className="rounded border border-gray-300 px-2 py-1 dark:border-neutral-700 dark:bg-neutral-900"
+          >
+            <option value="name">Name</option>
+            <option value="status">Status</option>
+            <option value="last_updated">Last Updated</option>
+          </select>
+        </label>
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-neutral-800">
-        <table className="min-w-[1300px] w-full text-left text-sm">
+        <table className="min-w-[1500px] w-full text-left text-sm">
           <thead className="bg-gray-100 text-xs uppercase tracking-wide text-gray-700 dark:bg-neutral-900 dark:text-gray-300">
             <tr>
-              <th className="p-2">canonical_name</th>
-              <th className="p-2">cat_id</th>
-              <th className="p-2">type</th>
-              <th className="p-2">status</th>
-              <th className="p-2">passport_required</th>
-              <th className="p-2">issuer</th>
-              <th className="p-2">expires_at_utc</th>
-              <th className="p-2">allowed_side_effects</th>
-              <th className="p-2">tags</th>
-              <th className="p-2">entrypoint</th>
-              <th className="p-2">version</th>
-              <th className="p-2">actions</th>
+              <th className="p-2">Name</th>
+              <th className="p-2">Canonical</th>
+              <th className="p-2">ID</th>
+              <th className="p-2">Purpose</th>
+              <th className="p-2">Version</th>
+              <th className="p-2">Status</th>
+              <th className="p-2">Side-effects</th>
+              <th className="p-2">Passport</th>
+              <th className="p-2">Approval</th>
+              <th className="p-2">Tags</th>
+              <th className="p-2">Last Updated</th>
+              <th className="p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {sortedRows.map((row) => {
-              const catId = row.registryEntry.cat_id || row.definition?.cat_id || row.canonicalName;
-              const isDefinitionOpen = openDefinition === catId;
-              const isPassportOpen = openPassport === catId;
-              const isReplayOpen = replaySelection?.catId === catId;
-
-              return (
-                <tr key={row.canonicalName} className="border-t border-gray-200 align-top dark:border-neutral-800">
-                  <td className="p-2 font-medium">{row.canonicalName}</td>
-                  <td className="p-2">{catId}</td>
-                  <td className="p-2">{row.definition?.type || "-"}</td>
-                  <td className="p-2">{row.registryEntry.status || "-"}</td>
-                  <td className="p-2">{String(row.registryEntry.passport_required ?? row.definition?.passport_required ?? false)}</td>
-                  <td className="p-2">{row.registryEntry.issuer || row.passport?.issuer || "-"}</td>
-                  <td className="p-2">{row.passport?.expires_at_utc || row.passportError || "-"}</td>
-                  <td className="p-2">{(row.definition?.allowed_side_effects || []).join(", ") || "-"}</td>
-                  <td className="p-2">{(row.definition?.tags || []).join(", ") || "-"}</td>
-                  <td className="p-2">{row.definition?.entrypoint || "-"}</td>
-                  <td className="p-2">{row.definition?.version || "-"}</td>
-                  <td className="p-2">
-                    <div className="flex flex-wrap gap-1">
-                      <button
-                        onClick={() => setOpenDefinition(isDefinitionOpen ? null : catId)}
-                        className="rounded border border-gray-300 px-2 py-1 text-xs hover:bg-gray-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
-                      >
-                        View Definition
-                      </button>
-                      <button
-                        onClick={() => setOpenPassport(isPassportOpen ? null : catId)}
-                        className="rounded border border-gray-300 px-2 py-1 text-xs hover:bg-gray-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
-                      >
-                        View Passport
-                      </button>
-                      <button
-                        onClick={() =>
-                          setReplaySelection(
-                            isReplayOpen && replaySelection?.mode === "normal"
-                              ? null
-                              : { catId, mode: "normal" }
-                          )
-                        }
-                        className="rounded border border-blue-300 px-2 py-1 text-xs text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950/40"
-                      >
-                        Run Demo Replay (normal)
-                      </button>
-                      <button
-                        onClick={() =>
-                          setReplaySelection(
-                            isReplayOpen && replaySelection?.mode === "expired"
-                              ? null
-                              : { catId, mode: "expired" }
-                          )
-                        }
-                        className="rounded border border-amber-300 px-2 py-1 text-xs text-amber-700 hover:bg-amber-50 dark:border-amber-800 dark:text-amber-300 dark:hover:bg-amber-950/40"
-                      >
-                        Run Demo Replay (forced denial: expired)
-                      </button>
-                    </div>
-
-                    {isDefinitionOpen && (
-                      <div className="mt-2">
-                        {row.definition ? (
-                          <JsonPanel title="Definition" data={row.definition} />
-                        ) : (
-                          <div className="text-xs text-red-600 dark:text-red-300">{row.definitionError || "Definition unavailable."}</div>
-                        )}
-                      </div>
-                    )}
-
-                    {isPassportOpen && (
-                      <div className="mt-2">
-                        {row.passport ? (
-                          <JsonPanel title="Passport" data={row.passport} />
-                        ) : (
-                          <div className="text-xs text-red-600 dark:text-red-300">{row.passportError || "Passport unavailable."}</div>
-                        )}
-                      </div>
-                    )}
-
-                    {isReplayOpen && replaySelection && (
-                      <div className="mt-2">
-                        <ReplayCommands catId={catId} mode={replaySelection.mode} />
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
+            {rows.map((item) => (
+              <tr key={item.cat_id} className="border-t border-gray-200 align-top dark:border-neutral-800">
+                <td className="p-2 font-medium">{item.name}</td>
+                <td className="p-2 font-mono text-xs">{item.canonical_name}</td>
+                <td className="p-2 font-mono text-xs">{item.cat_id}</td>
+                <td className="p-2">{item.purpose}</td>
+                <td className="p-2">{item.version}</td>
+                <td className="p-2">
+                  <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(item.status)}`}>
+                    {item.status}
+                  </span>
+                </td>
+                <td className="p-2">{item.allowed_side_effects.join(", ")}</td>
+                <td className="p-2">{item.passport_required ? "Required" : "Optional"}</td>
+                <td className="p-2">{item.requires_approval ? "Required" : "Not required"}</td>
+                <td className="p-2 text-xs">{item.tags.join(", ")}</td>
+                <td className="p-2">{item.last_updated}</td>
+                <td className="p-2">
+                  <div className="flex flex-wrap gap-1">
+                    <button
+                      onClick={() => setJsonItem(item)}
+                      className="rounded border border-gray-300 px-2 py-1 text-xs hover:bg-gray-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                    >
+                      View JSON
+                    </button>
+                    <button
+                      onClick={() => void copyReplayCommand(item)}
+                      className="rounded border border-sky-300 px-2 py-1 text-xs text-sky-800 hover:bg-sky-50 dark:border-sky-900 dark:text-sky-200 dark:hover:bg-sky-950/30"
+                    >
+                      {copiedCatId === item.cat_id ? "Copied" : "Copy Replay"}
+                    </button>
+                    <button
+                      onClick={() => downloadJson(`${item.cat_id}.json`, item)}
+                      className="rounded border border-gray-300 px-2 py-1 text-xs hover:bg-gray-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                    >
+                      Download JSON
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
+
+      {jsonItem ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-3xl rounded-xl border border-gray-300 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-950">
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-base font-semibold">{jsonItem.name} JSON</h3>
+              <button
+                onClick={() => setJsonItem(null)}
+                className="rounded border border-gray-300 px-2 py-1 text-xs hover:bg-gray-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+              >
+                Close
+              </button>
+            </div>
+            <pre className="max-h-[65vh] overflow-auto rounded border border-gray-200 bg-gray-50 p-3 text-[12px] dark:border-neutral-800 dark:bg-neutral-900/40">
+              {JSON.stringify(jsonItem, null, 2)}
+            </pre>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
