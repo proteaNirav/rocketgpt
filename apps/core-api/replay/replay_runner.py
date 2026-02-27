@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import os
+import re
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -99,6 +102,582 @@ def _normalize_output_path(
     if not candidate or candidate in {".", "./"}:
         return str(Path(evidence_dir) / filename)
     return candidate
+
+
+def _parse_utc_datetime(raw: str | None) -> datetime | None:
+    if not raw:
+        return None
+    try:
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def _cats_demo_renewal_policy(register: Dict[str, Any] | None) -> Dict[str, int]:
+    raw = register if isinstance(register, dict) else {}
+    nested = raw.get("renewal_policy", {}) if isinstance(raw.get("renewal_policy"), dict) else {}
+
+    def _int_or(value: Any, default: int) -> int:
+        try:
+            parsed = int(value)
+        except (TypeError, ValueError):
+            return default
+        return parsed
+
+    default_ttl = _int_or(nested.get("default_ttl_days"), _int_or(raw.get("default_ttl_days"), 90))
+    grace_days = _int_or(nested.get("renewal_grace_days"), 15)
+    return {
+        "default_ttl_days": max(default_ttl, 0),
+        "renewal_grace_days": max(grace_days, 0),
+    }
+
+
+def _cats_demo_renewal_request(
+    *,
+    cat_id: str,
+    canonical_name: Any,
+    passport: Dict[str, Any] | None,
+    bundle_digest: str | None,
+    police_register: Dict[str, Any] | None,
+    reason: str,
+) -> Dict[str, Any]:
+    policy = _cats_demo_renewal_policy(police_register)
+    return {
+        "cat_id": cat_id,
+        "canonical_name": canonical_name,
+        "passport_id": (passport or {}).get("passport_id"),
+        "current_expires_at_utc": (passport or {}).get("expires_at_utc"),
+        "requested_ttl_days": policy["default_ttl_days"],
+        "bundle_digest": bundle_digest,
+        "reason": reason,
+    }
+
+
+def _cats_demo_renewal_eligibility(
+    *,
+    passport: Dict[str, Any] | None,
+    police_register: Dict[str, Any] | None,
+    now_utc: datetime,
+) -> tuple[bool, str | None]:
+    if not isinstance(passport, dict):
+        return False, None
+    expires_dt = _parse_utc_datetime(passport.get("expires_at_utc"))
+    if expires_dt is None or expires_dt <= now_utc:
+        return True, "expired"
+    policy = _cats_demo_renewal_policy(police_register)
+    if expires_dt <= (now_utc + timedelta(days=policy["renewal_grace_days"])):
+        return True, "expiring_soon"
+    return False, None
+
+
+def _verify_cat_registry_entry(
+    registry: Dict[str, Any], canonical_name: Any, cat_id: Any
+) -> str | None:
+    if not isinstance(canonical_name, str):
+        return "CAT canonical_name missing or invalid for registry check."
+    namespaces = registry.get("namespaces", {}) if isinstance(registry, dict) else {}
+    if not isinstance(namespaces, dict):
+        return "CAT registry namespaces map is invalid."
+    entry = namespaces.get(canonical_name)
+    if not isinstance(entry, dict):
+        return f"canonical_name '{canonical_name}' is not registered."
+    if str(entry.get("cat_id", "")) != str(cat_id or ""):
+        return (
+            f"registry maps '{canonical_name}' to "
+            f"'{entry.get('cat_id', '')}', not '{cat_id}'."
+        )
+    return None
+
+
+def _get_cat_registry_record(
+    registry: Dict[str, Any], canonical_name: Any
+) -> Dict[str, Any] | None:
+    if not isinstance(canonical_name, str):
+        return None
+    namespaces = registry.get("namespaces", {}) if isinstance(registry, dict) else {}
+    if not isinstance(namespaces, dict):
+        return None
+    entry = namespaces.get(canonical_name)
+    return entry if isinstance(entry, dict) else None
+
+
+def _verify_cat_registry_namespace_binding(
+    registry_entry: Dict[str, Any] | None, canonical_name: Any
+) -> str | None:
+    if not isinstance(registry_entry, dict):
+        return None
+    if not isinstance(canonical_name, str):
+        return "CAT canonical_name missing or invalid for registry namespace binding."
+    publisher_namespace = registry_entry.get("publisher_namespace")
+    if not isinstance(publisher_namespace, str) or not publisher_namespace:
+        return "registry entry missing publisher_namespace."
+    expected_prefix = f"{publisher_namespace}/"
+    if not canonical_name.startswith(expected_prefix):
+        return (
+            f"canonical_name '{canonical_name}' must start with '{expected_prefix}'."
+        )
+    return None
+
+
+def _cat_registry_non_active_block(
+    registry: Dict[str, Any], registry_entry: Dict[str, Any] | None
+) -> str | None:
+    if not isinstance(registry_entry, dict):
+        return None
+
+    publisher_namespace = registry_entry.get("publisher_namespace")
+    if not isinstance(publisher_namespace, str) or not publisher_namespace:
+        return None
+
+    publisher_owners = registry.get("publisher_owners", {}) if isinstance(registry, dict) else {}
+    if not isinstance(publisher_owners, dict):
+        publisher_owners = {}
+    owner = publisher_owners.get(publisher_namespace)
+    owner_status = None
+    if isinstance(owner, dict):
+        owner_status = owner.get("status")
+    owner_status_str = str(owner_status or "MISSING")
+    if owner_status_str != "ACTIVE":
+        return f"publisher namespace '{publisher_namespace}' status {owner_status_str}"
+
+    entry_status_str = str(registry_entry.get("status") or "MISSING")
+    if entry_status_str != "ACTIVE":
+        return f"registry entry status {entry_status_str}"
+
+    return None
+
+
+def _verify_passport_cross_links(
+    *,
+    cat_def: Dict[str, Any],
+    registry_entry: Dict[str, Any] | None,
+    police_register: Dict[str, Any] | None,
+) -> tuple[str | None, str | None]:
+    if not isinstance(registry_entry, dict):
+        return (
+            "registry<->def",
+            "registry entry unavailable for passport cross-verification.",
+        )
+
+    if not bool(registry_entry.get("passport_required")):
+        return None, None
+
+    def_passport_id = cat_def.get("passport_id")
+    registry_passport_id = registry_entry.get("passport_id")
+    if not isinstance(def_passport_id, str) or not def_passport_id:
+        return "registry<->def", "definition passport_id missing."
+    if not isinstance(registry_passport_id, str) or not registry_passport_id:
+        return "registry<->def", "registry passport_id missing."
+    if registry_passport_id != def_passport_id:
+        return (
+            "registry<->def",
+            f"registry passport_id '{registry_passport_id}' != definition '{def_passport_id}'.",
+        )
+
+    passports = []
+    if isinstance(police_register, dict):
+        raw_passports = police_register.get("passports", []) or []
+        if isinstance(raw_passports, list):
+            passports = raw_passports
+    passport = next(
+        (
+            p
+            for p in passports
+            if isinstance(p, dict)
+            and str(p.get("passport_id", "")) == registry_passport_id
+        ),
+        None,
+    )
+    if passport is None:
+        return (
+            "police<->registry",
+            f"passport '{registry_passport_id}' not found in police register.",
+        )
+
+    registry_canonical = str(cat_def.get("canonical_name", "") or "")
+    police_canonical = passport.get("canonical_name")
+    if str(police_canonical or "") != registry_canonical:
+        return (
+            "police<->registry",
+            f"police canonical_name '{police_canonical}' != registry '{registry_canonical}'.",
+        )
+
+    police_cat_id = passport.get("cat_id")
+    if police_cat_id is not None and str(police_cat_id) != str(cat_def.get("cat_id", "")):
+        return (
+            "police<->def",
+            f"police cat_id '{police_cat_id}' != definition '{cat_def.get('cat_id')}'.",
+        )
+
+    return None, None
+
+
+def _cats_demo_stub_output(cat_id: str, payload: Any) -> Dict[str, Any]:
+    if cat_id == "RGPT-CAT-01":
+        return {
+            "decision": "ALLOW",
+            "reasons": ["demo-stub"],
+            "input": payload,
+        }
+    if cat_id == "RGPT-CAT-02":
+        return {"summary": "ledger-summary-demo", "input": payload}
+    if cat_id == "RGPT-CAT-03":
+        return {"proposal": "proposal-demo", "input": payload}
+    return {"error": "unknown_cat_id_demo_stub", "input": payload}
+
+
+def _demo_deny_status(reason: Any) -> str | None:
+    return {
+        "expired": "EXPIRED",
+        "digest": "DIGEST_MISMATCH",
+        "registry": "REGISTRY_MISMATCH",
+        "passport": "PASSPORT_MISMATCH",
+    }.get(str(reason or "").strip().lower())
+
+
+def _run_cats_demo_execution(
+    contract: Dict[str, Any],
+    ctx: ReplayContext,
+    frozen_ts: datetime | None = None,
+) -> tuple[Dict[str, Any] | None, str | None]:
+    inputs = contract.get("replay", {}).get("inputs", {}) or {}
+    if inputs.get("source") != "cats-demo":
+        return None, None
+
+    now_utc = frozen_ts or datetime.now(timezone.utc)
+    cat_id = str(inputs.get("cat_id", "") or "")
+    payload_raw = inputs.get("payload_json", "{}")
+    demo_deny_reason = inputs.get("demo_deny")
+    demo_renew = bool(inputs.get("demo_renew"))
+    notes: List[str] = []
+
+    try:
+        payload = json.loads(payload_raw)
+    except Exception as exc:
+        payload = {"_raw": payload_raw}
+        notes.append(f"payload_json_parse_failed:{type(exc).__name__}")
+
+    repo_root = Path(__file__).resolve().parents[3]
+    cat_def_path = repo_root / "cats" / "definitions" / f"{cat_id}.json"
+    police_register_path = repo_root / "cats" / "police_register.demo.json"
+    registry_index_path = repo_root / "cats" / "registry_index.json"
+
+    canonical_name = None
+    passport_status = None
+    passport_expires = None
+    passport_bundle_digest = None
+    computed_bundle_digest = None
+    allowed_side_effects_declared: List[str] = []
+    allowed_side_effects_effective: List[str] = ["read_only"]
+    verification_ok = False
+    passport_required = False
+    registry_entry = None
+    passport: Dict[str, Any] | None = None
+    register: Dict[str, Any] | None = None
+    passport_verification_status = "MISSING"
+    passport_verification_note = "Passport verification did not run."
+
+    failure_status: str | None = None
+    failure_note: str | None = None
+
+    def record_failure(
+        status: str, note: str, internal_note: str | None = None
+    ) -> None:
+        nonlocal failure_status, failure_note
+        if internal_note:
+            notes.append(internal_note)
+        if failure_status is None:
+            failure_status = status
+            failure_note = note
+
+    try:
+        cat_bytes = cat_def_path.read_bytes()
+        computed_bundle_digest = hashlib.sha256(cat_bytes).hexdigest()
+        cat_def = json.loads(cat_bytes.decode("utf-8"))
+        canonical_name = cat_def.get("canonical_name")
+        allowed_side_effects_declared = list(
+            cat_def.get("allowed_side_effects", []) or []
+        )
+        passport_required = bool(cat_def.get("passport_required"))
+        passport_id = cat_def.get("passport_id")
+
+        try:
+            registry_index = read_json(str(registry_index_path))
+            registry_error = _verify_cat_registry_entry(
+                registry_index, canonical_name, cat_def.get("cat_id")
+            )
+            if registry_error:
+                record_failure(
+                    "PASSPORT_MISMATCH",
+                    f"Passport cross-verification failed (registry<->def): {registry_error}",
+                    "registry_mismatch",
+                )
+            registry_entry = _get_cat_registry_record(registry_index, canonical_name)
+            registry_binding_error = _verify_cat_registry_namespace_binding(
+                registry_entry, canonical_name
+            )
+            if registry_binding_error:
+                record_failure(
+                    "PASSPORT_MISMATCH",
+                    (
+                        "Passport cross-verification failed (registry<->def): "
+                        f"{registry_binding_error}"
+                    ),
+                    "registry_mismatch",
+                )
+            registry_non_active = _cat_registry_non_active_block(
+                registry_index, registry_entry
+            )
+            if registry_non_active:
+                record_failure(
+                    "REGISTRY_NOT_ACTIVE",
+                    f"Registry not active: {registry_non_active}. Side effects downgraded to read_only.",
+                    "registry_not_active",
+                )
+        except FileNotFoundError as exc:
+            record_failure(
+                "PASSPORT_MISMATCH",
+                f"Passport cross-verification failed (registry<->def): registry missing: {exc.filename}",
+                f"registry_missing:{exc.filename}",
+            )
+        except Exception as exc:
+            record_failure(
+                "PASSPORT_MISMATCH",
+                f"Passport cross-verification failed (registry<->def): {type(exc).__name__}",
+                f"registry_exception:{type(exc).__name__}:{exc}",
+            )
+
+        if not isinstance(canonical_name, str) or not re.fullmatch(
+            r"[a-z0-9-]+/[a-z0-9-]+", canonical_name
+        ):
+            record_failure(
+                "INVALID_NAME",
+                "CAT canonical_name is invalid.",
+                "canonical_name_invalid",
+            )
+
+        register = read_json(str(police_register_path))
+        passports = register.get("passports", []) or []
+        cross_link, cross_link_detail = _verify_passport_cross_links(
+            cat_def=cat_def,
+            registry_entry=registry_entry,
+            police_register=register,
+        )
+        if cross_link:
+            record_failure(
+                "PASSPORT_MISMATCH",
+                f"Passport cross-verification failed ({cross_link}): {cross_link_detail}",
+                f"passport_mismatch:{cross_link}",
+            )
+        if passport_required:
+            if not passport_id:
+                record_failure(
+                    "MISSING",
+                    "CAT definition missing passport_id.",
+                    "passport_id_missing",
+                )
+            passport = next(
+                (
+                    p
+                    for p in passports
+                    if str(p.get("passport_id", "")) == str(passport_id)
+                ),
+                None,
+            )
+            if passport is None:
+                record_failure(
+                    "MISSING",
+                    "Passport not found in police register.",
+                    "passport_missing",
+                )
+            else:
+                passport_status = passport.get("status")
+                passport_expires = passport.get("expires_at_utc")
+                passport_bundle_digest = passport.get("bundle_digest")
+                if passport_status != "ACTIVE":
+                    if passport_status == "REVOKED":
+                        record_failure(
+                            "REVOKED",
+                            "Passport status REVOKED.",
+                            "passport_revoked",
+                        )
+                    elif passport_status == "SUSPENDED":
+                        record_failure(
+                            "SUSPENDED",
+                            "Passport status SUSPENDED.",
+                            "passport_suspended",
+                        )
+                    else:
+                        record_failure(
+                            "REVOKED",
+                            f"Passport status {passport_status or 'MISSING'}.",
+                            "passport_not_active",
+                        )
+                expires_dt = _parse_utc_datetime(passport_expires)
+                if expires_dt is None:
+                    record_failure(
+                        "EXPIRED",
+                        "Passport expiry invalid.",
+                        "passport_expiry_invalid",
+                    )
+                elif expires_dt <= now_utc:
+                    record_failure(
+                        "EXPIRED",
+                        "Passport expired.",
+                        "passport_expired",
+                    )
+                if passport_bundle_digest != computed_bundle_digest:
+                    record_failure(
+                        "DIGEST_MISMATCH",
+                        "Passport bundle_digest does not match definition.",
+                        "bundle_digest_mismatch",
+                    )
+        else:
+            passport = None
+
+        verification_ok = failure_status is None
+        if verification_ok:
+            passport_verification_status = "OK"
+            passport_verification_note = (
+                "Passport verified."
+                if passport_required
+                else "Passport not required."
+            )
+            allowed_side_effects_effective = allowed_side_effects_declared
+        else:
+            passport_verification_status = str(failure_status)
+            passport_verification_note = str(failure_note)
+    except FileNotFoundError as exc:
+        record_failure(
+            "MISSING",
+            f"Required verification file missing: {exc.filename}",
+            f"missing_file:{exc.filename}",
+        )
+    except Exception as exc:  # pragma: no cover - demo safety fallback
+        record_failure(
+            "MISSING",
+            f"Verification exception: {type(exc).__name__}",
+            f"verification_exception:{type(exc).__name__}:{exc}",
+        )
+
+    forced_status = _demo_deny_status(demo_deny_reason)
+    if forced_status:
+        verification_ok = False
+        passport_verification_status = forced_status
+        passport_verification_note = f"Forced demo denial: {str(demo_deny_reason).strip().lower()}"
+        allowed_side_effects_effective = ["read_only"]
+        notes.append(f"forced_demo_denial:{str(demo_deny_reason).strip().lower()}")
+    elif demo_deny_reason not in (None, ""):
+        notes.append(f"ignored_invalid_demo_deny:{demo_deny_reason}")
+
+    primary_bundle_digest = passport_bundle_digest or computed_bundle_digest
+    renewal_request_path: str | None = None
+    renewal_request_obj: Dict[str, Any] | None = None
+
+    if demo_renew:
+        if forced_status == "EXPIRED":
+            renewal_request_obj = _cats_demo_renewal_request(
+                cat_id=cat_id,
+                canonical_name=canonical_name,
+                passport=passport,
+                bundle_digest=primary_bundle_digest,
+                police_register=register,
+                reason="expired",
+            )
+        elif passport_verification_status == "EXPIRED":
+            renewal_request_obj = _cats_demo_renewal_request(
+                cat_id=cat_id,
+                canonical_name=canonical_name,
+                passport=passport,
+                bundle_digest=primary_bundle_digest,
+                police_register=register,
+                reason="expired",
+            )
+        elif passport_verification_status == "OK":
+            eligible, renew_reason = _cats_demo_renewal_eligibility(
+                passport=passport,
+                police_register=register,
+                now_utc=now_utc,
+            )
+            if eligible and renew_reason:
+                renewal_request_obj = _cats_demo_renewal_request(
+                    cat_id=cat_id,
+                    canonical_name=canonical_name,
+                    passport=passport,
+                    bundle_digest=primary_bundle_digest,
+                    police_register=register,
+                    reason=renew_reason,
+                )
+            else:
+                notes.append("demo_renew_not_eligible_yet")
+
+        renewal_request_path = str(
+            Path(ctx.paths.evidence_dir) / "cats_demo_renewal_request.json"
+        )
+        if renewal_request_obj is None:
+            renewal_request_obj = _cats_demo_renewal_request(
+                cat_id=cat_id,
+                canonical_name=canonical_name,
+                passport=passport,
+                bundle_digest=primary_bundle_digest,
+                police_register=register,
+                reason="expiring_soon",
+            )
+            renewal_request_obj["eligible"] = False
+            renewal_request_obj["message"] = "Not eligible for renewal yet"
+        write_json(renewal_request_path, renewal_request_obj)
+
+    artifact = {
+        "artifact_type": "cats_demo_replay_execution",
+        "timestamp_utc": _utc_now_iso(frozen_ts),
+        "cat_id": cat_id,
+        "canonical_name": canonical_name,
+        "passport_verification": {
+            "status": passport_verification_status,
+            "note": passport_verification_note,
+            "expires_at_utc": passport_expires,
+            "bundle_digest": primary_bundle_digest,
+        },
+        "passport_verification_internal": {
+            "ok": verification_ok,
+            "status": passport_status,
+            "note": passport_verification_note,
+            "expires_at_utc": passport_expires,
+            "bundle_digest": passport_bundle_digest,
+            "bundle_digest_computed": computed_bundle_digest,
+            "notes": notes,
+        },
+        "allowed_side_effects_effective": allowed_side_effects_effective,
+    }
+    if demo_renew:
+        artifact["renewal_mode"] = True
+        artifact["renewal_eligible"] = bool(renewal_request_obj) and bool(
+            renewal_request_obj.get("eligible", True)
+        )
+        if artifact["renewal_eligible"] is False:
+            artifact["renewal_message"] = "Not eligible for renewal yet"
+        if renewal_request_path:
+            artifact["renewal_request_artifact_path"] = renewal_request_path
+    else:
+        artifact["output"] = _cats_demo_stub_output(cat_id, payload)
+    if allowed_side_effects_declared:
+        artifact["allowed_side_effects_declared"] = allowed_side_effects_declared
+
+    artifact_path = str(Path(ctx.paths.evidence_dir) / "cats_demo_artifact.json")
+    write_json(artifact_path, artifact)
+    return artifact, artifact_path
+
+
+def _print_cats_demo_artifact(
+    artifact: Dict[str, Any] | None, artifact_path: str | None
+) -> None:
+    if not artifact or not artifact_path:
+        return
+    print(f"CATS demo artifact: {artifact_path}")
+    print(json.dumps(artifact, indent=2, sort_keys=True))
 
 
 def _collector_stage(
@@ -333,6 +912,7 @@ def build_context(
     contract: Dict[str, Any], frozen_ts: datetime | None = None
 ) -> ReplayContext:
     r = contract["replay"]
+    inputs = r.get("inputs", {}) or {}
 
     cfg = ReplayConfig(
         target_execution_id=r.get("target_execution_id", ""),
@@ -350,16 +930,21 @@ def build_context(
     )
 
     if not evidence_dir:
+        evidence_execution_id = cfg.target_execution_id
+        if inputs.get("source") == "cats-demo":
+            cats_demo_cat_id = str(inputs.get("cat_id", "") or "").strip()
+            if cats_demo_cat_id:
+                evidence_execution_id = cats_demo_cat_id
         evidence_dir = _default_run_dir(
-            base_evidence_root, cfg.target_execution_id, frozen_ts
+            base_evidence_root, evidence_execution_id, frozen_ts
         )
     if not stage_reports_dir:
         stage_reports_dir = str(Path(evidence_dir) / "stage_reports")
 
     paths = ReplayPaths(
-        execution_ledger_path=r["inputs"].get("execution_ledger_path", ""),
-        decision_ledger_path=r["inputs"].get("decision_ledger_path", ""),
-        artifacts_manifest_path=r["inputs"].get("artifacts_manifest_path", ""),
+        execution_ledger_path=inputs.get("execution_ledger_path", ""),
+        decision_ledger_path=inputs.get("decision_ledger_path", ""),
+        artifacts_manifest_path=inputs.get("artifacts_manifest_path", ""),
         evidence_dir=evidence_dir,
         stage_reports_dir=stage_reports_dir,
         diff_report_path=_normalize_output_path(
@@ -407,6 +992,9 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
     begin_snapshot = collect_snapshot(ctx, files_root=snapshot_files_root)
     _ensure_dir(ctx.paths.evidence_dir)
     _ensure_dir(ctx.paths.stage_reports_dir)
+    cats_demo_artifact, cats_demo_artifact_path = _run_cats_demo_execution(
+        contract, ctx, frozen_ts
+    )
 
     collector = _collector_stage(ctx, frozen_ts)
     write_json(
@@ -449,6 +1037,10 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
         # STRICT snapshot drift gate (Phase-E3-F)
         if effective_runtime_mode == "STRICT":
             if bool(snapshot_drift.get("side_effects_detected")):
+                print(
+                    "Replay denied: strict snapshot drift detected.",
+                    file=sys.stderr,
+                )
                 write_json(
                     str(Path(ctx.paths.replay_result_path)),
                     {
@@ -458,7 +1050,11 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
                         "evidence_dir": ctx.paths.evidence_dir,
                         "drift_report": drift_report_dict,
                         "snapshot_drift": snapshot_drift,
+                        "cats_demo_artifact_path": cats_demo_artifact_path,
                     },
+                )
+                _print_cats_demo_artifact(
+                    cats_demo_artifact, cats_demo_artifact_path
                 )
                 return 2
     except Exception:
@@ -466,6 +1062,12 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
         drift_report_dict = {"mode": "UNKNOWN", "drift_class": "D0", "verdict": "PASS", "notes": "tracker_error"}
 
     if commissioner["decision"] != "ALLOW":
+        denial_reasons = commissioner.get("denial_reasons", [])
+        reasons_msg = ", ".join(str(x) for x in denial_reasons) or "unknown"
+        print(
+            f"Replay denied by commissioner gate: {reasons_msg}",
+            file=sys.stderr,
+        )
         write_json(
             str(Path(ctx.paths.replay_result_path)),
             {
@@ -475,8 +1077,10 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
                 "evidence_dir": ctx.paths.evidence_dir,
                 "drift_report": drift_report_dict,
                 "snapshot_drift": snapshot_drift,
+                "cats_demo_artifact_path": cats_demo_artifact_path,
             },
         )
+        _print_cats_demo_artifact(cats_demo_artifact, cats_demo_artifact_path)
         return 2
 
     write_json(
@@ -487,8 +1091,10 @@ def run(contract_path: str, mode_override: str | None = None) -> int:
             "evidence_dir": ctx.paths.evidence_dir,
             "drift_report": drift_report_dict,
             "snapshot_drift": snapshot_drift,
+            "cats_demo_artifact_path": cats_demo_artifact_path,
         },
     )
+    _print_cats_demo_artifact(cats_demo_artifact, cats_demo_artifact_path)
     return 0
 
 
@@ -504,9 +1110,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-
-
-
-
-
