@@ -17,14 +17,8 @@ export default function PublicLayout({
             <Link href="/cats/library" className="hover:underline">
               CATS Library
             </Link>
-            <Link href="/cats/create" className="hover:underline">
-              Create CAT
-            </Link>
-            <Link href="/cats/generator" className="hover:underline">
+            <Link href="/cats/generate" className="hover:underline">
               CATS Generator
-            </Link>
-            <Link href="/cats/reports" className="hover:underline">
-              CATS Reports
             </Link>
             <Link href="/workflows/builder" className="hover:underline">
               Workflow Builder
