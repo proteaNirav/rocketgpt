@@ -117,12 +117,6 @@ export default async function Header() {
           >
             CATS
           </Link>
-          <Link
-            href="/workflows/builder"
-            className="md:hidden rounded border border-gray-300 dark:border-neutral-700 px-3 py-1.5 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-800"
-          >
-            Workflow
-          </Link>
 
           {!user ? (
             <Link
