@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import { createApproval } from "@/lib/api/approvalsClient";
 import { getCatsForUi } from "@/lib/cats-for-ui";
 import { recordCatsUsage } from "@/lib/cats-usage";
 import { DynamicCatItem, saveDynamicCat } from "@/lib/cats-dynamic";
@@ -34,6 +36,7 @@ function makeDynamicId(): string {
 }
 
 export default function CreateCatWizard() {
+  const router = useRouter();
   const [step, setStep] = useState<Step>(1);
 
   const [name, setName] = useState("");
@@ -50,6 +53,8 @@ export default function CreateCatWizard() {
 
   const [tagsCsv, setTagsCsv] = useState("");
   const [savedCatId, setSavedCatId] = useState<string | null>(null);
+  const [submittingApproval, setSubmittingApproval] = useState(false);
+  const [submittedApprovalId, setSubmittedApprovalId] = useState<number | null>(null);
 
   const [catsVersion, setCatsVersion] = useState(0);
 
@@ -131,17 +136,23 @@ export default function CreateCatWizard() {
     });
   }
 
-  function save(): void {
+  function riskFromSideEffects(): "low" | "medium" | "high" {
+    if (sideEffects.includes("workflow_dispatch")) return "high";
+    if (sideEffects.includes("ledger_write")) return "medium";
+    return "low";
+  }
+
+  function buildAndSaveFinalCat(): DynamicCatItem | null {
     if (hasErrors) {
       publishNotification({
         level: "error",
         title: "Validation Failed",
         message: "Please fix the highlighted fields before saving.",
       });
-      return;
+      return null;
     }
 
-    const newCat: DynamicCatItem = {
+    const finalCat: DynamicCatItem = {
       ...preview,
       cat_id: makeDynamicId(),
       canonical_name: canonical.trim(),
@@ -151,19 +162,72 @@ export default function CreateCatWizard() {
       last_updated: new Date().toISOString(),
     };
 
-    const saved = saveDynamicCat(newCat);
+    const saved = saveDynamicCat(finalCat);
     recordCatsUsage({
       catId: saved.cat_id,
       canonicalName: saved.canonical_name,
       action: "save_dynamic",
     });
-
     setSavedCatId(saved.cat_id);
     publishNotification({
       level: "success",
       title: "CAT Saved",
       message: `${saved.cat_id} saved to local library.`,
     });
+    return saved;
+  }
+
+  function save(): void {
+    buildAndSaveFinalCat();
+  }
+
+  async function submitForApproval(): Promise<void> {
+    if (approvalMode === "not_required") {
+      publishNotification({
+        level: "info",
+        title: "Approval Not Required",
+        message: "This CAT is configured as not requiring approval.",
+      });
+      return;
+    }
+
+    const saved = buildAndSaveFinalCat();
+    if (!saved) return;
+
+    setSubmittingApproval(true);
+    try {
+      const risk_level = riskFromSideEffects();
+      const priority = approvalMode === "required" ? "high" : "normal";
+      const request_body = JSON.stringify({ cat: saved }, null, 2);
+
+      const created = await createApproval({
+        request_title: `CAT Approval: ${saved.name} (${saved.canonical_name})`,
+        request_type: "cats.submit",
+        requester: "user",
+        source: "cats-create-wizard",
+        priority,
+        risk_level,
+        request_body,
+        payload: request_body,
+      } as any);
+
+      setSubmittedApprovalId(created.id);
+      publishNotification({
+        level: "success",
+        title: "Submitted for Approval",
+        message: `Approval #${created.id} created.`,
+      });
+      router.push("/cats/approvals");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to submit approval.";
+      publishNotification({
+        level: "error",
+        title: "Submit Failed",
+        message,
+      });
+    } finally {
+      setSubmittingApproval(false);
+    }
   }
 
   return (
@@ -280,11 +344,30 @@ export default function CreateCatWizard() {
 
           <div className="flex flex-wrap gap-2">
             <button type="button" onClick={save} className="rounded bg-black px-3 py-1.5 text-sm text-white dark:bg-white dark:text-black">Save to Library</button>
+            {approvalMode !== "not_required" ? (
+              <button
+                type="button"
+                onClick={() => void submitForApproval()}
+                disabled={submittingApproval}
+                className="rounded border border-gray-300 px-3 py-1.5 text-sm disabled:opacity-50"
+              >
+                {submittingApproval ? "Submitting..." : "Submit for Approval"}
+              </button>
+            ) : null}
             <Link href="/cats/library" className="rounded border border-gray-300 px-3 py-1.5 text-sm">Go to CATS Library</Link>
           </div>
 
           {savedCatId ? (
             <p className="text-sm text-green-700 dark:text-green-300">Saved {savedCatId} to localStorage.</p>
+          ) : null}
+          {submittedApprovalId ? (
+            <p className="text-sm text-green-700 dark:text-green-300">
+              Submitted approval #{submittedApprovalId}. View it in{" "}
+              <Link href="/cats/approvals" className="underline">
+                Approvals / Inbox
+              </Link>
+              .
+            </p>
           ) : null}
         </section>
       ) : null}
@@ -296,3 +379,4 @@ export default function CreateCatWizard() {
     </div>
   );
 }
+
