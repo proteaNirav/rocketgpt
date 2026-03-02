@@ -1,15 +1,14 @@
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 import { NextRequest, NextResponse } from 'next/server'
-import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
+import { runtimeGuard } from '@/rgpt/runtime/runtime-guard'
 import * as Sentry from '@sentry/nextjs'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-export const runtime = "nodejs";
-
+export const runtime = 'nodejs'
 
 export async function POST(_req: NextRequest) {
-  await runtimeGuard(_req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
+  await runtimeGuard(_req, { permission: 'API_CALL' }) // TODO(S4): tighten permission per route
   try {
     const cookieStore = await cookies()
     let guestId = cookieStore.get('guest_id')?.value
@@ -40,7 +39,7 @@ export async function POST(_req: NextRequest) {
           remove: () => {},
         },
         global: { headers: { 'x-guest-id': guestId! } },
-      }
+      },
     )
 
     const { error } = await supabase.from('guests').insert({ id: guestId })
@@ -56,5 +55,3 @@ export async function POST(_req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'internal_error' }, { status: 500 })
   }
 }
-
-

@@ -47,15 +47,13 @@ export const TOOL_CATALOG: Record<string, ToolMeta> = {
 /** Build a URL for redirect tools by injecting goal/plan. */
 export function buildToolUrl(
   toolId: string,
-  params: { goal: string; plan?: Array<{ id: string; title: string }> }
+  params: { goal: string; plan?: Array<{ id: string; title: string }> },
 ): string | null {
   const meta = TOOL_CATALOG[toolId]
   if (!meta || meta.runMode !== 'redirect' || !meta.urlTemplate) return null
-  const planTitles = (params.plan || []).map(s => s.title).join(', ')
+  const planTitles = (params.plan || []).map((s) => s.title).join(', ')
   const enc = (x: string) => encodeURIComponent(x)
   return meta.urlTemplate
     .replace('{goal}', enc(params.goal || ''))
     .replace('{plan}', enc(planTitles || ''))
 }
-
-

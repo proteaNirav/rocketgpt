@@ -6,20 +6,18 @@
  */
 
 export interface PlannerEngineInput {
-  [key: string]: any;
+  [key: string]: any
 }
 
 export interface PlannerEngineResult {
-  [key: string]: any;
+  [key: string]: any
 }
 
-export async function runPlanner(
-  input: PlannerEngineInput
-): Promise<PlannerEngineResult> {
+export async function runPlanner(input: PlannerEngineInput): Promise<PlannerEngineResult> {
   // Stub implementation – non-breaking placeholder.
   return {
-    status: "stub",
-    message: "Planner engine is not yet fully wired. PhaseB placeholder.",
+    status: 'stub',
+    message: 'Planner engine is not yet fully wired. PhaseB placeholder.',
     received_input: input ?? null,
-  };
+  }
 }

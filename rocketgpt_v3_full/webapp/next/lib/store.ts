@@ -66,9 +66,7 @@ type State = {
   updateMsg: (id: string, patch: Partial<Msg>) => void
   setPlan: (p: Step[]) => void
   setDecision: (d: Decision | undefined) => void
-  setRecs: (
-    r: Recommendation[] | ((prev: Recommendation[]) => Recommendation[])
-  ) => void
+  setRecs: (r: Recommendation[] | ((prev: Recommendation[]) => Recommendation[])) => void
   setLoading: (v: boolean) => void
   setController: (c?: AbortController) => void
   reset: () => void
@@ -104,10 +102,7 @@ export const useChat = create<State>((set) => ({
   // allow both direct array & updater function
   setRecs: (r) =>
     set((s) => ({
-      recs:
-        typeof r === 'function'
-          ? (r as (p: Recommendation[]) => Recommendation[])(s.recs)
-          : r,
+      recs: typeof r === 'function' ? (r as (p: Recommendation[]) => Recommendation[])(s.recs) : r,
     })),
 
   setLoading: (v) => set({ loading: v }),
@@ -128,5 +123,3 @@ export const useChat = create<State>((set) => ({
   openRunner: (p) => set({ runnerOpen: true, selectedTool: p }),
   closeRunner: () => set({ runnerOpen: false, selectedTool: null }),
 }))
-
-

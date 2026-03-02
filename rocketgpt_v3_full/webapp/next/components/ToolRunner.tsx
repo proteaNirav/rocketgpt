@@ -50,7 +50,9 @@ export default function ToolRunner() {
       <div className="card p-5 w-[min(640px,94vw)] space-y-3">
         <div className="flex items-center justify-between">
           <div className="font-semibold text-lg">Run: {tool.toolId}</div>
-          <button className="text-sm text-muted" onClick={closeRunner}>Close</button>
+          <button className="text-sm text-muted" onClick={closeRunner}>
+            Close
+          </button>
         </div>
 
         <div className="text-sm">
@@ -84,5 +86,3 @@ export default function ToolRunner() {
     </div>
   )
 }
-
-

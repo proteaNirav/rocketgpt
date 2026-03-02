@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation'
 
 /**
  * RGPT-P1: Root page redirects to /home (chat workspace).
@@ -10,5 +10,5 @@ import { redirect } from "next/navigation";
  * if needed in a future phase.
  */
 export default function RootPage() {
-  redirect("/home");
+  redirect('/home')
 }

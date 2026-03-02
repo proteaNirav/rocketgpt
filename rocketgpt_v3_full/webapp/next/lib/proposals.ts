@@ -41,15 +41,7 @@ export async function fetchProposals(): Promise<Proposal[]> {
   return (data ?? []) as Proposal[]
 }
 
-export async function updateProposal(
-  id: string,
-  updates: Partial<Proposal>
-): Promise<void> {
-  const { error } = await supabase
-    .from('improvement_proposals')
-    .update(updates)
-    .eq('id', id)
+export async function updateProposal(id: string, updates: Partial<Proposal>): Promise<void> {
+  const { error } = await supabase.from('improvement_proposals').update(updates).eq('id', id)
   if (error) throw new Error(error.message)
 }
-
-

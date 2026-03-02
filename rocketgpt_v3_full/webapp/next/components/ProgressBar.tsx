@@ -1,4 +1,4 @@
-export default function ProgressBar({ value=0 }: { value?: number }) {
+export default function ProgressBar({ value = 0 }: { value?: number }) {
   return (
     <div className="w-full h-2 bg-ink/10 rounded-xl overflow-hidden">
       <div
@@ -8,5 +8,3 @@ export default function ProgressBar({ value=0 }: { value?: number }) {
     </div>
   )
 }
-
-

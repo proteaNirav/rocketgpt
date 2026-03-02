@@ -13,45 +13,40 @@
 // -----------------------------------------------
 
 export const ORCH_RUN_STATUSES = [
-  "created",
-  "planning",
-  "building",
-  "testing",
-  "completed",
-  "failed"
-] as const;
+  'created',
+  'planning',
+  'building',
+  'testing',
+  'completed',
+  'failed',
+] as const
 
-export type OrchestratorRunStatus = (typeof ORCH_RUN_STATUSES)[number];
+export type OrchestratorRunStatus = (typeof ORCH_RUN_STATUSES)[number]
 
 // -----------------------------------------------
 // Builder Step Status
 // -----------------------------------------------
 
-export const BUILDER_STEP_STATUSES = [
-  "pending",
-  "running",
-  "success",
-  "failed"
-] as const;
+export const BUILDER_STEP_STATUSES = ['pending', 'running', 'success', 'failed'] as const
 
-export type BuilderStepStatus = (typeof BUILDER_STEP_STATUSES)[number];
+export type BuilderStepStatus = (typeof BUILDER_STEP_STATUSES)[number]
 
 // -----------------------------------------------
 // Planner Plan Types (LLM output from Planner)
 // -----------------------------------------------
 
 export interface PlannerStep {
-  step_no: number;              // 1-based step sequence from planner
-  title: string;                // Short title, e.g. "Create settings toggle"
-  description: string;          // Detailed explanation of what to do
-  acceptance_criteria?: string; // Optional - what "done" means
-  depends_on?: number[];        // Optional dependency on other step numbers
+  step_no: number // 1-based step sequence from planner
+  title: string // Short title, e.g. "Create settings toggle"
+  description: string // Detailed explanation of what to do
+  acceptance_criteria?: string // Optional - what "done" means
+  depends_on?: number[] // Optional dependency on other step numbers
 }
 
 export interface PlannerPlan {
-  plan_title: string;           // e.g. "Add Dark Mode to Settings UI"
-  goal_summary: string;         // Short summary of overall goal
-  steps: PlannerStep[];         // Ordered planner steps
+  plan_title: string // e.g. "Add Dark Mode to Settings UI"
+  goal_summary: string // Short summary of overall goal
+  steps: PlannerStep[] // Ordered planner steps
 }
 
 // -----------------------------------------------
@@ -59,11 +54,11 @@ export interface PlannerPlan {
 // -----------------------------------------------
 
 export interface BuilderStepDefinition {
-  run_id: number;               // FK to orchestrator run (DB: rgpt_builder_steps.run_id)
-  planner_step_no: number;      // Planner step that this builder step belongs to
-  builder_step_no: number;      // 1-based sequence within planner step
-  title: string;                // Builder step title
-  instruction: string;          // Final instruction text sent to Builder LLM
+  run_id: number // FK to orchestrator run (DB: rgpt_builder_steps.run_id)
+  planner_step_no: number // Planner step that this builder step belongs to
+  builder_step_no: number // 1-based sequence within planner step
+  title: string // Builder step title
+  instruction: string // Final instruction text sent to Builder LLM
 }
 
 // -----------------------------------------------

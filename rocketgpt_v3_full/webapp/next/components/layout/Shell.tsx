@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import Sidebar from "./Sidebar";
+import Sidebar from './Sidebar'
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   return (
@@ -9,10 +9,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <Sidebar collapsed={false} onToggle={() => {}} />
 
       {/* MAIN CONTENT – full width */}
-      <div className="flex-1 px-4 py-4">
-        {children}
-      </div>
+      <div className="flex-1 px-4 py-4">{children}</div>
     </div>
-  );
+  )
 }
-

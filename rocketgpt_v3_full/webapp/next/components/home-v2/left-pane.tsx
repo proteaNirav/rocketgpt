@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
 export function HomeV2LeftPane() {
   const sessions = [
-    { id: "sess_1", title: "UI Fix Discussion", model: "gpt-5.1", updated: "2025-11-20" },
-    { id: "sess_2", title: "RLS Debugging", model: "gpt-4.1", updated: "2025-11-19" },
-    { id: "sess_3", title: "Workflow Planning", model: "gpt-5.1", updated: "2025-11-18" }
-  ];
+    { id: 'sess_1', title: 'UI Fix Discussion', model: 'gpt-5.1', updated: '2025-11-20' },
+    { id: 'sess_2', title: 'RLS Debugging', model: 'gpt-4.1', updated: '2025-11-19' },
+    { id: 'sess_3', title: 'Workflow Planning', model: 'gpt-5.1', updated: '2025-11-18' },
+  ]
 
   return (
     <div className="w-64 border-r border-border p-4 space-y-4 hidden lg:block">
@@ -30,5 +30,5 @@ export function HomeV2LeftPane() {
         ))}
       </div>
     </div>
-  );
+  )
 }

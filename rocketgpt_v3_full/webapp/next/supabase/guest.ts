@@ -18,15 +18,14 @@ export async function ensureGuest() {
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 90 // 90 days
+      maxAge: 60 * 60 * 24 * 90, // 90 days
     })
   } else {
     await supabase.rpc('touch_guest', {
       p_guest_id: guestId,
-      p_user_agent: (await headers()).get('user-agent') ?? null
+      p_user_agent: (await headers()).get('user-agent') ?? null,
     })
   }
 
   return guestId
 }
-

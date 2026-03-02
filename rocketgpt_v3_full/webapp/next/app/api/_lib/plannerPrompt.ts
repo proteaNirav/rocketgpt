@@ -47,20 +47,20 @@ FORMAT RESTRICTIONS
 - Output ONLY JSON (no prose, no markdown).
 - Maintain correct field names and structure.
 - If unsure, produce a safe minimal plan beginning with a clarification step.
-`;
+`
 
 export interface PlannerContext {
-  project?: string;
-  environment?: string;
-  repo_summary?: string;
-  constraints?: string[];
-  preferences?: string[];
+  project?: string
+  environment?: string
+  repo_summary?: string
+  constraints?: string[]
+  preferences?: string[]
 }
 
 export interface PlannerInput {
-  goal: string;
-  context?: PlannerContext;
-  history?: string[];
+  goal: string
+  context?: PlannerContext
+  history?: string[]
 }
 
 /**
@@ -68,68 +68,68 @@ export interface PlannerInput {
  * This is combined with PLANNER_SYSTEM_PROMPT at runtime.
  */
 export function buildPlannerUserPrompt(input: PlannerInput): string {
-  const lines: string[] = [];
+  const lines: string[] = []
 
-  const goal = input.goal?.trim() || "(no goal provided)";
-  const ctx = input.context ?? {};
-  const history = input.history ?? [];
+  const goal = input.goal?.trim() || '(no goal provided)'
+  const ctx = input.context ?? {}
+  const history = input.history ?? []
 
-  const project = ctx.project ?? "";
-  const environment = ctx.environment ?? "";
-  const repoSummary = ctx.repo_summary ?? "";
-  const constraints = ctx.constraints ?? [];
-  const preferences = ctx.preferences ?? [];
+  const project = ctx.project ?? ''
+  const environment = ctx.environment ?? ''
+  const repoSummary = ctx.repo_summary ?? ''
+  const constraints = ctx.constraints ?? []
+  const preferences = ctx.preferences ?? []
 
-  lines.push("GOAL:");
-  lines.push(goal);
-  lines.push("");
+  lines.push('GOAL:')
+  lines.push(goal)
+  lines.push('')
 
-  lines.push("CONTEXT:");
-  lines.push(`Project: ${project || "(none)"}`);
-  lines.push(`Environment: ${environment || "(none)"}`);
-  lines.push(`Repo Summary: ${repoSummary || "(none)"}`);
-  lines.push("");
+  lines.push('CONTEXT:')
+  lines.push(`Project: ${project || '(none)'}`)
+  lines.push(`Environment: ${environment || '(none)'}`)
+  lines.push(`Repo Summary: ${repoSummary || '(none)'}`)
+  lines.push('')
 
   if (constraints.length > 0) {
-    lines.push("Constraints:");
+    lines.push('Constraints:')
     for (const c of constraints) {
-      lines.push(`- ${c}`);
+      lines.push(`- ${c}`)
     }
-    lines.push("");
+    lines.push('')
   } else {
-    lines.push("Constraints:");
-    lines.push("- (none specified)");
-    lines.push("");
+    lines.push('Constraints:')
+    lines.push('- (none specified)')
+    lines.push('')
   }
 
   if (preferences.length > 0) {
-    lines.push("Preferences:");
+    lines.push('Preferences:')
     for (const p of preferences) {
-      lines.push(`- ${p}`);
+      lines.push(`- ${p}`)
     }
-    lines.push("");
+    lines.push('')
   } else {
-    lines.push("Preferences:");
-    lines.push("- (none specified)");
-    lines.push("");
+    lines.push('Preferences:')
+    lines.push('- (none specified)')
+    lines.push('')
   }
 
   if (history.length > 0) {
-    lines.push("HISTORY:");
+    lines.push('HISTORY:')
     for (const h of history) {
-      lines.push(`- ${h}`);
+      lines.push(`- ${h}`)
     }
-    lines.push("");
+    lines.push('')
   } else {
-    lines.push("HISTORY:");
-    lines.push("- (no prior history)");
-    lines.push("");
+    lines.push('HISTORY:')
+    lines.push('- (no prior history)')
+    lines.push('')
   }
 
   lines.push(
-    "Using the GOAL + CONTEXT + HISTORY, produce a PLAN that strictly follows the schema defined in the SYSTEM prompt."
-  );
-  lines.push("Return ONLY valid JSON.");
+    'Using the GOAL + CONTEXT + HISTORY, produce a PLAN that strictly follows the schema defined in the SYSTEM prompt.',
+  )
+  lines.push('Return ONLY valid JSON.')
 
-  return lines.join("\n");
+  return lines.join('\n')
 }

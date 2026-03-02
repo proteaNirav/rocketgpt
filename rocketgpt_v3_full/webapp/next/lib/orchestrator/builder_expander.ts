@@ -6,8 +6,8 @@
 //   - Persisting builder steps into rgpt_builder_steps
 //
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { PlannerPlan, PlannerStep, BuilderStepDefinition } from "./builder_state";
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { PlannerPlan, PlannerStep, BuilderStepDefinition } from './builder_state'
 
 // -----------------------------------------------
 // Pure expansion: PlannerPlan -> BuilderStepDefinition[]
@@ -23,25 +23,25 @@ import type { PlannerPlan, PlannerStep, BuilderStepDefinition } from "./builder_
  */
 export function expandPlannerPlanToBuilderSteps(
   runId: number,
-  plan: PlannerPlan
+  plan: PlannerPlan,
 ): BuilderStepDefinition[] {
-  const builderSteps: BuilderStepDefinition[] = [];
+  const builderSteps: BuilderStepDefinition[] = []
 
   for (const step of plan.steps) {
-    const builderStepNo = 1; // reserved for future multi-step expansion
+    const builderStepNo = 1 // reserved for future multi-step expansion
 
-    const instruction = buildInstructionForPlannerStep(runId, plan, step);
+    const instruction = buildInstructionForPlannerStep(runId, plan, step)
 
     builderSteps.push({
       run_id: runId,
       planner_step_no: step.step_no,
       builder_step_no: builderStepNo,
       title: step.title,
-      instruction
-    });
+      instruction,
+    })
   }
 
-  return builderSteps;
+  return builderSteps
 }
 
 /**
@@ -50,41 +50,41 @@ export function expandPlannerPlanToBuilderSteps(
 function buildInstructionForPlannerStep(
   runId: number,
   plan: PlannerPlan,
-  step: PlannerStep
+  step: PlannerStep,
 ): string {
   const dependsOnText =
     step.depends_on && step.depends_on.length > 0
-      ? `This step depends on successful completion of planner steps: ${step.depends_on.join(", ")}.`
-      : "This step has no explicit dependencies, but you should still respect the overall plan order.";
+      ? `This step depends on successful completion of planner steps: ${step.depends_on.join(', ')}.`
+      : 'This step has no explicit dependencies, but you should still respect the overall plan order.'
 
   const acceptanceText = step.acceptance_criteria
     ? step.acceptance_criteria
-    : "Follow best engineering practices and keep changes minimal, coherent, and testable.";
+    : 'Follow best engineering practices and keep changes minimal, coherent, and testable.'
 
   return [
-    "You are the Builder agent for RocketGPT.",
-    "",
+    'You are the Builder agent for RocketGPT.',
+    '',
     `Orchestrator Run ID: ${runId}`,
     `Overall Goal: ${plan.goal_summary}`,
-    "",
+    '',
     `Current Planner Step (${step.step_no}): ${step.title}`,
-    "",
-    "Step Description:",
+    '',
+    'Step Description:',
     step.description,
-    "",
-    "Dependencies:",
+    '',
+    'Dependencies:',
     dependsOnText,
-    "",
-    "Acceptance Criteria:",
+    '',
+    'Acceptance Criteria:',
     acceptanceText,
-    "",
-    "Output Requirements:",
-    "- Plan the exact file(s) to edit or create in the RocketGPT repo.",
-    "- Describe the change in clear, structured steps.",
-    "- Where possible, produce concrete code snippets or full replacements.",
-    "- Avoid making breaking changes to unrelated modules.",
-    "- Keep the output deterministic and easy to apply programmatically."
-  ].join("\n");
+    '',
+    'Output Requirements:',
+    '- Plan the exact file(s) to edit or create in the RocketGPT repo.',
+    '- Describe the change in clear, structured steps.',
+    '- Where possible, produce concrete code snippets or full replacements.',
+    '- Avoid making breaking changes to unrelated modules.',
+    '- Keep the output deterministic and easy to apply programmatically.',
+  ].join('\n')
 }
 
 // -----------------------------------------------
@@ -92,13 +92,13 @@ function buildInstructionForPlannerStep(
 // -----------------------------------------------
 
 type RgptBuilderStepInsert = {
-  run_id: number;
-  planner_step_no: number;
-  builder_step_no: number;
-  title: string;
-  instruction: string;
-  status?: "pending" | "running" | "success" | "failed";
-};
+  run_id: number
+  planner_step_no: number
+  builder_step_no: number
+  title: string
+  instruction: string
+  status?: 'pending' | 'running' | 'success' | 'failed'
+}
 
 /**
  * Persist builder steps into rgpt_builder_steps using a Supabase client.
@@ -107,12 +107,9 @@ type RgptBuilderStepInsert = {
  * - Returns the inserted rows from DB
  * - Throws Error on failure (to be handled by orchestrator API)
  */
-export async function saveBuilderSteps(
-  supabase: SupabaseClient,
-  steps: BuilderStepDefinition[]
-) {
+export async function saveBuilderSteps(supabase: SupabaseClient, steps: BuilderStepDefinition[]) {
   if (!steps.length) {
-    return [];
+    return []
   }
 
   const payload: RgptBuilderStepInsert[] = steps.map((s) => ({
@@ -121,19 +118,16 @@ export async function saveBuilderSteps(
     builder_step_no: s.builder_step_no,
     title: s.title,
     instruction: s.instruction,
-    status: "pending"
-  }));
+    status: 'pending',
+  }))
 
-  const { data, error } = await supabase
-    .from("rgpt_builder_steps")
-    .insert(payload)
-    .select();
+  const { data, error } = await supabase.from('rgpt_builder_steps').insert(payload).select()
 
   if (error) {
-    throw new Error(`Failed to insert builder steps: ${error.message}`);
+    throw new Error(`Failed to insert builder steps: ${error.message}`)
   }
 
-  return data;
+  return data
 }
 
 /**
@@ -145,8 +139,8 @@ export async function saveBuilderSteps(
 export async function createBuilderStepsForRun(
   supabase: SupabaseClient,
   runId: number,
-  plan: PlannerPlan
+  plan: PlannerPlan,
 ) {
-  const steps = expandPlannerPlanToBuilderSteps(runId, plan);
-  return await saveBuilderSteps(supabase, steps);
+  const steps = expandPlannerPlanToBuilderSteps(runId, plan)
+  return await saveBuilderSteps(supabase, steps)
 }

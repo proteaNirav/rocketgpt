@@ -28,5 +28,3 @@ export function getSupabase(): SupabaseClient {
  * instead of `getSupabase()`.
  */
 export const supabase = getSupabase()
-
-
