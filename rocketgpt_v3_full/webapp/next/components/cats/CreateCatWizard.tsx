@@ -69,10 +69,7 @@ export default function CreateCatWizard() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  const allCats = useMemo(() => {
-    void catsVersion;
-    return getCatsForUi();
-  }, [catsVersion]);
+  const allCats = useMemo(() => getCatsForUi(), [catsVersion]);
 
   const errors = useMemo(() => {
     const result: Partial<Record<"name" | "canonical" | "purpose" | "sideEffects", string>> = {};

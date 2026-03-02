@@ -1,4 +1,4 @@
-export type CatCatalogItem = {
+﻿export type CatCatalogItem = {
   cat_id: string;
   canonical_name: string;
   name: string;
@@ -306,3 +306,4 @@ export const SEED_CATS: CatCatalogItem[] = generated.map((item, index) => {
 if (SEED_CATS.length !== 100) {
   throw new Error(`Expected 100 seed CATS, got ${SEED_CATS.length}`);
 }
+

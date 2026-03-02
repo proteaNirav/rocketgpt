@@ -52,18 +52,9 @@ export default function CatsReportsDashboard() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  const cats = useMemo(() => {
-    void version;
-    return getCatsForUi();
-  }, [version]);
-  const usageEvents = useMemo(() => {
-    void version;
-    return loadCatsUsage();
-  }, [version]);
-  const workflowRuns = useMemo(() => {
-    void version;
-    return loadWorkflowRuns();
-  }, [version]);
+  const cats = useMemo(() => getCatsForUi(), [version]);
+  const usageEvents = useMemo(() => loadCatsUsage(), [version]);
+  const workflowRuns = useMemo(() => loadWorkflowRuns(), [version]);
 
   const usageWindowDays = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : null;
 

@@ -1,4 +1,4 @@
-import { makeDevPendingCat } from '@/lib/cats-dynamic';
+﻿import { makeDevPendingCat, upsertDynamicCat } from '@/lib/cats-dynamic';
 import { CatCatalogItem } from "@/lib/cats-seed";
 
 export type CatSuggestion = {
@@ -167,7 +167,7 @@ export function suggestCats(conversationText: string, seedCats: CatCatalogItem[]
 }
 
 
-export function createPendingCatsFromText(conversationText: string) {
+function createPendingCatsFromText(conversationText: string) {
   const t = conversationText.toLowerCase();
 
   // Very simple intent detection for demo (expand later)
@@ -191,4 +191,3 @@ export function createPendingCatsFromText(conversationText: string) {
   // keep 3–5
   return cats.slice(0, 5);
 }
-
