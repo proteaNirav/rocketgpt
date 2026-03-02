@@ -26,6 +26,9 @@ export default function PublicLayout({
             <Link href="/cats/reports" className="hover:underline">
               CATS Reports
             </Link>
+            <Link href="/cats/approvals" className="hover:underline">
+              Approvals
+            </Link>
             <Link href="/workflows/builder" className="hover:underline">
               Workflow Builder
             </Link>
