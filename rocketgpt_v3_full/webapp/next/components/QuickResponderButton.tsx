@@ -1,37 +1,35 @@
-'use client';
-import { useState } from "react";
-import { callEdge } from "@/lib/edgeClient";
-import { emitRateLimited } from "@/lib/ratelimitBus";
-import { isRateLimitError } from "@/lib/errors";
+'use client'
+import { useState } from 'react'
+import { callEdge } from '@/lib/edgeClient'
+import { emitRateLimited } from '@/lib/ratelimitBus'
+import { isRateLimitError } from '@/lib/errors'
 
 export default function QuickResponderButton() {
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState(false)
 
   async function run() {
-    setBusy(true);
+    setBusy(true)
     try {
-      const res = await callEdge("quick-responder", { prompt: "ping" });
-      console.log("OK:", res);
+      const res = await callEdge('quick-responder', { prompt: 'ping' })
+      console.log('OK:', res)
     } catch (e: any) {
       if (isRateLimitError(e)) {
         emitRateLimited({
-          message: "Quick Responder hit the rate limit.",
+          message: 'Quick Responder hit the rate limit.',
           retryAfter: e.retryAfter ?? e.rl?.retry_after_seconds,
           plan: e.rl?.limits?.plan_code,
-        });
+        })
       } else {
-        console.error("QuickResponder error", e);
+        console.error('QuickResponder error', e)
       }
     } finally {
-      setBusy(false);
+      setBusy(false)
     }
   }
 
   return (
     <button className="btn" disabled={busy} onClick={run}>
-      {busy ? "Workingâ€¦" : "Run Quick Responder"}
+      {busy ? 'Workingâ€¦' : 'Run Quick Responder'}
     </button>
-  );
+  )
 }
-
-

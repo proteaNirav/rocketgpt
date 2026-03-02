@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function SettingsPage() {
   return (
@@ -17,12 +17,10 @@ export default function SettingsPage() {
         "
       >
         <div>
-          <h2 className="text-sm font-semibold mb-2">
-            UI & Theme
-          </h2>
+          <h2 className="text-sm font-semibold mb-2">UI & Theme</h2>
           <p className="text-xs text-gray-600 dark:text-slate-300 mb-3">
-            Configure how RocketGPT looks. Choose between Light, Dark, or follow
-            your system settings.
+            Configure how RocketGPT looks. Choose between Light, Dark, or follow your system
+            settings.
           </p>
         </div>
 
@@ -46,8 +44,8 @@ export default function SettingsPage() {
       >
         <h2 className="text-sm font-semibold mb-2">Behaviour (placeholder)</h2>
         <p className="text-xs text-gray-600 dark:text-slate-300">
-          In a future iteration, this area will control how RocketGPT behaves:
-          default model, response length, tone, and safety level.
+          In a future iteration, this area will control how RocketGPT behaves: default model,
+          response length, tone, and safety level.
         </p>
       </section>
 
@@ -62,10 +60,10 @@ export default function SettingsPage() {
       >
         <h2 className="text-sm font-semibold mb-2">Advanced (placeholder)</h2>
         <p className="text-xs text-gray-600 dark:text-slate-300">
-          Reserved for admin-level toggles like enabling experimental models,
-          self-improve intensity, and integration flags.
+          Reserved for admin-level toggles like enabling experimental models, self-improve
+          intensity, and integration flags.
         </p>
       </section>
     </div>
-  );
+  )
 }

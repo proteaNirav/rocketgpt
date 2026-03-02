@@ -1,7 +1,7 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-  testDir: "./tests",
+  testDir: './tests',
   timeout: 30 * 1000,
   expect: {
     timeout: 5 * 1000,
@@ -9,27 +9,24 @@ export default defineConfig({
   fullyParallel: true,
   retries: 0,
   reporter: [
-    ["list"],
-    ["html", { outputFolder: process.env.PLAYWRIGHT_HTML_REPORT || "playwright-report" }],
+    ['list'],
+    ['html', { outputFolder: process.env.PLAYWRIGHT_HTML_REPORT || 'playwright-report' }],
   ],
   use: {
-    baseURL: "http://localhost:3000",
-    trace: "on-first-retry",
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
   },
   webServer: {
-    env: { RGPT_SAFE_MODE: "1", ...process.env },
-    command: "pnpm dev",
-    url: "http://localhost:3000",
+    env: { RGPT_SAFE_MODE: '1', ...process.env },
+    command: 'pnpm dev',
+    url: 'http://localhost:3000',
     reuseExistingServer: true,
     timeout: 120 * 1000,
   },
   projects: [
     {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
-});
-
-
-
+})

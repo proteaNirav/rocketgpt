@@ -7,23 +7,23 @@
 //   - Track llm_input, llm_output, and error_message
 //
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { BuilderStepStatus } from "./builder_state";
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { BuilderStepStatus } from './builder_state'
 
 // Shape of a builder step row as returned from Supabase
 export interface BuilderStepRow {
-  id: number;
-  run_id: number;
-  planner_step_no: number;
-  builder_step_no: number;
-  title: string;
-  instruction: string;
-  llm_input: string | null;
-  llm_output: string | null;
-  status: BuilderStepStatus;
-  error_message: string | null;
-  created_at: string;
-  updated_at: string;
+  id: number
+  run_id: number
+  planner_step_no: number
+  builder_step_no: number
+  title: string
+  instruction: string
+  llm_input: string | null
+  llm_output: string | null
+  status: BuilderStepStatus
+  error_message: string | null
+  created_at: string
+  updated_at: string
 }
 
 // -----------------------------------------------
@@ -32,28 +32,28 @@ export interface BuilderStepRow {
 
 export async function getNextPendingBuilderStep(
   supabase: SupabaseClient,
-  runId: number
+  runId: number,
 ): Promise<BuilderStepRow | null> {
   const { data, error } = await supabase
-    .from("rgpt_builder_steps")
-    .select("*")
-    .eq("run_id", runId)
-    .eq("status", "pending")
-    .order("planner_step_no", { ascending: true })
-    .order("builder_step_no", { ascending: true })
-    .order("id", { ascending: true })
-    .limit(1);
+    .from('rgpt_builder_steps')
+    .select('*')
+    .eq('run_id', runId)
+    .eq('status', 'pending')
+    .order('planner_step_no', { ascending: true })
+    .order('builder_step_no', { ascending: true })
+    .order('id', { ascending: true })
+    .limit(1)
 
   if (error) {
-    throw new Error(`Failed to fetch next pending builder step: ${error.message}`);
+    throw new Error(`Failed to fetch next pending builder step: ${error.message}`)
   }
 
   if (!data || data.length === 0) {
-    return null;
+    return null
   }
 
   // Supabase returns snake_case columns; they already match the interface
-  return data[0] as BuilderStepRow;
+  return data[0] as BuilderStepRow
 }
 
 // -----------------------------------------------
@@ -64,27 +64,27 @@ async function updateBuilderStepStatus(
   supabase: SupabaseClient,
   stepId: number,
   patch: Partial<{
-    status: BuilderStepStatus;
-    llm_input: string | null;
-    llm_output: string | null;
-    error_message: string | null;
-  }>
+    status: BuilderStepStatus
+    llm_input: string | null
+    llm_output: string | null
+    error_message: string | null
+  }>,
 ): Promise<BuilderStepRow> {
   const { data, error } = await supabase
-    .from("rgpt_builder_steps")
+    .from('rgpt_builder_steps')
     .update({
       ...patch,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
-    .eq("id", stepId)
+    .eq('id', stepId)
     .select()
-    .single();
+    .single()
 
   if (error) {
-    throw new Error(`Failed to update builder step ${stepId}: ${error.message}`);
+    throw new Error(`Failed to update builder step ${stepId}: ${error.message}`)
   }
 
-  return data as BuilderStepRow;
+  return data as BuilderStepRow
 }
 
 /**
@@ -92,9 +92,9 @@ async function updateBuilderStepStatus(
  */
 export async function markBuilderStepRunning(
   supabase: SupabaseClient,
-  stepId: number
+  stepId: number,
 ): Promise<BuilderStepRow> {
-  return updateBuilderStepStatus(supabase, stepId, { status: "running" });
+  return updateBuilderStepStatus(supabase, stepId, { status: 'running' })
 }
 
 /**
@@ -104,14 +104,14 @@ export async function markBuilderStepSuccess(
   supabase: SupabaseClient,
   stepId: number,
   llmInput: string,
-  llmOutput: string
+  llmOutput: string,
 ): Promise<BuilderStepRow> {
   return updateBuilderStepStatus(supabase, stepId, {
-    status: "success",
+    status: 'success',
     llm_input: llmInput,
     llm_output: llmOutput,
-    error_message: null
-  });
+    error_message: null,
+  })
 }
 
 /**
@@ -122,12 +122,12 @@ export async function markBuilderStepFailed(
   stepId: number,
   errorMessage: string,
   llmInput?: string,
-  llmOutput?: string
+  llmOutput?: string,
 ): Promise<BuilderStepRow> {
   return updateBuilderStepStatus(supabase, stepId, {
-    status: "failed",
+    status: 'failed',
     error_message: errorMessage,
     llm_input: llmInput ?? null,
-    llm_output: llmOutput ?? null
-  });
+    llm_output: llmOutput ?? null,
+  })
 }

@@ -1,15 +1,12 @@
-"use client";
+'use client'
 
-import React from "react";
+import React from 'react'
 
 export default function RightInspectorPane() {
   return (
     <aside className="h-full border-l border-slate-900/80 bg-slate-950/80 p-3 flex flex-col overflow-y-auto space-y-4">
-
       {/* Title */}
-      <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-        Inspector
-      </div>
+      <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">Inspector</div>
 
       {/* Environment card */}
       <InspectorCard title="Environment">
@@ -47,12 +44,10 @@ export default function RightInspectorPane() {
 
       {/* Footer */}
       <div className="pt-2 text-[10px] text-slate-600 border-t border-slate-900/70">
-        Inspector uses static mock data.  
-        Dynamic context binding will be added later.
+        Inspector uses static mock data. Dynamic context binding will be added later.
       </div>
-
     </aside>
-  );
+  )
 }
 
 /* Reusable inspector card */
@@ -64,7 +59,7 @@ function InspectorCard({ title, children }: { title: string; children: any }) {
       </div>
       <div className="space-y-1">{children}</div>
     </div>
-  );
+  )
 }
 
 /* Reusable item row */
@@ -74,6 +69,5 @@ function Item({ label, value }: { label: string; value: any }) {
       <span className="text-slate-500">{label}</span>
       <span className="text-slate-300">{value}</span>
     </div>
-  );
+  )
 }
-

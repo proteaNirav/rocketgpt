@@ -29,5 +29,3 @@ export async function logObservation(input: {
     console.warn('[obs] unexpected error:', e?.message || e)
   }
 }
-
-

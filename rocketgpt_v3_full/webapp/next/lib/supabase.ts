@@ -22,5 +22,3 @@ export function getSupabase(): SupabaseClient {
 
 /** Back-compat default export */
 export const supabase = getSupabase()
-
-

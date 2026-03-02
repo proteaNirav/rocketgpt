@@ -1,4 +1,4 @@
-import type { PlannerRequest } from '@/types/planner';
+import type { PlannerRequest } from '@/types/planner'
 
 export function getPlannerSystemPrompt(): string {
   return [
@@ -14,34 +14,34 @@ export function getPlannerSystemPrompt(): string {
     'Output Format:',
     '- You must ONLY return valid JSON matching the PlannerResponse schema.',
     '- Do not add commentary, markdown, or natural language outside the JSON.',
-  ].join('\n');
+  ].join('\n')
 }
 
 export function buildPlanningPrompt(req: PlannerRequest): string {
-  const lines: string[] = [];
+  const lines: string[] = []
 
-  lines.push('User Goal:');
-  lines.push(req.goal.trim());
-  lines.push('');
+  lines.push('User Goal:')
+  lines.push(req.goal.trim())
+  lines.push('')
 
   if (req.context) {
-    lines.push('Context:');
-    lines.push(req.context.trim());
-    lines.push('');
+    lines.push('Context:')
+    lines.push(req.context.trim())
+    lines.push('')
   }
 
   if (req.constraints) {
-    lines.push('Constraints:');
-    lines.push(JSON.stringify(req.constraints));
-    lines.push('');
+    lines.push('Constraints:')
+    lines.push(JSON.stringify(req.constraints))
+    lines.push('')
   }
 
   if (req.preferences) {
-    lines.push('Preferences:');
-    lines.push(JSON.stringify(req.preferences));
-    lines.push('');
+    lines.push('Preferences:')
+    lines.push(JSON.stringify(req.preferences))
+    lines.push('')
   }
 
-  lines.push('Now generate a structured plan as JSON (PlannerResponse).');
-  return lines.join('\n');
+  lines.push('Now generate a structured plan as JSON (PlannerResponse).')
+  return lines.join('\n')
 }

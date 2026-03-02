@@ -1,70 +1,70 @@
-"use client";
+'use client'
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from 'react'
 
-type SessionStatus = "active" | "expired";
+type SessionStatus = 'active' | 'expired'
 
 interface SessionRow {
-  id: string;
-  title: string;
-  model: string;
-  status: SessionStatus;
-  lastUpdated: string;
+  id: string
+  title: string
+  model: string
+  status: SessionStatus
+  lastUpdated: string
 }
 
 const MOCK_SESSIONS: SessionRow[] = [
   {
-    id: "1",
-    title: "UI Fix Discussion",
-    model: "gpt-4.1",
-    status: "active",
-    lastUpdated: "2025-11-20",
+    id: '1',
+    title: 'UI Fix Discussion',
+    model: 'gpt-4.1',
+    status: 'active',
+    lastUpdated: '2025-11-20',
   },
   {
-    id: "2",
-    title: "RLS Repair Debug",
-    model: "gpt-4.1",
-    status: "active",
-    lastUpdated: "2025-11-19",
+    id: '2',
+    title: 'RLS Repair Debug',
+    model: 'gpt-4.1',
+    status: 'active',
+    lastUpdated: '2025-11-19',
   },
   {
-    id: "3",
-    title: "Self-Improve Backlog",
-    model: "gpt-4.1-mini",
-    status: "expired",
-    lastUpdated: "2025-11-18",
+    id: '3',
+    title: 'Self-Improve Backlog',
+    model: 'gpt-4.1-mini',
+    status: 'expired',
+    lastUpdated: '2025-11-18',
   },
   {
-    id: "4",
-    title: "CORS Investigation",
-    model: "gpt-4.1",
-    status: "expired",
-    lastUpdated: "2025-11-17",
+    id: '4',
+    title: 'CORS Investigation',
+    model: 'gpt-4.1',
+    status: 'expired',
+    lastUpdated: '2025-11-17',
   },
-];
+]
 
 export default function SessionsPage() {
-  const [tab, setTab] = useState<"all" | "active" | "expired">("active");
-  const [search, setSearch] = useState("");
-  const [modelFilter, setModelFilter] = useState<string>("all");
+  const [tab, setTab] = useState<'all' | 'active' | 'expired'>('active')
+  const [search, setSearch] = useState('')
+  const [modelFilter, setModelFilter] = useState<string>('all')
 
   const filtered = useMemo(() => {
     return MOCK_SESSIONS.filter((s) => {
-      if (tab === "active" && s.status !== "active") return false;
-      if (tab === "expired" && s.status !== "expired") return false;
+      if (tab === 'active' && s.status !== 'active') return false
+      if (tab === 'expired' && s.status !== 'expired') return false
 
-      if (modelFilter !== "all" && s.model !== modelFilter) return false;
+      if (modelFilter !== 'all' && s.model !== modelFilter) return false
 
       if (search.trim()) {
-        const q = search.toLowerCase();
-        if (!s.title.toLowerCase().includes(q)) return false;
+        const q = search.toLowerCase()
+        if (!s.title.toLowerCase().includes(q)) return false
       }
 
-      return true;
-    });
-  }, [tab, search, modelFilter]);
+      return true
+    })
+  }, [tab, search, modelFilter])
 
-  const models = Array.from(new Set(MOCK_SESSIONS.map((s) => s.model)));
+  const models = Array.from(new Set(MOCK_SESSIONS.map((s) => s.model)))
 
   return (
     <div className="space-y-6">
@@ -82,20 +82,20 @@ export default function SessionsPage() {
         <div className="flex flex-wrap items-center gap-2">
           <TabButton
             label="Active"
-            isActive={tab === "active"}
-            onClick={() => setTab("active")}
-            count={MOCK_SESSIONS.filter((s) => s.status === "active").length}
+            isActive={tab === 'active'}
+            onClick={() => setTab('active')}
+            count={MOCK_SESSIONS.filter((s) => s.status === 'active').length}
           />
           <TabButton
             label="Expired"
-            isActive={tab === "expired"}
-            onClick={() => setTab("expired")}
-            count={MOCK_SESSIONS.filter((s) => s.status === "expired").length}
+            isActive={tab === 'expired'}
+            onClick={() => setTab('expired')}
+            count={MOCK_SESSIONS.filter((s) => s.status === 'expired').length}
           />
           <TabButton
             label="All"
-            isActive={tab === "all"}
-            onClick={() => setTab("all")}
+            isActive={tab === 'all'}
+            onClick={() => setTab('all')}
             count={MOCK_SESSIONS.length}
           />
         </div>
@@ -121,9 +121,7 @@ export default function SessionsPage() {
           {/* Model filter */}
           <div className="flex gap-3 md:items-end">
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">
-                Model
-              </label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Model</label>
               <select
                 className="h-8 rounded-lg border bg-background/60 px-2 text-sm outline-none"
                 value={modelFilter}
@@ -146,14 +144,14 @@ export default function SessionsPage() {
         <SessionsTable rows={filtered} />
       </section>
     </div>
-  );
+  )
 }
 
 interface TabButtonProps {
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-  count?: number;
+  label: string
+  isActive: boolean
+  onClick: () => void
+  count?: number
 }
 
 function TabButton({ label, isActive, onClick, count }: TabButtonProps) {
@@ -162,29 +160,29 @@ function TabButton({ label, isActive, onClick, count }: TabButtonProps) {
       type="button"
       onClick={onClick}
       className={[
-        "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+        'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
         isActive
-          ? "bg-primary text-primary-foreground border-primary"
-          : "bg-background/60 text-muted-foreground hover:bg-muted/40",
-      ].join(" ")}
+          ? 'bg-primary text-primary-foreground border-primary'
+          : 'bg-background/60 text-muted-foreground hover:bg-muted/40',
+      ].join(' ')}
     >
       <span>{label}</span>
-      {typeof count === "number" ? (
+      {typeof count === 'number' ? (
         <span
           className={[
-            "rounded-full px-1.5 text-[10px] font-semibold",
-            isActive ? "bg-primary-foreground/20" : "bg-muted",
-          ].join(" ")}
+            'rounded-full px-1.5 text-[10px] font-semibold',
+            isActive ? 'bg-primary-foreground/20' : 'bg-muted',
+          ].join(' ')}
         >
           {count}
         </span>
       ) : null}
     </button>
-  );
+  )
 }
 
 interface SessionsTableProps {
-  rows: SessionRow[];
+  rows: SessionRow[]
 }
 
 function SessionsTable({ rows }: SessionsTableProps) {
@@ -192,11 +190,9 @@ function SessionsTable({ rows }: SessionsTableProps) {
     return (
       <div className="flex min-h-[120px] flex-col items-center justify-center text-center text-sm text-muted-foreground">
         <p className="font-medium">No sessions found.</p>
-        <p className="text-xs">
-          Try adjusting search text, filters, or switching tabs.
-        </p>
+        <p className="text-xs">Try adjusting search text, filters, or switching tabs.</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -212,10 +208,7 @@ function SessionsTable({ rows }: SessionsTableProps) {
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr
-              key={row.id}
-              className="border-b last:border-0 hover:bg-muted/20 transition-colors"
-            >
+            <tr key={row.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
               <td className="px-3 py-2">{row.title}</td>
               <td className="px-3 py-2">{row.model}</td>
               <td className="px-3 py-2">
@@ -227,26 +220,25 @@ function SessionsTable({ rows }: SessionsTableProps) {
         </tbody>
       </table>
     </div>
-  );
+  )
 }
 
 function StatusBadge({ status }: { status: SessionStatus }) {
-  const base =
-    "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium";
+  const base = 'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium'
 
-  if (status === "active") {
+  if (status === 'active') {
     return (
-      <span className={base + " bg-emerald-500/10 text-emerald-400 border border-emerald-600/40"}>
+      <span className={base + ' bg-emerald-500/10 text-emerald-400 border border-emerald-600/40'}>
         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
         Active
       </span>
-    );
+    )
   }
 
   return (
-    <span className={base + " bg-amber-500/10 text-amber-300 border border-amber-500/40"}>
+    <span className={base + ' bg-amber-500/10 text-amber-300 border border-amber-500/40'}>
       <span className="h-1.5 w-1.5 rounded-full bg-amber-300" />
       Expired
     </span>
-  );
+  )
 }

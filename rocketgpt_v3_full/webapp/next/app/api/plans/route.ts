@@ -1,27 +1,22 @@
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-import { NextResponse } from "next/server";
-import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
-export const runtime = "nodejs";
-
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+import { NextResponse } from 'next/server'
+import { runtimeGuard } from '@/rgpt/runtime/runtime-guard'
+import { getSupabaseServerClient } from '@/lib/supabase/server'
+export const runtime = 'nodejs'
 
 export async function GET() {
-  const sb = await getSupabaseServerClient();
-  const { data, error } = await sb.from("rl_plans").select("*").order("monthly_price_inr");
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data);
+  const sb = await getSupabaseServerClient()
+  const { data, error } = await sb.from('rl_plans').select('*').order('monthly_price_inr')
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data)
 }
 
 export async function POST(req: Request) {
-  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-  const sb = await getSupabaseServerClient();
-  const body = await req.json();
-  const { error } = await sb.from("rl_plans").upsert(body);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ ok: true });
+  await runtimeGuard(req, { permission: 'API_CALL' }) // TODO(S4): tighten permission per route
+  const sb = await getSupabaseServerClient()
+  const body = await req.json()
+  const { error } = await sb.from('rl_plans').upsert(body)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ ok: true })
 }
-
-
-
-

@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { mockPrompts } from "./data/prompts.data";
+import { mockPrompts } from './data/prompts.data'
 
 export default function PromptsPage() {
   return (
@@ -27,12 +27,10 @@ export default function PromptsPage() {
               ))}
             </div>
 
-            <p className="text-xs text-gray-500 mt-3">
-              Updated: {prompt.updatedAt}
-            </p>
+            <p className="text-xs text-gray-500 mt-3">Updated: {prompt.updatedAt}</p>
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }

@@ -1,29 +1,24 @@
-"use client";
+'use client'
 
-import React from "react";
-import { useTheme } from "@/components/theme-provider";
+import React from 'react'
+import { useTheme } from '@/components/theme-provider'
 
 export function HeaderThemeToggle() {
-  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme()
 
   // Cycle: light -> dark -> system -> light
   const handleClick = () => {
-    if (theme === "light") {
-      setTheme("dark");
-    } else if (theme === "dark") {
-      setTheme("system");
+    if (theme === 'light') {
+      setTheme('dark')
+    } else if (theme === 'dark') {
+      setTheme('system')
     } else {
-      setTheme("light");
+      setTheme('light')
     }
-  };
+  }
 
-  const icon = resolvedTheme === "dark" ? "🌙" : "☀️";
-  const label =
-    theme === "system"
-      ? "System"
-      : theme === "dark"
-      ? "Dark"
-      : "Light";
+  const icon = resolvedTheme === 'dark' ? '🌙' : '☀️'
+  const label = theme === 'system' ? 'System' : theme === 'dark' ? 'Dark' : 'Light'
 
   return (
     <button
@@ -45,5 +40,5 @@ export function HeaderThemeToggle() {
       </span>
       <span>{label}</span>
     </button>
-  );
+  )
 }

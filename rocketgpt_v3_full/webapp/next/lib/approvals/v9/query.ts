@@ -1,12 +1,12 @@
-import type { ApprovalCategory, ApprovalPacket } from "./types";
-import { approvalStore } from "./store/inmemory-store";
+import type { ApprovalCategory, ApprovalPacket } from './types'
+import { approvalStore } from './store/inmemory-store'
 
 /**
  * Rebuild the deterministic key used by evaluator.ts
  * (must stay in sync with buildStoreKey in evaluator.ts).
  */
 function buildStoreKey(runId: string, step: number, category: ApprovalCategory) {
-  return `${runId}:${step}:${category}`;
+  return `${runId}:${step}:${category}`
 }
 
 /**
@@ -14,20 +14,20 @@ function buildStoreKey(runId: string, step: number, category: ApprovalCategory) 
  * Primarily for diagnostics / admin views.
  */
 export function getAllApprovals(): ApprovalPacket[] {
-  return approvalStore.getAll<ApprovalPacket>();
+  return approvalStore.getAll<ApprovalPacket>()
 }
 
 /**
  * Return all approvals for a given runId, sorted by (step, category).
  */
 export function getApprovalsForRun(runId: string): ApprovalPacket[] {
-  const all = approvalStore.getAll<ApprovalPacket>();
+  const all = approvalStore.getAll<ApprovalPacket>()
   return all
     .filter((p) => p.runId === runId)
     .sort((a, b) => {
-      if (a.step !== b.step) return a.step - b.step;
-      return a.category.localeCompare(b.category);
-    });
+      if (a.step !== b.step) return a.step - b.step
+      return a.category.localeCompare(b.category)
+    })
 }
 
 /**
@@ -37,8 +37,8 @@ export function getApprovalsForRun(runId: string): ApprovalPacket[] {
 export function getApprovalForStep(
   runId: string,
   step: number,
-  category: ApprovalCategory
+  category: ApprovalCategory,
 ): ApprovalPacket | null {
-  const key = buildStoreKey(runId, step, category);
-  return approvalStore.get<ApprovalPacket>(key);
+  const key = buildStoreKey(runId, step, category)
+  return approvalStore.get<ApprovalPacket>(key)
 }

@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import type { OrchestratorResponse, OrchestratorStage } from "./responseEnvelope";
-import type { ErrorEnvelope } from "./errorEnvelope";
+import { NextResponse } from 'next/server'
+import type { OrchestratorResponse, OrchestratorStage } from './responseEnvelope'
+import type { ErrorEnvelope } from './errorEnvelope'
 
 type JsonResponseInit = {
-  status?: number;
-  headers?: HeadersInit;
-};
+  status?: number
+  headers?: HeadersInit
+}
 
 /**
  * Build a JSON response for a successful orchestrator call,
@@ -16,7 +16,7 @@ export function respondSuccess<T>(
   stage: OrchestratorStage,
   data: T,
   correlationId: string,
-  init?: JsonResponseInit
+  init?: JsonResponseInit,
 ) {
   const body: OrchestratorResponse<T> = {
     success: true,
@@ -24,22 +24,22 @@ export function respondSuccess<T>(
     stage,
     data,
     error: null,
-  };
+  }
 
   const baseHeaders: HeadersInit = {
-    "x-correlation-id": correlationId,
-    "x-run-id": run_id,
-  };
+    'x-correlation-id': correlationId,
+    'x-run-id': run_id,
+  }
 
   const headers: HeadersInit = {
     ...baseHeaders,
     ...(init?.headers ?? {}),
-  };
+  }
 
   return NextResponse.json(body, {
     ...(init ?? {}),
     headers,
-  });
+  })
 }
 
 /**
@@ -51,7 +51,7 @@ export function respondError(
   stage: OrchestratorStage,
   error: ErrorEnvelope,
   correlationId: string,
-  init?: JsonResponseInit
+  init?: JsonResponseInit,
 ) {
   const body: OrchestratorResponse<null> = {
     success: false,
@@ -59,23 +59,23 @@ export function respondError(
     stage,
     data: null,
     error,
-  };
+  }
 
   const baseHeaders: HeadersInit = {
-    "x-correlation-id": correlationId,
-    "x-run-id": run_id,
-  };
+    'x-correlation-id': correlationId,
+    'x-run-id': run_id,
+  }
 
   const headers: HeadersInit = {
     ...baseHeaders,
     ...(init?.headers ?? {}),
-  };
+  }
 
-  const status = init?.status ?? 500;
+  const status = init?.status ?? 500
 
   return NextResponse.json(body, {
     ...(init ?? {}),
     status,
     headers,
-  });
+  })
 }

@@ -1,26 +1,26 @@
-"use client";
+'use client'
 
 export default function PlansPage() {
   const mockPlans = [
     {
-      code: "bronze",
-      name: "Bronze",
-      limits: "Basic usage • Suitable for single-user testing",
-      updatedAt: "2025-11-20",
+      code: 'bronze',
+      name: 'Bronze',
+      limits: 'Basic usage • Suitable for single-user testing',
+      updatedAt: '2025-11-20',
     },
     {
-      code: "silver",
-      name: "Silver",
-      limits: "Extended usage • Suitable for small teams",
-      updatedAt: "2025-11-19",
+      code: 'silver',
+      name: 'Silver',
+      limits: 'Extended usage • Suitable for small teams',
+      updatedAt: '2025-11-19',
     },
     {
-      code: "gold",
-      name: "Gold",
-      limits: "Full usage • Teams & advanced workflows",
-      updatedAt: "2025-11-15",
+      code: 'gold',
+      name: 'Gold',
+      limits: 'Full usage • Teams & advanced workflows',
+      updatedAt: '2025-11-15',
     },
-  ];
+  ]
 
   return (
     <div className="p-6">
@@ -34,9 +34,7 @@ export default function PlansPage() {
           >
             <h2 className="text-lg font-bold text-sky-400">{plan.name}</h2>
             <p className="text-gray-300 mt-2">{plan.limits}</p>
-            <p className="text-xs text-gray-500 mt-3">
-              Updated: {plan.updatedAt}
-            </p>
+            <p className="text-xs text-gray-500 mt-3">Updated: {plan.updatedAt}</p>
           </div>
         ))}
       </div>
@@ -46,5 +44,5 @@ export default function PlansPage() {
         <code className="ml-1 text-sky-300">/api/limits</code>
       </p>
     </div>
-  );
+  )
 }

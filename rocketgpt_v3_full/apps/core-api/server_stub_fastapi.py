@@ -23,31 +23,38 @@ app.add_middleware(
 
 # ---- Health -----------------------------------------------------------------
 
+
 @app.get("/")
 def root():
     return {"ok": True, "service": "rocketgpt-core-api", "docs": "/docs"}
+
 
 @app.get("/health")
 def health():
     return {"status": "healthy"}
 
+
 # ---- Schemas ----------------------------------------------------------------
+
 
 class Attachment(BaseModel):
     type: str
     name: Optional[str] = None
     url: Optional[str] = None
 
+
 class Message(BaseModel):
     role: str
     content: str
     attachments: Optional[List[Attachment]] = None
+
 
 class Step(BaseModel):
     id: str
     title: str
     detail: Optional[str] = None
     status: str = Field(default="pending")
+
 
 class Estimates(BaseModel):
     costINR: float = 0
@@ -56,10 +63,12 @@ class Estimates(BaseModel):
     confidence: float = 0.8
     assumptions: Optional[List[str]] = None
 
+
 class Decision(BaseModel):
     summary: str
     toolId: Optional[str] = None
     estimates: Estimates
+
 
 class Recommendation(BaseModel):
     toolId: str
@@ -70,23 +79,28 @@ class Recommendation(BaseModel):
     actions: Optional[List[Dict[str, Any]]] = None
     badges: Optional[Dict[str, Any]] = None
 
+
 class PlanRequest(BaseModel):
     goal: str
     context: Optional[Dict[str, Any]] = None
     history: Optional[List[Message]] = None
 
+
 class PlanResponse(BaseModel):
     plan: List[Step]
     decision: Decision
+
 
 class RecommendRequest(BaseModel):
     goal: str
     plan: Optional[List[Step]] = None
     preferences: Optional[Dict[str, Any]] = None
 
+
 class RecommendResponse(BaseModel):
     decision: Decision
     recommendations: List[Recommendation]
+
 
 class EstimatePath(BaseModel):
     toolId: str
@@ -94,14 +108,18 @@ class EstimatePath(BaseModel):
     steps: Optional[List[Step]] = None
     inputs: Optional[Dict[str, Any]] = None
 
+
 class EstimateRequest(BaseModel):
     path: EstimatePath
+
 
 class EstimateResponse(BaseModel):
     estimates: Estimates
     breakdown: Optional[List[Dict[str, Any]]] = None
 
+
 # ---- Endpoints --------------------------------------------------------------
+
 
 @app.post("/plan", response_model=PlanResponse)
 def plan(req: PlanRequest):
@@ -111,7 +129,11 @@ def plan(req: PlanRequest):
     if any(k in g for k in ["brochure", "flyer", "poster", "pamphlet"]):
         plan_steps = [
             Step(id="step1", title="Pick a brochure template", detail="Use Canva (A4)"),
-            Step(id="step2", title="Replace content", detail="Logo, tagline, bullets, CTA"),
+            Step(
+                id="step2",
+                title="Replace content",
+                detail="Logo, tagline, bullets, CTA",
+            ),
             Step(id="step3", title="Export PDF", detail="A4, high quality"),
         ]
         decision = Decision(
@@ -123,8 +145,16 @@ def plan(req: PlanRequest):
     # 2) Presentation / Slides
     elif any(k in g for k in ["presentation", "deck", "slides", "pitch deck"]):
         plan_steps = [
-            Step(id="step1", title="Choose a slides template", detail="Google Slides or Canva"),
-            Step(id="step2", title="Outline 5–7 slides", detail="Title, Problem, Solution, CTA"),
+            Step(
+                id="step1",
+                title="Choose a slides template",
+                detail="Google Slides or Canva",
+            ),
+            Step(
+                id="step2",
+                title="Outline 5–7 slides",
+                detail="Title, Problem, Solution, CTA",
+            ),
             Step(id="step3", title="Polish visuals", detail="Icons, brand colors"),
         ]
         decision = Decision(
@@ -134,11 +164,33 @@ def plan(req: PlanRequest):
         )
 
     # 3) Wiki / Documentation
-    elif any(k in g for k in ["wiki", "documentation", "knowledge base", "gitbook", "confluence", "docs site"]):
+    elif any(
+        k in g
+        for k in [
+            "wiki",
+            "documentation",
+            "knowledge base",
+            "gitbook",
+            "confluence",
+            "docs site",
+        ]
+    ):
         plan_steps = [
-            Step(id="step1", title="Pick a wiki tool", detail="Notion, GitBook, GitHub Wiki, or Confluence"),
-            Step(id="step2", title="Create structure", detail="Home page + sections (About, Setup, FAQ)"),
-            Step(id="step3", title="Draft & publish", detail="Add content, share link/permissions"),
+            Step(
+                id="step1",
+                title="Pick a wiki tool",
+                detail="Notion, GitBook, GitHub Wiki, or Confluence",
+            ),
+            Step(
+                id="step2",
+                title="Create structure",
+                detail="Home page + sections (About, Setup, FAQ)",
+            ),
+            Step(
+                id="step3",
+                title="Draft & publish",
+                detail="Add content, share link/permissions",
+            ),
         ]
         decision = Decision(
             summary="Use Notion or GitBook for a quick, shareable wiki.",
@@ -149,9 +201,21 @@ def plan(req: PlanRequest):
     # Default generic plan
     else:
         plan_steps = [
-            Step(id="step1", title="Clarify outcome", detail="Define deliverable + success metric"),
-            Step(id="step2", title="Pick the best free tool", detail="Based on speed/cost"),
-            Step(id="step3", title="Execute and export", detail="Deliver in preferred format"),
+            Step(
+                id="step1",
+                title="Clarify outcome",
+                detail="Define deliverable + success metric",
+            ),
+            Step(
+                id="step2",
+                title="Pick the best free tool",
+                detail="Based on speed/cost",
+            ),
+            Step(
+                id="step3",
+                title="Execute and export",
+                detail="Deliver in preferred format",
+            ),
         ]
         decision = Decision(
             summary="Pick a free tool and execute quickly.",
@@ -205,7 +269,17 @@ def recommend(req: RecommendRequest):
         ]
 
     # 3) Wiki / Documentation
-    elif any(k in g for k in ["wiki", "documentation", "knowledge base", "gitbook", "confluence", "docs site"]):
+    elif any(
+        k in g
+        for k in [
+            "wiki",
+            "documentation",
+            "knowledge base",
+            "gitbook",
+            "confluence",
+            "docs site",
+        ]
+    ):
         recs = [
             Recommendation(
                 toolId="notion",
@@ -259,7 +333,7 @@ def estimate(req: EstimateRequest):
     steps = len(req.path.steps) if req.path.steps else 3
     est = Estimates(costINR=0.0, minutes=minutes, steps=steps, confidence=0.78)
     breakdown = [
-        {"stepId": f"step{i+1}", "minutes": max(2, minutes // steps), "costINR": 0.0}
+        {"stepId": f"step{i + 1}", "minutes": max(2, minutes // steps), "costINR": 0.0}
         for i in range(steps)
     ]
     return EstimateResponse(estimates=est, breakdown=breakdown)

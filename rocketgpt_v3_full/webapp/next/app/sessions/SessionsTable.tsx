@@ -1,62 +1,62 @@
-"use client";
+'use client'
 
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react'
 
-type SessionStatus = "Active" | "Expired";
+type SessionStatus = 'Active' | 'Expired'
 
 interface SessionSummary {
-  id: string;
-  model: string;
-  createdAt: string;
-  lastActiveAt: string;
-  status: SessionStatus;
+  id: string
+  model: string
+  createdAt: string
+  lastActiveAt: string
+  status: SessionStatus
 }
 
 const statusClassName = (status: SessionStatus) => {
   switch (status) {
-    case "Active":
-      return "inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs font-medium";
-    case "Expired":
-      return "inline-flex items-center rounded-full bg-rose-100 text-rose-700 px-2 py-0.5 text-xs font-medium";
+    case 'Active':
+      return 'inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs font-medium'
+    case 'Expired':
+      return 'inline-flex items-center rounded-full bg-rose-100 text-rose-700 px-2 py-0.5 text-xs font-medium'
     default:
-      return "inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2 py-0.5 text-xs font-medium";
+      return 'inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2 py-0.5 text-xs font-medium'
   }
-};
+}
 
-type StatusFilter = "all" | "active" | "expired";
+type StatusFilter = 'all' | 'active' | 'expired'
 
 interface SessionsTableProps {
-  sessions: SessionSummary[];
-  error: string | null;
+  sessions: SessionSummary[]
+  error: string | null
 }
 
 export function SessionsTable({ sessions, error }: SessionsTableProps) {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
 
   const filteredSessions = useMemo(() => {
     return sessions.filter((session) => {
       if (search) {
-        const term = search.toLowerCase();
-        const inId = session.id.toLowerCase().includes(term);
-        const inModel = session.model.toLowerCase().includes(term);
+        const term = search.toLowerCase()
+        const inId = session.id.toLowerCase().includes(term)
+        const inModel = session.model.toLowerCase().includes(term)
         if (!inId && !inModel) {
-          return false;
+          return false
         }
       }
 
-      if (statusFilter === "active" && session.status !== "Active") {
-        return false;
+      if (statusFilter === 'active' && session.status !== 'Active') {
+        return false
       }
-      if (statusFilter === "expired" && session.status !== "Expired") {
-        return false;
+      if (statusFilter === 'expired' && session.status !== 'Expired') {
+        return false
       }
 
-      return true;
-    });
-  }, [sessions, search, statusFilter]);
+      return true
+    })
+  }, [sessions, search, statusFilter])
 
-  const hasSessions = sessions.length > 0;
+  const hasSessions = sessions.length > 0
 
   return (
     <section className="space-y-4">
@@ -101,47 +101,30 @@ export function SessionsTable({ sessions, error }: SessionsTableProps) {
           <tbody>
             {!hasSessions && !error ? (
               <tr>
-                <td
-                  colSpan={6}
-                  className="p-6 text-center text-sm text-muted-foreground"
-                >
-                  No sessions yet. New conversations will appear here once users
-                  start chatting with RocketGPT.
+                <td colSpan={6} className="p-6 text-center text-sm text-muted-foreground">
+                  No sessions yet. New conversations will appear here once users start chatting with
+                  RocketGPT.
                 </td>
               </tr>
             ) : filteredSessions.length === 0 ? (
               <tr>
-                <td
-                  colSpan={6}
-                  className="p-6 text-center text-sm text-muted-foreground"
-                >
-                  No sessions match your filters. Adjust the search or status
-                  filter to see more results.
+                <td colSpan={6} className="p-6 text-center text-sm text-muted-foreground">
+                  No sessions match your filters. Adjust the search or status filter to see more
+                  results.
                 </td>
               </tr>
             ) : (
               filteredSessions.map((session) => (
-                <tr
-                  key={session.id}
-                  className="border-t hover:bg-muted/60 transition-colors"
-                >
+                <tr key={session.id} className="border-t hover:bg-muted/60 transition-colors">
                   <td className="p-3 font-mono text-xs">{session.id}</td>
                   <td className="p-3">{session.model}</td>
-                  <td className="p-3 text-xs text-muted-foreground">
-                    {session.createdAt}
-                  </td>
-                  <td className="p-3 text-xs text-muted-foreground">
-                    {session.lastActiveAt}
-                  </td>
+                  <td className="p-3 text-xs text-muted-foreground">{session.createdAt}</td>
+                  <td className="p-3 text-xs text-muted-foreground">{session.lastActiveAt}</td>
                   <td className="p-3">
-                    <span className={statusClassName(session.status)}>
-                      {session.status}
-                    </span>
+                    <span className={statusClassName(session.status)}>{session.status}</span>
                   </td>
                   <td className="p-3 text-right">
-                    <button className="text-xs font-medium underline">
-                      View
-                    </button>
+                    <button className="text-xs font-medium underline">View</button>
                   </td>
                 </tr>
               ))
@@ -150,5 +133,5 @@ export function SessionsTable({ sessions, error }: SessionsTableProps) {
         </table>
       </div>
     </section>
-  );
+  )
 }
