@@ -6,6 +6,7 @@ import {
   insertForesightTask,
   loadPolicyRules,
 } from "@/lib/db/governanceRepo";
+import { submitApproval } from "@/lib/db/approvalsRepo";
 import { applyContainmentDecision, buildSimulationReport } from "@/lib/governance/containment-engine";
 import { buildForesightTask } from "@/lib/governance/foresight-engine";
 import { evaluatePolicyRules } from "@/lib/governance/policy-engine";
@@ -16,14 +17,6 @@ import type {
   GovernancePreflightResult,
 } from "@/lib/governance/types";
 
-type GovernanceAction = "allow" | "contain" | "block";
-
-function normalizeAction(level: 1 | 2 | 3): GovernanceAction {
-  if (level >= 3) return "block";
-  if (level >= 2) return "contain";
-  return "allow";
-}
-
 function hasRedLine(crps: { impactScore: number; reversibilityScore: number; riskDomains: string[] }): boolean {
   return (
     (crps.impactScore >= 90 && crps.reversibilityScore <= 20) ||
@@ -31,38 +24,9 @@ function hasRedLine(crps: { impactScore: number; reversibilityScore: number; ris
   );
 }
 
-function isPreflightInput(value: any): value is GovernancePreflightInput {
-  return (
-    value &&
-    typeof value === "object" &&
-    typeof value.runId === "string" &&
-    typeof value.workflowId === "string" &&
-    Array.isArray(value.nodes)
-  );
-}
-
-function toPostRunInput(value: any): GovernancePostRunInput | null {
-  if (
-    value &&
-    typeof value === "object" &&
-    typeof value.runId === "string" &&
-    typeof value.workflowId === "string" &&
-    typeof value.crpsId === "string" &&
-    Array.isArray(value.results)
-  ) {
-    return {
-      runId: value.runId,
-      workflowId: value.workflowId,
-      crpsId: value.crpsId,
-      results: value.results,
-    };
-  }
-  return null;
-}
-
 export async function evaluateGovernancePreflight(
   input: GovernancePreflightInput
-): Promise<GovernancePreflightResult & { decision: GovernanceAction; action: GovernanceAction; result: GovernanceAction }> {
+): Promise<GovernancePreflightResult> {
   const crps = computeCrpsSignature({
     workflowId: input.workflowId,
     nodes: input.nodes,
@@ -92,7 +56,6 @@ export async function evaluateGovernancePreflight(
     simulationMissing: simulationReport === null,
   });
   const containment = applyContainmentDecision(policyDecision);
-  const action = normalizeAction(containment.level);
 
   const containmentEvent = await insertContainmentEvent({
     runId: input.runId,
@@ -104,7 +67,7 @@ export async function evaluateGovernancePreflight(
     policyRuleName: policyDecision.matchedRuleName,
   });
 
-  await appendGovernanceLedgerEvent({
+  const riskLedger = await appendGovernanceLedgerEvent({
     eventType: "risk_eval",
     runId: input.runId,
     workflowId: input.workflowId,
@@ -121,10 +84,36 @@ export async function evaluateGovernancePreflight(
       containmentEventId: containmentEvent.id,
       policyDecision,
       containment,
+      evidenceRefs: [riskLedger.id],
     },
   });
 
   if (containment.level >= 2) {
+    const approval = await submitApproval({
+      request_type: "governance.containment",
+      request_title: `Governance L${containment.level} checkpoint: ${input.workflowId}`,
+      payload: {
+        runId: input.runId,
+        workflowId: input.workflowId,
+        crpsId: crps.crpsId,
+        level: containment.level,
+        explanation: containment.explanation,
+      },
+      priority: containment.level >= 3 ? "critical" : "high",
+      risk_level: containment.level >= 3 ? "high" : "medium",
+      requested_by: "governance-monitor",
+    });
+    await appendGovernanceLedgerEvent({
+      eventType: "containment_applied",
+      runId: input.runId,
+      workflowId: input.workflowId,
+      crpsId: crps.crpsId,
+      payload: {
+        approvalCheckpointId: approval.id,
+        containmentLevel: containment.level,
+      },
+    });
+
     const foresightTask = buildForesightTask(crps, containment);
     const created = await insertForesightTask({
       crpsId: foresightTask.crpsId,
@@ -152,21 +141,7 @@ export async function evaluateGovernancePreflight(
     policyDecision,
     containment,
     simulationReport,
-    decision: action,
-    action,
-    result: action,
   };
-}
-
-export async function governancePreflight(input: any): Promise<any | null> {
-  try {
-    if (!isPreflightInput(input)) {
-      return { decision: "allow", action: "allow", result: "allow" };
-    }
-    return await evaluateGovernancePreflight(input);
-  } catch {
-    return { decision: "allow", action: "allow", result: "allow" };
-  }
 }
 
 export async function logGovernancePostRun(input: GovernancePostRunInput): Promise<void> {
@@ -187,32 +162,3 @@ export async function logGovernancePostRun(input: GovernancePostRunInput): Promi
     },
   });
 }
-
-export async function governancePostRun(input: any): Promise<void> {
-  try {
-    const parsed = toPostRunInput(input);
-    if (parsed) {
-      await logGovernancePostRun(parsed);
-      return;
-    }
-
-    await appendGovernanceLedgerEvent({
-      eventType: "risk_eval",
-      runId: typeof input?.runId === "string" ? input.runId : null,
-      workflowId: typeof input?.workflowId === "string" ? input.workflowId : (typeof input?.route === "string" ? input.route : "orchestrator.run"),
-      crpsId: typeof input?.crpsId === "string" ? input.crpsId : null,
-      payload: {
-        phase: "post_run",
-        outcome: input?.outcome ?? "unknown",
-        http_status: input?.http_status ?? null,
-        response_summary: input?.response_summary ?? null,
-        when: input?.when ?? new Date().toISOString(),
-      },
-    });
-  } catch {
-    // best-effort
-  }
-}
-
-export const evaluateGovernancePostRun = governancePostRun;
-export const postRun = governancePostRun;
