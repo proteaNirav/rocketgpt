@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
-const ROUTE = "/api/orchestrator/builder/execute-all";
 
 // Safe-Mode detection (CI forces this ON; must short-circuit safely)
 function _isSafeMode(): boolean {
@@ -80,54 +79,6 @@ function summarizeBody(body: unknown): string {
   }
 }
 
-function guardFailResponse(err: any, route: string, runId?: string): NextResponse {
-  const message = typeof err?.message === "string" ? err.message : "Runtime guard blocked request.";
-  const name = typeof err?.name === "string" ? err.name : undefined;
-  const isUpstreamFetchFailure =
-    message.includes("fetch failed") || name === "TypeError";
-  if (isUpstreamFetchFailure) {
-    return NextResponse.json(
-      {
-        success: false,
-        route,
-        runId: runId ?? null,
-        error_code: "UPSTREAM_FETCH_FAILED",
-        message: "Upstream fetch failed",
-        details: { name, message },
-      },
-      { status: 502 }
-    );
-  }
-
-  const statusFromError = typeof err?.status === "number" ? err.status : undefined;
-  const status =
-    statusFromError === 400 || statusFromError === 401 || statusFromError === 403
-      ? statusFromError
-      : message.startsWith("RGPT_GUARD_BLOCK:")
-        ? 403
-        : message.includes("MISSING_DECISION_ID")
-          ? 400
-          : 403;
-
-  const error_code = message.includes("MISSING_DECISION_ID")
-    ? "MISSING_DECISION_ID"
-    : message.startsWith("RGPT_GUARD_BLOCK:")
-      ? "RGPT_GUARD_BLOCK"
-      : "RUNTIME_GUARD_FAILED";
-
-  return NextResponse.json(
-    {
-      success: false,
-      route,
-      runId: runId ?? null,
-      error_code,
-      message,
-      ...(err?.details !== undefined ? { details: err.details } : {}),
-    },
-    { status }
-  );
-}
-
 /**
  * Wrap a route handler with standardized error logging and response.
  */
@@ -156,29 +107,8 @@ async function withOrchestratorHandlerLocal(
       return NextResponse.json(safeErr, { status: statusCode });
     }
 
-    // 2) Upstream fetch/network failures
+    // 2) Generic error handling (existing behaviour)
     const errorPayload = normalizeError(err);
-    if (
-      errorPayload.message.includes("fetch failed") ||
-      errorPayload.name === "TypeError"
-    ) {
-      return NextResponse.json(
-        {
-          success: false,
-          route: ctx.route,
-          runId: ctx.runId ?? null,
-          error_code: "UPSTREAM_FETCH_FAILED",
-          message: "Upstream fetch failed",
-          details: {
-            name: errorPayload.name,
-            message: errorPayload.message,
-          },
-        },
-        { status: 502 }
-      );
-    }
-
-    // 3) Generic error handling (existing behaviour)
 
     // Server-side log for observability
     console.error(
@@ -214,6 +144,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "SAFE_MODE_ACTIVE" }, { status: 403 });
   }
 
+  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
+
   /**
    * Governance helpers (dynamic import to avoid build-time coupling).
    * Best-effort: never crash the route if governance logger fails.
@@ -241,18 +173,9 @@ export async function POST(req: NextRequest) {
   }
 
   return withOrchestratorHandlerLocal(
-    { route: ROUTE },
+    { route: "/api/orchestrator/builder/execute-all" },
     async () => {
-      const route = ROUTE;
-      const runIdFromGuardContext =
-        req.headers.get("x-rgpt-run-id") ??
-        new URL(req.url).searchParams.get("run_id") ??
-        undefined;
-      try {
-        await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-      } catch (err: any) {
-        return guardFailResponse(err, route, runIdFromGuardContext ?? undefined);
-      }
+      const route = "/api/orchestrator/builder/execute-all";
       // --- Internal auth ---
       const expected = process.env.RGPT_INTERNAL_KEY || "";
       const provided = req.headers.get("x-rgpt-internal") || "";
@@ -382,4 +305,3 @@ export async function POST(req: NextRequest) {
     }
   );
 }
-
