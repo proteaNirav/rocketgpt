@@ -33,6 +33,32 @@ function summarizeBody(body: unknown): string {
   }
 }
 
+/**
+ * Governance helpers (dynamic import to avoid build-time coupling).
+ * Best-effort: never crash the route if governance logger fails.
+ */
+async function governancePreflightBestEffort(input: any): Promise<any | null> {
+  try {
+    const mod: any = await import("@/lib/governance/governance-service");
+    const fn = mod?.governancePreflight ?? mod?.evaluateGovernancePreflight;
+    if (typeof fn !== "function") return null;
+    return await fn(input);
+  } catch {
+    return null;
+  }
+}
+
+async function governancePostRunBestEffort(input: any): Promise<void> {
+  try {
+    const mod: any = await import("@/lib/governance/governance-service");
+    const fn = mod?.governancePostRun ?? mod?.postRun ?? mod?.evaluateGovernancePostRun;
+    if (typeof fn !== "function") return;
+    await fn(input);
+  } catch {
+    // swallow
+  }
+}
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   // [CONTROL-PLANE] V1 gate (pass-through)
@@ -171,74 +197,141 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   return withOrchestratorHandler(
     { route: "/api/orchestrator/run/planner", runId },
     async () => {
-      console.log("[ORCH-RUN-PLANNER] Incoming request", {
-        route: "/api/orchestrator/run/planner",
+      const route = "/api/orchestrator/run/planner";
+      const bodySummary = summarizeBody(body);
+      const preflight = await governancePreflightBestEffort({
         runId,
-        bodySummary: summarizeBody(body),
+        route,
+        capability: "run-planner",
+        inputs_summary: "Orchestrator run/planner invoked.",
+        body_summary: bodySummary,
+      });
+
+      const rawAction =
+        preflight?.decision ??
+        preflight?.action ??
+        preflight?.result?.decision ??
+        preflight?.result?.action ??
+        preflight?.result ??
+        "allow";
+      const action = (typeof rawAction === "string" ? rawAction : "allow").toLowerCase();
+
+      if (["block", "deny", "contain"].includes(action)) {
+        await governancePostRunBestEffort({
+          runId,
+          route,
+          capability: "run-planner",
+          outcome: "blocked",
+          http_status: 403,
+          response_summary: "Blocked by Governance Preflight.",
+          preflight,
+          when: new Date().toISOString(),
+        });
+
+        return NextResponse.json(
+          {
+            success: false,
+            route,
+            runId,
+            error_code: "GOVERNANCE_BLOCKED",
+            message: "Blocked by Governance Preflight.",
+            action,
+            preflight,
+          },
+          { status: 403 }
+        );
+      }
+
+      console.log("[ORCH-RUN-PLANNER] Incoming request", {
+        route,
+        runId,
+        bodySummary,
       });
 
       const plannerBody = buildProxyBody(body, runId);
 
       const plannerUrl = `${INTERNAL_BASE_URL}/api/planner`;
-
-      const res = await fetch(plannerUrl, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          ...(INTERNAL_KEY
-            ? { "x-rgpt-internal": INTERNAL_KEY }
-            : {}),
-        },
-        body: JSON.stringify(plannerBody),
-      });
-
-      const text = await res.text();
-      let json: any = null;
+      let responseSummary = "[not executed]";
+      let httpStatus = 500;
+      let outcome = "error";
 
       try {
-        json = text ? JSON.parse(text) : null;
-      } catch {
-        // Not valid JSON, keep raw text
-      }
+        const res = await fetch(plannerUrl, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            ...(INTERNAL_KEY
+              ? { "x-rgpt-internal": INTERNAL_KEY }
+              : {}),
+          },
+          body: JSON.stringify(plannerBody),
+        });
 
-      console.log("[ORCH-RUN-PLANNER] Planner response", {
-        route: "/api/orchestrator/run/planner",
-        runId,
-        status: res.status,
-        ok: res.ok,
-        bodySummary: summarizeBody(json ?? text),
-      });
+        const text = await res.text();
+        let json: any = null;
 
-      if (!res.ok) {
+        try {
+          json = text ? JSON.parse(text) : null;
+        } catch {
+          // Not valid JSON, keep raw text
+        }
+
+        responseSummary = summarizeBody(json ?? text);
+        httpStatus = res.status;
+        outcome = res.ok ? "success" : "error";
+
+        console.log("[ORCH-RUN-PLANNER] Planner response", {
+          route,
+          runId,
+          status: res.status,
+          ok: res.ok,
+          bodySummary: responseSummary,
+        });
+
+        if (!res.ok) {
+          return NextResponse.json(
+            {
+              success: false,
+              message: "Planner call failed.",
+              route,
+              runId,
+              status: res.status,
+              plannerRaw: json ?? text,
+            },
+            { status: 502 }
+          );
+        }
+
         return NextResponse.json(
           {
-            success: false,
-            message: "Planner call failed.",
-            route: "/api/orchestrator/run/planner",
+            success: true,
+            message: "Planner plan generated via orchestrator run endpoint.",
+            route,
             runId,
-            status: res.status,
-            plannerRaw: json ?? text,
+            planner: json,
           },
-          { status: 502 }
+          { status: 200 }
         );
-      }
-
-      return NextResponse.json(
-        {
-          success: true,
-          message: "Planner plan generated via orchestrator run endpoint.",
-          route: "/api/orchestrator/run/planner",
+      } catch (err: any) {
+        responseSummary = summarizeBody(err?.message ?? err ?? "Unknown fetch error");
+        httpStatus = 500;
+        outcome = "error";
+        throw err;
+      } finally {
+        await governancePostRunBestEffort({
           runId,
-          planner: json,
-        },
-        { status: 200 }
-      );
+          route,
+          capability: "run-planner",
+          outcome,
+          http_status: httpStatus,
+          response_summary: responseSummary,
+          preflight,
+          when: new Date().toISOString(),
+        });
+      }
     }
   );
 }
-
-
-
 
 
 

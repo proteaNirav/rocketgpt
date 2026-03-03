@@ -135,7 +135,10 @@ async function exportResultsXlsx(results: WorkflowStepResult[]): Promise<void> {
 export default function WorkflowBuilder() {
   const searchParams = useSearchParams();
   const [catsVersion, setCatsVersion] = useState(0);
-  const cats = useMemo(() => getCatsForUi(), [catsVersion]);
+  const cats = useMemo(() => {
+    void catsVersion;
+    return getCatsForUi();
+  }, [catsVersion]);
   const demoMode = isDemoMode();
 
   const [workflowId, setWorkflowId] = useState(createWorkflowId());

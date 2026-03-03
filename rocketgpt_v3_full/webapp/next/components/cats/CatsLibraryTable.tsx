@@ -96,7 +96,10 @@ export default function CatsLibraryTable() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  const allCats = useMemo(() => getCatsForUi(), [catsVersion]);
+  const allCats = useMemo(() => {
+    void catsVersion;
+    return getCatsForUi();
+  }, [catsVersion]);
 
   const effectOptions = useMemo(() => {
     const set = new Set<SideEffect>();

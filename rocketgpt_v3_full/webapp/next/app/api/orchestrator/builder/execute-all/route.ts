@@ -67,6 +67,18 @@ function normalizeError(err: unknown): { message: string; name?: string } {
   }
 }
 
+function summarizeBody(body: unknown): string {
+  try {
+    const asString = typeof body === "string" ? body : JSON.stringify(body);
+    if (asString.length > 5000) {
+      return asString.slice(0, 5000) + "...[truncated]";
+    }
+    return asString;
+  } catch {
+    return "[unserializable body]";
+  }
+}
+
 /**
  * Wrap a route handler with standardized error logging and response.
  */
@@ -133,9 +145,37 @@ export async function POST(req: NextRequest) {
   }
 
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
+
+  /**
+   * Governance helpers (dynamic import to avoid build-time coupling).
+   * Best-effort: never crash the route if governance logger fails.
+   */
+  async function governancePreflightBestEffort(input: any): Promise<any | null> {
+    try {
+      const mod: any = await import("@/lib/governance/governance-service");
+      const fn = mod?.governancePreflight ?? mod?.evaluateGovernancePreflight;
+      if (typeof fn !== "function") return null;
+      return await fn(input);
+    } catch {
+      return null;
+    }
+  }
+
+  async function governancePostRunBestEffort(input: any): Promise<void> {
+    try {
+      const mod: any = await import("@/lib/governance/governance-service");
+      const fn = mod?.governancePostRun ?? mod?.postRun ?? mod?.evaluateGovernancePostRun;
+      if (typeof fn !== "function") return;
+      await fn(input);
+    } catch {
+      // swallow
+    }
+  }
+
   return withOrchestratorHandlerLocal(
     { route: "/api/orchestrator/builder/execute-all" },
     async () => {
+      const route = "/api/orchestrator/builder/execute-all";
       // --- Internal auth ---
       const expected = process.env.RGPT_INTERNAL_KEY || "";
       const provided = req.headers.get("x-rgpt-internal") || "";
@@ -187,27 +227,81 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      if (
-        typeof body.runId !== "number" ||
-        !Number.isFinite(body.runId) ||
-        body.runId <= 0
-      ) {
-        return NextResponse.json(
-          {
-            error: {
-              code: "INVALID_INPUT",
-              message: "Field 'runId' must be a positive number.",
+      const runId =
+        typeof body?.runId === "string"
+          ? body.runId
+          : typeof body?.run_id === "string"
+            ? body.run_id
+            : undefined;
+
+      let preflight: any = null;
+      let outcome = "error";
+      let httpStatus = 500;
+      let responseSummary = "[not executed]";
+
+      try {
+        preflight = await governancePreflightBestEffort({
+          runId,
+          route,
+          capability: "builder.execute_all",
+          inputs_summary: "Orchestrator builder/execute-all invoked.",
+          body_summary: summarizeBody(body),
+        });
+
+        const rawAction =
+          preflight?.decision ??
+          preflight?.action ??
+          preflight?.result?.decision ??
+          preflight?.result?.action ??
+          preflight?.result ??
+          "allow";
+        const action = (typeof rawAction === "string" ? rawAction : "allow").toLowerCase();
+
+        if (["block", "deny", "contain"].includes(action)) {
+          outcome = "blocked";
+          httpStatus = 403;
+          responseSummary = "Blocked by Governance Preflight.";
+
+          return NextResponse.json(
+            {
+              success: false,
+              route,
+              runId,
+              error_code: "GOVERNANCE_BLOCKED",
+              message: "Blocked by Governance Preflight.",
+              action,
+              preflight,
             },
-          },
-          { status: 400 }
-        );
+            { status: 403 }
+          );
+        }
+
+        // --- Normal execution path (stub) ---
+        const payload = {
+          success: true,
+          message: "execute-all allowed (safe-mode disabled).",
+        };
+        outcome = "success";
+        httpStatus = 200;
+        responseSummary = summarizeBody(payload);
+        return NextResponse.json(payload, { status: 200 });
+      } catch (err: any) {
+        outcome = "error";
+        httpStatus = 500;
+        responseSummary = summarizeBody(err?.message ?? err ?? "Unexpected error");
+        throw err;
+      } finally {
+        await governancePostRunBestEffort({
+          runId,
+          route,
+          capability: "builder.execute_all",
+          outcome,
+          http_status: httpStatus,
+          response_summary: responseSummary,
+          preflight,
+          when: new Date().toISOString(),
+        });
       }
-      // --- Normal execution path (stub) ---
-      return NextResponse.json(
-        { success: true, message: "execute-all allowed (safe-mode disabled)." },
-        { status: 200 }
-      );
     }
   );
 }
-

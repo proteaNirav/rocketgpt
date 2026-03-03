@@ -27,6 +27,32 @@ function summarizeBody(body: unknown): string {
   }
 }
 
+/**
+ * Governance helpers (dynamic import to avoid build-time coupling).
+ * Best-effort: never crash the route if governance logger fails.
+ */
+async function governancePreflightBestEffort(input: any): Promise<any | null> {
+  try {
+    const mod: any = await import("@/lib/governance/governance-service");
+    const fn = mod?.governancePreflight ?? mod?.evaluateGovernancePreflight;
+    if (typeof fn !== "function") return null;
+    return await fn(input);
+  } catch {
+    return null;
+  }
+}
+
+async function governancePostRunBestEffort(input: any): Promise<void> {
+  try {
+    const mod: any = await import("@/lib/governance/governance-service");
+    const fn = mod?.governancePostRun ?? mod?.postRun ?? mod?.evaluateGovernancePostRun;
+    if (typeof fn !== "function") return;
+    await fn(input);
+  } catch {
+    // swallow
+  }
+}
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
   const body = await safeParseJson(req);
@@ -67,69 +93,138 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   return withOrchestratorHandler(
     { route: "/api/orchestrator/run/tester", runId },
     async () => {
-      console.log("[ORCH-RUN-TESTER] Incoming request", {
-        route: "/api/orchestrator/run/tester",
+      const route = "/api/orchestrator/run/tester";
+      const bodySummary = summarizeBody(body);
+      const preflight = await governancePreflightBestEffort({
         runId,
-        bodySummary: summarizeBody(body),
+        route,
+        capability: "run-tester",
+        inputs_summary: "Orchestrator run/tester invoked.",
+        body_summary: bodySummary,
+      });
+
+      const rawAction =
+        preflight?.decision ??
+        preflight?.action ??
+        preflight?.result?.decision ??
+        preflight?.result?.action ??
+        preflight?.result ??
+        "allow";
+      const action = (typeof rawAction === "string" ? rawAction : "allow").toLowerCase();
+
+      if (["block", "deny", "contain"].includes(action)) {
+        await governancePostRunBestEffort({
+          runId,
+          route,
+          capability: "run-tester",
+          outcome: "blocked",
+          http_status: 403,
+          response_summary: "Blocked by Governance Preflight.",
+          preflight,
+          when: new Date().toISOString(),
+        });
+
+        return NextResponse.json(
+          {
+            success: false,
+            route,
+            runId,
+            error_code: "GOVERNANCE_BLOCKED",
+            message: "Blocked by Governance Preflight.",
+            action,
+            preflight,
+          },
+          { status: 403 }
+        );
+      }
+
+      console.log("[ORCH-RUN-TESTER] Incoming request", {
+        route,
+        runId,
+        bodySummary,
       });
 
       const testerBody = buildProxyBody(body, runId);
 
       const testerUrl = `${INTERNAL_BASE_URL}/api/tester/run`;
-
-      const res = await fetch(testerUrl, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          ...(INTERNAL_KEY
-            ? { "x-rgpt-internal": INTERNAL_KEY }
-            : {}),
-        },
-        body: JSON.stringify(testerBody),
-      });
-
-      const text = await res.text();
-      let json: any = null;
+      let responseSummary = "[not executed]";
+      let httpStatus = 500;
+      let outcome = "error";
 
       try {
-        json = text ? JSON.parse(text) : null;
-      } catch {
-        // Not valid JSON, keep raw text
-      }
+        const res = await fetch(testerUrl, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            ...(INTERNAL_KEY
+              ? { "x-rgpt-internal": INTERNAL_KEY }
+              : {}),
+          },
+          body: JSON.stringify(testerBody),
+        });
 
-      console.log("[ORCH-RUN-TESTER] Tester response", {
-        route: "/api/orchestrator/run/tester",
-        runId,
-        status: res.status,
-        ok: res.ok,
-        bodySummary: summarizeBody(json ?? text),
-      });
+        const text = await res.text();
+        let json: any = null;
 
-      if (!res.ok) {
+        try {
+          json = text ? JSON.parse(text) : null;
+        } catch {
+          // Not valid JSON, keep raw text
+        }
+
+        responseSummary = summarizeBody(json ?? text);
+        httpStatus = res.status;
+        outcome = res.ok ? "success" : "error";
+
+        console.log("[ORCH-RUN-TESTER] Tester response", {
+          route,
+          runId,
+          status: res.status,
+          ok: res.ok,
+          bodySummary: responseSummary,
+        });
+
+        if (!res.ok) {
+          return NextResponse.json(
+            {
+              success: false,
+              message: "Tester call failed.",
+              route,
+              runId,
+              status: res.status,
+              testerRaw: json ?? text,
+            },
+            { status: 502 }
+          );
+        }
+
         return NextResponse.json(
           {
-            success: false,
-            message: "Tester call failed.",
-            route: "/api/orchestrator/run/tester",
+            success: true,
+            message: "Tester run executed via orchestrator run endpoint.",
+            route,
             runId,
-            status: res.status,
-            testerRaw: json ?? text,
+            tester: json,
           },
-          { status: 502 }
+          { status: 200 }
         );
-      }
-
-      return NextResponse.json(
-        {
-          success: true,
-          message: "Tester run executed via orchestrator run endpoint.",
-          route: "/api/orchestrator/run/tester",
+      } catch (err: any) {
+        responseSummary = summarizeBody(err?.message ?? err ?? "Unknown fetch error");
+        httpStatus = 500;
+        outcome = "error";
+        throw err;
+      } finally {
+        await governancePostRunBestEffort({
           runId,
-          tester: json,
-        },
-        { status: 200 }
-      );
+          route,
+          capability: "run-tester",
+          outcome,
+          http_status: httpStatus,
+          response_summary: responseSummary,
+          preflight,
+          when: new Date().toISOString(),
+        });
+      }
     }
   );
 }
-
