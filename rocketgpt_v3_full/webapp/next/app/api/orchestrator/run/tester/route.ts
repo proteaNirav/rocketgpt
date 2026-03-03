@@ -111,6 +111,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
   const body = await safeParseJson(req);
   const runId = pickRunId(req, body);
+  const decisionIdHeader =
+    req.headers.get("x-rgpt-decision-id") ??
+    req.headers.get("X-RGPT-Decision-Id") ??
+    undefined;
   try {
     safeModeGuard("run-tester");
   } catch (err: any) {
@@ -210,6 +214,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           method: "POST",
           headers: {
             "content-type": "application/json",
+            ...(decisionIdHeader
+              ? { "x-rgpt-decision-id": decisionIdHeader }
+              : {}),
             ...(INTERNAL_KEY
               ? { "x-rgpt-internal": INTERNAL_KEY }
               : {}),
@@ -239,6 +246,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         });
 
         if (!res.ok) {
+          const upstreamStatus =
+            res.status >= 400 && res.status < 500 ? res.status : 502;
           return NextResponse.json(
             {
               success: false,
@@ -248,7 +257,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
               status: res.status,
               testerRaw: json ?? text,
             },
-            { status: 502 }
+            { status: upstreamStatus }
           );
         }
 
