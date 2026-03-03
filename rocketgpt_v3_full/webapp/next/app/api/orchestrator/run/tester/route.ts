@@ -9,10 +9,7 @@ export const runtime = "nodejs";
 
 
 const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
-const INTERNAL_BASE_URL =
-  process.env.RGPT_INTERNAL_BASE_URL ||
-  process.env.NEXT_PUBLIC_BASE_URL ||
-  "http://localhost:3000";
+const ROUTE = "/api/orchestrator/run/tester";
 
 function summarizeBody(body: unknown): string {
   try {
@@ -25,6 +22,54 @@ function summarizeBody(body: unknown): string {
   } catch {
     return "[unserializable body]";
   }
+}
+
+function guardFailResponse(err: any, route: string, runId?: string): NextResponse {
+  const message = typeof err?.message === "string" ? err.message : "Runtime guard blocked request.";
+  const name = typeof err?.name === "string" ? err.name : undefined;
+  const isUpstreamFetchFailure =
+    message.includes("fetch failed") || name === "TypeError";
+  if (isUpstreamFetchFailure) {
+    return NextResponse.json(
+      {
+        success: false,
+        route,
+        runId: runId ?? null,
+        error_code: "UPSTREAM_FETCH_FAILED",
+        message: "Upstream fetch failed",
+        details: { name, message },
+      },
+      { status: 502 }
+    );
+  }
+
+  const statusFromError = typeof err?.status === "number" ? err.status : undefined;
+  const status =
+    statusFromError === 400 || statusFromError === 401 || statusFromError === 403
+      ? statusFromError
+      : message.startsWith("RGPT_GUARD_BLOCK:")
+        ? 403
+        : message.includes("MISSING_DECISION_ID")
+          ? 400
+          : 403;
+
+  const error_code = message.includes("MISSING_DECISION_ID")
+    ? "MISSING_DECISION_ID"
+    : message.startsWith("RGPT_GUARD_BLOCK:")
+      ? "RGPT_GUARD_BLOCK"
+      : "RUNTIME_GUARD_FAILED";
+
+  return NextResponse.json(
+    {
+      success: false,
+      route,
+      runId: runId ?? null,
+      error_code,
+      message,
+      ...(err?.details !== undefined ? { details: err.details } : {}),
+    },
+    { status }
+  );
 }
 
 /**
@@ -54,7 +99,16 @@ async function governancePostRunBestEffort(input: any): Promise<void> {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
+  const origin = new URL(req.url).origin;
+  const baseUrl = process.env.INTERNAL_BASE_URL?.trim()
+    ? process.env.INTERNAL_BASE_URL.trim()
+    : origin;
+  const runIdFromGuardContext = pickRunId(req, {});
+  try {
+    await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
+  } catch (err: any) {
+    return guardFailResponse(err, ROUTE, runIdFromGuardContext);
+  }
   const body = await safeParseJson(req);
   const runId = pickRunId(req, body);
   try {
@@ -70,7 +124,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (INTERNAL_KEY) {
     if (!internalKeyHeader || internalKeyHeader !== INTERNAL_KEY) {
       console.warn("[ORCH-RUN-TESTER] Unauthorized access attempt.", {
-        route: "/api/orchestrator/run/tester",
+        route: ROUTE,
         runId,
       });
 
@@ -78,7 +132,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         {
           success: false,
           message: "Unauthorized orchestrator access.",
-          route: "/api/orchestrator/run/tester",
+          route: ROUTE,
           runId,
         },
         { status: 401 }
@@ -91,9 +145,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   return withOrchestratorHandler(
-    { route: "/api/orchestrator/run/tester", runId },
+    { route: ROUTE, runId },
     async () => {
-      const route = "/api/orchestrator/run/tester";
+      const route = ROUTE;
       const bodySummary = summarizeBody(body);
       const preflight = await governancePreflightBestEffort({
         runId,
@@ -146,7 +200,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
       const testerBody = buildProxyBody(body, runId);
 
-      const testerUrl = `${INTERNAL_BASE_URL}/api/tester/run`;
+      const testerUrl = `${baseUrl}/api/tester/run`;
       let responseSummary = "[not executed]";
       let httpStatus = 500;
       let outcome = "error";
