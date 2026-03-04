@@ -2,10 +2,13 @@
 
 import { useState, FormEvent } from "react";
 import { useHomeChat } from "./useHomeChat";
+import { isDemoMode } from "@/lib/demo-mode";
 
 export function CenterChatPane() {
-  const { messages, sending, error, sendMessage, resetKey } = useHomeChat();
+  const { messages, sending, error, sendMessage, resetKey, designModeEnabled, setDesignModeEnabled } =
+    useHomeChat();
   const [input, setInput] = useState("");
+  const demoMode = isDemoMode();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -18,18 +21,30 @@ export function CenterChatPane() {
   return (
     <section className="flex h-full min-h-[420px] flex-col gap-4">
       {/* Demo mode banner */}
-      <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
-        Demo mode: RocketGPT is running with placeholder responses for Phase-1 UAT.
-      </div>
+      {demoMode ? (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+          Demo mode (Supabase not configured) — deterministic seed-catalog chat suggestions are enabled.
+        </div>
+      ) : null}
 
       {/* Welcome / info card */}
       <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-sm">
-        <h2 className="text-sm font-semibold">
-          Welcome to the RocketGPT Home Chat Workspace.
-        </h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold">Welcome to the RocketGPT Home Chat Workspace.</h2>
+          <button
+            type="button"
+            onClick={() => setDesignModeEnabled(!designModeEnabled)}
+            className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+              designModeEnabled
+                ? "border-emerald-400/70 bg-emerald-500/20 text-emerald-100"
+                : "border-slate-600 bg-slate-800/50 text-slate-200"
+            }`}
+          >
+            Design Mode: {designModeEnabled ? "On" : "Off"}
+          </button>
+        </div>
         <p className="mt-1 text-xs text-muted-foreground">
-          Below you can send prompts to the demo orchestrator endpoint. The transcript is now live
-          and driven by the Home Chat hook.
+          Send a goal to generate deterministic CAT workflow suggestions directly in chat.
         </p>
         {error && (
           <p className="mt-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
@@ -99,8 +114,7 @@ export function CenterChatPane() {
               </button>
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Composer is wired to the demo orchestrator via <code>/api/demo/chat</code>. Layout
-              adapts automatically to your screen height.
+              Assistant replies include selected CATs, reasoning, governance summary, and workflow draft CTAs.
             </p>
           </form>
         </div>
@@ -111,4 +125,3 @@ export function CenterChatPane() {
 
 
 export default CenterChatPane;
-
