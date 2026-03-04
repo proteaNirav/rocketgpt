@@ -15,10 +15,7 @@ export const runtime = "nodejs";
 
 
 const INTERNAL_KEY = process.env.RGPT_INTERNAL_KEY;
-const INTERNAL_BASE_URL =
-  process.env.RGPT_INTERNAL_BASE_URL ||
-  process.env.NEXT_PUBLIC_BASE_URL ||
-  "http://localhost:3000";
+const ROUTE = "/api/orchestrator/run/planner";
 
 function summarizeBody(body: unknown): string {
   try {
@@ -33,8 +30,91 @@ function summarizeBody(body: unknown): string {
   }
 }
 
+function guardFailResponse(err: any, route: string, runId?: string): NextResponse {
+  const message = typeof err?.message === "string" ? err.message : "Runtime guard blocked request.";
+  const name = typeof err?.name === "string" ? err.name : undefined;
+  const isUpstreamFetchFailure =
+    message.includes("fetch failed") || name === "TypeError";
+  if (isUpstreamFetchFailure) {
+    return NextResponse.json(
+      {
+        success: false,
+        route,
+        runId: runId ?? null,
+        error_code: "UPSTREAM_FETCH_FAILED",
+        message: "Upstream fetch failed",
+        details: { name, message },
+      },
+      { status: 502 }
+    );
+  }
+
+  const statusFromError = typeof err?.status === "number" ? err.status : undefined;
+  const status =
+    statusFromError === 400 || statusFromError === 401 || statusFromError === 403
+      ? statusFromError
+      : message.startsWith("RGPT_GUARD_BLOCK:")
+        ? 403
+        : message.includes("MISSING_DECISION_ID")
+          ? 400
+          : 403;
+
+  const error_code = message.includes("MISSING_DECISION_ID")
+    ? "MISSING_DECISION_ID"
+    : message.startsWith("RGPT_GUARD_BLOCK:")
+      ? "RGPT_GUARD_BLOCK"
+      : "RUNTIME_GUARD_FAILED";
+
+  return NextResponse.json(
+    {
+      success: false,
+      route,
+      runId: runId ?? null,
+      error_code,
+      message,
+      ...(err?.details !== undefined ? { details: err.details } : {}),
+    },
+    { status }
+  );
+}
+
+/**
+ * Governance helpers (dynamic import to avoid build-time coupling).
+ * Best-effort: never crash the route if governance logger fails.
+ */
+async function governancePreflightBestEffort(input: any): Promise<any | null> {
+  try {
+    const mod: any = await import("@/lib/governance/governance-service");
+    const fn = mod?.governancePreflight ?? mod?.evaluateGovernancePreflight;
+    if (typeof fn !== "function") return null;
+    return await fn(input);
+  } catch {
+    return null;
+  }
+}
+
+async function governancePostRunBestEffort(input: any): Promise<void> {
+  try {
+    const mod: any = await import("@/lib/governance/governance-service");
+    const fn = mod?.governancePostRun ?? mod?.postRun ?? mod?.evaluateGovernancePostRun;
+    if (typeof fn !== "function") return;
+    await fn(input);
+  } catch {
+    // swallow
+  }
+}
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
+  const origin = new URL(req.url).origin;
+  const baseUrl = process.env.INTERNAL_BASE_URL?.trim()
+    ? process.env.INTERNAL_BASE_URL.trim()
+    : origin;
+  const runIdFromGuardContext = pickRunId(req, {});
+  try {
+    await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
+  } catch (err: any) {
+    return guardFailResponse(err, ROUTE, runIdFromGuardContext);
+  }
   // [CONTROL-PLANE] V1 gate (pass-through)
   const executionContext: ExecutionContext = {
     executionId: crypto.randomUUID(),
@@ -148,7 +228,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (INTERNAL_KEY) {
     if (!internalKeyHeader || internalKeyHeader !== INTERNAL_KEY) {
       console.warn("[ORCH-RUN-PLANNER] Unauthorized access attempt.", {
-        route: "/api/orchestrator/run/planner",
+        route: ROUTE,
         runId,
       });
 
@@ -156,7 +236,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         {
           success: false,
           message: "Unauthorized orchestrator access.",
-          route: "/api/orchestrator/run/planner",
+          route: ROUTE,
           runId,
         },
         { status: 401 }
@@ -169,78 +249,143 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   return withOrchestratorHandler(
-    { route: "/api/orchestrator/run/planner", runId },
+    { route: ROUTE, runId },
     async () => {
-      console.log("[ORCH-RUN-PLANNER] Incoming request", {
-        route: "/api/orchestrator/run/planner",
+      const route = ROUTE;
+      const bodySummary = summarizeBody(body);
+      const preflight = await governancePreflightBestEffort({
         runId,
-        bodySummary: summarizeBody(body),
+        route,
+        capability: "run-planner",
+        inputs_summary: "Orchestrator run/planner invoked.",
+        body_summary: bodySummary,
+      });
+
+      const rawAction =
+        preflight?.decision ??
+        preflight?.action ??
+        preflight?.result?.decision ??
+        preflight?.result?.action ??
+        preflight?.result ??
+        "allow";
+      const action = (typeof rawAction === "string" ? rawAction : "allow").toLowerCase();
+
+      if (["block", "deny", "contain"].includes(action)) {
+        await governancePostRunBestEffort({
+          runId,
+          route,
+          capability: "run-planner",
+          outcome: "blocked",
+          http_status: 403,
+          response_summary: "Blocked by Governance Preflight.",
+          preflight,
+          when: new Date().toISOString(),
+        });
+
+        return NextResponse.json(
+          {
+            success: false,
+            route,
+            runId,
+            error_code: "GOVERNANCE_BLOCKED",
+            message: "Blocked by Governance Preflight.",
+            action,
+            preflight,
+          },
+          { status: 403 }
+        );
+      }
+
+      console.log("[ORCH-RUN-PLANNER] Incoming request", {
+        route,
+        runId,
+        bodySummary,
       });
 
       const plannerBody = buildProxyBody(body, runId);
 
-      const plannerUrl = `${INTERNAL_BASE_URL}/api/planner`;
-
-      const res = await fetch(plannerUrl, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          ...(INTERNAL_KEY
-            ? { "x-rgpt-internal": INTERNAL_KEY }
-            : {}),
-        },
-        body: JSON.stringify(plannerBody),
-      });
-
-      const text = await res.text();
-      let json: any = null;
+      const plannerUrl = `${baseUrl}/api/planner`;
+      let responseSummary = "[not executed]";
+      let httpStatus = 500;
+      let outcome = "error";
 
       try {
-        json = text ? JSON.parse(text) : null;
-      } catch {
-        // Not valid JSON, keep raw text
-      }
+        const res = await fetch(plannerUrl, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            ...(INTERNAL_KEY
+              ? { "x-rgpt-internal": INTERNAL_KEY }
+              : {}),
+          },
+          body: JSON.stringify(plannerBody),
+        });
 
-      console.log("[ORCH-RUN-PLANNER] Planner response", {
-        route: "/api/orchestrator/run/planner",
-        runId,
-        status: res.status,
-        ok: res.ok,
-        bodySummary: summarizeBody(json ?? text),
-      });
+        const text = await res.text();
+        let json: any = null;
 
-      if (!res.ok) {
+        try {
+          json = text ? JSON.parse(text) : null;
+        } catch {
+          // Not valid JSON, keep raw text
+        }
+
+        responseSummary = summarizeBody(json ?? text);
+        httpStatus = res.status;
+        outcome = res.ok ? "success" : "error";
+
+        console.log("[ORCH-RUN-PLANNER] Planner response", {
+          route,
+          runId,
+          status: res.status,
+          ok: res.ok,
+          bodySummary: responseSummary,
+        });
+
+        if (!res.ok) {
+          return NextResponse.json(
+            {
+              success: false,
+              message: "Planner call failed.",
+              route,
+              runId,
+              status: res.status,
+              plannerRaw: json ?? text,
+            },
+            { status: 502 }
+          );
+        }
+
         return NextResponse.json(
           {
-            success: false,
-            message: "Planner call failed.",
-            route: "/api/orchestrator/run/planner",
+            success: true,
+            message: "Planner plan generated via orchestrator run endpoint.",
+            route,
             runId,
-            status: res.status,
-            plannerRaw: json ?? text,
+            planner: json,
           },
-          { status: 502 }
+          { status: 200 }
         );
-      }
-
-      return NextResponse.json(
-        {
-          success: true,
-          message: "Planner plan generated via orchestrator run endpoint.",
-          route: "/api/orchestrator/run/planner",
+      } catch (err: any) {
+        responseSummary = summarizeBody(err?.message ?? err ?? "Unknown fetch error");
+        httpStatus = 500;
+        outcome = "error";
+        throw err;
+      } finally {
+        await governancePostRunBestEffort({
           runId,
-          planner: json,
-        },
-        { status: 200 }
-      );
+          route,
+          capability: "run-planner",
+          outcome,
+          http_status: httpStatus,
+          response_summary: responseSummary,
+          preflight,
+          when: new Date().toISOString(),
+        });
+      }
     }
   );
 }
-
-
-
-
-
 
 
 
