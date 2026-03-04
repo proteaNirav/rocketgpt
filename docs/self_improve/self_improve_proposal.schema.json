@@ -1,0 +1,33 @@
+{
+  "proposal_id": "SI-YYYYMMDD-HHMM-XXXX",
+  "finding": {
+    "type": "ci_failure|policy_violation|replay_drift|perf_regression|ux_dead_end|security_risk|docs_gap",
+    "severity": "info|warn|error|critical",
+    "summary": "",
+    "evidence_refs": []
+  },
+  "plan": {
+    "scope": {
+      "allowed_paths": [],
+      "disallowed_paths": [],
+      "max_files_changed": 15
+    },
+    "changes": [
+      {
+        "kind": "code|test|docs|config",
+        "path": "",
+        "rationale": ""
+      }
+    ],
+    "risk": "low|medium|high",
+    "rollback": ""
+  },
+  "verification": {
+    "required_checks": ["policy_gate", "safe_mode", "tests", "replay"],
+    "commands": []
+  },
+  "approvals": {
+    "requires_human": true,
+    "auto_merge_allowed": false
+  }
+}
