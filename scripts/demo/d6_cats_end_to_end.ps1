@@ -81,16 +81,20 @@ function Ensure-CatsRegistryApi {
         return $null
     }
 
+    $ExpectedCoreApiDir = Join-Path $RepoRoot "apps\core-api"
+    if ((Resolve-Path -LiteralPath $WorkingDir).Path -ne (Resolve-Path -LiteralPath $ExpectedCoreApiDir).Path) {
+        Write-Host "Overriding uvicorn working directory to $ExpectedCoreApiDir"
+        $WorkingDir = $ExpectedCoreApiDir
+    }
+
     $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
     $logPrefix = Join-Path ([System.IO.Path]::GetTempPath()) "cats_registry_uvicorn_${PortNumber}_$stamp"
     $stdoutLog = "${logPrefix}.stdout.log"
     $stderrLog = "${logPrefix}.stderr.log"
 
-    $startCommand = "Set-Location -LiteralPath `"$WorkingDir`"; python -m uvicorn main:app --app-dir `"$WorkingDir`" --host 127.0.0.1 --port $PortNumber"
-
     Write-Host "Starting registry API via uvicorn on port $PortNumber..."
-    $proc = Start-Process -FilePath "pwsh" `
-        -ArgumentList @("-NoProfile", "-Command", $startCommand) `
+    $proc = Start-Process -FilePath "python" `
+        -ArgumentList @("-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "$PortNumber") `
         -WorkingDirectory $WorkingDir `
         -PassThru `
         -RedirectStandardOutput $stdoutLog `
@@ -98,6 +102,21 @@ function Ensure-CatsRegistryApi {
 
     if (-not (Wait-CatsRegistryHealth -Url $Url -FallbackUrl $FallbackUrl -MaxAttempts 25 -DelaySeconds 1)) {
         $procId = if ($proc) { $proc.Id } else { "unknown" }
+        Write-Host "Registry API health-check failed. Showing first 30 log lines."
+        if (Test-Path -LiteralPath $stdoutLog) {
+            Write-Host "---- stdout (first 30 lines) ----"
+            Get-Content -LiteralPath $stdoutLog -TotalCount 30 | ForEach-Object { Write-Host $_ }
+        } else {
+            Write-Host "---- stdout ----"
+            Write-Host "(log file not found)"
+        }
+        if (Test-Path -LiteralPath $stderrLog) {
+            Write-Host "---- stderr (first 30 lines) ----"
+            Get-Content -LiteralPath $stderrLog -TotalCount 30 | ForEach-Object { Write-Host $_ }
+        } else {
+            Write-Host "---- stderr ----"
+            Write-Host "(log file not found)"
+        }
         throw "Registry API failed health-check on $Url/cats/registry. pid=$procId stdout=$stdoutLog stderr=$stderrLog"
     }
 
