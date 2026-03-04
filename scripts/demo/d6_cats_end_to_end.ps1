@@ -24,8 +24,57 @@ $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $CoreApiDir = Join-Path $RepoRoot "apps\core-api"
-$BaseUrl = "http://localhost:$Port"
-$LoopbackBaseUrl = "http://127.0.0.1:$Port"
+
+function Get-ListeningConnectionByPort {
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$PortNumber
+    )
+
+    $connections = @(Get-NetTCPConnection -LocalPort $PortNumber -State Listen -ErrorAction SilentlyContinue)
+    if ($connections.Count -gt 0) {
+        return $connections[0]
+    }
+    return $null
+}
+
+function Resolve-RegistryPort {
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$RequestedPort
+    )
+
+    $candidatePort = $RequestedPort
+    while ($true) {
+        $listener = Get-ListeningConnectionByPort -PortNumber $candidatePort
+        if (-not $listener) {
+            if ($candidatePort -ne $RequestedPort) {
+                Write-Host "Using next free registry port $candidatePort."
+            }
+            return $candidatePort
+        }
+
+        $ownerPid = $listener.OwningProcess
+        Write-Host "Port $candidatePort is in use by pid $ownerPid. Attempting to stop it..."
+        try {
+            Stop-Process -Id $ownerPid -Force -ErrorAction Stop
+            Start-Sleep -Milliseconds 500
+        } catch {
+            Write-Host "Unable to stop pid $ownerPid on port ${candidatePort}: $($_.Exception.Message)"
+        }
+
+        if (-not (Get-ListeningConnectionByPort -PortNumber $candidatePort)) {
+            Write-Host "Freed port $candidatePort by stopping pid $ownerPid."
+            return $candidatePort
+        }
+
+        Write-Host "Port $candidatePort is still busy. Trying next port..."
+        $candidatePort++
+    }
+}
+
+$BaseUrl = "http://127.0.0.1:$Port"
+$LoopbackBaseUrl = $BaseUrl
 
 function Test-CatsRegistryHealth {
     param(
@@ -78,19 +127,32 @@ function Ensure-CatsRegistryApi {
 
     if (Test-CatsRegistryHealth -Url $Url -FallbackUrl $FallbackUrl) {
         Write-Host "Registry API already listening on port $PortNumber."
-        return $null
+        return [pscustomobject]@{
+            Process = $null
+            Port    = $PortNumber
+            BaseUrl = "http://127.0.0.1:$PortNumber"
+        }
     }
 
+    $ExpectedCoreApiDir = Join-Path $RepoRoot "apps\core-api"
+    if ((Resolve-Path -LiteralPath $WorkingDir).Path -ne (Resolve-Path -LiteralPath $ExpectedCoreApiDir).Path) {
+        Write-Host "Overriding uvicorn working directory to $ExpectedCoreApiDir"
+        $WorkingDir = $ExpectedCoreApiDir
+    }
+
+    $resolvedPort = Resolve-RegistryPort -RequestedPort $PortNumber
+    $resolvedBaseUrl = "http://127.0.0.1:$resolvedPort"
+    $Url = $resolvedBaseUrl
+    $FallbackUrl = $resolvedBaseUrl
+
     $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
-    $logPrefix = Join-Path ([System.IO.Path]::GetTempPath()) "cats_registry_uvicorn_${PortNumber}_$stamp"
+    $logPrefix = Join-Path ([System.IO.Path]::GetTempPath()) "cats_registry_uvicorn_${resolvedPort}_$stamp"
     $stdoutLog = "${logPrefix}.stdout.log"
     $stderrLog = "${logPrefix}.stderr.log"
 
-    $startCommand = "Set-Location -LiteralPath `"$WorkingDir`"; python -m uvicorn main:app --app-dir `"$WorkingDir`" --host 127.0.0.1 --port $PortNumber"
-
-    Write-Host "Starting registry API via uvicorn on port $PortNumber..."
-    $proc = Start-Process -FilePath "pwsh" `
-        -ArgumentList @("-NoProfile", "-Command", $startCommand) `
+    Write-Host "Starting registry API via uvicorn on port $resolvedPort..."
+    $proc = Start-Process -FilePath "python" `
+        -ArgumentList @("-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "$resolvedPort") `
         -WorkingDirectory $WorkingDir `
         -PassThru `
         -RedirectStandardOutput $stdoutLog `
@@ -98,13 +160,32 @@ function Ensure-CatsRegistryApi {
 
     if (-not (Wait-CatsRegistryHealth -Url $Url -FallbackUrl $FallbackUrl -MaxAttempts 25 -DelaySeconds 1)) {
         $procId = if ($proc) { $proc.Id } else { "unknown" }
+        Write-Host "Registry API health-check failed. Showing first 30 log lines."
+        if (Test-Path -LiteralPath $stdoutLog) {
+            Write-Host "---- stdout (first 30 lines) ----"
+            Get-Content -LiteralPath $stdoutLog -TotalCount 30 | ForEach-Object { Write-Host $_ }
+        } else {
+            Write-Host "---- stdout ----"
+            Write-Host "(log file not found)"
+        }
+        if (Test-Path -LiteralPath $stderrLog) {
+            Write-Host "---- stderr (first 30 lines) ----"
+            Get-Content -LiteralPath $stderrLog -TotalCount 30 | ForEach-Object { Write-Host $_ }
+        } else {
+            Write-Host "---- stderr ----"
+            Write-Host "(log file not found)"
+        }
         throw "Registry API failed health-check on $Url/cats/registry. pid=$procId stdout=$stdoutLog stderr=$stderrLog"
     }
 
     Write-Host "Registry API started (pid=$($proc.Id))."
     Write-Host "uvicorn stdout: $stdoutLog"
     Write-Host "uvicorn stderr: $stderrLog"
-    return $proc
+    return [pscustomobject]@{
+        Process = $proc
+        Port    = $resolvedPort
+        BaseUrl = $resolvedBaseUrl
+    }
 }
 
 function Show-EndpointJson {
@@ -186,7 +267,10 @@ Write-Host "Repo root: $RepoRoot"
 Write-Host "CAT ID: $CatId"
 Write-Host "Registry base URL: $BaseUrl"
 
-$null = Ensure-CatsRegistryApi -Url $BaseUrl -FallbackUrl $LoopbackBaseUrl -WorkingDir $CoreApiDir -PortNumber $Port
+$registry = Ensure-CatsRegistryApi -Url $BaseUrl -FallbackUrl $LoopbackBaseUrl -WorkingDir $CoreApiDir -PortNumber $Port
+$Port = $registry.Port
+$BaseUrl = $registry.BaseUrl
+$LoopbackBaseUrl = $BaseUrl
 
 Show-EndpointJson -Url "$BaseUrl/cats/registry" -FallbackUrl "$LoopbackBaseUrl/cats/registry"
 Show-EndpointJson -Url "$BaseUrl/cats/$CatId/passport" -FallbackUrl "$LoopbackBaseUrl/cats/$CatId/passport"
