@@ -5,9 +5,17 @@ import { readJson, proposalsDir, evidenceDir, relToRepo, repoRoot, writeJson, no
 import { validateProposal } from "./proposal-validator.mjs";
 import { writeExecutionLedger, writeDecisionLedger } from "./ledger.mjs";
 
+function pnpmBin() {
+  return process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+}
 function runCommand(command, args, cwd = repoRoot) {
+  // Windows: route through cmd.exe so .cmd/.bat (pnpm, gh, etc.) works reliably from Node
+  const isWin = process.platform === "win32";
+  const cmd = isWin ? "cmd.exe" : command;
+  const cmdArgs = isWin ? ["/d", "/s", "/c", command, ...args] : args;
+
   try {
-    const stdout = execFileSync(command, args, {
+    const stdout = execFileSync(cmd, cmdArgs, {
       cwd,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
@@ -76,7 +84,7 @@ async function applyDeterministicChanges(proposal) {
   for (const change of proposal.plan.changes) {
     if (change.rationale.startsWith("deterministic:prettier:")) {
       const target = change.rationale.slice("deterministic:prettier:".length);
-      const result = runCommand("pnpm", ["--filter", "rocketgpt-ui", "exec", "prettier", "-w", target]);
+      const result = runCommand(pnpmBin(), ["--filter", "rocketgpt-ui", "exec", "prettier", "-w", target]);
       patchResults.push({ change, ...result });
       continue;
     }
@@ -139,7 +147,7 @@ async function verifyReplay() {
 }
 
 function verifyTests() {
-  const result = runCommand("pnpm", ["--filter", "rocketgpt-ui", "run", "typecheck"]);
+  const result = runCommand(pnpmBin(), ["--filter", "rocketgpt-ui", "run", "typecheck"]);
   return { ok: result.ok, output: [result.stdout, result.stderr].filter(Boolean).join("\n") };
 }
 
@@ -284,3 +292,8 @@ export async function executeProposal({ proposalId, actor = "service:self-improv
     evidence_root: relToRepo(evidenceRoot),
   };
 }
+
+
+
+
+
