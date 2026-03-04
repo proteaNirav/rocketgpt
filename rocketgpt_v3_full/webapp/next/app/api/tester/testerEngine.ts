@@ -66,7 +66,8 @@ function categorizeStatus(statusCode: number): string {
 export async function runTesterEngine(
   profileId: string,
   goal: string,
-  runId?: string
+  runId?: string,
+  baseUrl?: string
 ): Promise<TesterEngineResult> {
   const profile = buildProfile(profileId);
   const started = Date.now();
@@ -91,8 +92,17 @@ export async function runTesterEngine(
       "Calling /api/orchestrator/builder/execute-all to validate HTTP status..."
     );
 
+    const targetBaseUrl = (
+      baseUrl ??
+      process.env.INTERNAL_BASE_URL ??
+      process.env.RGPT_INTERNAL_BASE_URL ??
+      process.env.NEXT_PUBLIC_BASE_URL ??
+      "http://localhost:3000"
+    ).trim();
+    const orchestratorBuilderUrl = `${targetBaseUrl}/api/orchestrator/builder/execute-all`;
+
     const res = await fetch(
-      "http://localhost:3000/api/orchestrator/builder/execute-all",
+      orchestratorBuilderUrl,
       {
         method: "POST",
         headers: { "content-type": "application/json",
@@ -200,4 +210,3 @@ export async function runTesterEngine(
     run_id: runId,
   };
 }
-
