@@ -10,10 +10,17 @@ router = APIRouter()
 
 
 def _repo_root() -> Path:
-    root = Path(__file__).resolve()
-    for _ in range(3):
-        root = root.parent
-    return root
+    current = Path(__file__).resolve().parent
+    while True:
+        if (current / "cats" / "registry_index.json").is_file():
+            return current
+        if (current / ".git").is_dir():
+            return current
+        parent = current.parent
+        if parent == current:
+            # Fallback to the previous static expectation to avoid hard failure.
+            return Path(__file__).resolve().parents[3]
+        current = parent
 
 
 def _cats_root() -> Path:
