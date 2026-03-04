@@ -50,9 +50,15 @@ function listChangedFiles() {
   if (!out.ok) return [];
   return out.stdout
     .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => line.slice(3).replace(/\\/g, "/"));
+    .filter((line) => line && line.trim().length > 0)
+    .map((line) => {
+      // IMPORTANT: do NOT trim before slice(3); porcelain format is "XY <path>"
+      const rest = line.length >= 3 ? line.slice(3) : "";
+      // Handle renames: "R  old -> new"
+      const p = rest.includes("->") ? rest.split("->").pop() : rest;
+      return String(p).trim().replace(/\\/g, "/");
+    })
+    .filter(Boolean);
 }
 
 async function applyTypeImportFix(change) {
@@ -292,6 +298,7 @@ export async function executeProposal({ proposalId, actor = "service:self-improv
     evidence_root: relToRepo(evidenceRoot),
   };
 }
+
 
 
 
