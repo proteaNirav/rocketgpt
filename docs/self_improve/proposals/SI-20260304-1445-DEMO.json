@@ -16,7 +16,7 @@
       {
         "kind": "docs",
         "path": "docs/self_improve/README.md",
-        "rationale": "Add a tiny demo line to prove deterministic patching + constraints."
+        "rationale": "manual_placeholder:Add bounded TODO patch instructions for a human-approved fix."
       }
     ],
     "risk": "low",
@@ -31,4 +31,5 @@
     "auto_merge_allowed": false
   }
 }
+
 
