@@ -70,3 +70,8 @@ Every scan/propose/validate/execute action writes:
   2. Persist raw evidence into the evidence bundle.
   3. Register in `runAllDetectors`.
   4. Add tests covering parser and finding outputs.
+
+<!-- SELF_IMPROVE_TODO:SI-20260304-1445-DEMO -->
+- Proposal: SI-20260304-1445-DEMO
+- Rationale: manual_placeholder:Add bounded TODO patch instructions for a human-approved fix.
+- Action: human review + bounded patch
