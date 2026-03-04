@@ -2,6 +2,12 @@
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
+import { suggestCats } from "@/lib/cats-suggest";
+import { SEED_CATS } from "@/lib/cats-seed";
+import { buildWorkflowArtifactFromSuggestions, saveWorkflowDraftToStorage } from "@/lib/workflow-draft";
+import { WorkflowNode, WorkflowArtifact } from "@/lib/workflow-types";
+import { validateWorkflow, WorkflowValidationResult } from "@/lib/workflow-validate";
+
 export type HomeChatRole = "user" | "assistant";
 
 export interface HomeChatMessage {
@@ -19,107 +25,146 @@ export interface UseHomeChatResult {
   sendMessage: (text: string) => Promise<void>;
   clearMessages: () => void;
   resetChat: () => void;
-  /** Increments on resetChat(); use as key to hard-reset child components */
   resetKey: number;
+  designModeEnabled: boolean;
+  setDesignModeEnabled: (next: boolean) => void;
+  draftArtifact: WorkflowArtifact | null;
+  validation: WorkflowValidationResult | null;
+  initParamDrafts: Record<string, string>;
+  initParamErrors: Record<string, string>;
+  setNodeExpectedBehavior: (nodeId: string, expectedBehavior: string) => void;
+  setInitParamDraft: (nodeId: string, raw: string) => void;
+  applyInitParams: (nodeId: string) => void;
+  toggleNodeOutput: (nodeId: string, outputId: string) => void;
+  updateNodeOutputLabel: (nodeId: string, outputId: string, label: string) => void;
+  addNodeOutput: (nodeId: string) => void;
+  removeNodeOutput: (nodeId: string, outputId: string) => void;
 }
 
 type HomeChatContextValue = UseHomeChatResult;
 
 const HomeChatContext = createContext<HomeChatContextValue | null>(null);
 
-/**
- * HomeChatProvider
- * Provides shared chat state across the Home workspace.
- * Phase-1: Messages start empty (no demo seeding).
- */
+function formatAssistantWorkflowMessage(artifact: WorkflowArtifact, validation: WorkflowValidationResult): string {
+  const catsHeader = `Suggested workflow draft (${artifact.nodes.length} CATs)`;
+  const catLines = artifact.nodes.map((node, index) => {
+    return `${index + 1}. ${node.cat_id} | ${node.name} | ${node.canonical_name}\n   Why selected: ${node.selection_reason}`;
+  });
+  const governance = validation.governanceSummary;
+  const governanceLine = [
+    "Governance summary:",
+    `approval=${governance.anyRequiresApproval ? "required" : "not_required"}`,
+    `passport=${governance.anyRequiresPassport ? "required" : "not_required"}`,
+    `side_effects=${governance.sideEffects.join(",") || "none"}`,
+    `elevated=${governance.anyElevated ? "true" : "false"}`,
+  ].join(" ");
+
+  return [catsHeader, "", ...catLines, "", governanceLine, "", "Open Workflow Builder", "Download Draft JSON"].join(
+    "\n"
+  );
+}
+
+function nowTimeLabel(): string {
+  return new Date().toTimeString().slice(0, 5);
+}
+
+function applyNodeUpdate(
+  artifact: WorkflowArtifact | null,
+  updater: (nodes: WorkflowNode[]) => WorkflowNode[]
+): WorkflowArtifact | null {
+  if (!artifact) return null;
+  return { ...artifact, nodes: updater(artifact.nodes) };
+}
+
 export function HomeChatProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<HomeChatMessage[]>([]);
   const [sending, setSending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [resetKey, setResetKey] = useState<number>(0);
+  const [designModeEnabled, setDesignModeEnabled] = useState<boolean>(false);
+  const [draftArtifact, setDraftArtifact] = useState<WorkflowArtifact | null>(null);
+  const [validation, setValidation] = useState<WorkflowValidationResult | null>(null);
+  const [initParamDrafts, setInitParamDrafts] = useState<Record<string, string>>({});
+  const [initParamErrors, setInitParamErrors] = useState<Record<string, string>>({});
+
+  function persistArtifact(nextArtifact: WorkflowArtifact) {
+    const nextValidation = validateWorkflow(nextArtifact, SEED_CATS);
+    saveWorkflowDraftToStorage(nextArtifact);
+    setDraftArtifact(nextArtifact);
+    setValidation(nextValidation);
+    return nextValidation;
+  }
+
+  function commitNodeEdits(updater: (nodes: WorkflowNode[]) => WorkflowNode[]) {
+    setDraftArtifact((current) => {
+      const next = applyNodeUpdate(current, updater);
+      if (!next) return current;
+      const nextValidation = validateWorkflow(next, SEED_CATS);
+      saveWorkflowDraftToStorage(next);
+      setValidation(nextValidation);
+      return next;
+    });
+  }
 
   const sendMessage = async (text: string): Promise<void> => {
     const trimmed = text.trim();
-    if (!trimmed || sending) {
-      return;
-    }
+    if (!trimmed || sending) return;
 
-    const now = new Date();
-    const time = now.toTimeString().slice(0, 5);
-
+    const time = nowTimeLabel();
     const userMessage: HomeChatMessage = {
-      id: "user-" + Date.now().toString(),
+      id: `user-${Date.now()}`,
       role: "user",
       name: "You",
       content: trimmed,
       time,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
     setSending(true);
     setError(null);
 
     try {
-      const payload = {
-        messages: [{ role: "user", content: trimmed }],
-      };
-
-      const res = await fetch("/api/demo/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        let errMsg = "Request failed (" + res.status.toString() + ")";
-        try {
-          const data = await res.json();
-          if (data && typeof data.error === "string") {
-            errMsg = data.error;
-          }
-        } catch {
-          // ignore
-        }
-
-        setError(errMsg);
-        const errorMessage: HomeChatMessage = {
-          id: "err-" + Date.now().toString(),
-          role: "assistant",
-          name: "RocketGPT",
-          content: "Error: " + errMsg,
-          time,
-        };
-        setMessages((prev) => [...prev, errorMessage]);
-        return;
-      }
-
-      const data = await res.json();
-      let replyText = "RocketGPT could not generate a reply.";
-      if (data && typeof data.reply === "string") {
-        replyText = data.reply;
-      }
+      const nextMessages = [...messages, userMessage];
+      const conversationText = nextMessages
+        .filter((item) => item.role === "user")
+        .map((item) => item.content)
+        .join("\n");
+      const suggestions = suggestCats(conversationText, SEED_CATS);
+      const nextArtifact = buildWorkflowArtifactFromSuggestions(
+        suggestions,
+        conversationText,
+        undefined,
+        "chat"
+      );
+      const nextValidation = persistArtifact(nextArtifact);
+      setInitParamDrafts(
+        nextArtifact.nodes.reduce<Record<string, string>>((acc, node) => {
+          acc[node.node_id] = JSON.stringify(node.init_params || {}, null, 2);
+          return acc;
+        }, {})
+      );
+      setInitParamErrors({});
+      setDesignModeEnabled(true);
 
       const assistantMessage: HomeChatMessage = {
-        id: "assistant-" + Date.now().toString(),
+        id: `assistant-${Date.now() + 1}`,
         role: "assistant",
         name: "RocketGPT",
-        content: replyText,
+        content: formatAssistantWorkflowMessage(nextArtifact, nextValidation),
         time,
       };
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      setMessages([...nextMessages, assistantMessage]);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Network error";
+      const msg = e instanceof Error ? e.message : "Deterministic draft generation failed";
       setError(msg);
-
-      const errorMessage: HomeChatMessage = {
-        id: "err-" + Date.now().toString(),
+      const errMessage: HomeChatMessage = {
+        id: `err-${Date.now()}`,
         role: "assistant",
         name: "RocketGPT",
-        content: "Network error: " + msg,
+        content: `Error: ${msg}`,
         time,
       };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, userMessage, errMessage]);
     } finally {
       setSending(false);
     }
@@ -130,30 +175,132 @@ export function HomeChatProvider({ children }: { children: ReactNode }) {
     setError(null);
   };
 
-  /**
-   * resetChat - Full reset for New Chat button
-   * Clears messages, error, sending state, and increments resetKey
-   * so child components (like composer input) can hard-reset.
-   */
   const resetChat = (): void => {
     setMessages([]);
     setError(null);
     setSending(false);
     setResetKey((k) => k + 1);
+    setDraftArtifact(null);
+    setValidation(null);
+    setInitParamDrafts({});
+    setInitParamErrors({});
   };
 
-  return (
-    <HomeChatContext.Provider
-      value={{ messages, sending, error, sendMessage, clearMessages, resetChat, resetKey }}
-    >
-      {children}
-    </HomeChatContext.Provider>
-  );
+  function setNodeExpectedBehavior(nodeId: string, expectedBehavior: string) {
+    commitNodeEdits((nodes) =>
+      nodes.map((node) => (node.node_id === nodeId ? { ...node, expected_behavior: expectedBehavior } : node))
+    );
+  }
+
+  function setInitParamDraft(nodeId: string, raw: string) {
+    setInitParamDrafts((current) => ({ ...current, [nodeId]: raw }));
+  }
+
+  function applyInitParams(nodeId: string) {
+    const raw = initParamDrafts[nodeId] ?? "{}";
+    try {
+      const parsed = JSON.parse(raw || "{}");
+      if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+        setInitParamErrors((current) => ({ ...current, [nodeId]: "Init params must be a JSON object." }));
+        return;
+      }
+      setInitParamErrors((current) => {
+        const next = { ...current };
+        delete next[nodeId];
+        return next;
+      });
+      commitNodeEdits((nodes) => nodes.map((node) => (node.node_id === nodeId ? { ...node, init_params: parsed } : node)));
+    } catch {
+      setInitParamErrors((current) => ({ ...current, [nodeId]: "Invalid JSON." }));
+    }
+  }
+
+  function toggleNodeOutput(nodeId: string, outputId: string) {
+    commitNodeEdits((nodes) =>
+      nodes.map((node) =>
+        node.node_id !== nodeId
+          ? node
+          : {
+              ...node,
+              expected_outputs: node.expected_outputs.map((output) =>
+                output.id === outputId ? { ...output, checked: !output.checked } : output
+              ),
+            }
+      )
+    );
+  }
+
+  function updateNodeOutputLabel(nodeId: string, outputId: string, label: string) {
+    commitNodeEdits((nodes) =>
+      nodes.map((node) =>
+        node.node_id !== nodeId
+          ? node
+          : {
+              ...node,
+              expected_outputs: node.expected_outputs.map((output) =>
+                output.id === outputId ? { ...output, label } : output
+              ),
+            }
+      )
+    );
+  }
+
+  function addNodeOutput(nodeId: string) {
+    commitNodeEdits((nodes) =>
+      nodes.map((node) => {
+        if (node.node_id !== nodeId) return node;
+        const nextNumber = node.expected_outputs.length + 1;
+        return {
+          ...node,
+          expected_outputs: [
+            ...node.expected_outputs,
+            {
+              id: `${node.node_id}-out-${nextNumber}`,
+              label: "New expected output",
+              checked: false,
+            },
+          ],
+        };
+      })
+    );
+  }
+
+  function removeNodeOutput(nodeId: string, outputId: string) {
+    commitNodeEdits((nodes) =>
+      nodes.map((node) =>
+        node.node_id !== nodeId
+          ? node
+          : { ...node, expected_outputs: node.expected_outputs.filter((output) => output.id !== outputId) }
+      )
+    );
+  }
+
+  const value: HomeChatContextValue = {
+    messages,
+    sending,
+    error,
+    sendMessage,
+    clearMessages,
+    resetChat,
+    resetKey,
+    designModeEnabled,
+    setDesignModeEnabled,
+    draftArtifact,
+    validation,
+    initParamDrafts,
+    initParamErrors,
+    setNodeExpectedBehavior,
+    setInitParamDraft,
+    applyInitParams,
+    toggleNodeOutput,
+    updateNodeOutputLabel,
+    addNodeOutput,
+    removeNodeOutput,
+  };
+
+  return <HomeChatContext.Provider value={value}>{children}</HomeChatContext.Provider>;
 }
 
-/**
- * useHomeChat - Access shared chat state
- */
 export function useHomeChat(): HomeChatContextValue {
   const ctx = useContext(HomeChatContext);
   if (!ctx) {
