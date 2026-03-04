@@ -85,8 +85,29 @@ export async function withOrchestratorHandler(
       return NextResponse.json(safeErr, { status: statusCode });
     }
 
-    // 2) Generic error handling (existing behaviour)
+    // 2) Upstream fetch/network failures
     const errorPayload = normalizeError(err);
+    if (
+      errorPayload.message.includes("fetch failed") ||
+      errorPayload.name === "TypeError"
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          route: ctx.route,
+          runId: ctx.runId ?? null,
+          error_code: "UPSTREAM_FETCH_FAILED",
+          message: "Upstream fetch failed",
+          details: {
+            name: errorPayload.name,
+            message: errorPayload.message,
+          },
+        },
+        { status: 502 }
+      );
+    }
+
+    // 3) Generic error handling (existing behaviour)
 
     // Server-side log for observability
     console.error(
@@ -110,4 +131,3 @@ export async function withOrchestratorHandler(
     );
   }
 }
-
