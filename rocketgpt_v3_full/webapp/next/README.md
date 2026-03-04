@@ -21,3 +21,15 @@ npm run dev
 - Build: `npm run build`
 - Start: `npm start`
 - Deploy on Vercel/Render/Netlify (set env NEXT_PUBLIC_CORE_API_BASE)
+
+## CATS Demo UI
+- Start core-api on `http://localhost:8080` and set `NEXT_PUBLIC_CORE_API_BASE=http://localhost:8080`.
+- Open `/cats/library` to load registry entries and inspect CAT definition/passport JSON.
+- Use the replay action buttons in the library page to copy exact `pwsh` commands for:
+  - normal demo replay
+  - forced denial replay (`--deny expired`)
+  - locating the latest `cats_demo_artifact.json` evidence file
+- Open `/cats/generate` to create a CAT definition JSON with governance defaults (`requires_approval=true`, `passport_required=true`) and a computed SHA-256 bundle digest over the downloadable JSON bytes.
+- Open `/workflows/builder` to compose an ordered multi-CAT workflow, run compatibility checks (side-effects + passport validity + type constraints), and generate:
+  - command pack for replay simulation in `pwsh`
+  - downloadable combined workflow simulation artifact JSON
