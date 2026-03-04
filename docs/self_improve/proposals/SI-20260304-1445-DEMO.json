@@ -4,12 +4,20 @@
     "type": "docs_gap",
     "severity": "info",
     "summary": "Demo proposal: add a short note to docs/self_improve/README.md",
-    "evidence_refs": ["manual:demo"]
+    "evidence_refs": [
+      "manual:demo"
+    ]
   },
   "plan": {
     "scope": {
-      "allowed_paths": ["docs/self_improve/"],
-      "disallowed_paths": [".github/", "apps/core-api/replay/", "rocketgpt_v3_full/webapp/next/app/api/"],
+      "allowed_paths": [
+        "docs/self_improve/**"
+      ],
+      "disallowed_paths": [
+        ".github/",
+        "apps/core-api/replay/",
+        "rocketgpt_v3_full/webapp/next/app/api/"
+      ],
       "max_files_changed": 5
     },
     "changes": [
@@ -23,7 +31,12 @@
     "rollback": "Revert the commit/PR created by the executor."
   },
   "verification": {
-    "required_checks": ["policy_gate", "safe_mode", "tests", "replay"],
+    "required_checks": [
+      "policy_gate",
+      "safe_mode",
+      "tests",
+      "replay"
+    ],
     "commands": []
   },
   "approvals": {
@@ -31,5 +44,3 @@
     "auto_merge_allowed": false
   }
 }
-
-
