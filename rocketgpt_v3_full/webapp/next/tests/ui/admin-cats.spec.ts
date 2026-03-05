@@ -5,17 +5,17 @@ test.describe("Admin CATS UI", () => {
     const catName = `UI Smoke CAT ${Date.now()}`;
     const createdCatId = "00000000-0000-4000-8000-000000000010";
 
-    await page.route("**/api/cats**", async (route, request) => {
+    await page.route("**/api/_admin/cats*", async (route, request) => {
       const pathname = new URL(request.url()).pathname;
       const method = request.method();
-      if (method === "GET" && pathname === "/api/cats") {
+      if (method === "GET" && pathname === "/api/_admin/cats") {
         return route.fulfill({
           status: 200,
           contentType: "application/json",
           body: JSON.stringify({ page: 1, pageSize: 50, total: 0, items: [] }),
         });
       }
-      if (method === "POST" && pathname === "/api/cats") {
+      if (method === "POST" && pathname === "/api/_admin/cats") {
         return route.fulfill({
           status: 201,
           contentType: "application/json",
@@ -34,7 +34,7 @@ test.describe("Admin CATS UI", () => {
       return route.fallback();
     });
 
-    await page.route(`**/api/cats/${createdCatId}`, async (route, request) => {
+    await page.route(`**/api/_admin/cats/${createdCatId}*`, async (route, request) => {
       if (request.method() === "GET") {
         return route.fulfill({
           status: 200,
@@ -54,7 +54,7 @@ test.describe("Admin CATS UI", () => {
       return route.fallback();
     });
 
-    await page.route(`**/api/cats/${createdCatId}/versions`, async (route, request) => {
+    await page.route(`**/api/_admin/cats/${createdCatId}/versions*`, async (route, request) => {
       if (request.method() === "GET") {
         return route.fulfill({
           status: 200,
@@ -68,7 +68,7 @@ test.describe("Admin CATS UI", () => {
     await page.goto("/admin/cats");
     await expect(page.getByText("Admin CATS Registry")).toBeVisible();
 
-    await page.getByRole("button", { name: "Create CAT" }).click();
+    await page.getByRole("link", { name: "Create CAT" }).click();
     await expect(page.getByRole("heading", { name: "Create CAT" })).toBeVisible();
 
     await page.getByLabel("Name").fill(catName);
