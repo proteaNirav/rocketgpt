@@ -38,8 +38,6 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
     cache: "no-store",
     headers: {
       "content-type": "application/json",
-      "x-tenant-id": process.env.NEXT_PUBLIC_DEMO_TENANT_ID || "00000000-0000-4000-8000-000000000001",
-      "x-user-id": process.env.NEXT_PUBLIC_DEMO_USER_ID || "00000000-0000-4000-8000-000000000002",
       ...(init?.headers || {}),
     },
     ...init,
@@ -61,7 +59,7 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export function listCats(page = 1, pageSize = 20): Promise<ListCatsResponse> {
-  return requestJson<any>(`/api/cats?page=${page}&pageSize=${pageSize}`).then((response) => ({
+  return requestJson<any>(`/api/_admin/cats?page=${page}&pageSize=${pageSize}`).then((response) => ({
     page: response.page,
     pageSize: response.pageSize,
     total: response.total,
@@ -70,18 +68,18 @@ export function listCats(page = 1, pageSize = 20): Promise<ListCatsResponse> {
 }
 
 export function createCat(input: { name: string; description?: string }): Promise<CatDto> {
-  return requestJson<any>("/api/cats", {
+  return requestJson<any>("/api/_admin/cats", {
     method: "POST",
     body: JSON.stringify(input),
   }).then(toCatDto);
 }
 
 export function getCat(catId: string): Promise<CatDto> {
-  return requestJson<any>(`/api/cats/${encodeURIComponent(catId)}`).then(toCatDto);
+  return requestJson<any>(`/api/_admin/cats/${encodeURIComponent(catId)}`).then(toCatDto);
 }
 
 export function updateCat(catId: string, input: { name: string; description?: string }): Promise<CatDto> {
-  return requestJson<any>(`/api/cats/${encodeURIComponent(catId)}`, {
+  return requestJson<any>(`/api/_admin/cats/${encodeURIComponent(catId)}`, {
     method: "PUT",
     body: JSON.stringify(input),
   }).then(toCatDto);
@@ -96,20 +94,20 @@ export function publishCatVersion(
     commandBundleRef: string;
   }
 ): Promise<CatVersionDto> {
-  return requestJson<any>(`/api/cats/${encodeURIComponent(catId)}/versions`, {
+  return requestJson<any>(`/api/_admin/cats/${encodeURIComponent(catId)}/versions`, {
     method: "POST",
     body: JSON.stringify(input),
   }).then(toVersionDto);
 }
 
 export function listCatVersions(catId: string): Promise<ListVersionsResponse> {
-  return requestJson<any>(`/api/cats/${encodeURIComponent(catId)}/versions`).then((response) => ({
+  return requestJson<any>(`/api/_admin/cats/${encodeURIComponent(catId)}/versions`).then((response) => ({
     items: (response.items || []).map(toVersionDto),
   }));
 }
 
 export function transitionCat(catId: string, targetStatus: CatStatus): Promise<CatDto> {
-  return requestJson<any>(`/api/cats/${encodeURIComponent(catId)}/transition`, {
+  return requestJson<any>(`/api/_admin/cats/${encodeURIComponent(catId)}/transition`, {
     method: "POST",
     body: JSON.stringify({ targetStatus }),
   }).then(toCatDto);
