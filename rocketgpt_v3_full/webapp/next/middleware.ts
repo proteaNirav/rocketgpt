@@ -79,6 +79,12 @@ export function middleware(req: NextRequest) {
   if (pathname === "/api/cats" || pathname.startsWith("/api/cats/")) {
     return NextResponse.next();
   }
+  if (pathname === "/api/learning" || pathname.startsWith("/api/learning/")) {
+    return NextResponse.next();
+  }
+  if (pathname === "/api/_admin" || pathname.startsWith("/api/_admin/")) {
+    return NextResponse.next();
+  }
 
   if (!RUNTIME_ALLOWLIST.has(pathname)) {
     const res = new NextResponse("Not Found", { status: 404 });
