@@ -11,6 +11,21 @@ npm run dev
 # open http://localhost:3000
 ```
 
+## Local Admin UI (No Docker)
+Set these in `.env.local`:
+- `NEXT_PUBLIC_SUPABASE_URL=<your supabase url>`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY=<your supabase anon key>`
+- `SUPABASE_SERVICE_ROLE_KEY=<your service role key>`
+- `ADMIN_TOKEN=<admin token>` (use `ADMIN_TOKEN`, not `ROCKETGPT_ADMIN_TOKEN`)
+- `NEXT_PUBLIC_DEV_TENANT_ID=<tenant uuid>`
+- `ALLOW_DEV_ADMIN_PROXY=true` (localhost only dev bypass when not signed in)
+
+Run:
+```bash
+pnpm dev
+pnpm exec playwright test tests/ui/admin-learning.spec.ts tests/ui/admin-cats.spec.ts
+```
+
 ## What"™s included
 - Next.js (app router) + Tailwind
 - PromptBar, DecisionBanner, Toolcard, EstimateBadge, PlanPanel
