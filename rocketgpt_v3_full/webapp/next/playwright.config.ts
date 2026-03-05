@@ -17,7 +17,13 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   webServer: {
-    env: { RGPT_SAFE_MODE: "1", ...process.env },
+    env: {
+      RGPT_SAFE_MODE: "1",
+      CATS_INMEMORY: "1",
+      NEXT_PUBLIC_DEMO_TENANT_ID: "00000000-0000-4000-8000-000000000001",
+      NEXT_PUBLIC_DEMO_USER_ID: "00000000-0000-4000-8000-000000000002",
+      ...process.env,
+    },
     command: "pnpm dev",
     url: "http://localhost:3000",
     reuseExistingServer: true,
@@ -30,6 +36,5 @@ export default defineConfig({
     },
   ],
 });
-
 
 
