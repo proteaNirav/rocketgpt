@@ -7,12 +7,12 @@ if (!CORE) {
   console.error('NEXT_PUBLIC_CORE_API_BASE is not set on the server');
 }
 
-async function forward(req: Request, method: 'GET'|'POST', path: string[]) {
+async function forward(req: Request, method: 'GET'|'POST'|'PUT', path: string[]) {
   const target = `${CORE}/${path.join('/')}`;
   const headers: Record<string,string> = { 'content-type': 'application/json' };
 
   let body: string | undefined = undefined;
-  if (method === 'POST') {
+  if (method === 'POST' || method === 'PUT') {
     try {
       body = JSON.stringify(await req.json());
     } catch {
@@ -35,4 +35,9 @@ export async function GET(req: Request, ctx: { params: Promise<{ path: string[] 
 export async function POST(req: Request, ctx: { params: Promise<{ path: string[] }> }) {
   const { path } = await ctx.params;
   return forward(req, 'POST', path);
+}
+
+export async function PUT(req: Request, ctx: { params: Promise<{ path: string[] }> }) {
+  const { path } = await ctx.params;
+  return forward(req, 'PUT', path);
 }
