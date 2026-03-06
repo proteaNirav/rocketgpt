@@ -1,11 +1,19 @@
 {
   "devDependencies": {
+    "@types/node": "^20.14.9",
     "typescript": "^5.9.3"
   },
   "scripts": {
     "ws:build": "pnpm -r --if-present run build",
     "ws:lint": "pnpm -r --if-present run lint",
     "ws:test": "pnpm -r --if-present run test",
+    "contracts:compile": "npx tsc -p tsconfig.contracts.json",
+    "contracts:test": "node --test src/contracts/__tests__/contracts.validation.test.mjs src/contracts/__tests__/contracts.benchmark.test.mjs",
+    "mesh:test": "npx tsc -p tsconfig.cognitive-mesh.tests.json && node --test .tmp/mesh-tests/__tests__/mesh-router.unit.test.js .tmp/mesh-tests/__tests__/mesh-live-hook.unit.test.js .tmp/mesh-tests/__tests__/cats-registry-summary-cache.unit.test.js .tmp/mesh-tests/__tests__/mesh-router.benchmark.test.js .tmp/mesh-tests/tests/cognitive-mesh/packet/knowledge-packet-factory.test.js .tmp/mesh-tests/tests/cognitive-mesh/packet/knowledge-packet-integrity.test.js .tmp/mesh-tests/tests/cognitive-mesh/packet/knowledge-packet-router-ledger.test.js .tmp/mesh-tests/tests/cognitive-mesh/packet/knowledge-packet-validator.test.js",
+    "env:check": "node scripts/quality/env-hygiene.mjs",
+    "env:fix": "node scripts/quality/env-hygiene.mjs --fix",
+    "libs:index": "node scripts/quality/libs-index.mjs",
+    "libs:check": "node scripts/quality/libs-index.mjs --check",
     "self-improve:scan": "node tools/self-improve/index.mjs scan",
     "self-improve:propose": "node tools/self-improve/index.mjs propose",
     "self-improve:validate": "node tools/self-improve/index.mjs validate",
@@ -18,3 +26,4 @@
     "overrides": {}
   }
 }
+
