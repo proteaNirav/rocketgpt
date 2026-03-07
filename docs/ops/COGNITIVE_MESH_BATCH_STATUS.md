@@ -24,3 +24,13 @@ Last Updated: 2026-03-07
 - Batch-6.1: terminal/finalization discipline coverage strengthened.
 - Batch-7: registry validation and orchestrator envelope/verification negative-path hardening completed.
 - Validation passed.
+
+## Batch-9 - Ecosystem Protection Foundations (EPF): Completed
+
+- Role boundary enforcement documented and enforced at natural control points.
+- Verification trust disposition model added.
+- Trusted commit discipline hardened.
+- Negative-path governance taxonomy added.
+- Governance issues propagated into runtime and CEL.
+- Harmful-pattern experience tagging added.
+- Documentation and tests committed.

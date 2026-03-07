@@ -38,6 +38,10 @@ export class CognitiveExperienceCaptureService {
   }
 
   private augmentHarmfulPatternTags(record: ExperienceRecord): ExperienceRecord {
+    // Repeated-pattern detection is session-local and based on already captured
+    // meaningful records in the in-memory repository. A repeated tag is added on
+    // the 3rd occurrence (2 prior matching records + current record).
+    const priorOccurrencesForRepeatedTag = 2;
     const priorSessionRecords = this.repository.listBySession(record.sessionId);
     const nextTags = [...record.tags];
 
@@ -46,7 +50,7 @@ export class CognitiveExperienceCaptureService {
     ).length;
     if (
       record.governanceIssues.includes(NEGATIVE_PATH_ISSUES.VERIFICATION_UNAVAILABLE) &&
-      verifierUnavailableCount >= 2
+      verifierUnavailableCount >= priorOccurrencesForRepeatedTag
     ) {
       nextTags.push("harmful:repeated_verifier_absence");
     }
@@ -56,18 +60,18 @@ export class CognitiveExperienceCaptureService {
     ).length;
     if (
       record.governanceIssues.includes(NEGATIVE_PATH_ISSUES.CAPABILITY_MALFORMED_RESULT) &&
-      malformedCount >= 2
+      malformedCount >= priorOccurrencesForRepeatedTag
     ) {
       nextTags.push("harmful:repeated_malformed_capability_result");
     }
 
     const fallbackCount = priorSessionRecords.filter((entry) => entry.circumstances.fallbackTriggered).length;
-    if (record.circumstances.fallbackTriggered && fallbackCount >= 2) {
+    if (record.circumstances.fallbackTriggered && fallbackCount >= priorOccurrencesForRepeatedTag) {
       nextTags.push("harmful:repeated_fallback_dependency");
     }
 
     const guardedCount = priorSessionRecords.filter((entry) => entry.outcome.classification === "guarded").length;
-    if (record.outcome.classification === "guarded" && guardedCount >= 2) {
+    if (record.outcome.classification === "guarded" && guardedCount >= priorOccurrencesForRepeatedTag) {
       nextTags.push("harmful:guarded_outcome_cluster");
     }
 

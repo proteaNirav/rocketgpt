@@ -88,7 +88,10 @@ export interface ExperienceRecord {
   outcome: ExperienceOutcome;
   circumstances: CircumstantialContext;
   learnableValue: LearnableValueAssessment;
+  // Canonical normalized governance issue codes attached to this outcome.
   governanceIssues: NegativePathIssueCode[];
+  // Search-friendly tags. `issue:*` tags are derived from governanceIssues.
+  // `harmful:*` tags are derived clustering signals and are not canonical issue codes.
   tags: string[];
   relevanceScore: number;
   isMeaningful: boolean;

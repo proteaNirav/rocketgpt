@@ -10,6 +10,7 @@ import type { CapabilityAdaptor } from "../capabilities/adaptors/capability-adap
 import type { CapabilityDefinition } from "../capabilities/types/capability.types";
 import type { CapabilityRequestEnvelope } from "../capabilities/types/capability-request.types";
 import type { CapabilityResultEnvelope } from "../capabilities/types/capability-result.types";
+import { NEGATIVE_PATH_ISSUES } from "../governance/negative-path-taxonomy";
 
 test("orchestrator invokes approved capability and returns standardized outcome", async () => {
   const orchestrator = new CapabilityMeshOrchestrator(new CapabilityRegistry(), [
@@ -77,7 +78,7 @@ test("orchestrator applies verification for required capability", async () => {
   assert.ok(outcome.verification);
   assert.equal(outcome.shouldCommit, false);
   assert.equal(outcome.verificationDisposition, "passed");
-  assert.equal(outcome.governanceIssues.includes("verification_failed"), false);
+  assert.equal(outcome.governanceIssues.includes(NEGATIVE_PATH_ISSUES.VERIFICATION_FAILED), false);
 });
 
 test("orchestrator does not commit when verification is required but verifier is missing", async () => {
@@ -124,7 +125,7 @@ test("orchestrator does not commit when verification is required but verifier is
   assert.equal(outcome.verification, undefined);
   assert.equal(outcome.shouldCommit, false);
   assert.equal(outcome.verificationDisposition, "unavailable");
-  assert.equal(outcome.governanceIssues.includes("verification_unavailable"), true);
+  assert.equal(outcome.governanceIssues.includes(NEGATIVE_PATH_ISSUES.VERIFICATION_UNAVAILABLE), true);
 });
 
 test("orchestrator normalizes malformed capability result envelope", async () => {
@@ -174,7 +175,7 @@ test("orchestrator normalizes malformed capability result envelope", async () =>
   assert.equal(outcome.result.verificationRequired, false);
   assert.equal(typeof outcome.result.completedAt, "string");
   assert.equal(outcome.shouldCommit, false);
-  assert.equal(outcome.governanceIssues.includes("capability_malformed_result"), true);
+  assert.equal(outcome.governanceIssues.includes(NEGATIVE_PATH_ISSUES.CAPABILITY_MALFORMED_RESULT), true);
 });
 
 test("orchestrator preserves verification-failed trust disposition and blocks commit", async () => {
@@ -231,6 +232,65 @@ test("orchestrator preserves verification-failed trust disposition and blocks co
   });
 
   assert.equal(outcome.verificationDisposition, "failed");
-  assert.equal(outcome.governanceIssues.includes("verification_failed"), true);
+  assert.equal(outcome.governanceIssues.includes(NEGATIVE_PATH_ISSUES.VERIFICATION_FAILED), true);
   assert.equal(outcome.shouldCommit, false);
+});
+
+test("orchestrator preserves downgraded non-trusted outcome without dropping result", async () => {
+  class ReviewVerificationCapability extends VerificationCapability {
+    override verify(request: Parameters<VerificationCapability["verify"]>[0]) {
+      return {
+        ...super.verify(request),
+        verdict: "review" as const,
+        recommendedAction: "review" as const,
+      };
+    }
+  }
+
+  class DowngradedCandidateCapability implements CapabilityAdaptor {
+    getCapabilityDefinition(): CapabilityDefinition {
+      return {
+        capabilityId: "cap.downgraded.candidate.v1",
+        name: "downgraded-candidate",
+        family: "knowledge",
+        version: "1.0.0",
+        status: "active",
+        description: "returns success but needs verification",
+        ownerAuthority: "test",
+        allowedOperations: ["candidate.review"],
+        verificationMode: "required",
+        riskLevel: "medium",
+        directBrainCommitAllowed: true,
+      };
+    }
+    async invoke(request: CapabilityRequestEnvelope): Promise<CapabilityResultEnvelope> {
+      return {
+        requestId: request.requestId,
+        sessionId: request.sessionId,
+        capabilityId: request.capabilityId,
+        status: "success",
+        payload: { ok: true, detail: "non_trusted_review" },
+        verificationRequired: true,
+        completedAt: new Date().toISOString(),
+      };
+    }
+  }
+
+  const orchestrator = new CapabilityMeshOrchestrator(new CapabilityRegistry(), [
+    new DowngradedCandidateCapability(),
+    new ReviewVerificationCapability(),
+  ]);
+  const outcome = await orchestrator.invoke({
+    requestId: "req-orch-verify-review",
+    sessionId: "session-orch",
+    capabilityId: "cap.downgraded.candidate.v1",
+    purpose: "verify-review",
+    input: { value: 1 },
+    createdAt: new Date().toISOString(),
+  });
+
+  assert.equal(outcome.result.status, "success");
+  assert.equal(outcome.verificationDisposition, "downgraded");
+  assert.equal(outcome.shouldCommit, false);
+  assert.ok(outcome.result.payload);
 });

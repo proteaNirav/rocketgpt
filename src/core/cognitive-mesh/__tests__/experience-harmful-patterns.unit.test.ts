@@ -35,14 +35,20 @@ test("CEL adds harmful pattern tag for repeated verifier absence", () => {
   const service = new CognitiveExperienceCaptureService(new InMemoryExperienceRepository(100));
   const sessionId = "harmful-verifier-absence";
 
-  service.captureExecutionExperience(baseFacts(sessionId));
-  service.captureExecutionExperience(baseFacts(sessionId));
+  const first = service.captureExecutionExperience(baseFacts(sessionId));
+  const second = service.captureExecutionExperience(baseFacts(sessionId));
   const third = service.captureExecutionExperience(baseFacts(sessionId));
 
+  assert.equal(first.record.tags.includes("harmful:repeated_verifier_absence"), false);
+  assert.equal(second.record.tags.includes("harmful:repeated_verifier_absence"), false);
   assert.equal(third.captured, true);
   assert.equal(third.record.tags.includes("harmful:repeated_verifier_absence"), true);
   assert.equal(
     third.record.tags.includes(`issue:${NEGATIVE_PATH_ISSUES.VERIFICATION_UNAVAILABLE}`),
+    true
+  );
+  assert.equal(
+    third.record.governanceIssues.includes(NEGATIVE_PATH_ISSUES.VERIFICATION_UNAVAILABLE),
     true
   );
 });
@@ -71,4 +77,3 @@ test("CEL adds harmful pattern tag for guarded outcome clusters", () => {
   assert.equal(third.record.outcome.classification, "guarded");
   assert.equal(third.record.tags.includes("harmful:guarded_outcome_cluster"), true);
 });
-

@@ -53,6 +53,7 @@ Batch-9 normalized issue categories:
 - `runtime_capture_failed`
 
 Usage is intentionally compact and deterministic.
+Canonical source of truth: `src/core/cognitive-mesh/governance/negative-path-taxonomy.ts`.
 
 ## Commit and Verification Discipline
 
@@ -61,6 +62,7 @@ Usage is intentionally compact and deterministic.
 - Downgraded verification remains explicit (`downgraded`) and blocks trusted commit.
 - Guarded and fallback outcomes preserve provenance.
 - Malformed capability outputs are normalized and prevented from trusted commit.
+- Non-trusted outcomes are still preserved in orchestrator output/runtime traces/CEL capture flows where meaningful.
 
 ## Lifecycle Protection Rules
 
@@ -71,6 +73,11 @@ Usage is intentionally compact and deterministic.
 
 ## CEL Harmful-Pattern Tagging Scope
 
+Record semantics:
+- `governanceIssues`: canonical normalized issue codes for this outcome.
+- `issue:*` tags: searchable convenience tags derived from `governanceIssues`.
+- `harmful:*` tags: deterministic clustering labels for repeated/grouped instability patterns.
+
 Batch-9 adds deterministic meaningful tags such as:
 - repeated verifier absence
 - repeated malformed capability result
@@ -78,5 +85,13 @@ Batch-9 adds deterministic meaningful tags such as:
 - guarded outcome clusters
 - lifecycle violation attempts
 
-No adaptive response is performed in Batch-9.
+Repeated semantics:
+- scope: same session only
+- source set: already captured meaningful records in the in-memory repository
+- threshold: tag is emitted on the 3rd occurrence (`2` prior matches + current record)
 
+`fallback_exhausted` semantics:
+- used only for strict-mode failure handling paths where no permissive fallback path is allowed and execution exits as failed.
+- fallback-mode completion paths preserve fallback provenance without forcing `fallback_exhausted`.
+
+No adaptive response is performed in Batch-9.
