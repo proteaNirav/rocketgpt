@@ -1,32 +1,32 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
-import Button from "@/components/ui/button";
-import { CatDto, listCats } from "@/lib/admin-cats-api";
+import Button from '@/components/ui/button'
+import { CatDto, listCats } from '@/lib/admin-cats-api'
 
 export default function AdminCatsPage() {
-  const [items, setItems] = useState<CatDto[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<CatDto[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
   async function load() {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
     try {
-      const response = await listCats(1, 50);
-      setItems(response.items);
+      const response = await listCats(1, 50)
+      setItems(response.items)
     } catch (err: any) {
-      setError(String(err?.message || err));
+      setError(String(err?.message || err))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   useEffect(() => {
-    void load();
-  }, []);
+    void load()
+  }, [])
 
   return (
     <div className="mx-auto max-w-6xl space-y-4 p-4">
@@ -42,7 +42,11 @@ export default function AdminCatsPage() {
         </div>
       </div>
 
-      {error ? <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
+      {error ? (
+        <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </p>
+      ) : null}
 
       <div className="overflow-x-auto rounded-md border">
         <table className="min-w-full text-sm">
@@ -78,5 +82,5 @@ export default function AdminCatsPage() {
         </table>
       </div>
     </div>
-  );
+  )
 }

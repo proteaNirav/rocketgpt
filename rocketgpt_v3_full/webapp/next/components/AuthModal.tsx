@@ -2,13 +2,7 @@
 import { useState } from 'react'
 import { getSupabase } from '@/lib/supabaseClient'
 
-export default function AuthModal({
-  open,
-  onClose,
-}: {
-  open: boolean
-  onClose: () => void
-}) {
+export default function AuthModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [email, setEmail] = useState('')
   const [msg, setMsg] = useState('')
 
@@ -23,7 +17,9 @@ export default function AuthModal({
     }
     const { error } = await sb.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined },
+      options: {
+        emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+      },
     })
     setMsg(error ? error.message : 'Magic link sent Ã¢â‚¬" check your inbox.')
   }
@@ -53,5 +49,3 @@ export default function AuthModal({
     </div>
   )
 }
-
-

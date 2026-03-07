@@ -1,54 +1,55 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 
 type UsageEntry = {
-  date: string;
-  requests: number;
-  tokens: number;
-};
+  date: string
+  requests: number
+  tokens: number
+}
 
 type UsageResponse = {
-  ok?: boolean;
-  usage: UsageEntry[];
-  totals?: { requests: number; tokens: number };
-  message?: string;
-};
+  ok?: boolean
+  usage: UsageEntry[]
+  totals?: { requests: number; tokens: number }
+  message?: string
+}
 
 export default function UsagePage() {
-  const [usage, setUsage] = useState<UsageEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [usage, setUsage] = useState<UsageEntry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadUsage() {
       try {
-        setLoading(true);
-        setError(null);
+        setLoading(true)
+        setError(null)
 
-        const res = await fetch("/api/usage");
+        const res = await fetch('/api/usage')
         if (!res.ok) {
-          throw new Error(`Failed to load usage (${res.status})`);
+          throw new Error(`Failed to load usage (${res.status})`)
         }
 
-        const json = (await res.json()) as UsageResponse;
-        setUsage(json.usage ?? []);
+        const json = (await res.json()) as UsageResponse
+        setUsage(json.usage ?? [])
       } catch (err: any) {
-        console.error("Failed to load usage", err);
-        setError(err?.message ?? "Failed to load usage");
+        console.error('Failed to load usage', err)
+        setError(err?.message ?? 'Failed to load usage')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    loadUsage();
-  }, []);
+    loadUsage()
+  }, [])
 
   return (
     <div className="p-6 space-y-4 text-gray-900 dark:text-gray-100">
       <h1 className="text-xl font-semibold">Usage Dashboard</h1>
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        This page will evolve into full usage analytics. Currently powered by <code>/api/usage</code>.
+        This page will evolve into full usage analytics. Currently powered by{' '}
+        <code>/api/usage</code>.
       </p>
 
       {loading && (
@@ -97,9 +98,7 @@ export default function UsagePage() {
 
           {usage.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                No usage data yet.
-              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">No usage data yet.</p>
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 Usage analytics will appear here once enabled.
               </p>
@@ -123,9 +122,7 @@ export default function UsagePage() {
                       <td className="py-2 pr-4 text-gray-800 dark:text-gray-200">
                         {new Date(row.date).toLocaleDateString()}
                       </td>
-                      <td className="py-2 pr-4 text-gray-800 dark:text-gray-200">
-                        {row.requests}
-                      </td>
+                      <td className="py-2 pr-4 text-gray-800 dark:text-gray-200">{row.requests}</td>
                       <td className="py-2 pr-4 text-right text-gray-800 dark:text-gray-200">
                         {row.tokens}
                       </td>
@@ -142,5 +139,5 @@ export default function UsagePage() {
         </div>
       )}
     </div>
-  );
+  )
 }
