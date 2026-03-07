@@ -1,18 +1,13 @@
-import type { ErrorEnvelope } from "./errorEnvelope";
+import type { ErrorEnvelope } from './errorEnvelope'
 
-export type OrchestratorStage =
-  | "planner"
-  | "builder"
-  | "tester"
-  | "orchestrator"
-  | string;
+export type OrchestratorStage = 'planner' | 'builder' | 'tester' | 'orchestrator' | string
 
 export interface OrchestratorResponse<T = any> {
-  success: boolean;
-  run_id: string;
-  stage?: OrchestratorStage;
-  data?: T;
-  error?: ErrorEnvelope | null;
+  success: boolean
+  run_id: string
+  stage?: OrchestratorStage
+  data?: T
+  error?: ErrorEnvelope | null
 }
 
 /**
@@ -21,7 +16,7 @@ export interface OrchestratorResponse<T = any> {
 export function makeSuccessResponse<T>(
   run_id: string,
   stage: OrchestratorStage,
-  data: T
+  data: T,
 ): OrchestratorResponse<T> {
   return {
     success: true,
@@ -29,7 +24,7 @@ export function makeSuccessResponse<T>(
     stage,
     data,
     error: null,
-  };
+  }
 }
 
 /**
@@ -38,7 +33,7 @@ export function makeSuccessResponse<T>(
 export function makeErrorResponse(
   run_id: string,
   stage: OrchestratorStage,
-  error: ErrorEnvelope
+  error: ErrorEnvelope,
 ): OrchestratorResponse<null> {
   return {
     success: false,
@@ -46,5 +41,5 @@ export function makeErrorResponse(
     stage,
     data: null,
     error,
-  };
+  }
 }

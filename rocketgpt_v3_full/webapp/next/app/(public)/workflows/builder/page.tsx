@@ -1,4 +1,4 @@
-import WorkflowBuilder from "@/components/workflows/WorkflowBuilder";
+import WorkflowBuilder from '@/components/workflows/WorkflowBuilder'
 
 export default function WorkflowsBuilderPage() {
   return (
@@ -9,5 +9,5 @@ export default function WorkflowsBuilderPage() {
       </p>
       <WorkflowBuilder />
     </div>
-  );
+  )
 }

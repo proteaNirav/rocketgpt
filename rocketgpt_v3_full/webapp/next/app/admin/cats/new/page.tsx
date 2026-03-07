@@ -1,32 +1,32 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import type { FormEvent } from "react";
+import Link from 'next/link'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import type { FormEvent } from 'react'
 
-import Button from "@/components/ui/button";
-import Input from "@/components/ui/input";
-import { createCat } from "@/lib/admin-cats-api";
+import Button from '@/components/ui/button'
+import Input from '@/components/ui/input'
+import { createCat } from '@/lib/admin-cats-api'
 
 export default function AdminCatsNewPage() {
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter()
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-    setError(null);
+    e.preventDefault()
+    setSaving(true)
+    setError(null)
     try {
-      const created = await createCat({ name: name.trim(), description: description.trim() });
-      router.push(`/admin/cats/${created.catId}`);
+      const created = await createCat({ name: name.trim(), description: description.trim() })
+      router.push(`/admin/cats/${created.catId}`)
     } catch (err: any) {
-      setError(String(err?.message || err));
+      setError(String(err?.message || err))
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
   }
 
@@ -67,9 +67,9 @@ export default function AdminCatsNewPage() {
         </div>
         {error ? <p className="text-sm text-red-700">{error}</p> : null}
         <Button type="submit" disabled={saving || !name.trim()}>
-          {saving ? "Creating..." : "Create Draft CAT"}
+          {saving ? 'Creating...' : 'Create Draft CAT'}
         </Button>
       </form>
     </div>
-  );
+  )
 }

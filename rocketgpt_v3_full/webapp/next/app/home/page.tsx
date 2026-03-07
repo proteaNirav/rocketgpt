@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import LeftSessionsPane from "./ChatWorkspace/LeftSessionsPane";
-import CenterChatPane from "./ChatWorkspace/CenterChatPane";
-import RightInspectorPane from "./ChatWorkspace/RightInspectorPane";
-import CollapsibleWrapper from "./ChatWorkspace/CollapsibleWrapper";
-import { HomeChatProvider } from "./ChatWorkspace/HomeChatContext";
+import LeftSessionsPane from './ChatWorkspace/LeftSessionsPane'
+import CenterChatPane from './ChatWorkspace/CenterChatPane'
+import RightInspectorPane from './ChatWorkspace/RightInspectorPane'
+import CollapsibleWrapper from './ChatWorkspace/CollapsibleWrapper'
+import { HomeChatProvider } from './ChatWorkspace/HomeChatContext'
 
 export default function HomeChatPage() {
   return (
@@ -25,5 +25,5 @@ export default function HomeChatPage() {
         </div>
       </div>
     </HomeChatProvider>
-  );
+  )
 }

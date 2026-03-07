@@ -1,8 +1,8 @@
-import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
-export const runtime = "nodejs";
+import { runtimeGuard } from '@/rgpt/runtime/runtime-guard'
+export const runtime = 'nodejs'
 
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 
 /**
  * GET /api/orchestrator/run/status
@@ -15,18 +15,18 @@ export const fetchCache = "force-no-store";
  * to accept ?runId=... and return run status details.
  */
 export async function GET(req: Request) {
-  await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-  const url = new URL(req.url);
-  const runId = url.searchParams.get("runId");
+  await runtimeGuard(req, { permission: 'API_CALL' }) // TODO(S4): tighten permission per route
+  const url = new URL(req.url)
+  const runId = url.searchParams.get('runId')
 
   // Minimal safe response; does not disclose secrets
   return Response.json({
     success: true,
-    route: "/api/orchestrator/run/status",
+    route: '/api/orchestrator/run/status',
     runId: runId ?? null,
     message: runId
-      ? "Run status query is not yet implemented; extend this endpoint to read run state."
-      : "Orchestrator run status endpoint is operational.",
+      ? 'Run status query is not yet implemented; extend this endpoint to read run state.'
+      : 'Orchestrator run status endpoint is operational.',
     timestamp: new Date().toISOString(),
-  });
+  })
 }

@@ -1,36 +1,44 @@
-"use client";
+'use client'
 
-import { WorkflowNode } from "@/lib/workflow-types";
+import { WorkflowNode } from '@/lib/workflow-types'
 
-import StepCard from "@/components/workflows/StepCard";
+import StepCard from '@/components/workflows/StepCard'
 
 type WorkflowCanvasProps = {
-  nodes: WorkflowNode[];
-  onDropPaletteCat: (catId: string) => void;
-  onMove: (nodeId: string, direction: -1 | 1) => void;
-  onDelete: (nodeId: string) => void;
-  onReorder: (fromIndex: number, toIndex: number) => void;
-};
+  nodes: WorkflowNode[]
+  onDropPaletteCat: (catId: string) => void
+  onMove: (nodeId: string, direction: -1 | 1) => void
+  onDelete: (nodeId: string) => void
+  onReorder: (fromIndex: number, toIndex: number) => void
+}
 
-export default function WorkflowCanvas({ nodes, onDropPaletteCat, onMove, onDelete, onReorder }: WorkflowCanvasProps) {
+export default function WorkflowCanvas({
+  nodes,
+  onDropPaletteCat,
+  onMove,
+  onDelete,
+  onReorder,
+}: WorkflowCanvasProps) {
   return (
     <section
       className="rounded-xl border border-gray-200 p-4 dark:border-neutral-800"
       onDragOver={(event) => {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "copy";
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'copy'
       }}
       onDrop={(event) => {
-        event.preventDefault();
-        const droppedCatId = event.dataTransfer.getData("text/plain");
+        event.preventDefault()
+        const droppedCatId = event.dataTransfer.getData('text/plain')
         if (droppedCatId) {
-          onDropPaletteCat(droppedCatId);
+          onDropPaletteCat(droppedCatId)
         }
       }}
       aria-label="Workflow canvas"
     >
       <h2 className="text-lg font-semibold">Workflow Canvas</h2>
-      <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">Drop CAT cards here. Order represents the execution path.</p>
+      <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+        Drop CAT cards here. Order represents the execution path.
+      </p>
 
       <div className="mt-3 space-y-2">
         {nodes.length === 0 ? (
@@ -52,5 +60,5 @@ export default function WorkflowCanvas({ nodes, onDropPaletteCat, onMove, onDele
         )}
       </div>
     </section>
-  );
+  )
 }

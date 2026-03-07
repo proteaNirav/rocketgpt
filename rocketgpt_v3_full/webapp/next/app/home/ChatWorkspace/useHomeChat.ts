@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 // Re-export from context for backward compatibility
 export {
@@ -6,6 +6,6 @@ export {
   HomeChatProvider,
   type HomeChatMessage,
   type HomeChatRole,
-} from "./HomeChatContext";
+} from './HomeChatContext'
 
-export type { UseHomeChatResult } from "./HomeChatContext";
+export type { UseHomeChatResult } from './HomeChatContext'

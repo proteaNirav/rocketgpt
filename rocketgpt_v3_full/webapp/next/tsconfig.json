@@ -1,45 +1,30 @@
 {
-    "compilerOptions":  {
-                            "target":  "ES2022",
-                            "lib":  [
-                                        "dom",
-                                        "dom.iterable",
-                                        "esnext"
-                                    ],
-                            "allowJs":  true,
-                            "skipLibCheck":  true,
-                            "strict":  false,
-                            "noEmit":  true,
-                            "incremental":  true,
-                            "module":  "esnext",
-                            "esModuleInterop":  true,
-                            "moduleResolution":  "node",
-                            "resolveJsonModule":  true,
-                            "isolatedModules":  true,
-                            "jsx":  "preserve",
-                            "baseUrl":  ".",
-                            "downlevelIteration":  true,
-                            "plugins":  [
-                                            {
-                                                "name":  "next"
-                                            }
-                                        ],
-                            "paths":  {
-                                          "@/rgpt/*":  [
-                                                           "./src/rgpt/*"
-                                                       ],
-                                          "@/*":  [
-                                                      "./*"
-                                                  ]
-                                      }
-                        },
-    "include":  [
-                    "next-env.d.ts",
-                    ".next/types*.ts",
-                    "**/*.tsx",
-                    ".next/types/**/*.ts"
-                ],
-    "exclude":  [
-                    "node_modules"
-                ]
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "incremental": true,
+    "module": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "downlevelIteration": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/rgpt/*": ["./src/rgpt/*"],
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", ".next/types*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

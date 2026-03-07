@@ -1,13 +1,9 @@
-import Link from "next/link";
+import Link from 'next/link'
 
-import { isDemoMode } from "@/lib/demo-mode";
+import { isDemoMode } from '@/lib/demo-mode'
 
-export default function PublicLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const demoMode = isDemoMode();
+export default function PublicLayout({ children }: { children: React.ReactNode }) {
+  const demoMode = isDemoMode()
 
   return (
     <div className="space-y-6">
@@ -39,5 +35,5 @@ export default function PublicLayout({
       </header>
       <section>{children}</section>
     </div>
-  );
+  )
 }
