@@ -52,6 +52,20 @@ Ledger integration:
 - one runtime ledger append entry for successful single-shot heartbeat
 - no capability/workflow dispatch actions are triggered by this path
 
+## Identity model clarification
+- `entryId` (execution ledger):
+  - cross-process unique append id generated per record (`exec_<time>_<entropy>`)
+  - intended for durable record identity and operational tracing
+- `executionId`:
+  - correlates events within an execution stream
+  - for manual heartbeat this is per-attempt (`heartbeat_<runtimeId>_<timestamp-fragment>`)
+- `stableIdentity` (canonical timeline):
+  - deterministic semantic identity hash from canonicalized event material
+  - equivalent semantic events intentionally share the same stable identity
+- `eventId` (canonical timeline):
+  - deterministic from execution stream + sequence + stable identity
+  - uniqueness depends on stream sequencing context, not random entropy
+
 ## Fail-safe defaults
 - env unset -> blocked
 - file missing -> blocked

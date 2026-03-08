@@ -141,7 +141,7 @@ test("manual heartbeat path does not trigger capability or workflow dispatch act
   });
   const entries = ledger.snapshot();
   assert.equal(entries.length, 1);
-  assert.equal(entries[0]?.action, "heartbeat.manual.single");
+  assert.equal(entries[0]?.action, "runtime.heartbeat.manual.single");
   assert.equal(entries[0]?.target, "system_heartbeat");
   assert.equal(entries.some((entry) => entry.eventType === "dispatch.started"), false);
   assert.equal(entries.some((entry) => entry.eventType === "execution.started"), false);
@@ -155,4 +155,3 @@ test("kill-switch parser preserves loaded state and defaults", async () => {
   assert.equal(result.config.runtimeSignals, true);
   assert.equal(result.config.capabilityDispatch, true);
 });
-

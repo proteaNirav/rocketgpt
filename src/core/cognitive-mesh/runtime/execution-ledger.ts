@@ -1,5 +1,6 @@
 import { appendFile, mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
+import { randomUUID } from "node:crypto";
 import type { DispatchGuardDecision } from "./dispatch-guard";
 import type { RuntimeGuardDecision } from "./runtime-guard";
 import {
@@ -115,12 +116,17 @@ function toText(value: string | undefined, fallback: string): string {
   return typeof value === "string" && value.trim().length > 0 ? value : fallback;
 }
 
+function createLedgerEntryId(timestampIso: string): string {
+  const ts = timestampIso.replace(/[-:.TZ]/g, "").slice(0, 17);
+  const entropy = randomUUID().replace(/-/g, "").slice(0, 12);
+  return `exec_${ts}_${entropy}`;
+}
+
 export class ExecutionLedger {
   private readonly entries: ExecutionLedgerEntry[] = [];
   private readonly timelineEvents: CanonicalTimelineEvent[] = [];
   private readonly timelineSequenceByExecutionId = new Map<string, number>();
   private readonly timelinePrevHashByExecutionId = new Map<string, string>();
-  private sequence = 0;
   private durablePathReady = false;
   private durableTimelinePathReady = false;
 
@@ -130,9 +136,10 @@ export class ExecutionLedger {
   ) {}
 
   append(input: ExecutionLedgerAppendInput): ExecutionLedgerEntry {
+    const timestamp = input.timestamp ?? new Date().toISOString();
     const entry: ExecutionLedgerEntry = {
-      entryId: `exec_${++this.sequence}`,
-      timestamp: input.timestamp ?? new Date().toISOString(),
+      entryId: createLedgerEntryId(timestamp),
+      timestamp,
       category: input.category,
       eventType: input.eventType,
       action: toText(input.action, "unknown_action"),

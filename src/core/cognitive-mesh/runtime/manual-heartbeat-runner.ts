@@ -48,6 +48,11 @@ function resolveRuntimeId(input?: string): string {
   return `rgpt-${hostname().toLowerCase()}`;
 }
 
+function buildHeartbeatExecutionId(runtimeId: string, timestampIso: string): string {
+  const ts = timestampIso.replace(/[-:.TZ]/g, "").slice(0, 17);
+  return `heartbeat_${runtimeId}_${ts}`;
+}
+
 export async function runSingleManualHeartbeat(input: ManualHeartbeatRunInput = {}): Promise<ManualHeartbeatRunResult> {
   const now = input.now ?? new Date();
   const attemptedAt = now.toISOString();
@@ -82,6 +87,7 @@ export async function runSingleManualHeartbeat(input: ManualHeartbeatRunInput = 
       fileState: decision.metadata.fileState,
     },
   };
+  const executionId = buildHeartbeatExecutionId(runtimeId, attemptedAt);
 
   const runtimeSignal = createRuntimeSignal({
     signalType: "system_heartbeat",
@@ -93,7 +99,7 @@ export async function runSingleManualHeartbeat(input: ManualHeartbeatRunInput = 
       requestId: input.requestId,
       sessionId: input.sessionId,
       correlationId: input.requestId,
-      executionId: `heartbeat_${runtimeId}`,
+      executionId,
     },
     reasonCodes: decision.reasonCodes,
     metadata: {
@@ -113,7 +119,7 @@ export async function runSingleManualHeartbeat(input: ManualHeartbeatRunInput = 
       requestId: input.requestId,
       sessionId: input.sessionId,
       correlationId: input.requestId,
-      executionId: runtimeSignal.ids.executionId,
+      executionId,
     },
     mode: "normal",
     status: "evaluated",
