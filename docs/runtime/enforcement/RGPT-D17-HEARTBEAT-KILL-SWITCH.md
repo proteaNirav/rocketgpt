@@ -15,6 +15,7 @@ Heartbeat remains disabled unless all control layers allow execution.
    - missing file: fail-safe disabled
    - malformed file: fail-safe disabled
 3. Guard-level safety gate:
+- current implementation note: rate limiting is process-local/in-memory for the manual CLI path in this batch; cross-process persistence is deferred to a later batch
    - frequency guard rejects high-rate heartbeat attempts
    - conservative threshold for this batch: max 1 per 10 seconds per runtime id
 
