@@ -4,6 +4,7 @@ Last Updated: 2026-03-08
 
 ## Next Batch
 
+- Batch-19 (Heartbeat Kill Switch Contract): Completed.
 - Batch-18 (Constitutional Evaluation Hook): Completed.
 - Batch-17 (Experience Engine): Completed.
 - Batch-16 (Memory Reinforcement Scoring): Completed.
@@ -11,6 +12,15 @@ Last Updated: 2026-03-08
 - Batch-14 (Memory Adoption): Completed.
 - Batch-13 (Cognitive Signal System): Completed.
 - Batch-12 (Motivated Recall): Active.
+
+## Batch-19 - Heartbeat Kill Switch Contract: Completed
+
+- Added centralized heartbeat kill-switch contract with three control layers (env/file/rate guard).
+- Default behavior is fail-safe disabled when env is unset/false or file is missing/malformed.
+- Added single-shot manual heartbeat runner and CLI command (no scheduler/loop).
+- Added typed system heartbeat signal payload and runtime signal emission (`system_heartbeat`).
+- Added one runtime ledger write path for successful single-shot heartbeat attempts.
+- Added focused tests for blocked/allowed/rate-limit and no-capability-dispatch behavior.
 
 ## Batch-18 - Constitutional Evaluation Hook: Completed
 

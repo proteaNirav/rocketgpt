@@ -6,6 +6,7 @@ import type { SideEffectDriftResult } from "./side-effect-drift-detector";
 import type { NegativePathIssueCode } from "../governance/negative-path-taxonomy";
 
 export type CognitiveRuntimeSignalType =
+  | "system_heartbeat"
   | "execution_ok"
   | "degraded_execution"
   | "verification_warning"
@@ -94,6 +95,7 @@ export interface DeriveCapabilitySignalsInput {
 }
 
 const SIGNAL_CATEGORY_BY_TYPE: Record<CognitiveRuntimeSignalType, CognitiveRuntimeSignalCategory> = {
+  system_heartbeat: "execution",
   execution_ok: "execution",
   degraded_execution: "execution",
   verification_warning: "verification",
@@ -110,6 +112,7 @@ const SIGNAL_CATEGORY_BY_TYPE: Record<CognitiveRuntimeSignalType, CognitiveRunti
 };
 
 const SIGNAL_SEVERITY_BY_TYPE: Record<CognitiveRuntimeSignalType, CognitiveRuntimeSignalSeverity> = {
+  system_heartbeat: "info",
   execution_ok: "info",
   degraded_execution: "medium",
   verification_warning: "medium",

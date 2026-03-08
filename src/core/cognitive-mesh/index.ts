@@ -97,6 +97,8 @@ export * from "./runtime/ledger-integrity-verifier";
 export * from "./runtime/cognitive-signal-system";
 export * from "./runtime/dispatch-guard";
 export * from "./runtime/runtime-guard";
+export * from "./runtime/heartbeat-kill-switch";
+export * from "./runtime/manual-heartbeat-runner";
 export * from "./runtime/messaging/cognitive-messaging-plane-runtime";
 export * from "./thinking/categorizer";
 export * from "./thinking/context-builder";
