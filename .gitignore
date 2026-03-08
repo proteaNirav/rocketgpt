@@ -151,3 +151,8 @@ docs/self_improve/evidence/
 docs/self_improve/findings/latest.json
 docs/self_improve/ledgers/*.jsonl
 docs/self_improve/proposals/*.meta.json
+
+# RocketGPT cognitive runtime artifacts
+.rocketgpt/
+.tmp/
+rocketgpt_v3_full/webapp/next/supabase/.temp/
