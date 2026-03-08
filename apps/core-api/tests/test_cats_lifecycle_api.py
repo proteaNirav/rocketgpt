@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import shutil
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -99,6 +100,104 @@ class CatsLifecycleApiTests(unittest.TestCase):
         )
         self.assertEqual(updated.status_code, 409, updated.text)
         self.assertIn("Draft/Review", updated.json()["detail"])
+
+    def test_capability_index_search_and_route(self) -> None:
+        created = self.client.post(
+            "/api/cats",
+            headers=self.headers,
+            json={"name": "Policy Router", "description": "Routing CAT"},
+        )
+        self.assertEqual(created.status_code, 201, created.text)
+        cat_id = created.json()["catId"]
+
+        publish = self.client.post(
+            f"/api/cats/{cat_id}/versions",
+            headers=self.headers,
+            json={
+                "version": "1.2.3",
+                "manifestJson": {
+                    "entrypoint": "run",
+                    "tags": ["policy", "governance"],
+                    "trustTier": "high",
+                    "inputs_schema": {"type": "object", "properties": {"text": {"type": "string"}}},
+                    "outputs_schema": {"type": "object", "properties": {"ok": {"type": "boolean"}}},
+                },
+                "rulebookJson": {"policy": "strict"},
+                "commandBundleRef": "cats/bundles/policy-v123",
+            },
+        )
+        self.assertEqual(publish.status_code, 201, publish.text)
+        publish_body = publish.json()
+        self.assertTrue(publish_body["capabilityIndexed"])
+        self.assertIn("cats_index_version", publish_body["indexTelemetry"])
+        self.assertIn("index_refresh_ms", publish_body["indexTelemetry"])
+
+        by_key = self.client.get(f"/api/cats/{cat_id}/index/1.2.3", headers=self.headers)
+        self.assertEqual(by_key.status_code, 200, by_key.text)
+        index_body = by_key.json()
+        self.assertEqual(index_body["catId"], cat_id)
+        self.assertEqual(index_body["version"], "1.2.3")
+        self.assertEqual(index_body["trustTier"], "high")
+        self.assertEqual(set(index_body["tags"]), {"policy", "governance"})
+        self.assertIsNotNone(index_body["inputsSig"])
+        self.assertIsNotNone(index_body["outputsSig"])
+        self.assertTrue(str(index_body["manifestRef"]).startswith("cat-version://"))
+        self.assertTrue(str(index_body["rulebookRef"]).startswith("cat-version://"))
+
+        search = self.client.post(
+            "/api/cats/index/search",
+            headers=self.headers,
+            json={"tags": ["policy"], "trustTier": "high", "limit": 5},
+        )
+        self.assertEqual(search.status_code, 200, search.text)
+        items = search.json()["items"]
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["catId"], cat_id)
+
+        route = self.client.post(
+            "/api/cats/route",
+            headers=self.headers,
+            json={"tags": ["governance"], "trustTier": "high"},
+        )
+        self.assertEqual(route.status_code, 200, route.text)
+        selected = route.json()["selected"]
+        self.assertEqual(selected["catId"], cat_id)
+        self.assertEqual(selected["version"], "1.2.3")
+
+    def test_capability_index_search_benchmark(self) -> None:
+        for i in range(20):
+            created = self.client.post(
+                "/api/cats",
+                headers=self.headers,
+                json={"name": f"Bench CAT {i}", "description": "Benchmark CAT"},
+            )
+            self.assertEqual(created.status_code, 201, created.text)
+            cat_id = created.json()["catId"]
+            publish = self.client.post(
+                f"/api/cats/{cat_id}/versions",
+                headers=self.headers,
+                json={
+                    "version": "1.0.0",
+                    "manifestJson": {
+                        "tags": ["bench", f"bucket-{i % 4}"],
+                        "trustTier": "standard" if i % 2 == 0 else "high",
+                    },
+                    "rulebookJson": {},
+                    "commandBundleRef": f"cats/bundles/bench-{i}",
+                },
+            )
+            self.assertEqual(publish.status_code, 201, publish.text)
+
+        started = time.perf_counter()
+        for _ in range(100):
+            search = self.client.post(
+                "/api/cats/index/search",
+                headers=self.headers,
+                json={"tags": ["bench", "bucket-1"], "trustTier": "high", "limit": 3},
+            )
+            self.assertEqual(search.status_code, 200, search.text)
+        avg_ms = ((time.perf_counter() - started) * 1000.0) / 100.0
+        self.assertLess(avg_ms, 250.0, f"Expected avg hot-path search < 250ms, got {avg_ms:.2f}ms")
 
 
 if __name__ == "__main__":

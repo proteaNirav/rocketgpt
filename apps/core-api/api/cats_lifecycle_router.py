@@ -10,6 +10,8 @@ from pydantic import BaseModel, Field
 from api.cats_ledger import append_cats_event
 from api.cats_store import (
     create_cat,
+    get_capability_index,
+    get_capability_index_telemetry,
     create_version,
     get_cat,
     get_connection_error_detail,
@@ -17,6 +19,8 @@ from api.cats_store import (
     is_unique_violation,
     list_cats,
     list_versions,
+    route_cat_by_capability,
+    search_capability_index,
     transition_cat,
     update_cat,
 )
@@ -56,6 +60,17 @@ class PublishVersionBody(BaseModel):
 
 class TransitionBody(BaseModel):
     targetStatus: str = Field(min_length=1, max_length=64)
+
+
+class IndexSearchBody(BaseModel):
+    tags: list[str] = Field(default_factory=list)
+    trustTier: Optional[str] = Field(default=None, max_length=64)
+    limit: int = Field(default=20, ge=1, le=200)
+
+
+class RouteBody(BaseModel):
+    tags: list[str] = Field(default_factory=list)
+    trustTier: Optional[str] = Field(default=None, max_length=64)
 
 
 def _org_user(owner_org_id: Optional[str], owner_user_id: Optional[str]) -> tuple[str, str]:
@@ -213,7 +228,12 @@ def post_version(
         owner_user_id,
         {"catId": cat_id, "catVersionId": version["catVersionId"], "version": version["version"]},
     )
-    return {**version, "ledgerWritten": ledger_written}
+    return {
+        **version,
+        "ledgerWritten": ledger_written,
+        "capabilityIndexed": True,
+        "indexTelemetry": get_capability_index_telemetry(),
+    }
 
 
 @router.get("/{cat_id}/versions")
@@ -227,6 +247,49 @@ def get_versions(
     if versions is None:
         raise HTTPException(status_code=404, detail="CAT not found.")
     return {"items": versions}
+
+
+@router.get("/{cat_id}/index/{version}")
+def get_capability_index_by_version(
+    cat_id: str,
+    version: str,
+    x_org_id: Optional[str] = Header(default=None),
+    x_user_id: Optional[str] = Header(default=None),
+) -> Dict[str, Any]:
+    owner_org_id, _ = _org_user(x_org_id, x_user_id)
+    index_row = get_capability_index(owner_org_id=owner_org_id, cat_id=cat_id, version=version)
+    if index_row is None:
+        raise HTTPException(status_code=404, detail="CAT capability index not found.")
+    return {**index_row, "telemetry": get_capability_index_telemetry()}
+
+
+@router.post("/index/search")
+def post_capability_index_search(
+    body: IndexSearchBody,
+    x_org_id: Optional[str] = Header(default=None),
+    x_user_id: Optional[str] = Header(default=None),
+) -> Dict[str, Any]:
+    owner_org_id, _ = _org_user(x_org_id, x_user_id)
+    items = search_capability_index(
+        owner_org_id=owner_org_id,
+        tags=body.tags,
+        trust_tier=body.trustTier,
+        limit=body.limit,
+    )
+    return {"items": items, "telemetry": get_capability_index_telemetry()}
+
+
+@router.post("/route")
+def post_route_cat(
+    body: RouteBody,
+    x_org_id: Optional[str] = Header(default=None),
+    x_user_id: Optional[str] = Header(default=None),
+) -> Dict[str, Any]:
+    owner_org_id, _ = _org_user(x_org_id, x_user_id)
+    selected = route_cat_by_capability(owner_org_id=owner_org_id, tags=body.tags, trust_tier=body.trustTier)
+    if selected is None:
+        raise HTTPException(status_code=404, detail="No CAT matched route criteria.")
+    return {"selected": selected, "telemetry": get_capability_index_telemetry()}
 
 
 @router.post("/{cat_id}/transition")

@@ -8,6 +8,13 @@ import type {
 function cloneRecord(record: ExperienceRecord): ExperienceRecord {
   return {
     ...record,
+    relatedSignals: [...record.relatedSignals],
+    relatedReinforcementEvents: record.relatedReinforcementEvents.map((event) => ({
+      ...event,
+      reasonCodes: [...event.reasonCodes],
+    })),
+    experienceTags: [...record.experienceTags],
+    experienceMetadata: { ...record.experienceMetadata },
     source: { ...record.source },
     situation: { ...record.situation },
     context: { ...record.context, tags: [...record.context.tags] },

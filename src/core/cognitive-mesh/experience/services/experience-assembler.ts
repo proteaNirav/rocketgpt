@@ -65,8 +65,20 @@ export class ExperienceAssembler {
 
     const draft: Omit<ExperienceRecord, "tags"> = {
       experienceId: this.createExperienceId(facts.sessionId),
+      experienceType: "execution",
+      experienceCategory: "execution_success",
+      experienceOutcome: "positive",
+      experienceScore: 0,
+      experienceConfidence: 0,
       sessionId: facts.sessionId,
       timestamp: facts.timestamp,
+      sourceCapability: facts.action.capabilityId,
+      relatedMemoryId: facts.relatedMemoryId,
+      relatedExecutionId: facts.relatedExecutionId ?? facts.source.eventId,
+      relatedSignals: [...(facts.relatedSignals ?? [])],
+      relatedReinforcementEvents: [...(facts.relatedReinforcementEvents ?? [])],
+      experienceTags: [...(facts.tags ?? [])],
+      experienceMetadata: { ...(facts.experienceMetadata ?? {}) },
       source: { ...facts.source },
       situation: { ...facts.situation },
       context: {

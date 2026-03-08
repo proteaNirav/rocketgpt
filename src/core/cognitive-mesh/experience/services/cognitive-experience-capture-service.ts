@@ -1,4 +1,5 @@
 import { ExperienceAssembler, type ExperienceAssemblerOptions } from "./experience-assembler";
+import { ExperienceEngine } from "./experience-engine";
 import { InMemoryExperienceRepository } from "../repository/in-memory-experience-repository";
 import type { ExperienceCaptureFacts, ExperienceRecord } from "../types/experience.types";
 import { NEGATIVE_PATH_ISSUES } from "../../governance/negative-path-taxonomy";
@@ -10,16 +11,20 @@ export interface CaptureExperienceResult {
 
 export class CognitiveExperienceCaptureService {
   private readonly assembler: ExperienceAssembler;
+  private readonly experienceEngine: ExperienceEngine;
 
   constructor(
     private readonly repository: InMemoryExperienceRepository = new InMemoryExperienceRepository(),
     assemblerOptions: ExperienceAssemblerOptions = {}
   ) {
     this.assembler = new ExperienceAssembler(assemblerOptions);
+    this.experienceEngine = new ExperienceEngine();
   }
 
   captureExecutionExperience(facts: ExperienceCaptureFacts): CaptureExperienceResult {
-    const record = this.augmentHarmfulPatternTags(this.assembler.assemble(facts));
+    const assembled = this.assembler.assemble(facts);
+    const finalized = this.experienceEngine.finalize(assembled, facts);
+    const record = this.augmentHarmfulPatternTags(finalized);
     if (record.isMeaningful) {
       this.repository.save(record);
       return {

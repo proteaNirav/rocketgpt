@@ -1,4 +1,5 @@
 import type { NegativePathIssueCode } from "../../governance/negative-path-taxonomy";
+import type { MemoryReinforcementReasonCode, MemoryReinforcementTrend } from "../../memory/memory-reinforcement-scoring";
 
 export type ExperienceOutcomeClassification =
   | "successful"
@@ -13,6 +14,30 @@ export type ExperienceOutcomeClassification =
 export type ExperienceOutcomeStatus = "positive" | "neutral" | "negative";
 
 export type ExperienceStabilityImpact = "positive" | "neutral" | "negative" | "critical";
+
+export type ExperienceType = "execution" | "verification" | "anomaly" | "reinforcement" | "recall";
+
+export type ExperienceCategory =
+  | "execution_success"
+  | "execution_degraded"
+  | "execution_failure"
+  | "verification_rejection"
+  | "anomaly_detected"
+  | "drift_detected"
+  | "reinforcement_positive"
+  | "reinforcement_negative"
+  | "recall_success"
+  | "recall_misfire";
+
+export type ExperienceOutcomeLabel = "positive" | "degraded" | "negative" | "rejected" | "warning";
+
+export interface ExperienceReinforcementEvent {
+  memoryId: string;
+  delta: number;
+  trend: MemoryReinforcementTrend;
+  reasonCodes: MemoryReinforcementReasonCode[];
+  timestamp: string;
+}
 
 export interface ExperienceSituation {
   mode: "chat" | "workflow";
@@ -30,7 +55,17 @@ export interface ExperienceContext {
 
 export interface ExperienceAction {
   capabilityId?: string;
-  capabilityStatus?: "success" | "failed" | "blocked" | "unavailable" | "invocation_failed" | "none";
+  capabilityStatus?:
+    | "success"
+    | "degraded_success"
+    | "failed"
+    | "denied"
+    | "blocked"
+    | "not_found"
+    | "invalid"
+    | "unavailable"
+    | "invocation_failed"
+    | "none";
   verificationInvoked: boolean;
   routeDisposition?: string;
   routeAccepted?: boolean;
@@ -78,8 +113,20 @@ export interface ExperienceSourceMetadata {
 
 export interface ExperienceRecord {
   experienceId: string;
+  experienceType: ExperienceType;
+  experienceCategory: ExperienceCategory;
+  experienceOutcome: ExperienceOutcomeLabel;
+  experienceScore: number;
+  experienceConfidence: number;
   sessionId: string;
   timestamp: string;
+  sourceCapability?: string;
+  relatedMemoryId?: string;
+  relatedExecutionId?: string;
+  relatedSignals: string[];
+  relatedReinforcementEvents: ExperienceReinforcementEvent[];
+  experienceTags: string[];
+  experienceMetadata: Record<string, unknown>;
   source: ExperienceSourceMetadata;
   situation: ExperienceSituation;
   context: ExperienceContext;
@@ -123,4 +170,10 @@ export interface ExperienceCaptureFacts {
   executionAborted?: boolean;
   governanceIssues?: NegativePathIssueCode[];
   tags?: string[];
+  relatedSignals?: string[];
+  relatedMemoryId?: string;
+  relatedExecutionId?: string;
+  relatedReinforcementEvents?: ExperienceReinforcementEvent[];
+  recallOutcome?: "success" | "misfire";
+  experienceMetadata?: Record<string, unknown>;
 }

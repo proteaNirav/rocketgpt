@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import sqlite3
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -12,6 +13,11 @@ from typing import Any, Dict, List, Optional, Tuple
 
 _SCHEMA_LOCK = Lock()
 _INITIALIZED_DB: Optional[Path] = None
+_INDEX_SCHEMA_VERSION = "1"
+_INDEX_TELEMETRY: Dict[str, Any] = {
+    "cats_index_version": _INDEX_SCHEMA_VERSION,
+    "index_refresh_ms": 0.0,
+}
 
 
 def _repo_root() -> Path:
@@ -114,6 +120,38 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
         );
         """
     )
+    conn.execute(
+        """
+        create table if not exists cats_capability_index (
+          cat_id text not null,
+          version text not null,
+          tags_json text not null,
+          inputs_sig text,
+          outputs_sig text,
+          avg_latency real,
+          success_rate real,
+          trust_tier text not null,
+          updated_at text not null,
+          manifest_ref text,
+          rulebook_ref text,
+          primary key (cat_id, version),
+          foreign key (cat_id, version) references cats_versions (cat_id, version) on delete cascade
+        );
+        """
+    )
+    conn.execute("create index if not exists ix_cats_cap_idx_trust_tier on cats_capability_index (trust_tier);")
+    conn.execute(
+        """
+        create table if not exists cats_capability_index_tags (
+          cat_id text not null,
+          version text not null,
+          tag text not null,
+          primary key (cat_id, version, tag),
+          foreign key (cat_id, version) references cats_capability_index (cat_id, version) on delete cascade
+        );
+        """
+    )
+    conn.execute("create index if not exists ix_cats_cap_idx_tag on cats_capability_index_tags (tag);")
     conn.commit()
 
 
@@ -162,6 +200,156 @@ def _version_row_to_dict(row: sqlite3.Row) -> Dict[str, Any]:
         "status": row["status"],
         "createdAt": row["created_at"],
     }
+
+
+def _compute_sig(payload: Any) -> Optional[str]:
+    if payload is None:
+        return None
+    if isinstance(payload, str):
+        cleaned = payload.strip()
+        return cleaned or None
+    try:
+        raw = json.dumps(payload, separators=(",", ":"), sort_keys=True, ensure_ascii=False)
+    except TypeError:
+        return None
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _compute_success_rate(success_count: int, fail_count: int) -> Optional[float]:
+    total = int(success_count) + int(fail_count)
+    if total <= 0:
+        return None
+    return float(success_count) / float(total)
+
+
+def _normalize_tags(manifest_json: Dict[str, Any], rulebook_json: Dict[str, Any]) -> List[str]:
+    raw_tags: List[Any] = []
+    manifest_tags = manifest_json.get("tags")
+    if isinstance(manifest_tags, list):
+        raw_tags.extend(manifest_tags)
+    rulebook_tags = rulebook_json.get("tags")
+    if isinstance(rulebook_tags, list):
+        raw_tags.extend(rulebook_tags)
+
+    cleaned = []
+    seen = set()
+    for tag in raw_tags:
+        if not isinstance(tag, str):
+            continue
+        value = tag.strip().lower()
+        if not value or value in seen:
+            continue
+        seen.add(value)
+        cleaned.append(value)
+    return cleaned
+
+
+def _extract_trust_tier(manifest_json: Dict[str, Any], rulebook_json: Dict[str, Any]) -> str:
+    value = manifest_json.get("trustTier")
+    if not isinstance(value, str) or not value.strip():
+        value = manifest_json.get("trust_tier")
+    if not isinstance(value, str) or not value.strip():
+        value = rulebook_json.get("trustTier")
+    if not isinstance(value, str) or not value.strip():
+        value = rulebook_json.get("trust_tier")
+    if not isinstance(value, str):
+        return "standard"
+    return value.strip().lower()
+
+
+def _index_row_to_dict(row: sqlite3.Row) -> Dict[str, Any]:
+    return {
+        "catId": row["cat_id"],
+        "version": row["version"],
+        "tags": _parse_json(row["tags_json"]),
+        "inputsSig": row["inputs_sig"],
+        "outputsSig": row["outputs_sig"],
+        "avgLatency": row["avg_latency"],
+        "successRate": row["success_rate"],
+        "trustTier": row["trust_tier"],
+        "updatedAt": row["updated_at"],
+        "manifestRef": row["manifest_ref"],
+        "rulebookRef": row["rulebook_ref"],
+    }
+
+
+def _upsert_capability_index(
+    conn: sqlite3.Connection,
+    cat_version_id: str,
+    cat_id: str,
+    version: str,
+    manifest_json: Dict[str, Any],
+    rulebook_json: Dict[str, Any],
+) -> Dict[str, Any]:
+    started = time.perf_counter()
+    metric_row = conn.execute(
+        """
+        select success_count, fail_count, avg_exec_ms
+        from cats_metrics
+        where cat_version_id = ?
+        """,
+        (cat_version_id,),
+    ).fetchone()
+    success_count = 0 if metric_row is None else int(metric_row["success_count"])
+    fail_count = 0 if metric_row is None else int(metric_row["fail_count"])
+    avg_latency = None if metric_row is None else metric_row["avg_exec_ms"]
+    success_rate = _compute_success_rate(success_count, fail_count)
+    tags = _normalize_tags(manifest_json, rulebook_json)
+    tags_json = json.dumps(tags, separators=(",", ":"), ensure_ascii=False)
+    inputs_sig = _compute_sig(manifest_json.get("inputsSig") or manifest_json.get("inputs_schema"))
+    outputs_sig = _compute_sig(manifest_json.get("outputsSig") or manifest_json.get("outputs_schema"))
+    trust_tier = _extract_trust_tier(manifest_json, rulebook_json)
+    now = _now_iso()
+    manifest_ref = f"cat-version://{cat_version_id}/manifest"
+    rulebook_ref = f"cat-version://{cat_version_id}/rulebook"
+
+    conn.execute(
+        """
+        insert into cats_capability_index
+          (cat_id, version, tags_json, inputs_sig, outputs_sig, avg_latency, success_rate, trust_tier, updated_at, manifest_ref, rulebook_ref)
+        values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        on conflict(cat_id, version) do update set
+          tags_json = excluded.tags_json,
+          inputs_sig = excluded.inputs_sig,
+          outputs_sig = excluded.outputs_sig,
+          avg_latency = excluded.avg_latency,
+          success_rate = excluded.success_rate,
+          trust_tier = excluded.trust_tier,
+          updated_at = excluded.updated_at,
+          manifest_ref = excluded.manifest_ref,
+          rulebook_ref = excluded.rulebook_ref
+        """,
+        (cat_id, version, tags_json, inputs_sig, outputs_sig, avg_latency, success_rate, trust_tier, now, manifest_ref, rulebook_ref),
+    )
+    conn.execute(
+        """
+        delete from cats_capability_index_tags
+        where cat_id = ? and version = ?
+        """,
+        (cat_id, version),
+    )
+    if tags:
+        conn.executemany(
+            """
+            insert into cats_capability_index_tags (cat_id, version, tag)
+            values (?, ?, ?)
+            """,
+            [(cat_id, version, tag) for tag in tags],
+        )
+    refreshed = conn.execute(
+        """
+        select *
+        from cats_capability_index
+        where cat_id = ? and version = ?
+        """,
+        (cat_id, version),
+    ).fetchone()
+    elapsed_ms = (time.perf_counter() - started) * 1000.0
+    _INDEX_TELEMETRY["index_refresh_ms"] = round(elapsed_ms, 3)
+    _INDEX_TELEMETRY["cats_index_version"] = _INDEX_SCHEMA_VERSION
+    if refreshed is None:
+        raise RuntimeError("capability index upsert failed")
+    return _index_row_to_dict(refreshed)
 
 
 def list_cats(owner_org_id: str, page: int, page_size: int) -> Dict[str, Any]:
@@ -280,6 +468,14 @@ def create_version(
             """,
             (_new_id(), cat_version_id, now, now),
         )
+        _upsert_capability_index(
+            conn=conn,
+            cat_version_id=cat_version_id,
+            cat_id=cat_id,
+            version=version,
+            manifest_json=manifest_json,
+            rulebook_json=rulebook_json,
+        )
         row = conn.execute("select * from cats_versions where cat_version_id = ?", (cat_version_id,)).fetchone()
     if row is None:
         raise RuntimeError("version creation failed")
@@ -318,3 +514,126 @@ def get_status(owner_org_id: str, cat_id: str) -> Optional[str]:
 
 def get_connection_error_detail(exc: Exception) -> str:
     return str(exc)
+
+
+def refresh_capability_index(owner_org_id: str, cat_id: str, version: str) -> Optional[Dict[str, Any]]:
+    with _connect() as conn:
+        row = conn.execute(
+            """
+            select cv.cat_version_id, cv.cat_id, cv.version, cv.manifest_json, cv.rulebook_json
+            from cats_versions cv
+            join cats c on c.cat_id = cv.cat_id
+            where c.owner_org_id = ? and cv.cat_id = ? and cv.version = ?
+            """,
+            (owner_org_id, cat_id, version),
+        ).fetchone()
+        if row is None:
+            return None
+        return _upsert_capability_index(
+            conn=conn,
+            cat_version_id=row["cat_version_id"],
+            cat_id=row["cat_id"],
+            version=row["version"],
+            manifest_json=_parse_json(row["manifest_json"]),
+            rulebook_json=_parse_json(row["rulebook_json"]),
+        )
+
+
+def get_capability_index(owner_org_id: str, cat_id: str, version: str) -> Optional[Dict[str, Any]]:
+    with _connect() as conn:
+        row = conn.execute(
+            """
+            select i.*
+            from cats_capability_index i
+            join cats c on c.cat_id = i.cat_id
+            where c.owner_org_id = ? and i.cat_id = ? and i.version = ?
+            """,
+            (owner_org_id, cat_id, version),
+        ).fetchone()
+    return None if row is None else _index_row_to_dict(row)
+
+
+def search_capability_index(
+    owner_org_id: str,
+    tags: Optional[List[str]] = None,
+    trust_tier: Optional[str] = None,
+    limit: int = 20,
+) -> List[Dict[str, Any]]:
+    normalized_tags: List[str] = []
+    for tag in tags or []:
+        if not isinstance(tag, str):
+            continue
+        cleaned = tag.strip().lower()
+        if cleaned and cleaned not in normalized_tags:
+            normalized_tags.append(cleaned)
+    trust = trust_tier.strip().lower() if isinstance(trust_tier, str) and trust_tier.strip() else None
+    safe_limit = max(1, min(200, int(limit)))
+
+    with _connect() as conn:
+        if normalized_tags:
+            placeholders = ",".join("?" for _ in normalized_tags)
+            params: Tuple[Any, ...] = (owner_org_id, *normalized_tags)
+            query = f"""
+                select i.*
+                from cats_capability_index i
+                join cats c on c.cat_id = i.cat_id
+                join cats_capability_index_tags t
+                  on t.cat_id = i.cat_id and t.version = i.version
+                where c.owner_org_id = ?
+                  and t.tag in ({placeholders})
+            """
+            if trust:
+                query += " and i.trust_tier = ?"
+                params = (*params, trust)
+            query += """
+                group by i.cat_id, i.version
+                having count(distinct t.tag) = ?
+                order by coalesce(i.success_rate, 0.0) desc, coalesce(i.avg_latency, 1e18) asc, i.updated_at desc
+                limit ?
+            """
+            params = (*params, len(normalized_tags), safe_limit)
+            rows = conn.execute(query, params).fetchall()
+        else:
+            if trust:
+                rows = conn.execute(
+                    """
+                    select i.*
+                    from cats_capability_index i
+                    join cats c on c.cat_id = i.cat_id
+                    where c.owner_org_id = ? and i.trust_tier = ?
+                    order by coalesce(i.success_rate, 0.0) desc, coalesce(i.avg_latency, 1e18) asc, i.updated_at desc
+                    limit ?
+                    """,
+                    (owner_org_id, trust, safe_limit),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    """
+                    select i.*
+                    from cats_capability_index i
+                    join cats c on c.cat_id = i.cat_id
+                    where c.owner_org_id = ?
+                    order by coalesce(i.success_rate, 0.0) desc, coalesce(i.avg_latency, 1e18) asc, i.updated_at desc
+                    limit ?
+                    """,
+                    (owner_org_id, safe_limit),
+                ).fetchall()
+    return [_index_row_to_dict(row) for row in rows]
+
+
+def route_cat_by_capability(
+    owner_org_id: str,
+    tags: Optional[List[str]] = None,
+    trust_tier: Optional[str] = None,
+) -> Optional[Dict[str, Any]]:
+    matches = search_capability_index(owner_org_id=owner_org_id, tags=tags, trust_tier=trust_tier, limit=1)
+    if not matches:
+        return None
+    return matches[0]
+
+
+def get_capability_index_telemetry() -> Dict[str, Any]:
+    return {
+        "cats_index_version": _INDEX_TELEMETRY["cats_index_version"],
+        "index_refresh_ms": _INDEX_TELEMETRY["index_refresh_ms"],
+    }

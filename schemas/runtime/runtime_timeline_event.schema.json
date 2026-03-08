@@ -9,6 +9,7 @@
     "event_id",
     "sequence_no",
     "event_type",
+    "stage",
     "layer",
     "event_time_utc",
     "actor_type",
@@ -49,11 +50,42 @@
         "POLICY_GATE_BLOCKED",
         "RUNTIME_GUARD_TRIGGERED",
         "SAFE_MODE_ENTERED",
+        "DISPATCH_GUARD_EVALUATED",
+        "DISPATCH_STARTED",
+        "DISPATCH_COMPLETED",
+        "DISPATCH_DENIED",
+        "EXECUTION_STARTED",
+        "EXECUTION_FAILED",
+        "EXECUTION_DENIED",
+        "EXECUTION_REDIRECTED",
+        "EXECUTION_DEGRADED",
+        "EXECUTION_AUDIT_REQUIRED",
+        "SIDE_EFFECT_INTENT",
+        "SIDE_EFFECT_COMPLETED",
         "HUMAN_OVERRIDE_APPLIED",
         "RESULT_COMMITTED",
         "RESULT_REDACTED",
         "EXECUTION_ABORTED",
         "EXECUTION_COMPLETED"
+      ]
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "dispatch_evaluated",
+        "dispatch_started",
+        "dispatch_completed",
+        "dispatch_denied",
+        "runtime_evaluated",
+        "execution_started",
+        "execution_completed",
+        "execution_failed",
+        "execution_denied",
+        "execution_redirected",
+        "execution_degraded",
+        "execution_audit_required",
+        "side_effect_intent",
+        "side_effect_completed"
       ]
     },
     "layer": {
@@ -87,6 +119,24 @@
     "status": {
       "type": "string",
       "enum": ["ok", "blocked", "partial", "error", "timeout", "aborted"]
+    },
+    "action": { "type": ["string", "null"], "minLength": 1 },
+    "source": { "type": ["string", "null"], "minLength": 1 },
+    "target": { "type": ["string", "null"], "minLength": 1 },
+    "mode": {
+      "type": ["string", "null"],
+      "enum": ["normal", "reroute", "degraded", "safe_mode_redirect", "audit_required", "unknown", null]
+    },
+    "outcome": { "type": ["string", "null"] },
+    "correlation": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "request_id": { "type": ["string", "null"] },
+        "execution_id": { "type": ["string", "null"] },
+        "correlation_id": { "type": ["string", "null"] },
+        "session_id": { "type": ["string", "null"] }
+      }
     },
     "cat": {
       "type": ["object", "null"],

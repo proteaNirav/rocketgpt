@@ -28,6 +28,19 @@ This index links all major architectural, AI, safety, and improvement documents.
 
 ---
 
+## ⚖ Governance
+
+- **Governance Documentation Index**  
+  `docs/governance/README.md`
+
+- **Constitutional Brain Layer v1**  
+  `docs/governance/RGPT-CONSTITUTIONAL-BRAIN-LAYER-v1.md`
+
+- **Constitution Integration Plan v1**  
+  `docs/governance/RGPT-CONSTITUTION-INTEGRATION-PLAN-v1.md`
+
+---
+
 ## 🧭 Roadmaps
 
 - **AI Evolution (Narrow → General → Super AI)**  
