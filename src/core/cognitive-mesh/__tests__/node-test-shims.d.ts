@@ -22,4 +22,6 @@ declare module "node:path" {
 
 declare const process: {
   env: Record<string, string | undefined>;
+  cpuUsage(previousValue?: NodeJS.CpuUsage): NodeJS.CpuUsage;
+  memoryUsage(): NodeJS.MemoryUsage;
 };

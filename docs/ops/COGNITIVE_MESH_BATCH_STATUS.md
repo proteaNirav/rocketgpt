@@ -4,6 +4,7 @@ Last Updated: 2026-03-09
 
 ## Next Batch
 
+- D22-Candidate (Controlled Heartbeat Activation and Observation Harness): Completed.
 - Batch-22B (Evolution Signals Framework): Completed.
 - Batch-22 (Cognitive Stability System Phase 1): Completed.
 - D21 Runtime Resilience Stack Completed: Stock-take documented.
@@ -47,6 +48,16 @@ Last Updated: 2026-03-09
 - Added runtime evolution state surface (`.rocketgpt/runtime/evolution-signals.json`) and immutable evolution event emission.
 - Added D22-B CLI and focused unit/benchmark coverage.
 - Documentation: `docs/runtime/enforcement/RGPT-D22B-EVOLUTION-SIGNALS-FRAMEWORK.md`.
+
+## D22-Candidate - Controlled Heartbeat Activation and Observation Harness: Completed
+
+- Added explicit opt-in observation mode with bounded session duration and snapshot interval controls (default 2-hour target).
+- Added deterministic observation session runner that captures runtime resilience state snapshots and writes session manifest/summary artifacts.
+- Added storage growth and event-volume measurement with lightweight snapshot-overhead estimation.
+- Added JSON + Markdown post-run reporting for signal/noise and operational readiness review.
+- Added observation CLI for controlled runs and smoke-mode validation.
+- Added focused unit/benchmark coverage for manifest creation, missing-state handling, bounded completion, and overhead classification.
+- Documentation: `docs/runtime/enforcement/RGPT-D22C-CONTROLLED-HEARTBEAT-OBSERVATION-HARNESS.md`.
 
 ## Batch-21C - Failure Containment & Quarantine: Completed
 
