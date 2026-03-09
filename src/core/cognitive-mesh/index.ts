@@ -99,6 +99,7 @@ export * from "./runtime/dispatch-guard";
 export * from "./runtime/runtime-guard";
 export * from "./runtime/heartbeat-kill-switch";
 export * from "./runtime/manual-heartbeat-runner";
+export * from "./runtime/hybrid-heartbeat";
 export * from "./runtime/runtime-status";
 export * from "./runtime/runtime-artifact-reset";
 export * from "./runtime/runtime-sanitation.types";
