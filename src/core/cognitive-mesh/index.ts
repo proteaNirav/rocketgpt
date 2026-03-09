@@ -105,6 +105,7 @@ export * from "./runtime/runtime-artifact-reset";
 export * from "./runtime/runtime-sanitation.types";
 export * from "./runtime/runtime-sanitation-policy";
 export * from "./runtime/runtime-sanitation-service";
+export * from "./runtime/repair";
 export * from "./runtime/messaging/cognitive-messaging-plane-runtime";
 export * from "./thinking/categorizer";
 export * from "./thinking/context-builder";

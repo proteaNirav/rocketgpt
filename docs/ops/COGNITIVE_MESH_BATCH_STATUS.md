@@ -1,9 +1,10 @@
 # Cognitive Mesh Batch Status
 
-Last Updated: 2026-03-08
+Last Updated: 2026-03-09
 
 ## Next Batch
 
+- Batch-21A (Runtime Repair & Recovery): Completed.
 - Batch-19 (Heartbeat Kill Switch Contract): Completed.
 - Batch-18 (Constitutional Evaluation Hook): Completed.
 - Batch-17 (Experience Engine): Completed.
@@ -12,6 +13,15 @@ Last Updated: 2026-03-08
 - Batch-14 (Memory Adoption): Completed.
 - Batch-13 (Cognitive Signal System): Completed.
 - Batch-12 (Motivated Recall): Active.
+
+## Batch-21A - Runtime Repair & Recovery: Completed
+
+- Added deterministic runtime diagnosis engine and bounded repair orchestrator.
+- Added repair agents for runtime restart marker, queue recovery marker, transient memory cleanup, and capability runtime state reset.
+- Added deterministic post-repair recovery validator and immutable runtime repair ledger event emission.
+- Added runtime repair state surface (`.rocketgpt/runtime/repair-state.json`) with cooldown map and summary counters.
+- Added per-target cooldown and bounded attempt-window dedupe to prevent repair spam loops.
+- Added focused unit tests + benchmark for diagnosis/action mapping, cooldown behavior, agent bounds, validator outcomes, state updates, and event emission.
 
 ## Batch-19 - Heartbeat Kill Switch Contract: Completed
 

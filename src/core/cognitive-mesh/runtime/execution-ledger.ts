@@ -28,6 +28,15 @@ export type ExecutionLedgerCategory = "runtime" | "dispatch" | "execution" | "si
 
 export type ExecutionLedgerEventType =
   | "runtime.guard.evaluated"
+  | "runtime_repair_diagnosed"
+  | "runtime_repair_attempted"
+  | "runtime_repair_succeeded"
+  | "runtime_repair_failed"
+  | "runtime_recovery_validation_started"
+  | "runtime_recovery_validation_succeeded"
+  | "runtime_recovery_validation_failed"
+  | "runtime_repair_skipped"
+  | "runtime_repair_cooldown_active"
   | "dispatch.guard.evaluated"
   | "execution.started"
   | "execution.completed"

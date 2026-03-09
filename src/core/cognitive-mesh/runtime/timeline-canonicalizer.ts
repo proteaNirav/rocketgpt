@@ -208,6 +208,15 @@ function mapEventType(eventType: string): CanonicalTimelineEventType {
     case "dispatch.denied":
       return "DISPATCH_DENIED";
     case "runtime.guard.evaluated":
+    case "runtime_repair_diagnosed":
+    case "runtime_repair_attempted":
+    case "runtime_repair_succeeded":
+    case "runtime_repair_failed":
+    case "runtime_recovery_validation_started":
+    case "runtime_recovery_validation_succeeded":
+    case "runtime_recovery_validation_failed":
+    case "runtime_repair_skipped":
+    case "runtime_repair_cooldown_active":
       return "RUNTIME_GUARD_TRIGGERED";
     case "execution.started":
       return "EXECUTION_STARTED";
@@ -254,6 +263,15 @@ function mapStage(eventType: string): CanonicalTimelineStage {
     case "dispatch.denied":
       return "dispatch_denied";
     case "runtime.guard.evaluated":
+    case "runtime_repair_diagnosed":
+    case "runtime_repair_attempted":
+    case "runtime_repair_succeeded":
+    case "runtime_repair_failed":
+    case "runtime_recovery_validation_started":
+    case "runtime_recovery_validation_succeeded":
+    case "runtime_recovery_validation_failed":
+    case "runtime_repair_skipped":
+    case "runtime_repair_cooldown_active":
       return "runtime_evaluated";
     case "execution.started":
       return "execution_started";
