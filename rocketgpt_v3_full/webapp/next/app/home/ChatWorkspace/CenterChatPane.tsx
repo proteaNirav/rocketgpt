@@ -114,7 +114,9 @@ export function CenterChatPane() {
               </button>
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Assistant replies include selected CATs, reasoning, governance summary, and workflow draft CTAs.
+              {designModeEnabled
+                ? "Design mode is active: chat replies generate workflow drafts with builder CTAs."
+                : "Design mode is off: chat replies go to runtime execution response mode."}
             </p>
           </form>
         </div>

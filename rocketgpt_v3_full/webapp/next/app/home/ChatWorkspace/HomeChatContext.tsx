@@ -45,6 +45,53 @@ type HomeChatContextValue = UseHomeChatResult;
 
 const HomeChatContext = createContext<HomeChatContextValue | null>(null);
 
+const WORKFLOW_INTENT_PATTERNS: RegExp[] = [
+  /\bworkflow\b/i,
+  /\bplan\b/i,
+  /\bplanner\b/i,
+  /\bdraft\b/i,
+  /\bbuilder\b/i,
+  /\borchestrator\b/i,
+  /\bcat(s)?\b/i,
+  /\bpipeline\b/i,
+];
+
+function hasExplicitWorkflowIntent(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  return WORKFLOW_INTENT_PATTERNS.some((pattern) => pattern.test(trimmed));
+}
+
+async function requestRuntimeChatReply(input: {
+  userText: string;
+  nextMessages: HomeChatMessage[];
+}): Promise<string> {
+  const payloadMessages = input.nextMessages.map((message) => ({
+    role: message.role,
+    content: message.content,
+  }));
+  const response = await fetch("/api/demo/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      messages: payloadMessages,
+      message: input.userText,
+      chatId: "home-chat",
+    }),
+  });
+
+  const data = await response.json().catch(() => null);
+  const reply = typeof data?.reply === "string" ? data.reply.trim() : "";
+  if (!response.ok) {
+    const reason = typeof data?.error === "string" ? data.error : `HTTP ${response.status}`;
+    throw new Error(reason);
+  }
+  if (reply.length === 0) {
+    throw new Error("Runtime chat endpoint returned an empty reply.");
+  }
+  return reply;
+}
+
 function formatAssistantWorkflowMessage(artifact: WorkflowArtifact, validation: WorkflowValidationResult): string {
   const catsHeader = `Suggested workflow draft (${artifact.nodes.length} CATs)`;
   const catLines = artifact.nodes.map((node, index) => {
@@ -124,36 +171,51 @@ export function HomeChatProvider({ children }: { children: ReactNode }) {
 
     try {
       const nextMessages = [...messages, userMessage];
-      const conversationText = nextMessages
-        .filter((item) => item.role === "user")
-        .map((item) => item.content)
-        .join("\n");
-      const suggestions = suggestCats(conversationText, SEED_CATS);
-      const nextArtifact = buildWorkflowArtifactFromSuggestions(
-        suggestions,
-        conversationText,
-        undefined,
-        "chat"
-      );
-      const nextValidation = persistArtifact(nextArtifact);
-      setInitParamDrafts(
-        nextArtifact.nodes.reduce<Record<string, string>>((acc, node) => {
-          acc[node.node_id] = JSON.stringify(node.init_params || {}, null, 2);
-          return acc;
-        }, {})
-      );
-      setInitParamErrors({});
-      setDesignModeEnabled(true);
+      const shouldGenerateDraft = designModeEnabled || hasExplicitWorkflowIntent(trimmed);
+      if (shouldGenerateDraft) {
+        const conversationText = nextMessages
+          .filter((item) => item.role === "user")
+          .map((item) => item.content)
+          .join("\n");
+        const suggestions = suggestCats(conversationText, SEED_CATS);
+        const nextArtifact = buildWorkflowArtifactFromSuggestions(
+          suggestions,
+          conversationText,
+          undefined,
+          "chat"
+        );
+        const nextValidation = persistArtifact(nextArtifact);
+        setInitParamDrafts(
+          nextArtifact.nodes.reduce<Record<string, string>>((acc, node) => {
+            acc[node.node_id] = JSON.stringify(node.init_params || {}, null, 2);
+            return acc;
+          }, {})
+        );
+        setInitParamErrors({});
+        setDesignModeEnabled(true);
 
-      const assistantMessage: HomeChatMessage = {
-        id: `assistant-${Date.now() + 1}`,
-        role: "assistant",
-        name: "RocketGPT",
-        content: formatAssistantWorkflowMessage(nextArtifact, nextValidation),
-        time,
-      };
-
-      setMessages([...nextMessages, assistantMessage]);
+        const assistantMessage: HomeChatMessage = {
+          id: `assistant-${Date.now() + 1}`,
+          role: "assistant",
+          name: "RocketGPT",
+          content: formatAssistantWorkflowMessage(nextArtifact, nextValidation),
+          time,
+        };
+        setMessages([...nextMessages, assistantMessage]);
+      } else {
+        const runtimeReply = await requestRuntimeChatReply({
+          userText: trimmed,
+          nextMessages,
+        });
+        const assistantMessage: HomeChatMessage = {
+          id: `assistant-${Date.now() + 1}`,
+          role: "assistant",
+          name: "RocketGPT",
+          content: runtimeReply,
+          time,
+        };
+        setMessages([...nextMessages, assistantMessage]);
+      }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Deterministic draft generation failed";
       setError(msg);
