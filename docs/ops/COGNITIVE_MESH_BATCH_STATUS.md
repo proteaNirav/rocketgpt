@@ -4,6 +4,7 @@ Last Updated: 2026-03-09
 
 ## Next Batch
 
+- Batch-21B (Root Cause Learning & Prevention): Completed.
 - Batch-21A (Runtime Repair & Recovery): Completed.
 - Batch-19 (Heartbeat Kill Switch Contract): Completed.
 - Batch-18 (Constitutional Evaluation Hook): Completed.
@@ -13,6 +14,16 @@ Last Updated: 2026-03-09
 - Batch-14 (Memory Adoption): Completed.
 - Batch-13 (Cognitive Signal System): Completed.
 - Batch-12 (Motivated Recall): Active.
+
+## Batch-21B - Root Cause Learning & Prevention: Completed
+
+- Added deterministic post-repair learning orchestration over D21-A diagnosis/repair/validation evidence.
+- Added window-based recurring failure pattern detection and threshold-aware recurrence signaling.
+- Added rule-based root-cause analysis with confidence and reason-code traceability.
+- Added non-executing prevention recommendation engine (advisory-only, no auto-apply).
+- Added runtime learning state surface (`.rocketgpt/runtime/repair-learning-state.json`) with counters, recent patterns, and dedupe cooldown keys.
+- Added immutable learning event emission (`runtime_pattern_detected`, `runtime_root_cause_identified`, `runtime_learning_analysis_completed`, etc.).
+- Added focused D21-B unit/benchmark coverage and CLI surface for deterministic smoke runs.
 
 ## Batch-21A - Runtime Repair & Recovery: Completed
 

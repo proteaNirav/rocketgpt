@@ -217,6 +217,13 @@ function mapEventType(eventType: string): CanonicalTimelineEventType {
     case "runtime_recovery_validation_failed":
     case "runtime_repair_skipped":
     case "runtime_repair_cooldown_active":
+    case "runtime_pattern_detected":
+    case "runtime_root_cause_identified":
+    case "runtime_prevention_recommendation_generated":
+    case "runtime_learning_analysis_completed":
+    case "runtime_learning_analysis_skipped":
+    case "runtime_recurrence_threshold_reached":
+    case "runtime_repair_ineffectiveness_detected":
       return "RUNTIME_GUARD_TRIGGERED";
     case "execution.started":
       return "EXECUTION_STARTED";
@@ -272,6 +279,13 @@ function mapStage(eventType: string): CanonicalTimelineStage {
     case "runtime_recovery_validation_failed":
     case "runtime_repair_skipped":
     case "runtime_repair_cooldown_active":
+    case "runtime_pattern_detected":
+    case "runtime_root_cause_identified":
+    case "runtime_prevention_recommendation_generated":
+    case "runtime_learning_analysis_completed":
+    case "runtime_learning_analysis_skipped":
+    case "runtime_recurrence_threshold_reached":
+    case "runtime_repair_ineffectiveness_detected":
       return "runtime_evaluated";
     case "execution.started":
       return "execution_started";
