@@ -4,6 +4,9 @@ Last Updated: 2026-03-09
 
 ## Next Batch
 
+- Batch-22B (Evolution Signals Framework): Completed.
+- Batch-22 (Cognitive Stability System Phase 1): Completed.
+- D21 Runtime Resilience Stack Completed: Stock-take documented.
 - Batch-21C (Failure Containment & Quarantine): Completed.
 - Batch-21B (Root Cause Learning & Prevention): Completed.
 - Batch-21A (Runtime Repair & Recovery): Completed.
@@ -15,6 +18,35 @@ Last Updated: 2026-03-09
 - Batch-14 (Memory Adoption): Completed.
 - Batch-13 (Cognitive Signal System): Completed.
 - Batch-12 (Motivated Recall): Active.
+
+## D21 Runtime Resilience Stack Completed
+
+- D21-A Runtime Repair and Recovery: Completed.
+- D21-B Root Cause Learning and Prevention: Completed.
+- D21-C Failure Containment and Quarantine: Completed.
+- Consolidated architecture review: `docs/runtime/enforcement/RGPT-D20-D21-RUNTIME-RESILIENCE-STOCKTAKE.md`.
+
+## Batch-22 - Cognitive Stability System (Phase 1): Completed
+
+- Added deterministic stability signal aggregation across D20 and D21 evidence windows.
+- Added bounded target-level and system-level stability scoring with explicit stability bands.
+- Added deterministic oscillation/thrash detection and pattern signaling.
+- Added conservative graceful degradation policy engine and recommendation actions.
+- Added runtime stability state surface (`.rocketgpt/runtime/stability-state.json`) with target index, recent patterns, and counters.
+- Added immutable runtime stability event emission and D22 CLI surface.
+- Added focused D22 unit/benchmark coverage and enforcement documentation.
+- Documentation: `docs/runtime/enforcement/RGPT-D22-COGNITIVE-STABILITY-SYSTEM.md`.
+
+## Batch-22B - Evolution Signals Framework: Completed
+
+- Added deterministic evolution-signals orchestration with bounded evidence windows and compact outputs.
+- Added healing telemetry aggregation with `healthy/watch/stressed/unstable` assessment model.
+- Added structured learning-signal extraction for significant runtime transitions only.
+- Added deterministic improvement candidate detection for recurring weak-point categories.
+- Added bounded noise-control dedupe/cooldown for learning signals, candidates, and unchanged healing assessments.
+- Added runtime evolution state surface (`.rocketgpt/runtime/evolution-signals.json`) and immutable evolution event emission.
+- Added D22-B CLI and focused unit/benchmark coverage.
+- Documentation: `docs/runtime/enforcement/RGPT-D22B-EVOLUTION-SIGNALS-FRAMEWORK.md`.
 
 ## Batch-21C - Failure Containment & Quarantine: Completed
 

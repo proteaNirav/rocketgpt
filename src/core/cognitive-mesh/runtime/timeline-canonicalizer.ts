@@ -208,6 +208,7 @@ function mapEventType(eventType: string): CanonicalTimelineEventType {
     case "dispatch.denied":
       return "DISPATCH_DENIED";
     case "runtime.guard.evaluated":
+    case "runtime.heartbeat":
     case "runtime_repair_diagnosed":
     case "runtime_repair_attempted":
     case "runtime_repair_succeeded":
@@ -234,6 +235,20 @@ function mapEventType(eventType: string): CanonicalTimelineEventType {
     case "runtime_reintegration_failed":
     case "runtime_cascade_risk_detected":
     case "runtime_target_retired_from_auto_reintegration":
+    case "runtime_stability_evaluated":
+    case "runtime_instability_pattern_detected":
+    case "runtime_oscillation_detected":
+    case "runtime_degradation_state_changed":
+    case "runtime_degradation_action_recommended":
+    case "runtime_stability_watch_triggered":
+    case "runtime_stability_critical_triggered":
+    case "runtime_healing_telemetry_evaluated":
+    case "runtime_learning_signal_captured":
+    case "runtime_improvement_candidate_detected":
+    case "runtime_evolution_signals_evaluated":
+    case "runtime_learning_signal_skipped":
+    case "runtime_improvement_candidate_escalated":
+    case "runtime_healing_assessment_changed":
       return "RUNTIME_GUARD_TRIGGERED";
     case "execution.started":
       return "EXECUTION_STARTED";
@@ -280,6 +295,7 @@ function mapStage(eventType: string): CanonicalTimelineStage {
     case "dispatch.denied":
       return "dispatch_denied";
     case "runtime.guard.evaluated":
+    case "runtime.heartbeat":
     case "runtime_repair_diagnosed":
     case "runtime_repair_attempted":
     case "runtime_repair_succeeded":
@@ -306,6 +322,20 @@ function mapStage(eventType: string): CanonicalTimelineStage {
     case "runtime_reintegration_failed":
     case "runtime_cascade_risk_detected":
     case "runtime_target_retired_from_auto_reintegration":
+    case "runtime_stability_evaluated":
+    case "runtime_instability_pattern_detected":
+    case "runtime_oscillation_detected":
+    case "runtime_degradation_state_changed":
+    case "runtime_degradation_action_recommended":
+    case "runtime_stability_watch_triggered":
+    case "runtime_stability_critical_triggered":
+    case "runtime_healing_telemetry_evaluated":
+    case "runtime_learning_signal_captured":
+    case "runtime_improvement_candidate_detected":
+    case "runtime_evolution_signals_evaluated":
+    case "runtime_learning_signal_skipped":
+    case "runtime_improvement_candidate_escalated":
+    case "runtime_healing_assessment_changed":
       return "runtime_evaluated";
     case "execution.started":
       return "execution_started";

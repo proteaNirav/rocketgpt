@@ -108,6 +108,8 @@ export * from "./runtime/runtime-sanitation-service";
 export * from "./runtime/repair";
 export * from "./runtime/repair-learning";
 export * from "./runtime/containment";
+export * from "./runtime/stability";
+export * from "./runtime/evolution-signals";
 export * from "./runtime/messaging/cognitive-messaging-plane-runtime";
 export * from "./thinking/categorizer";
 export * from "./thinking/context-builder";
