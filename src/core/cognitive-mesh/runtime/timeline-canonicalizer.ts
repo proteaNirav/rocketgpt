@@ -224,6 +224,16 @@ function mapEventType(eventType: string): CanonicalTimelineEventType {
     case "runtime_learning_analysis_skipped":
     case "runtime_recurrence_threshold_reached":
     case "runtime_repair_ineffectiveness_detected":
+    case "runtime_containment_triggered":
+    case "runtime_quarantine_applied":
+    case "runtime_quarantine_skipped":
+    case "runtime_quarantine_extended":
+    case "runtime_reintegration_started":
+    case "runtime_reintegration_observation_started":
+    case "runtime_reintegration_completed":
+    case "runtime_reintegration_failed":
+    case "runtime_cascade_risk_detected":
+    case "runtime_target_retired_from_auto_reintegration":
       return "RUNTIME_GUARD_TRIGGERED";
     case "execution.started":
       return "EXECUTION_STARTED";
@@ -286,6 +296,16 @@ function mapStage(eventType: string): CanonicalTimelineStage {
     case "runtime_learning_analysis_skipped":
     case "runtime_recurrence_threshold_reached":
     case "runtime_repair_ineffectiveness_detected":
+    case "runtime_containment_triggered":
+    case "runtime_quarantine_applied":
+    case "runtime_quarantine_skipped":
+    case "runtime_quarantine_extended":
+    case "runtime_reintegration_started":
+    case "runtime_reintegration_observation_started":
+    case "runtime_reintegration_completed":
+    case "runtime_reintegration_failed":
+    case "runtime_cascade_risk_detected":
+    case "runtime_target_retired_from_auto_reintegration":
       return "runtime_evaluated";
     case "execution.started":
       return "execution_started";

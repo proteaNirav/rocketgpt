@@ -4,6 +4,7 @@ Last Updated: 2026-03-09
 
 ## Next Batch
 
+- Batch-21C (Failure Containment & Quarantine): Completed.
 - Batch-21B (Root Cause Learning & Prevention): Completed.
 - Batch-21A (Runtime Repair & Recovery): Completed.
 - Batch-19 (Heartbeat Kill Switch Contract): Completed.
@@ -14,6 +15,15 @@ Last Updated: 2026-03-09
 - Batch-14 (Memory Adoption): Completed.
 - Batch-13 (Cognitive Signal System): Completed.
 - Batch-12 (Motivated Recall): Active.
+
+## Batch-21C - Failure Containment & Quarantine: Completed
+
+- Added deterministic containment detector and rule-based containment policy engine for worker/queue/capability scopes.
+- Added quarantine and reintegration controllers with bounded observation windows and retirement thresholds.
+- Added runtime containment state surface (`.rocketgpt/runtime/containment-state.json`) with active entries, history, cooldowns, and counters.
+- Added immutable containment event emission (`runtime_quarantine_applied`, `runtime_reintegration_completed`, `runtime_target_retired_from_auto_reintegration`, etc.).
+- Added containment eligibility hooks in capability and mesh job dispatch paths to block new assignments for quarantined targets.
+- Added D21-C CLI surface and focused unit/benchmark tests including cooldown dedupe and D21-A/B integration flow.
 
 ## Batch-21B - Root Cause Learning & Prevention: Completed
 

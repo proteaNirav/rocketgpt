@@ -6,6 +6,10 @@ import {
   type DispatchMode,
 } from "../runtime/dispatch-guard";
 import { ExecutionLedger, getExecutionLedger } from "../runtime/execution-ledger";
+import {
+  evaluateRuntimeContainmentEligibility,
+} from "../runtime/containment/runtime-containment-eligibility";
+import type { RuntimeContainmentTargetType } from "../runtime/containment/runtime-containment.types";
 
 export type CognitiveMeshTaskKind =
   | "deepen-index"
@@ -48,6 +52,36 @@ export class CognitiveMeshJobDispatcher {
       sourceType: event.sourceType,
       ...payload,
     };
+
+    const containmentTarget = this.readContainmentTarget(kind, normalizedPayload);
+    if (containmentTarget) {
+      const eligibility = await evaluateRuntimeContainmentEligibility(containmentTarget.targetType, containmentTarget.targetId);
+      if (!eligibility.eligible) {
+        this.executionLedger.append({
+          category: "dispatch",
+          eventType: "dispatch.denied",
+          action: "mesh_job_dispatch",
+          source: event.source,
+          target: kind,
+          ids: {
+            requestId: event.requestId,
+            executionId: event.eventId,
+            correlationId: event.requestId,
+            sessionId: event.sessionId,
+          },
+          mode: "normal",
+          status: "denied",
+          metadata: {
+            containmentBlocked: true,
+            targetType: containmentTarget.targetType,
+            targetId: containmentTarget.targetId,
+            containmentStatus: eligibility.status,
+            reasonCodes: eligibility.reasonCodes,
+          },
+        });
+        throw new Error(`dispatch denied by containment: ${eligibility.reasonCodes.join(",")}`);
+      }
+    }
 
     try {
       const guarded = await executeWithDispatchGuard(this.dispatchGuard, {
@@ -173,6 +207,21 @@ export class CognitiveMeshJobDispatcher {
     }
 
     return this.enqueueJob(event, normalizedKind, normalizedPayload, dispatchMode);
+  }
+
+  private readContainmentTarget(
+    kind: CognitiveMeshTaskKind,
+    payload: Record<string, unknown>
+  ): { targetType: RuntimeContainmentTargetType; targetId: string } | null {
+    const targetId = typeof payload.targetId === "string" && payload.targetId.trim().length > 0 ? payload.targetId.trim() : null;
+    const explicitType = payload.targetType;
+    if (targetId && (explicitType === "queue" || explicitType === "worker" || explicitType === "capability")) {
+      return { targetType: explicitType, targetId };
+    }
+    if (kind === "quarantine-review" && targetId) {
+      return { targetType: "worker", targetId };
+    }
+    return null;
   }
 
   peek(limit = 50): CognitiveMeshJob[] {

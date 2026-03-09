@@ -30,6 +30,7 @@ import {
   deriveCapabilitySignals,
   type CognitiveRuntimeSignal,
 } from "../../runtime/cognitive-signal-system";
+import { evaluateRuntimeContainmentEligibility } from "../../runtime/containment/runtime-containment-eligibility";
 
 export interface CapabilityInvocationRecord {
   requestId: string;
@@ -225,6 +226,75 @@ export class CapabilityMeshOrchestrator {
       return {
         capability,
         result: unavailable,
+        capabilityVerification,
+        cognitiveSignals,
+        verificationDisposition: "unavailable",
+        governanceIssues,
+        invokable: false,
+        directCommitAllowed: false,
+        shouldCommit: false,
+      };
+    }
+
+    const containmentEligibility = await evaluateRuntimeContainmentEligibility("capability", request.capabilityId);
+    if (!containmentEligibility.eligible) {
+      governanceIssues.push(NEGATIVE_PATH_ISSUES.GUARDRAIL_BLOCKED);
+      const blockedByContainment = this.executionHardener.buildFailureResult({
+        request,
+        status: "denied",
+        failureClass: "guard_blocked",
+        reasonCodes: containmentEligibility.reasonCodes,
+        stage: "policy_gated",
+      });
+      this.executionLedger.append({
+        category: "dispatch",
+        eventType: "dispatch.denied",
+        action: request.purpose,
+        source: "capability_mesh_orchestrator",
+        target: request.capabilityId,
+        ids: {
+          requestId: request.requestId,
+          sessionId: request.sessionId,
+        },
+        mode: "normal",
+        status: "denied",
+        metadata: {
+          containmentBlocked: true,
+          containmentStatus: containmentEligibility.status,
+          reasonCodes: containmentEligibility.reasonCodes,
+        },
+      });
+      this.recordInvocation({
+        requestId: request.requestId,
+        sessionId: request.sessionId,
+        capabilityId: request.capabilityId,
+        selectedAt,
+        completedAt: blockedByContainment.completedAt,
+        resultStatus: blockedByContainment.status,
+        verificationInvoked: false,
+      });
+      const capabilityVerification: CapabilityVerificationOutcome = {
+        decision: "policy_rejected",
+        adoptable: false,
+        reasonCodes: [],
+        warnings: [],
+        normalizedStatus: blockedByContainment.status,
+      };
+      const cognitiveSignals = deriveCapabilitySignals({
+        source: "capability_mesh_orchestrator",
+        ids: {
+          requestId: request.requestId,
+          sessionId: request.sessionId,
+        },
+        capabilityId: request.capabilityId,
+        capabilityStatus: blockedByContainment.status,
+        capabilityVerification,
+        shouldCommit: false,
+        governanceIssues,
+      });
+      return {
+        capability,
+        result: blockedByContainment,
         capabilityVerification,
         cognitiveSignals,
         verificationDisposition: "unavailable",
