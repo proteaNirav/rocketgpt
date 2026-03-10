@@ -1,7 +1,7 @@
 # Security Policy
 
 ## Reporting a Vulnerability
-If you discover a vulnerability or security issue in **RocketGPT**, please **do not create a public issue**.
+If you discover a vulnerability or security issue in **Mishti AI**, please **do not create a public issue**.
 
 Instead, report it privately via email to **nirav@protea.ai** with:
 - Detailed description of the issue  
@@ -18,4 +18,4 @@ We follow a coordinated disclosure model:
 - The issue will be patched before any public disclosure.  
 - Contributors who report valid vulnerabilities will be credited in the changelog (if desired).  
 
-Thank you for helping keep RocketGPT secure.
+Thank you for helping keep Mishti AI secure.
