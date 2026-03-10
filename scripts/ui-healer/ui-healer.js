@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Simple UI healer for RocketGPT v3_full
+// Simple UI healer for the Mishti AI legacy v3_full surface
 
 const { execSync } = require("node:child_process");
 const process = require("node:process");
@@ -61,7 +61,7 @@ async function main() {
 
   // 2) Build a compact prompt with opinionated UI rules
   const prompt = `
-You are RocketGPT's UI Healer. You review diffs of the Next.js app in "rocketgpt_v3_full/webapp/next" and suggest minimal improvements.
+You are Mishti AI's UI Healer. You review diffs of the Next.js app in "rocketgpt_v3_full/webapp/next" and suggest minimal improvements.
 
 Rules:
 - Keep all business logic and data flow as-is.
@@ -98,7 +98,7 @@ Output format (very important):
     messages: [
       {
         role: "system",
-        content: "You are a senior frontend engineer and UI healer for RocketGPT."
+        content: "You are a senior frontend engineer and UI healer for Mishti AI."
       },
       { role: "user", content: prompt }
     ]
@@ -126,7 +126,7 @@ Output format (very important):
   if (GITHUB_TOKEN && GITHUB_REPOSITORY) {
     const commentBody = {
       body: [
-        "### 🤖 RocketGPT UI Healer Report",
+        "### 🤖 Mishti AI UI Healer Report",
         "",
         content,
         "",
