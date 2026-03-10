@@ -130,7 +130,7 @@ $newFiles += $path_wf_selfheal
 
 # Bootstrap readme for v4
 $readme = @"
-# RocketGPT v4 — Core AI (Self-Healing & Self-Improving)
+# Mishti AI v4 — Core AI (Self-Healing & Self-Improving)
 
 This branch seeds the **Self-Heal Controller** workflow and a `core-ai/` workspace for future agents:
 - Diagnostics & plan generation
@@ -218,4 +218,5 @@ if ($stashes) {
 Write-Step "DONE" "Green"
 Write-Host "Branch: $Branch" -ForegroundColor Green
 if ($prUrl) { Write-Host "PR: $prUrl" -ForegroundColor Green }
+
 

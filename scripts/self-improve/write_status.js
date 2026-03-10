@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// RocketGPT Self-Improve Status Writer (placeholder)
+// Mishti AI Self-Improve Status Writer (placeholder)
 
 console.log("Self-Improve status writer (placeholder) payload:");
 console.log(JSON.stringify({

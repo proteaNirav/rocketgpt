@@ -127,7 +127,7 @@ name: Watchdog
 
 on:
   workflow_run:
-    workflows: ["AI Codegen", "RocketGPT Ship Issue"]
+    workflows: ["AI Codegen", "Mishti AI Ship Issue"]
     types: [completed]
 
 jobs:

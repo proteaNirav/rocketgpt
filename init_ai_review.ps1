@@ -1,5 +1,5 @@
 <#
-RocketGPT — Step 2: AI Diff Review (Claude)
+Mishti AI — Step 2: AI Diff Review (Claude)
 This script:
   - stores CLAUDE_API_KEY in repo secrets
   - upgrades .github/workflows/ai-review.yml to do real diff review
@@ -160,3 +160,4 @@ if ($pr) {
 }
 
 Write-Host "Done. Step-2 PR opened/updated for AI diff review." -ForegroundColor Green
+

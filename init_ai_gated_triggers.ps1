@@ -1,5 +1,5 @@
 <#
-RocketGPT — Step 3.5: Label-Gated AI Triggers
+Mishti AI — Step 3.5: Label-Gated AI Triggers
 - Gates AI Diff Review behind label: ai:review
 - Gates AI CI-Failure Advisor behind label: ai:advisor
 - Creates missing labels
@@ -308,3 +308,4 @@ if ($pr) {
 }
 
 Write-Host "Done. PR opened/updated for label-gated AI triggers." -ForegroundColor Green
+

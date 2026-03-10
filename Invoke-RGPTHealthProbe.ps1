@@ -2,7 +2,7 @@ param(
     [string] $BaseUrl = "http://localhost:3000"
 )
 
-Write-Host "`n[RGPT-HEALTH] RocketGPT Health Probe starting..." -ForegroundColor Cyan
+Write-Host "`n[RGPT-HEALTH] Mishti AI Health Probe starting..." -ForegroundColor Cyan
 
 $StatusUrl      = "$BaseUrl/api/status"
 $OrchHealthUrl  = "$BaseUrl/api/orchestrator/health"

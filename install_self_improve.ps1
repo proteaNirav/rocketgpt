@@ -1,5 +1,5 @@
 # install_self_improve.ps1
-# RocketGPT v4: Self-Improve + Watchdog + Safety Locks (branch: v4-core-ai)
+# Mishti AI v4: Self-Improve + Watchdog + Safety Locks (branch: v4-core-ai)
 
 [CmdletBinding()]
 param(
@@ -118,7 +118,7 @@ name: Watchdog
 
 on:
   workflow_run:
-    workflows: ["AI Codegen", "RocketGPT Ship Issue"]
+    workflows: ["AI Codegen", "Mishti AI Ship Issue"]
     types: [completed]
 
 jobs:

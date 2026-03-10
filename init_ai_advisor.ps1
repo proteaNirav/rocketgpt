@@ -1,5 +1,5 @@
 <#
-RocketGPT — Step 3: AI CI-Failure Advisor (Claude)
+Mishti AI — Step 3: AI CI-Failure Advisor (Claude)
 - Creates .github/workflows/ai-advisor.yml
 - Opens/updates PR: rocketgpt-core/ai-advisor -> develop
 Prereqs:
@@ -182,3 +182,4 @@ if ($pr) {
 }
 
 Write-Host "Done. Step-3 PR opened/updated for AI CI-Failure Advisor." -ForegroundColor Green
+

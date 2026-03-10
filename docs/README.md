@@ -10,14 +10,24 @@ This index links all major architectural, AI, safety, and improvement documents.
 - **Self-Improvement Charter**  
   `docs/self-improvement-charter.md`
 
-- **Real Self-Improving Mishti AI**  
-  `docs/real-self-improving-rocketgpt.md`
-
 - **AI Evolution Roadmap**  
   `docs/roadmap/AI_Evolution.md`
 
 - **Mishti AI v4 Core AI Roadmap**  
   `docs/roadmap/v4-core-ai.md`
+
+---
+
+## 🏗 Architecture
+
+- **Mishti AI Platform Architecture**  
+  `docs/architecture/MISHTI_AI_PLATFORM_ARCHITECTURE.md`
+
+- **Mishti AI - Multimodal Capture Architecture**  
+  `docs/architecture/multimodal/MISHTI-AI-MULTIMODAL-CAPTURE-ARCHITECTURE.md`
+
+- **Mishti AI - Capture Intelligence Layer (CIL)**  
+  `docs/architecture/multimodal/MISHTI-AI-CAPTURE-INTELLIGENCE-LAYER.md`
 
 ---
 
