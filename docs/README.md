@@ -1,6 +1,6 @@
-# RocketGPT Documentation Index
+# Mishti AI Documentation Index
 
-Welcome to the official documentation for **RocketGPT**.  
+Welcome to the official documentation for **Mishti AI**.  
 This index links all major architectural, AI, safety, and improvement documents.
 
 ---
@@ -10,13 +10,13 @@ This index links all major architectural, AI, safety, and improvement documents.
 - **Self-Improvement Charter**  
   `docs/self-improvement-charter.md`
 
-- **Real Self-Improving RocketGPT**  
+- **Real Self-Improving Mishti AI**  
   `docs/real-self-improving-rocketgpt.md`
 
 - **AI Evolution Roadmap**  
   `docs/roadmap/AI_Evolution.md`
 
-- **RocketGPT v4 Core AI Roadmap**  
+- **Mishti AI v4 Core AI Roadmap**  
   `docs/roadmap/v4-core-ai.md`
 
 ---
@@ -46,7 +46,7 @@ This index links all major architectural, AI, safety, and improvement documents.
 - **AI Evolution (Narrow → General → Super AI)**  
   `docs/roadmap/AI_Evolution.md`
 
-- **RocketGPT v4 Core AI (Self-Healing, Self-Improving)**  
+- **Mishti AI v4 Core AI (Self-Healing, Self-Improving)**  
   `docs/roadmap/v4-core-ai.md`
 
 <!-- Phase-1 validation: PR-1 baseline -->
@@ -54,4 +54,4 @@ This index links all major architectural, AI, safety, and improvement documents.
 
 ---
 
-*This file will keep expanding as RocketGPT grows.*
+*This file will keep expanding as Mishti AI grows.*

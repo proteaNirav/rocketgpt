@@ -1,6 +1,6 @@
 # Planner v1 Output Schema (LOCKED)
 
-This folder defines the canonical output contract for RocketGPT Planner v1.
+This folder defines the canonical output contract for the Mishti AI Planner v1.
 
 ## Artifacts
 - ExecutionPlan.template.json (primary machine contract)
