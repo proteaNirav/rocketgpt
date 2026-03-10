@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// RocketGPT Self-Improve patcher (placeholder)
+// Mishti AI Self-Improve patcher (placeholder)
 //
 // Responsibility in v4 Core AI:
 // - NEVER fail the workflow if there is no active improvement.
