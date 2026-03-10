@@ -34,7 +34,7 @@ jobs:
         run: |
           echo "⚠️  STATUS: STUB - This workflow is not functional"
           echo ""
-          echo "TODO: RocketGPT self-heal to inspect failing tests and propose fixes."
+          echo "TODO: Mishti AI self-heal to inspect failing tests and propose fixes."
           echo ""
           echo "Required before activation:"
           echo "- [ ] CI failure analysis logic"
@@ -42,4 +42,3 @@ jobs:
           echo "- [ ] PR creation workflow"
           echo "- [ ] Human approval required"
           echo "- [ ] Rollback plan"
-

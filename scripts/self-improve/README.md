@@ -2,7 +2,9 @@
 
 ## Overview
 
-These scripts support RocketGPT's self-improvement subsystem. All scripts follow strict safety guidelines to prevent unauthorized code modifications.
+These scripts support Mishti AI's self-improvement subsystem. All scripts follow strict safety guidelines to prevent unauthorized code modifications.
+
+For operator-facing CLI access, prefer `./scripts/mt.ps1` and treat `./scripts/rgpt.ps1` as a temporary compatibility alias.
 
 **Last Audited**: 2025-12-23
 **Safety Status**: ✅ All scripts safe for use
@@ -245,3 +247,4 @@ node scripts/self-improve/execute.js
 
 **Version**: 1.0
 **Last Updated**: 2025-12-23
+
