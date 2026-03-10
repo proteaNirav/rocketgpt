@@ -1,5 +1,5 @@
 # RGPT-E2-TIMELINE-VERIFY-PS-01
-# Purpose: Validate RocketGPT Runtime Timeline (JSONL)
+# Purpose: Validate the Mishti AI Runtime Timeline (JSONL)
 # Usage:
 #   pwsh .\scripts\ops\Verify-RuntimeTimeline.ps1 -Path ".\runtime_timeline.jsonl"
 

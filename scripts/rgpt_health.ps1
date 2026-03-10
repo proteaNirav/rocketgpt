@@ -1,5 +1,5 @@
 Write-Host "`n==========================="
-Write-Host " RocketGPT Health Snapshot "
+Write-Host " Mishti AI Health Snapshot "
 Write-Host "===========================`n"
 
 # -------------------------------
@@ -29,18 +29,19 @@ $latestRun = gh run list --repo "proteaNirav/rocketgpt" `
   ConvertFrom-Json
 
 if (-not $latestRun) {
-    Write-Host "No runs found — health UNKNOWN" -ForegroundColor Yellow
+    Write-Host "No runs found ï¿½ health UNKNOWN" -ForegroundColor Yellow
     exit
 }
 
 $latest = $latestRun
 
 if ($latest.status -eq "completed" -and $latest.conclusion -eq "success") {
-    Write-Host "? RocketGPT Self-Improve is Healthy" -ForegroundColor Green
+    Write-Host "? Mishti AI Self-Improve is Healthy" -ForegroundColor Green
 }
 elseif ($latest.status -eq "completed" -and $latest.conclusion -ne "success") {
-    Write-Host "? Self-Improve completed but failed — needs attention" -ForegroundColor Yellow
+    Write-Host "? Self-Improve completed but failed ï¿½ needs attention" -ForegroundColor Yellow
 }
 else {
     Write-Host "? Self-Improve is in a bad state" -ForegroundColor Red
 }
+
