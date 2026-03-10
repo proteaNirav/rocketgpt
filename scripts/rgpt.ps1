@@ -78,13 +78,12 @@ switch ($Command.ToLower()) {
 
         Start-Sleep -Seconds 3
         $r = gh run list --workflow "Vercel Throttled Deploy" --limit 1 --json databaseId,updatedAt | ConvertFrom-Json
-        if (-not $r) { Write-Host "No run found — check GitHub." -ForegroundColor Yellow; break }
+        if (-not $r) { Write-Host "No run found. Check GitHub." -ForegroundColor Yellow; break }
         $runId = $r[0].databaseId
         Write-Host "Run ID: $runId"
 
         if (-not $opts.Wait) { break }
 
-        # Wait mode: poll until completed and print gate decision
         do {
           $j = gh run view $runId --json status,conclusion | ConvertFrom-Json
           $resultText = "(n/a)"
@@ -98,11 +97,10 @@ switch ($Command.ToLower()) {
     }
     "deploy-status" {
         if ($Args.Count -lt 1) {
-            Write-Host "Usage: ./scripts/rgpt.ps1 deploy-status <RunId>" -ForegroundColor Yellow
+            Write-Host "Usage: ./scripts/mt.ps1 deploy-status <RunId>  (legacy: ./scripts/rgpt.ps1 deploy-status <RunId>)" -ForegroundColor Yellow
             break
         }
         $runId = $Args[0]
-        # wait until completed, then show decision lines
         do {
           $j = gh run view $runId --json status,conclusion | ConvertFrom-Json
           $resultText = "(n/a)"
@@ -115,22 +113,24 @@ switch ($Command.ToLower()) {
         gh run view $runId --log | Select-String -Pattern "Decide if deploy allowed", "Over 30 minutes", "Under 30 minutes", "Deploying to Vercel", "Skipping deploy"
     }
     "help" {
-        Write-Host "`nRocketGPT CLI (rgpt.ps1)" -ForegroundColor Cyan
-        Write-Host "Operate RocketGPT from PowerShell: health, runs, logs, deploy, and plan views.`n"
+        Write-Host "`nMishti AI CLI compatibility script" -ForegroundColor Cyan
+        Write-Host "Preferred command: ./scripts/mt.ps1. Legacy compatibility alias: ./scripts/rgpt.ps1.`n"
         Write-Host "USAGE:" -ForegroundColor Yellow
-        Write-Host "  ./scripts/rgpt.ps1 health                 # Health snapshot (runs + plan + verdict)"
-        Write-Host "  ./scripts/rgpt.ps1 runs [--limit N]       # Recent Self-Improve runs (table)"
-        Write-Host "  ./scripts/rgpt.ps1 logs                   # Logs for the latest run"
-        Write-Host "  ./scripts/rgpt.ps1 logs --run <RunId>     # Logs for a specific run"
-        Write-Host "  ./scripts/rgpt.ps1 logs --limit N         # Logs for last N runs"
-        Write-Host "  ./scripts/rgpt.ps1 logs --last-failed     # Logs for most recent failed run"
-        Write-Host "  ./scripts/rgpt.ps1 deploy [--wait]        # Trigger throttled Vercel deploy (with 30m gate)"
-        Write-Host "  ./scripts/rgpt.ps1 deploy-status <RunId>  # Wait + print gate decision for a throttled deploy run"
+        Write-Host "  ./scripts/mt.ps1 health                   # Preferred health snapshot command"
+        Write-Host "  ./scripts/mt.ps1 runs [--limit N]         # Preferred recent Self-Improve runs command"
+        Write-Host "  ./scripts/mt.ps1 logs                     # Preferred logs command"
+        Write-Host "  ./scripts/mt.ps1 logs --run <RunId>       # Preferred logs command for a specific run"
+        Write-Host "  ./scripts/mt.ps1 logs --limit N           # Preferred logs command for last N runs"
+        Write-Host "  ./scripts/mt.ps1 logs --last-failed       # Preferred logs command for the most recent failed run"
+        Write-Host "  ./scripts/mt.ps1 deploy [--wait]          # Preferred throttled Vercel deploy command"
+        Write-Host "  ./scripts/mt.ps1 deploy-status <RunId>    # Preferred gate decision command"
+        Write-Host "`nLegacy compatibility:"
+        Write-Host "  ./scripts/rgpt.ps1 <command>              # Still supported during phased migration"
         return
     }
     default {
         Write-Host "Unknown command: $Command" -ForegroundColor Red
-        Write-Host "Try: ./scripts/rgpt.ps1 help"
+        Write-Host "Try: ./scripts/mt.ps1 help  (legacy: ./scripts/rgpt.ps1 help)"
         exit 1
     }
 }

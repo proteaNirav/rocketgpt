@@ -1,4 +1,4 @@
-name: RocketGPT Ship Issue
+name: Mishti AI Ship Issue
 on:
   workflow_dispatch:
     inputs:

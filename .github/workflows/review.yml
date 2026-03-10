@@ -1,4 +1,4 @@
-name: RocketGPT Review Pipeline
+name: Mishti AI Review Pipeline
 
 on:
   pull_request:
@@ -307,5 +307,4 @@ jobs:
           (command -v jq >/dev/null && jq -C '.' dispatch.merge.resp.json) || cat dispatch.merge.resp.json
           echo "::endgroup::"
           test "$STATUS" = "204" || (echo "ERR: merge dispatch failed"; exit 1)
-
 
