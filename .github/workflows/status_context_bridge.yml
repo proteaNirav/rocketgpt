@@ -7,7 +7,7 @@ on:
       - text-guard (smoke)
       - policy_prompt_bypass_gate
       - workflow_name_drift_lock
-      - RGPT DB Exposure Guard
+      - Mishti AI DB Exposure Guard
       - Safe-Mode CI Gate
       - .github/workflows/policy_gate_required.yml
     types: [completed]
@@ -78,6 +78,5 @@ jobs:
               description: `Bridge: ${run.name} ΓåÆ ${state}`,
               target_url: run.html_url
             });
-
 
 

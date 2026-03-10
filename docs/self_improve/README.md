@@ -1,4 +1,4 @@
-# RocketGPT Self-Improve System
+# Mishti AI Self-Improve System
 
 ## Goal
 Detect -> Propose -> Validate -> Execute -> Verify -> PR -> Ledger
