@@ -8,7 +8,7 @@ name: Notify on Pipeline
 
 on:
   workflow_run:
-    workflows: ["AI Codegen", "AI PR Review", "RocketGPT Review Pipeline"]
+    workflows: ["AI Codegen", "AI PR Review", "Mishti AI Review Pipeline"]
     types: [completed]
 
 permissions:
@@ -36,6 +36,5 @@ jobs:
           curl -sS -X POST -H 'Content-type: application/json' \
           --data "{\"text\":\"${{ steps.msg.outputs.text }}\"}" \
           "${{ vars.TEAMS_WEBHOOK_URL }}"
-
 
 

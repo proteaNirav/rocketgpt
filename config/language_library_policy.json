@@ -39,9 +39,10 @@
   },
 
   "goals": [
-    "build reusable language knowledge for RocketGPT's own use",
+    "build reusable language knowledge for Mishti AI's own use",
     "standardise translation and explanation style across languages",
-    "capture best-practice patterns for programming languages RocketGPT uses",
+    "capture best-practice patterns for programming languages Mishti AI uses",
     "stay within free-tier constraints by using repo storage instead of databases"
   ]
 }
+

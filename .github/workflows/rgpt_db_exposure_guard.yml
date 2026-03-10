@@ -1,4 +1,4 @@
-name: rgpt-db-exposure-guard
+name: Mishti AI DB Exposure Guard
 
 on:
   pull_request:
@@ -202,7 +202,6 @@ jobs:
           } -Body $body | Out-Null
 
           Write-Host "[OK] Published status context rgpt-db-exposure-guard => $state" -ForegroundColor Green
-
 
 
 
