@@ -1,9 +1,4 @@
-name: PR Checks (meta)
-
-# Safety: Meta PR checks workflow (read-only)
-# - Displays PR context for debugging
-# - No actual checks or modifications
-# - Permissions: read-only
+name: PR Checks
 
 on:
   pull_request:
@@ -13,17 +8,34 @@ permissions:
   contents: read
 
 jobs:
-  meta-pr-checks:
-    name: Meta PR Checks
+  pr-checks:
+    name: PR Checks
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup pnpm
+        run: corepack enable
+
       - name: Show basic PR context
         run: |
-          echo "PR Checks meta workflow running."
+          echo "PR checks workflow running."
           echo "Repository: ${{ github.repository }}"
           echo "PR #:      ${{ github.event.pull_request.number }}"
           echo "Head SHA:  ${{ github.sha }}"
 
-      - name: Mark PR checks as successful
-        run: echo "PR checks meta workflow completed successfully."
+      - name: Environment hygiene check
+        run: pnpm env:check
+
+      - name: Library index drift check
+        run: pnpm libs:check
+
+      - name: Performance regression guardrails
+        run: node rocketgpt_v3_full/webapp/next/scripts/perf-guard.mjs --ci

@@ -15,8 +15,20 @@ import { runAllDetectors } from "./detectors.mjs";
 import { rankFindings } from "./ranking.mjs";
 import { validateProposal } from "./proposal-validator.mjs";
 import { writeDecisionLedger, writeExecutionLedger } from "./ledger.mjs";
+import { validateAnalysisReport, validateWorkflowPlan } from "../../../src/contracts/index.mjs";
 
 const defaultDisallowedPaths = ["**/.env*", "**/secrets/**", "infra/**", ".github/workflows/**", ".git/**"];
+
+export function validateContractBoundaryPayload(payload) {
+  const result = {
+    workflowPlan: payload?.workflowPlan ? validateWorkflowPlan(payload.workflowPlan) : { ok: true, errors: [] },
+    analysisReport: payload?.analysisReport ? validateAnalysisReport(payload.analysisReport) : { ok: true, errors: [] },
+  };
+  return {
+    ok: result.workflowPlan.ok && result.analysisReport.ok,
+    ...result,
+  };
+}
 
 function getAllowedPathsForFinding(finding) {
   if (finding.type === "replay_drift") {

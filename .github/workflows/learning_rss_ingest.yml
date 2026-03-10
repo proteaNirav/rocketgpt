@@ -1,0 +1,43 @@
+name: Learning RSS Ingest
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call learning RSS ingest endpoint
+        env:
+          INGEST_URL: ${{ secrets.LEARNING_INGEST_URL }}
+          ADMIN_TOKEN: ${{ secrets.LEARNING_ADMIN_TOKEN }}
+          TENANT_ID: ${{ secrets.LEARNING_TENANT_ID }}
+          USER_ID: ${{ secrets.LEARNING_USER_ID }}
+        run: |
+          if [ -z "$INGEST_URL" ] || [ -z "$ADMIN_TOKEN" ] || [ -z "$TENANT_ID" ]; then
+            echo "Missing required secrets: LEARNING_INGEST_URL, LEARNING_ADMIN_TOKEN, LEARNING_TENANT_ID"
+            exit 1
+          fi
+          if [ -z "$USER_ID" ]; then
+            USER_ID="00000000-0000-4000-8000-000000000002"
+          fi
+
+          HTTP_CODE=$(curl -sS -o out.json -w "%{http_code}" \
+            -X POST "$INGEST_URL" \
+            -H "content-type: application/json" \
+            -H "x-governance-role: admin" \
+            -H "x-admin-token: $ADMIN_TOKEN" \
+            -H "x-tenant-id: $TENANT_ID" \
+            -H "x-user-id: $USER_ID" \
+            -d '{}')
+
+          cat out.json
+          if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+            echo "Learning RSS ingest failed with HTTP $HTTP_CODE"
+            exit 1
+          fi

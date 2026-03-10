@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { runMeshLiveHookIfEnabled } from "../../../../../src/core/cognitive-mesh/runtime/mesh-live-hook";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,24 @@ export async function GET(req: NextRequest) {
         { success: false, message: "Run not found" },
         { status: 404 },
       );
+    }
+
+    try {
+      await runMeshLiveHookIfEnabled({
+        sessionId: `orchestrator-run-${runId}`,
+        requestId: `status-${runId}-${Date.now()}`,
+        routeType: "/api/orchestrator/run/status",
+        rawInput: {
+          runId,
+          status: data.status,
+        },
+        metadata: {
+          project: "rocketgpt",
+          domain: "orchestrator",
+        },
+      });
+    } catch (meshErr) {
+      console.error("[mesh-live-hook] non-blocking error:", meshErr);
     }
 
     return NextResponse.json(
