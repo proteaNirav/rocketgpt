@@ -1,10 +1,10 @@
 ## Self-* Capabilities (Study, Reasoning, Research, Innovation)
 
 ### Goals
-- Enable RocketGPT to understand its own codebase, docs, and workflows (Self-Study).
-- Enable RocketGPT to plan and execute complex tasks in steps (Self-Reasoning).
-- Enable RocketGPT to investigate problems and patterns (Self-Research).
-- Enable RocketGPT to propose and prototype new ideas/features (Self-Innovation).
+- Enable Mishti AI to understand its own codebase, docs, and workflows (Self-Study).
+- Enable Mishti AI to plan and execute complex tasks in steps (Self-Reasoning).
+- Enable Mishti AI to investigate problems and patterns (Self-Research).
+- Enable Mishti AI to propose and prototype new ideas/features (Self-Innovation).
 - Keep all self-* activity safe, logged, and always under human approval.
 
 ### Phase S1 – Foundations (v4.x, Go-Live Compatible)

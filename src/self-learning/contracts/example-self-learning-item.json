@@ -1,0 +1,18 @@
+{
+  "learningId": "sl-0001",
+  "title": "Runtime heartbeat instability under repeated recovery cycles",
+  "category": "runtime",
+  "state": "suspected",
+  "confidence": {
+    "score": 0.72,
+    "basis": "repeated heartbeat degradation observations"
+  },
+  "priority": "high",
+  "evidenceReferences": [
+    {
+      "sourceSystem": "runtime-heartbeat",
+      "sourceRef": "hb-0001"
+    }
+  ],
+  "reviewStage": "candidate-learning"
+}

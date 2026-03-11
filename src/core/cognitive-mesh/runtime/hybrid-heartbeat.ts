@@ -62,6 +62,8 @@ interface HeartbeatStateSurface {
   anomalyDetected: boolean;
   ledgerEventWritten: boolean;
   shouldAlert: boolean;
+  policyBlocked: boolean;
+  alertSuppressedByPolicy: boolean;
 }
 
 export interface HybridHeartbeatEvaluateInput {
@@ -90,6 +92,8 @@ export interface HybridHeartbeatMonitorReport {
   fileEnabled: boolean;
   ledgerEventWritten: boolean;
   shouldAlert: boolean;
+  policyBlocked: boolean;
+  alertSuppressedByPolicy: boolean;
   notes: string[];
 }
 
@@ -149,6 +153,13 @@ function mapStateToLedgerStatus(state: HeartbeatState): ExecutionLedgerStatus {
 
 function shouldAlert(state: HeartbeatState): boolean {
   return state === "blocked" || state === "degraded" || state === "stale" || state === "failed" || state === "unknown";
+}
+
+function isPolicyBlocked(decision: HeartbeatGateDecision): boolean {
+  if (decision.allowed) {
+    return false;
+  }
+  return decision.reasonCodes.includes("ENV_DISABLED") || decision.reasonCodes.includes("FILE_DISABLED");
 }
 
 function shouldWriteLedgerEvent(input: {
@@ -235,6 +246,8 @@ async function readStateFile(path: string): Promise<HeartbeatStateSurface | null
       anomalyDetected: value.anomalyDetected === true,
       ledgerEventWritten: value.ledgerEventWritten === true,
       shouldAlert: value.shouldAlert === true,
+      policyBlocked: value.policyBlocked === true,
+      alertSuppressedByPolicy: value.alertSuppressedByPolicy === true,
     };
   } catch {
     return null;
@@ -484,6 +497,7 @@ export async function evaluateHybridHeartbeat(input: HybridHeartbeatEvaluateInpu
 
   const subsystemHealth = summarizeChecks(checks);
   const lastHealthyAt = currentState === "healthy" ? evaluatedAt : previous?.lastHealthyAt ?? null;
+  const policyBlocked = currentState === "blocked" && isPolicyBlocked(decision);
 
   if (ledgerEventWritten) {
     const ledger =
@@ -528,6 +542,8 @@ export async function evaluateHybridHeartbeat(input: HybridHeartbeatEvaluateInpu
     anomalyDetected,
     ledgerEventWritten,
     shouldAlert: shouldAlert(currentState),
+    policyBlocked,
+    alertSuppressedByPolicy: policyBlocked,
   };
 
   await writeStateFile(statePath, state);
@@ -543,6 +559,8 @@ export async function evaluateHybridHeartbeat(input: HybridHeartbeatEvaluateInpu
       fileEnabled: decision.fileEnabled,
       ledgerEventWritten,
       shouldAlert: state.shouldAlert,
+      policyBlocked: state.policyBlocked,
+      alertSuppressedByPolicy: state.alertSuppressedByPolicy,
       notes,
     },
     decision,

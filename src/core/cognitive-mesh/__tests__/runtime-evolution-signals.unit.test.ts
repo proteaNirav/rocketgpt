@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import * as assert from "node:assert/strict";
-import { mkdtemp, mkdir, readFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ExecutionLedger } from "../runtime/execution-ledger";
@@ -9,6 +9,7 @@ import { RuntimeLearningSignalExtractor } from "../runtime/evolution-signals/lea
 import { RuntimeImprovementCandidateDetector } from "../runtime/evolution-signals/improvement-candidate-detector";
 import { RuntimeEvolutionSignalsOrchestrator } from "../runtime/evolution-signals/runtime-evolution-signals-orchestrator";
 import { RuntimeEvolutionSignalsStateRepository } from "../runtime/evolution-signals/runtime-evolution-signals-state-repository";
+import { RuntimeEvolutionSignalsAggregator } from "../runtime/evolution-signals/healing-telemetry-aggregator";
 import type { RuntimeEvolutionEvidenceSignal } from "../runtime/evolution-signals/runtime-evolution-signals.types";
 import { RuntimeRepairOrchestrator } from "../runtime/repair/runtime-repair-orchestrator";
 import { RuntimeRepairLearningOrchestrator } from "../runtime/repair-learning/runtime-repair-learning-orchestrator";
@@ -383,4 +384,47 @@ test("unchanged healing assessment suppression behavior", async () => {
 
   const stateRaw = JSON.parse(await readFile(fixture.evolutionStatePath, "utf8")) as Record<string, unknown>;
   assert.equal(stateRaw.schemaVersion, "rgpt.runtime_evolution_signals_state.v1");
+});
+
+test("evolution aggregator ingests hybrid/manual heartbeat intent from runtime.guard.evaluated entries", async () => {
+  const fixture = await createFixture();
+  await writeFile(
+    fixture.ledgerPath,
+    `${JSON.stringify({
+      entryId: "exec_hb_evolution",
+      timestamp: "2026-03-09T17:40:00.000Z",
+      category: "runtime",
+      eventType: "runtime.guard.evaluated",
+      action: "runtime.heartbeat.manual.single",
+      source: "manual_heartbeat_runner",
+      target: "system_heartbeat",
+      ids: { requestId: "hb-evo-compat" },
+      mode: "normal",
+      status: "completed",
+      metadata: {
+        heartbeat: {
+          runtime_id: "rgpt-evolution-test",
+        },
+      },
+    })}\n`,
+    "utf8"
+  );
+
+  const signals = await new RuntimeEvolutionSignalsAggregator().collect(
+    {
+      enabled: true,
+      lookbackMs: 3_600_000,
+      signalCooldownMs: 60_000,
+      candidateCooldownMs: 60_000,
+      maxRecentSignals: 30,
+      maxActiveCandidates: 20,
+      maxEvidenceEvents: 20,
+      statePath: fixture.evolutionStatePath,
+      ledgerPath: fixture.ledgerPath,
+    },
+    new Date("2026-03-09T17:40:30.000Z")
+  );
+
+  assert.equal(signals.length, 1);
+  assert.equal(signals[0]!.eventType, "runtime.heartbeat");
 });

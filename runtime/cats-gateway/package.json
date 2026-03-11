@@ -1,0 +1,14 @@
+{
+  "name": "@mishti/cats-gateway",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/runtime/cats-gateway/src/index.js",
+  "types": "dist/runtime/cats-gateway/src/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\""
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

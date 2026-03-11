@@ -1,7 +1,7 @@
 
-# RocketGPT – Self-Improve Backlog (Specification)
+# Mishti AI – Self-Improve Backlog (Specification)
 
-This document explains how `config/self_improve_backlog.json` is used to plan, select, and track self-improvements for RocketGPT.
+This document explains how `config/self_improve_backlog.json` is used to plan, select, and track self-improvements for Mishti AI.
 
 ---
 
@@ -66,7 +66,7 @@ ISO 8601 timestamp when the improvement was added.
 
 ---
 
-## 3. How RocketGPT Chooses the “Next Improvement”
+## 3. How Mishti AI Chooses the “Next Improvement”
 
 When the self-improve workflow runs, it follows this algorithm:
 
@@ -87,9 +87,9 @@ When the self-improve workflow runs, it follows this algorithm:
 
 ---
 
-## 4. What You Will See in RocketGPT (Once Step 9.x Is Done)
+## 4. What You Will See in Mishti AI (Once Step 9.x Is Done)
 
-RocketGPT will be able to show:
+Mishti AI will be able to show:
 
 ### **Current Improvement**
 - The backlog item with status:

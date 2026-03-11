@@ -1,0 +1,38 @@
+{
+  "mode": "normal",
+  "constitutionVersion": "v1",
+  "decisions": [
+    {
+      "taskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+      "checkedAt": "2026-03-11T12:32:42.093Z",
+      "eligibility": "eligible",
+      "decisionClass": "bounded_allow",
+      "reasonCode": "first_life_document_task_allowed",
+      "policyRefs": [
+        "mishti.first-life.governance",
+        "mishti.runtime.sandbox.first-life"
+      ]
+    },
+    {
+      "taskId": "9bfa3614-8564-4152-ad34-504b6d22d085",
+      "checkedAt": "2026-03-11T12:37:59.640Z",
+      "eligibility": "eligible",
+      "decisionClass": "bounded_allow",
+      "reasonCode": "first_life_document_task_allowed",
+      "policyRefs": [
+        "mishti.first-life.governance",
+        "mishti.runtime.sandbox.first-life"
+      ]
+    },
+    {
+      "taskId": "6dd7eed7-0626-4991-b177-1f1b1af97602",
+      "checkedAt": "2026-03-11T12:39:38.271Z",
+      "eligibility": "blocked",
+      "decisionClass": "approval_required",
+      "reasonCode": "runtime_safe_mode_active",
+      "policyRefs": [
+        "mishti.first-life.survival"
+      ]
+    }
+  ]
+}

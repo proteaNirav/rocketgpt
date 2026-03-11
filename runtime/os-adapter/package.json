@@ -1,0 +1,14 @@
+{
+  "name": "@mishti/os-adapter",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/runtime/os-adapter/src/index.js",
+  "types": "dist/runtime/os-adapter/src/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\""
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

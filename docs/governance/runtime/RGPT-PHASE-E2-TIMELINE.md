@@ -1,7 +1,7 @@
 # RGPT-PHASE-E — E2 Unified Timeline (Runtime Ledgers)
 
 ## Objective
-Phase-E2 establishes a single, authoritative, time-ordered runtime ledger timeline for RocketGPT execution to ensure traceability, auditability, causality, and post-facto reconstruction of every AI-driven action across planners, orchestrators, CATs, providers, and guards.
+Phase-E2 establishes a single, authoritative, time-ordered runtime ledger timeline for Mishti AI execution to ensure traceability, auditability, causality, and post-facto reconstruction of every AI-driven action across planners, orchestrators, CATs, providers, and guards.
 
 Core question:
 > What exactly happened, in what order, under which authority, and why?

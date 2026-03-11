@@ -1,11 +1,11 @@
 # CTP-07 — Claude Coding Input Contract (Minimal)
 
 ## Purpose
-Define the minimum, explicit constraints and input format for using Claude (Claude Code / CI) as a **read-only, suggestion-only** coding accelerator for RocketGPT.
+Define the minimum, explicit constraints and input format for using Claude (Claude Code / CI) as a **read-only, suggestion-only** coding accelerator for Mishti AI.
 
 This contract ensures:
 - Claude can generate actionable code suggestions and patches
-- RocketGPT retains final authority (Policy Gate + Approvals + Ledger)
+- Mishti AI retains final authority (Policy Gate + Approvals + Ledger)
 - No secret handling or repo write risk is introduced
 
 ---
@@ -113,7 +113,7 @@ Use this exact structure for requests:
 
 ---
 
-## Review & Acceptance (RocketGPT Governance)
+## Review & Acceptance (Mishti AI Governance)
 - Claude output is reviewed via: Policy Gate + Approvals v9 (if risk >= threshold)
 - Decision recorded in: Decision Ledger (accept/reject + rationale)
 - Maintainer applies patch and runs CI checks before merge
@@ -122,5 +122,5 @@ Use this exact structure for requests:
 
 ## Versioning
 - Contract ID: CTP-07-INPUT
-- Owner: RocketGPT Maintainers
+- Owner: Mishti AI Maintainers
 - Status: Active

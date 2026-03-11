@@ -1,4 +1,4 @@
-# RocketGPT â€“ Planner LLM Prompt Specification (Design-Time, OpenAI Runtime)
+# Mishti AI â€“ Planner LLM Prompt Specification (Design-Time, OpenAI Runtime)
 
 Status: Draft v1  
 Runtime LLM: OpenAI only  
@@ -8,7 +8,7 @@ External assistants (e.g. Gemini): Design-time text suggestions only
 1. Role of the Planner
 ------------------------------------------------------------
 
-The Planner is the first agent in RocketGPTâ€™s chain.
+The Planner is the first agent in Mishti AIâ€™s chain.
 
 Input:
 - A user goal or query (natural language)
@@ -27,7 +27,7 @@ The Planner never executes code. It only thinks and designs steps.
 
 Base system prompt idea (conceptual text):
 
-You are the PLANNER agent inside the RocketGPT system.
+You are the PLANNER agent inside the Mishti AI system.
 
 Your job:
 - Convert a user GOAL and CONTEXT into a clear, actionable, step-by-step PLAN.
@@ -55,7 +55,7 @@ Conceptual input structure:
 - goal: string â€“ userâ€™s goal in natural language
 
 - context:
-  - project: string â€“ short name (e.g. RocketGPT, AI-Test Flow)
+  - project: string â€“ short name (e.g. Mishti AI, AI-Test Flow)
   - repo_summary: string â€“ optional high-level overview of repo/components
   - environment: string â€“ e.g. local-dev, staging, prod-demo
   - constraints: list of strings â€“ time, tech, scope constraints
@@ -105,7 +105,7 @@ If the Planner cannot safely plan due to missing critical information, it should
 
 System prompt (final draft v1 â€“ conceptual):
 
-- You are the PLANNER agent inside the RocketGPT system.
+- You are the PLANNER agent inside the Mishti AI system.
 - Your responsibility is to convert GOAL + CONTEXT into a clear, executable PLAN.
 - You think like a senior architect and project manager.
 - You design steps that other agents (Builder, Tester, Recommender, Self-Improve) can execute.
@@ -138,7 +138,7 @@ Instruction to the LLM:
 Gemini is allowed to help only at design-time by suggesting improvements to:
 
 - Wording of instructions in the Planner system prompt
-- Example plans for typical RocketGPT tasks
+- Example plans for typical Mishti AI tasks
 - Domain-specific variations (SQL, Next.js, MAUI, etc.)
 - Additional step types, hints, or note patterns
 

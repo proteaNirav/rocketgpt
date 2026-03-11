@@ -1,7 +1,7 @@
-# CAT Complete View (v1.0) — RocketGPT-Aligned Nano-Robot Model
+# CAT Complete View (v1.0) — Mishti AI-Aligned Nano-Robot Model
 
 ## 1. What a CAT is (Authoritative Definition)
-A CAT (Contract-Agent-Team) is a **task-scoped nano-worker** that runs on **RocketGPT Core intelligence** and operates strictly under:
+A CAT (Contract-Agent-Team) is a **task-scoped nano-worker** that runs on **Mishti AI Core intelligence** and operates strictly under:
 - **Execution Context v2** (read-only situational snapshot)
 - **Decision Ledger** (append-only trace of intent, risk, reasoning, and outcomes)
 - **Policy + Safe-Mode controls**
@@ -20,21 +20,21 @@ A CAT is designed to help a user achieve **day-to-day goals** by executing small
 ## 2. Core Mental Model
 - **User** = commander
 - **CATs** = nano-robots (hands/eyes/scouts)
-- **RocketGPT** = command centre (brain, governance, aggregation, long-term insights)
+- **Mishti AI** = command centre (brain, governance, aggregation, long-term insights)
 
 Hierarchy:
-YOU → CATs (workers) → RocketGPT (command centre)
+YOU → CATs (workers) → Mishti AI (command centre)
 
 ---
 
 ## 3. Non-Negotiable Invariants (Hard Rules)
 ### 3.1 Local-First CAT Invariant (Locked)
-Every CAT must be fully useful locally without RocketGPT:
-- Runs without requiring RocketGPT to be online
+Every CAT must be fully useful locally without Mishti AI:
+- Runs without requiring Mishti AI to be online
 - Produces **local results** every run
 - Explains what it did and why
 
-RocketGPT later provides **more comprehensive views** by aggregation and correlation.
+Mishti AI later provides **more comprehensive views** by aggregation and correlation.
 
 ### 3.2 Ledger Always On
 - No execution without a Decision Ledger entry
@@ -58,7 +58,7 @@ Each CAT must declare:
 - cat_id (immutable)
 - name
 - semantic version (MAJOR.MINOR.PATCH)
-- compatible RocketGPT Core versions
+- compatible Mishti AI Core versions
 - mission statement + forbidden actions
 - supported modes: Cloud / Edge / Offline-Degraded
 
@@ -87,7 +87,7 @@ Profiles map to constraints such as:
 ## 6. Modes of Operation
 ### 6.1 Cloud Mode
 - Full policy evaluation available
-- Full RocketGPT aggregation available
+- Full Mishti AI aggregation available
 - Still local-first outputs are required
 
 ### 6.2 Edge Mode (PC)
@@ -111,7 +111,7 @@ Profiles map to constraints such as:
 4) Execute permitted steps (Planner/Builder/Tester as applicable)
 5) Write DecisionOutcome (status, metrics, side-effects)
 6) Produce local outputs (mandatory)
-7) Optionally prepare sync summary for RocketGPT
+7) Optionally prepare sync summary for Mishti AI
 
 No step may bypass ledger or context.
 
@@ -176,8 +176,8 @@ Chaining rules:
 
 ---
 
-## 12. RocketGPT Aggregation (When Connected)
-RocketGPT is the command centre:
+## 12. Mishti AI Aggregation (When Connected)
+Mishti AI is the command centre:
 - correlates across CATs, time, devices, projects
 - generates strategic insights (“what works / what fails / where to improve”)
 - suggests improvements (read-only; no auto-apply)
@@ -191,7 +191,7 @@ Sync principle:
 
 ## 13. Forbidden Capabilities (v1.0)
 A CAT must never:
-- mutate RocketGPT policies
+- mutate Mishti AI policies
 - self-learn without review/approval
 - run hidden tools
 - auto-sync data without consent
@@ -208,7 +208,7 @@ Violation results in:
 ## 14. Success Criteria (What “good” looks like)
 - CAT is useful locally, every time
 - User can understand what happened from local outputs alone
-- RocketGPT provides a broader, more powerful view when connected
+- Mishti AI provides a broader, more powerful view when connected
 - Governance is preserved under all modes
 - CAT behaviour is controllable and versioned
 
@@ -216,8 +216,8 @@ Violation results in:
 
 ## 15. Glossary
 - CAT: Contract-Agent-Team (nano-worker)
-- RocketGPT: command centre (brain + governance + aggregation)
+- Mishti AI: command centre (brain + governance + aggregation)
 - Execution Context v2: read-only situational snapshot
 - Decision Ledger: append-only reasoning and outcomes log
-- Local-first: results always available locally without RocketGPT
+- Local-first: results always available locally without Mishti AI
 

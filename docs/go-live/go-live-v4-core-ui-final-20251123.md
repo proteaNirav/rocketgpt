@@ -1,4 +1,4 @@
-# RocketGPT Go-Live – v4 Core UI Final
+# Mishti AI Go-Live – v4 Core UI Final
 
 **Date:** 2025-11-23  
 **Environment:** Production (Vercel)  
@@ -129,7 +129,7 @@ Decision for this Go-Live:
 
 ## 6. Summary
 
-RocketGPT is **LIVE** on:
+Mishti AI is **LIVE** on:
 
 - **Commit:** c76e53d75146f16d79df7d26fc1648b7078131ee  
 - **Tag:** go-live/v4-core-ui-final-20251123-c76e53d  

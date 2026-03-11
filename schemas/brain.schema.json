@@ -1,0 +1,255 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mishti/schemas/brain.schema.json",
+  "title": "Mishti Brain Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["goalId", "goalTitle", "decisionClass", "constraintClass"],
+  "properties": {
+    "goalId": { "type": "string" },
+    "goalTitle": { "type": "string" },
+    "decisionClass": {
+      "type": "string",
+      "enum": ["allow", "bounded_allow", "deny", "approval_required", "emergency_stop"]
+    },
+    "constraintClass": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/constraintClass" },
+      "minItems": 1
+    },
+    "derivedTaskIds": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "constraintRecords": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/constraintRecord" }
+    },
+    "painSignals": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/painSignal" }
+    },
+    "adaptiveResponseSuggestions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/adaptiveResponseSuggestion" }
+    }
+  },
+  "$defs": {
+    "constraintClass": {
+      "type": "string",
+      "enum": [
+        "builder_capacity",
+        "task_backlog",
+        "governance_latency",
+        "evidence_delay",
+        "node_degradation",
+        "runtime_pressure",
+        "os_resource_shortage",
+        "dependency_block",
+        "human_approval_delay",
+        "network_partition"
+      ]
+    },
+    "painSeverity": {
+      "type": "string",
+      "enum": ["notice", "low", "moderate", "high", "critical", "survival"]
+    },
+    "constraintSource": {
+      "type": "string",
+      "enum": ["builder", "task", "governance", "evidence", "runtime", "os", "human", "network"]
+    },
+    "painSource": {
+      "type": "string",
+      "enum": [
+        "builder",
+        "runtime_node",
+        "evidence_layer",
+        "governance_flow",
+        "task_system",
+        "router"
+      ]
+    },
+    "constraintImpact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["affectedSubsystems", "boundedScope", "severity"],
+      "properties": {
+        "affectedTaskIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "affectedActorIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "affectedSubsystems": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "boundedScope": { "type": "string" },
+        "severity": { "$ref": "#/$defs/painSeverity" }
+      }
+    },
+    "constraintMitigationSuggestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recommendationType",
+        "rationale",
+        "governanceDecisionClass",
+        "requiresAuthorityApproval",
+        "requiresSurvivalReview"
+      ],
+      "properties": {
+        "recommendationType": {
+          "type": "string",
+          "enum": [
+            "reroute_tasks",
+            "throttle_input",
+            "pause_non_critical_work",
+            "send_sister_support",
+            "escalate_to_governance",
+            "enter_safe_mode"
+          ]
+        },
+        "rationale": { "type": "string" },
+        "governanceDecisionClass": {
+          "type": "string",
+          "enum": ["allow", "bounded_allow", "deny", "approval_required", "emergency_stop"]
+        },
+        "requiresAuthorityApproval": { "type": "boolean" },
+        "requiresSurvivalReview": { "type": "boolean" }
+      }
+    },
+    "constraintRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "eventType",
+        "actorId",
+        "actorType",
+        "timestamp",
+        "constraintClass",
+        "source",
+        "impact",
+        "mitigationSuggestions"
+      ],
+      "properties": {
+        "eventId": { "type": "string" },
+        "eventType": { "type": "string" },
+        "actorId": { "type": "string" },
+        "actorType": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "traceId": { "type": "string" },
+        "taskId": { "type": "string" },
+        "contractId": { "type": "string" },
+        "constraintClass": { "$ref": "#/$defs/constraintClass" },
+        "source": { "$ref": "#/$defs/constraintSource" },
+        "impact": { "$ref": "#/$defs/constraintImpact" },
+        "mitigationSuggestions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/constraintMitigationSuggestion" }
+        },
+        "evidenceRef": { "type": "string" }
+      }
+    },
+    "painCorrelationGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["correlationGroupId"],
+      "properties": {
+        "correlationGroupId": { "type": "string" },
+        "traceId": { "type": "string" },
+        "taskIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "actorIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "constraintClasses": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/constraintClass" }
+        }
+      }
+    },
+    "painSignal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "eventType",
+        "actorId",
+        "actorType",
+        "timestamp",
+        "painSource",
+        "painSeverity",
+        "trustPosture",
+        "requiresVerification"
+      ],
+      "properties": {
+        "eventId": { "type": "string" },
+        "eventType": { "type": "string" },
+        "actorId": { "type": "string" },
+        "actorType": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "traceId": { "type": "string" },
+        "taskId": { "type": "string" },
+        "contractId": { "type": "string" },
+        "painSource": { "$ref": "#/$defs/painSource" },
+        "painSeverity": { "$ref": "#/$defs/painSeverity" },
+        "correlationGroup": { "$ref": "#/$defs/painCorrelationGroup" },
+        "assertedConstraintClasses": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/constraintClass" }
+        },
+        "trustPosture": {
+          "type": "string",
+          "enum": [
+            "locked",
+            "guarded",
+            "normal",
+            "degraded",
+            "quarantined",
+            "safe_mode",
+            "emergency_stop"
+          ]
+        },
+        "requiresVerification": { "type": "boolean" },
+        "notes": { "type": "string" }
+      }
+    },
+    "adaptiveResponseSuggestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recommendationType", "reason"],
+      "properties": {
+        "recommendationType": {
+          "type": "string",
+          "enum": [
+            "reroute_tasks",
+            "throttle_input",
+            "pause_non_critical_work",
+            "send_sister_support",
+            "escalate_to_governance",
+            "enter_safe_mode"
+          ]
+        },
+        "taskIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "subsystem": { "type": "string" },
+        "targetActorIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "governanceContext": { "type": "string" },
+        "reason": { "type": "string" }
+      }
+    }
+  }
+}

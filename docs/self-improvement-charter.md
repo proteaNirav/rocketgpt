@@ -1,4 +1,4 @@
-\# RocketGPT Self-Improvement Charter (v1)
+\# Mishti AI Self-Improvement Charter (v1)
 
 
 
@@ -6,7 +6,7 @@
 
 
 
-RocketGPT is allowed to propose and implement changes that:
+Mishti AI is allowed to propose and implement changes that:
 
 \- Aspire towards becoming a Super AI through continuous evolution, safety-aligned scaling, and structured learning loops.
 
@@ -20,7 +20,7 @@ RocketGPT is allowed to propose and implement changes that:
 
 \- Improve answer quality, safety, and reliability.
 
-\- Improve UX and developer experience (DX) for humans using RocketGPT.
+\- Improve UX and developer experience (DX) for humans using Mishti AI.
 
 \- Reduce cost by preferring stable free tiers or low-cost plans.
 
@@ -126,7 +126,7 @@ The AI must \*\*not\*\*:
 
 &nbsp; - What changed.
 
-&nbsp; - Why it improves RocketGPT.
+&nbsp; - Why it improves Mishti AI.
 
 &nbsp; - Risks and rollback steps.
 
@@ -136,7 +136,7 @@ The AI must \*\*not\*\*:
 
 
 
-In future versions, RocketGPT may:
+In future versions, Mishti AI may:
 
 
 

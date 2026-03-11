@@ -1,0 +1,9 @@
+{
+  "survivalState": "normal",
+  "runtimeEligibilityDefaults": [
+    "sandbox_runner",
+    "cats_gateway",
+    "os_adapter"
+  ],
+  "lastRunAt": "2026-03-11T12:40:43.604Z"
+}

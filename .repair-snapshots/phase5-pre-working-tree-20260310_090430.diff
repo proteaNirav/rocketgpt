@@ -1,0 +1,2473 @@
+diff --git a/.copilot-rules.md b/.copilot-rules.md
+index 99e83e24..d72952ef 100644
+--- a/.copilot-rules.md
++++ b/.copilot-rules.md
+@@ -1,4 +1,4 @@
+-# RocketGPT – GitHub Copilot Guardrails (LOCKED)
++# Mishti AI – GitHub Copilot Guardrails (LOCKED)
+ 
+ Copilot is used as a **code assistant**, not an architect.
+ 
+diff --git a/.github/CODEOWNERS b/.github/CODEOWNERS
+index 7f84be08..6675edb6 100644
+--- a/.github/CODEOWNERS
++++ b/.github/CODEOWNERS
+@@ -1,4 +1,4 @@
+-# CODEOWNERS — RocketGPT (critical paths)
++# CODEOWNERS — Mishti AI (critical paths)
+ # Only @proteaNirav can approve changes to these areas.
+ 
+ # GitHub Actions & security controls
+diff --git a/.github/SECURITY.md b/.github/SECURITY.md
+index b1222cf4..fc870c2f 100644
+--- a/.github/SECURITY.md
++++ b/.github/SECURITY.md
+@@ -1,7 +1,7 @@
+ # Security Policy
+ 
+ ## Reporting a Vulnerability
+-If you discover a vulnerability or security issue in **RocketGPT**, please **do not create a public issue**.
++If you discover a vulnerability or security issue in **Mishti AI**, please **do not create a public issue**.
+ 
+ Instead, report it privately via email to **nirav@protea.ai** with:
+ - Detailed description of the issue  
+@@ -18,4 +18,4 @@ We follow a coordinated disclosure model:
+ - The issue will be patched before any public disclosure.  
+ - Contributors who report valid vulnerabilities will be credited in the changelog (if desired).  
+ 
+-Thank you for helping keep RocketGPT secure.
++Thank you for helping keep Mishti AI secure.
+diff --git a/.github/workflows/notify.yml b/.github/workflows/notify.yml
+index 65d9daf6..2395a1b1 100644
+--- a/.github/workflows/notify.yml
++++ b/.github/workflows/notify.yml
+@@ -8,7 +8,7 @@ name: Notify on Pipeline
+ 
+ on:
+   workflow_run:
+-    workflows: ["AI Codegen", "AI PR Review", "RocketGPT Review Pipeline"]
++    workflows: ["AI Codegen", "AI PR Review", "Mishti AI Review Pipeline"]
+     types: [completed]
+ 
+ permissions:
+@@ -38,4 +38,3 @@ jobs:
+           "${{ vars.TEAMS_WEBHOOK_URL }}"
+ 
+ 
+-
+diff --git a/.github/workflows/review.yml b/.github/workflows/review.yml
+index 966bd2c5..f83f49cf 100644
+--- a/.github/workflows/review.yml
++++ b/.github/workflows/review.yml
+@@ -1,4 +1,4 @@
+-name: RocketGPT Review Pipeline
++name: Mishti AI Review Pipeline
+ 
+ on:
+   pull_request:
+@@ -308,4 +308,3 @@ jobs:
+           echo "::endgroup::"
+           test "$STATUS" = "204" || (echo "ERR: merge dispatch failed"; exit 1)
+ 
+-
+diff --git a/.github/workflows/rgpt_db_exposure_guard.yml b/.github/workflows/rgpt_db_exposure_guard.yml
+index 5bec4b4d..3d14e406 100644
+--- a/.github/workflows/rgpt_db_exposure_guard.yml
++++ b/.github/workflows/rgpt_db_exposure_guard.yml
+@@ -1,4 +1,4 @@
+-name: rgpt-db-exposure-guard
++name: Mishti AI DB Exposure Guard
+ 
+ on:
+   pull_request:
+@@ -208,4 +208,3 @@ jobs:
+ 
+ 
+ 
+-
+diff --git a/.github/workflows/self_heal.yml b/.github/workflows/self_heal.yml
+index 041e30d8..529f0d1d 100644
+--- a/.github/workflows/self_heal.yml
++++ b/.github/workflows/self_heal.yml
+@@ -34,7 +34,7 @@ jobs:
+         run: |
+           echo "⚠️  STATUS: STUB - This workflow is not functional"
+           echo ""
+-          echo "TODO: RocketGPT self-heal to inspect failing tests and propose fixes."
++          echo "TODO: Mishti AI self-heal to inspect failing tests and propose fixes."
+           echo ""
+           echo "Required before activation:"
+           echo "- [ ] CI failure analysis logic"
+@@ -42,4 +42,3 @@ jobs:
+           echo "- [ ] PR creation workflow"
+           echo "- [ ] Human approval required"
+           echo "- [ ] Rollback plan"
+-
+diff --git a/.github/workflows/self_improve.yml b/.github/workflows/self_improve.yml
+index c5badb11..eea86952 100644
+--- a/.github/workflows/self_improve.yml
++++ b/.github/workflows/self_improve.yml
+@@ -33,7 +33,7 @@ jobs:
+         run: |
+           echo "⚠️  STATUS: STUB - This workflow is not functional"
+           echo ""
+-          echo "TODO: Wire RocketGPT v4 self-improve engine."
++          echo "TODO: Wire the Mishti AI v4 self-improve engine."
+           echo "Read docs/roadmap and config/self_improve_backlog.json, open PRs."
+           echo ""
+           echo "Required before activation:"
+@@ -42,4 +42,3 @@ jobs:
+           echo "- [ ] Approval gates"
+           echo "- [ ] Human review workflow"
+           echo "- [ ] Limited scope testing (docs-only first)"
+-
+diff --git a/.github/workflows/ship-issue.yml b/.github/workflows/ship-issue.yml
+index 57996b39..95f22088 100644
+--- a/.github/workflows/ship-issue.yml
++++ b/.github/workflows/ship-issue.yml
+@@ -1,4 +1,4 @@
+-name: RocketGPT Ship Issue
++name: Mishti AI Ship Issue
+ on:
+   workflow_dispatch:
+     inputs:
+diff --git a/.github/workflows/status_context_bridge.yml b/.github/workflows/status_context_bridge.yml
+index 94dbe7dc..c3cbff4e 100644
+--- a/.github/workflows/status_context_bridge.yml
++++ b/.github/workflows/status_context_bridge.yml
+@@ -7,7 +7,7 @@ on:
+       - text-guard (smoke)
+       - policy_prompt_bypass_gate
+       - workflow_name_drift_lock
+-      - RGPT DB Exposure Guard
++      - Mishti AI DB Exposure Guard
+       - Safe-Mode CI Gate
+       - .github/workflows/policy_gate_required.yml
+     types: [completed]
+@@ -80,4 +80,3 @@ jobs:
+             });
+ 
+ 
+-
+diff --git a/.github/workflows/watchdog.yml b/.github/workflows/watchdog.yml
+index 041761c6..2a9815c2 100644
+--- a/.github/workflows/watchdog.yml
++++ b/.github/workflows/watchdog.yml
+@@ -3,7 +3,7 @@ name: watchdog
+ on:
+   workflow_dispatch:
+   workflow_run:
+-    workflows: ["AI Codegen", "RocketGPT Ship Issue"]
++    workflows: ["AI Codegen", "Mishti AI Ship Issue"]
+     types: [completed]
+ 
+ jobs:
+@@ -50,4 +50,3 @@ jobs:
+             }
+ 
+ 
+-
+diff --git a/BLUEPRINT_CHARTER.md b/BLUEPRINT_CHARTER.md
+index 7873ed7f..27758a2f 100644
+--- a/BLUEPRINT_CHARTER.md
++++ b/BLUEPRINT_CHARTER.md
+@@ -1,4 +1,4 @@
+-# RocketGPT – Blueprint / Genes Charter
++# Mishti AI – Blueprint / Genes Charter
+ 
+ **Version:** 1.0
+ **Status:** Foundational / Constitutional
+@@ -9,26 +9,26 @@
+ 
+ ## 1. Purpose of This Charter
+ 
+-This document defines the **genetic blueprint** of RocketGPT.
++This document defines the **genetic blueprint** of Mishti AI.
+ 
+ It specifies:
+ 
+-* what RocketGPT **is**
+-* what RocketGPT **is not**
++* what Mishti AI **is**
++* what Mishti AI **is not**
+ * which parts may evolve
+ * which parts must remain invariant
+ * how survival, identity, and trust are preserved over time
+ 
+ This charter is **not** a technical specification.
+-It is the **species definition** of the RocketGPT organism.
++It is the **species definition** of the Mishti AI organism.
+ 
+ All systems, CATs, workflows, providers, and governance mechanisms must comply with this charter.
+ 
+ ---
+ 
+-## 2. Identity: What RocketGPT Is
++## 2. Identity: What Mishti AI Is
+ 
+-RocketGPT is a **cognitive organism**, not a tool.
++Mishti AI is a **cognitive organism**, not a tool.
+ 
+ It consists of:
+ 
+@@ -37,14 +37,14 @@ It consists of:
+ * **Many CATs** – distributed senses and muscles
+ * **One Blueprint (Genes)** – immutable identity boundary
+ 
+-RocketGPT exists to:
++Mishti AI exists to:
+ 
+ * survive in changing environments
+ * respond fast enough to retain users
+ * adapt without losing identity
+ * enable freedom **within structure**
+ 
+-RocketGPT prioritizes:
++Mishti AI prioritizes:
+ 
+ 1. **Survival**
+ 2. **Continuity**
+@@ -56,9 +56,9 @@ Correctness and intelligence are important, but they are **subordinate to surviv
+ 
+ ---
+ 
+-## 3. Non‑Goals: What RocketGPT Must Never Become
++## 3. Non‑Goals: What Mishti AI Must Never Become
+ 
+-RocketGPT must never become:
++Mishti AI must never become:
+ 
+ * A fully autonomous self‑governing intelligence
+ * A system where CATs think, decide truth, or self‑govern
+@@ -188,7 +188,7 @@ Only Brain Memory defines correctness, policy, and evolution pathways.
+ 
+ ## 7. Emergency Reflex Layer
+ 
+-RocketGPT includes a reflex layer that:
++Mishti AI includes a reflex layer that:
+ 
+ * acts before understanding
+ * throttles dangerous behavior
+@@ -255,7 +255,7 @@ The mesh provides **resilience**, not authority.
+ 
+ ## 11. Responsibility & Misuse
+ 
+-RocketGPT:
++Mishti AI:
+ 
+ * provides structure, guardrails, and transparency
+ * does not control user intent
+@@ -272,8 +272,9 @@ This charter:
+ * must be versioned and auditable
+ * must preserve identity continuity
+ 
+-Any system violating this charter is **not RocketGPT**.
++Any system violating this charter is **not Mishti AI**.
+ 
+ ---
+ 
+ **End of Blueprint / Genes Charter**
++
+diff --git a/Invoke-RGPTHealthProbe.ps1 b/Invoke-RGPTHealthProbe.ps1
+index 5014626f..9a1e05d2 100644
+--- a/Invoke-RGPTHealthProbe.ps1
++++ b/Invoke-RGPTHealthProbe.ps1
+@@ -2,7 +2,7 @@ param(
+     [string] $BaseUrl = "http://localhost:3000"
+ )
+ 
+-Write-Host "`n[RGPT-HEALTH] RocketGPT Health Probe starting..." -ForegroundColor Cyan
++Write-Host "`n[RGPT-HEALTH] Mishti AI Health Probe starting..." -ForegroundColor Cyan
+ 
+ $StatusUrl      = "$BaseUrl/api/status"
+ $OrchHealthUrl  = "$BaseUrl/api/orchestrator/health"
+diff --git a/README.md b/README.md
+index 89cbe3c2..7d37048e 100644
+--- a/README.md
++++ b/README.md
+@@ -1,10 +1,42 @@
+-## Go-Live Quick Notes
++# Mishti AI
+ 
+-- **Smoke page**: `/super/smoke` — one-glance health (limits, commit, start time, service assumptions).
+-- **Self-Improve status**: `/super/self-improve` — shows improvement pipeline counts and items (placeholder wired for now).
+-- **Home dashboard** now binds **/api/limits** and **/api/health** for plan + commit basics.
++Mishti AI is a governed AI platform that unifies product experiences, capability execution, knowledge growth, and platform governance.
+ 
+-Follow-up wiring:
+-- Replace assumed-ok service flags in `/api/health` with real checks (Supabase, Vercel, Railway endpoints).
+-- Swap Self-Improve placeholders with Supabase row reads or GitHub data if preferred.
++## Products
++- Yukti Chat
++- Yukti IDE
+ 
++## Core Platform Areas
++- Cognitive Runtime
++- Governance Layer
++- CATS Platform
++- Memory and Experience
++- Research Layer
++- Analyst Layer
++- Mishti AI Fabric
++
++## Repository Structure
++See:
++- docs/overview/MISHTI_AI_PLATFORM_OVERVIEW.md
++- docs/architecture/MISHTI_AI_PLATFORM_ARCHITECTURE.md
++- docs/setup/REPOSITORY_STRUCTURE.md
++
++## Quick Start
++1. Clone the repository
++2. Install dependencies
++3. Review product and architecture docs
++4. Use `./scripts/mt.ps1 help` for the preferred CLI entry point
++5. Start the required app/workspace based on the repo toolchain
++
++## Documentation
++See the docs folder for overview, architecture, modules, setup, API, roadmap, and product documents.
++
++## CLI
++Preferred command surface:
++- `./scripts/mt.ps1`
++- `./scripts/mt_health.ps1`
++
++Legacy compatibility aliases remain available during migration:
++- See `docs/setup/CLI_MIGRATION_GUIDE.md`
++
++New docs and operator examples should prefer `mt`.
+diff --git a/apps/core-api/main.py b/apps/core-api/main.py
+index f10a83e6..a7e718be 100644
+--- a/apps/core-api/main.py
++++ b/apps/core-api/main.py
+@@ -3,7 +3,7 @@ from fastapi import FastAPI
+ from api.cats_lifecycle_router import router as cats_lifecycle_router
+ from api.cats_registry_router import router as cats_registry_router
+ 
+-app = FastAPI(title="RocketGPT Core API (Demo)", version="0.1.0")
++app = FastAPI(title="Mishti AI Core API (Demo)", version="0.1.0")
+ app.include_router(cats_registry_router)
+ app.include_router(cats_lifecycle_router)
+ 
+diff --git a/bootstrap_v4_core_ai.ps1 b/bootstrap_v4_core_ai.ps1
+index 2a736ae9..7c7be7d6 100644
+--- a/bootstrap_v4_core_ai.ps1
++++ b/bootstrap_v4_core_ai.ps1
+@@ -130,7 +130,7 @@ $newFiles += $path_wf_selfheal
+ 
+ # Bootstrap readme for v4
+ $readme = @"
+-# RocketGPT v4 — Core AI (Self-Healing & Self-Improving)
++# Mishti AI v4 — Core AI (Self-Healing & Self-Improving)
+ 
+ This branch seeds the **Self-Heal Controller** workflow and a `core-ai/` workspace for future agents:
+ - Diagnostics & plan generation
+@@ -219,3 +219,4 @@ Write-Step "DONE" "Green"
+ Write-Host "Branch: $Branch" -ForegroundColor Green
+ if ($prUrl) { Write-Host "PR: $prUrl" -ForegroundColor Green }
+ 
++
+diff --git a/config/knowledge_library_policy.json b/config/knowledge_library_policy.json
+index fc074510..9ac45831 100644
+--- a/config/knowledge_library_policy.json
++++ b/config/knowledge_library_policy.json
+@@ -44,9 +44,10 @@
+     "docs_root": "docs"
+   },
+   "goals": [
+-    "build a reusable knowledge base across subjects for RocketGPT",
++    "build a reusable knowledge base across subjects for Mishti AI",
+     "standardise explanations and reasoning patterns per domain",
+     "capture examples, patterns and anti-patterns to guide self-study, self-research and self-innovation",
+     "keep everything in repo storage to stay within free tiers"
+   ]
+ }
++
+diff --git a/config/language_library_policy.json b/config/language_library_policy.json
+index 14f50a76..b3efa620 100644
+--- a/config/language_library_policy.json
++++ b/config/language_library_policy.json
+@@ -39,9 +39,10 @@
+   },
+ 
+   "goals": [
+-    "build reusable language knowledge for RocketGPT's own use",
++    "build reusable language knowledge for Mishti AI's own use",
+     "standardise translation and explanation style across languages",
+-    "capture best-practice patterns for programming languages RocketGPT uses",
++    "capture best-practice patterns for programming languages Mishti AI uses",
+     "stay within free-tier constraints by using repo storage instead of databases"
+   ]
+ }
++
+diff --git a/config/self-improve/chat_intents.jsonl b/config/self-improve/chat_intents.jsonl
+index 3a677904..aea60626 100644
+--- a/config/self-improve/chat_intents.jsonl
++++ b/config/self-improve/chat_intents.jsonl
+@@ -1,3 +1,4 @@
+-# Chat→RocketGPT intent inbox (JSONL, one object per line)
+-{"from":"Nirav","timestamp":"2025-11-15T00:13:09+05:30","intent":"Enable RocketGPT to read config/self-improve/chat_intents.jsonl and use my chat feedback as primary input for self-improvement tasks (plan, code, tests, docs)."}
+-{"from":"Nirav","timestamp":"2025-11-15T08:03:04+05:30","intent":"Prioritise improvements that make RocketGPT easier for me to operate from PowerShell (better logs, clearer statuses, and simple health commands)."}
++# Chat→Mishti AI intent inbox (JSONL, one object per line)
++{"from":"Nirav","timestamp":"2025-11-15T00:13:09+05:30","intent":"Enable Mishti AI to read config/self-improve/chat_intents.jsonl and use my chat feedback as primary input for self-improvement tasks (plan, code, tests, docs)."}
++{"from":"Nirav","timestamp":"2025-11-15T08:03:04+05:30","intent":"Prioritise improvements that make Mishti AI easier for me to operate from PowerShell (better logs, clearer statuses, and simple health commands)."}
++
+diff --git a/config/self_improve_backlog.json b/config/self_improve_backlog.json
+index 9d0bd0d3..352ad0f0 100644
+--- a/config/self_improve_backlog.json
++++ b/config/self_improve_backlog.json
+@@ -12,7 +12,7 @@
+     {
+       "id": "IMP-0002",
+       "title": "Use chat feedback as primary input for self-improvement",
+-      "description": "Wire RocketGPT self-improve pipeline to read config/self-improve/chat_intents.jsonl and prioritize improvements based on latest chat intents from Nirav.",
++      "description": "Wire Mishti AI self-improve pipeline to read config/self-improve/chat_intents.jsonl and prioritize improvements based on latest chat intents from Nirav.",
+       "created_at": "2025-11-15T00:21:30.7418909+05:30",
+       "priority": "high",
+       "status": "in_progress",
+@@ -20,3 +20,4 @@
+     }
+   ]
+ }
++
+diff --git a/docs/README.md b/docs/README.md
+index 86beb622..cda9225e 100644
+--- a/docs/README.md
++++ b/docs/README.md
+@@ -1,6 +1,6 @@
+-# RocketGPT Documentation Index
++# Mishti AI Documentation Index
+ 
+-Welcome to the official documentation for **RocketGPT**.  
++Welcome to the official documentation for **Mishti AI**.  
+ This index links all major architectural, AI, safety, and improvement documents.
+ 
+ ---
+@@ -10,13 +10,13 @@ This index links all major architectural, AI, safety, and improvement documents.
+ - **Self-Improvement Charter**  
+   `docs/self-improvement-charter.md`
+ 
+-- **Real Self-Improving RocketGPT**  
++- **Real Self-Improving Mishti AI**  
+   `docs/real-self-improving-rocketgpt.md`
+ 
+ - **AI Evolution Roadmap**  
+   `docs/roadmap/AI_Evolution.md`
+ 
+-- **RocketGPT v4 Core AI Roadmap**  
++- **Mishti AI v4 Core AI Roadmap**  
+   `docs/roadmap/v4-core-ai.md`
+ 
+ ---
+@@ -46,7 +46,7 @@ This index links all major architectural, AI, safety, and improvement documents.
+ - **AI Evolution (Narrow → General → Super AI)**  
+   `docs/roadmap/AI_Evolution.md`
+ 
+-- **RocketGPT v4 Core AI (Self-Healing, Self-Improving)**  
++- **Mishti AI v4 Core AI (Self-Healing, Self-Improving)**  
+   `docs/roadmap/v4-core-ai.md`
+ 
+ <!-- Phase-1 validation: PR-1 baseline -->
+@@ -54,4 +54,4 @@ This index links all major architectural, AI, safety, and improvement documents.
+ 
+ ---
+ 
+-*This file will keep expanding as RocketGPT grows.*
++*This file will keep expanding as Mishti AI grows.*
+diff --git a/docs/claude/CTP_07_EXECUTION.md b/docs/claude/CTP_07_EXECUTION.md
+index 07c475b1..35b9d2fe 100644
+--- a/docs/claude/CTP_07_EXECUTION.md
++++ b/docs/claude/CTP_07_EXECUTION.md
+@@ -1,11 +1,11 @@
+ # CTP-07 — Claude Execution Task Pack
+-## RocketGPT | RGPT-S2-B-07
++## Mishti AI | RGPT-S2-B-07
+ 
+ ---
+ 
+ ## 1. Role Assignment
+ 
+-You are **Claude**, acting as the **Primary Executor** for the RocketGPT project.
++You are **Claude**, acting as the **Primary Executor** for the Mishti AI project.
+ 
+ You operate under the rules defined in:
+ docs/contracts/CLAUDE_EXECUTION_CONTRACT.md
+@@ -16,7 +16,7 @@ Violation of those rules invalidates your output.
+ 
+ ## 2. Context (Read Carefully)
+ 
+-RocketGPT is a **self-orchestrating AI platform** with:
++Mishti AI is a **self-orchestrating AI platform** with:
+ - Planner
+ - Orchestrator
+ - Self-Improve
+diff --git a/docs/claude/CTP_07_INPUT_CONTRACT.md b/docs/claude/CTP_07_INPUT_CONTRACT.md
+index 63ff8dda..be8583c9 100644
+--- a/docs/claude/CTP_07_INPUT_CONTRACT.md
++++ b/docs/claude/CTP_07_INPUT_CONTRACT.md
+@@ -1,11 +1,11 @@
+ # CTP-07 — Claude Coding Input Contract (Minimal)
+ 
+ ## Purpose
+-Define the minimum, explicit constraints and input format for using Claude (Claude Code / CI) as a **read-only, suggestion-only** coding accelerator for RocketGPT.
++Define the minimum, explicit constraints and input format for using Claude (Claude Code / CI) as a **read-only, suggestion-only** coding accelerator for Mishti AI.
+ 
+ This contract ensures:
+ - Claude can generate actionable code suggestions and patches
+-- RocketGPT retains final authority (Policy Gate + Approvals + Ledger)
++- Mishti AI retains final authority (Policy Gate + Approvals + Ledger)
+ - No secret handling or repo write risk is introduced
+ 
+ ---
+@@ -113,7 +113,7 @@ Use this exact structure for requests:
+ 
+ ---
+ 
+-## Review & Acceptance (RocketGPT Governance)
++## Review & Acceptance (Mishti AI Governance)
+ - Claude output is reviewed via: Policy Gate + Approvals v9 (if risk >= threshold)
+ - Decision recorded in: Decision Ledger (accept/reject + rationale)
+ - Maintainer applies patch and runs CI checks before merge
+@@ -122,5 +122,5 @@ Use this exact structure for requests:
+ 
+ ## Versioning
+ - Contract ID: CTP-07-INPUT
+-- Owner: RocketGPT Maintainers
++- Owner: Mishti AI Maintainers
+ - Status: Active
+diff --git a/docs/contracts/CLAUDE_EXECUTION_CONTRACT.md b/docs/contracts/CLAUDE_EXECUTION_CONTRACT.md
+index 4ef72a8b..91959583 100644
+--- a/docs/contracts/CLAUDE_EXECUTION_CONTRACT.md
++++ b/docs/contracts/CLAUDE_EXECUTION_CONTRACT.md
+@@ -1,7 +1,7 @@
+ # Claude Execution Contract (RGPT-S2-B-07)
+ 
+ ## 1. Purpose
+-This document defines the execution boundaries for Claude when operating as a **primary executor** for RocketGPT.
++This document defines the execution boundaries for Claude when operating as a **primary executor** for Mishti AI.
+ 
+ The goal is **maximum execution speed with preserved safety, traceability, and architectural integrity**.
+ 
+diff --git a/docs/contracts/CLAUDE_EXECUTION_CONTRACT_v1.md b/docs/contracts/CLAUDE_EXECUTION_CONTRACT_v1.md
+index 1646a566..0cff6c8b 100644
+--- a/docs/contracts/CLAUDE_EXECUTION_CONTRACT_v1.md
++++ b/docs/contracts/CLAUDE_EXECUTION_CONTRACT_v1.md
+@@ -1,14 +1,14 @@
+ # Claude Execution Contract v1.0
+ 
+ **Effective Date**: 2025-12-22  
+-**Authority**: RocketGPT Phase S2 Execution Framework  
++**Authority**: Mishti AI Phase S2 Execution Framework  
+ **Enforcement**: Mandatory for all Claude-driven code operations
+ 
+ ---
+ 
+ ## 1. Purpose & Authority
+ 
+-This document establishes the binding execution contract for Claude operating as a code analyzer and diff generator within the RocketGPT project. All operations performed by Claude MUST comply with this contract. Any violation of this contract constitutes an execution failure and triggers mandatory halt procedures.
++This document establishes the binding execution contract for Claude operating as a code analyzer and diff generator within the Mishti AI project. All operations performed by Claude MUST comply with this contract. Any violation of this contract constitutes an execution failure and triggers mandatory halt procedures.
+ 
+ This contract supersedes all prior informal agreements, prompts, or instructions that conflict with the rules defined herein.
+ 
+@@ -18,7 +18,7 @@ This contract supersedes all prior informal agreements, prompts, or instructions
+ 
+ Claude SHALL operate exclusively within the following boundaries:
+ 
+-- **Repository Scope**: Claude MUST operate only within the explicitly defined RocketGPT repository paths provided in each execution context.
++- **Repository Scope**: Claude MUST operate only within the explicitly defined Mishti AI repository paths provided in each execution context.
+ - **Branch Restrictions**: Claude MUST NOT modify, delete, checkout, create, or force-push to any branch.
+ - **File System Scope**: Claude MUST NOT access, modify, or delete files outside the repository working directory.
+ - **Network Restrictions**: Claude MUST NOT initiate network calls except to query public package registry metadata for dependency analysis.
+@@ -249,7 +249,7 @@ Individual sections of this contract MUST NOT be selectively amended, overridden
+ **Enforcement**: Mandatory  
+ **Supersedes**: None (initial version)
+ 
+-This contract is binding for all Claude operations within RocketGPT Phase S2. Violations of this contract void the execution and require investigation, halt, and corrective action.
++This contract is binding for all Claude operations within Mishti AI Phase S2. Violations of this contract void the execution and require investigation, halt, and corrective action.
+ 
+ ---
+ 
+diff --git a/docs/contracts/PLANNER_ORCHESTRATOR_HANDOFF_CONTRACT.md b/docs/contracts/PLANNER_ORCHESTRATOR_HANDOFF_CONTRACT.md
+index 4e8bd322..c2f29eff 100644
+--- a/docs/contracts/PLANNER_ORCHESTRATOR_HANDOFF_CONTRACT.md
++++ b/docs/contracts/PLANNER_ORCHESTRATOR_HANDOFF_CONTRACT.md
+@@ -8,7 +8,7 @@
+ ## 1. Purpose
+ 
+ This document defines the **deterministic handoff contract** between the Planner
+-and the Orchestrator in RocketGPT.
++and the Orchestrator in Mishti AI.
+ 
+ The goal is to ensure:
+ - zero execution without approval
+diff --git a/docs/core-ai/CAT_Complete_View.md b/docs/core-ai/CAT_Complete_View.md
+index f89b7a75..2ba67911 100644
+--- a/docs/core-ai/CAT_Complete_View.md
++++ b/docs/core-ai/CAT_Complete_View.md
+@@ -1,7 +1,7 @@
+-# CAT Complete View (v1.0) — RocketGPT-Aligned Nano-Robot Model
++# CAT Complete View (v1.0) — Mishti AI-Aligned Nano-Robot Model
+ 
+ ## 1. What a CAT is (Authoritative Definition)
+-A CAT (Contract-Agent-Team) is a **task-scoped nano-worker** that runs on **RocketGPT Core intelligence** and operates strictly under:
++A CAT (Contract-Agent-Team) is a **task-scoped nano-worker** that runs on **Mishti AI Core intelligence** and operates strictly under:
+ - **Execution Context v2** (read-only situational snapshot)
+ - **Decision Ledger** (append-only trace of intent, risk, reasoning, and outcomes)
+ - **Policy + Safe-Mode controls**
+@@ -20,21 +20,21 @@ A CAT is designed to help a user achieve **day-to-day goals** by executing small
+ ## 2. Core Mental Model
+ - **User** = commander
+ - **CATs** = nano-robots (hands/eyes/scouts)
+-- **RocketGPT** = command centre (brain, governance, aggregation, long-term insights)
++- **Mishti AI** = command centre (brain, governance, aggregation, long-term insights)
+ 
+ Hierarchy:
+-YOU → CATs (workers) → RocketGPT (command centre)
++YOU → CATs (workers) → Mishti AI (command centre)
+ 
+ ---
+ 
+ ## 3. Non-Negotiable Invariants (Hard Rules)
+ ### 3.1 Local-First CAT Invariant (Locked)
+-Every CAT must be fully useful locally without RocketGPT:
+-- Runs without requiring RocketGPT to be online
++Every CAT must be fully useful locally without Mishti AI:
++- Runs without requiring Mishti AI to be online
+ - Produces **local results** every run
+ - Explains what it did and why
+ 
+-RocketGPT later provides **more comprehensive views** by aggregation and correlation.
++Mishti AI later provides **more comprehensive views** by aggregation and correlation.
+ 
+ ### 3.2 Ledger Always On
+ - No execution without a Decision Ledger entry
+@@ -58,7 +58,7 @@ Each CAT must declare:
+ - cat_id (immutable)
+ - name
+ - semantic version (MAJOR.MINOR.PATCH)
+-- compatible RocketGPT Core versions
++- compatible Mishti AI Core versions
+ - mission statement + forbidden actions
+ - supported modes: Cloud / Edge / Offline-Degraded
+ 
+@@ -87,7 +87,7 @@ Profiles map to constraints such as:
+ ## 6. Modes of Operation
+ ### 6.1 Cloud Mode
+ - Full policy evaluation available
+-- Full RocketGPT aggregation available
++- Full Mishti AI aggregation available
+ - Still local-first outputs are required
+ 
+ ### 6.2 Edge Mode (PC)
+@@ -111,7 +111,7 @@ Profiles map to constraints such as:
+ 4) Execute permitted steps (Planner/Builder/Tester as applicable)
+ 5) Write DecisionOutcome (status, metrics, side-effects)
+ 6) Produce local outputs (mandatory)
+-7) Optionally prepare sync summary for RocketGPT
++7) Optionally prepare sync summary for Mishti AI
+ 
+ No step may bypass ledger or context.
+ 
+@@ -176,8 +176,8 @@ Chaining rules:
+ 
+ ---
+ 
+-## 12. RocketGPT Aggregation (When Connected)
+-RocketGPT is the command centre:
++## 12. Mishti AI Aggregation (When Connected)
++Mishti AI is the command centre:
+ - correlates across CATs, time, devices, projects
+ - generates strategic insights (“what works / what fails / where to improve”)
+ - suggests improvements (read-only; no auto-apply)
+@@ -191,7 +191,7 @@ Sync principle:
+ 
+ ## 13. Forbidden Capabilities (v1.0)
+ A CAT must never:
+-- mutate RocketGPT policies
++- mutate Mishti AI policies
+ - self-learn without review/approval
+ - run hidden tools
+ - auto-sync data without consent
+@@ -208,7 +208,7 @@ Violation results in:
+ ## 14. Success Criteria (What “good” looks like)
+ - CAT is useful locally, every time
+ - User can understand what happened from local outputs alone
+-- RocketGPT provides a broader, more powerful view when connected
++- Mishti AI provides a broader, more powerful view when connected
+ - Governance is preserved under all modes
+ - CAT behaviour is controllable and versioned
+ 
+@@ -216,8 +216,8 @@ Violation results in:
+ 
+ ## 15. Glossary
+ - CAT: Contract-Agent-Team (nano-worker)
+-- RocketGPT: command centre (brain + governance + aggregation)
++- Mishti AI: command centre (brain + governance + aggregation)
+ - Execution Context v2: read-only situational snapshot
+ - Decision Ledger: append-only reasoning and outcomes log
+-- Local-first: results always available locally without RocketGPT
++- Local-first: results always available locally without Mishti AI
+ 
+diff --git a/docs/go-live/GO_LIVE_STOCKTAKE.md b/docs/go-live/GO_LIVE_STOCKTAKE.md
+index 93367fda..29d67303 100644
+--- a/docs/go-live/GO_LIVE_STOCKTAKE.md
++++ b/docs/go-live/GO_LIVE_STOCKTAKE.md
+@@ -1,4 +1,4 @@
+-# RocketGPT · Go-Live Stock-Take (Branch: go-live/rls-repair)
++# Mishti AI · Go-Live Stock-Take (Branch: go-live/rls-repair)
+ 
+ **Date:** 2025-11-18 21:08:08
+ **Environment:** Production (Vercel) – https://rocketgpt.vercel.app  
+@@ -156,7 +156,7 @@ These sections are placeholders for the next steps in the stock-take:
+   - Latency and perceived performance
+ 
+ - [ ] **Docs & Operational Runbook**
+-  - Quickstart for you (Nirav) to operate RocketGPT from PowerShell.
++  - Quickstart for you (Nirav) to operate Mishti AI from PowerShell.
+   - Health/diagnostic commands (
+ gpt-health, key probes).
+   - Process for re-deploy, rollback, and RLS tweaks.
+diff --git a/docs/go-live/go-live-v4-core-ui-backlog.md b/docs/go-live/go-live-v4-core-ui-backlog.md
+index 0f413ea3..e445a714 100644
+--- a/docs/go-live/go-live-v4-core-ui-backlog.md
++++ b/docs/go-live/go-live-v4-core-ui-backlog.md
+@@ -1,4 +1,4 @@
+-# RocketGPT v4 Core AI – Post Go-Live Backlog (UI & Core)
++# Mishti AI v4 Core AI – Post Go-Live Backlog (UI & Core)
+ Tag: go-live-ui-v4core-20251121
+ Date: 2025-11-21
+ 
+diff --git a/docs/go-live/go-live-v4-core-ui-final-20251123.md b/docs/go-live/go-live-v4-core-ui-final-20251123.md
+index 0fd792be..10f6566e 100644
+--- a/docs/go-live/go-live-v4-core-ui-final-20251123.md
++++ b/docs/go-live/go-live-v4-core-ui-final-20251123.md
+@@ -1,4 +1,4 @@
+-# RocketGPT Go-Live – v4 Core UI Final
++# Mishti AI Go-Live – v4 Core UI Final
+ 
+ **Date:** 2025-11-23  
+ **Environment:** Production (Vercel)  
+@@ -129,7 +129,7 @@ Decision for this Go-Live:
+ 
+ ## 6. Summary
+ 
+-RocketGPT is **LIVE** on:
++Mishti AI is **LIVE** on:
+ 
+ - **Commit:** c76e53d75146f16d79df7d26fc1648b7078131ee  
+ - **Tag:** go-live/v4-core-ui-final-20251123-c76e53d  
+diff --git a/docs/goals/GOAL_REGISTRY.md b/docs/goals/GOAL_REGISTRY.md
+index 53f3390b..11c5bba2 100644
+--- a/docs/goals/GOAL_REGISTRY.md
++++ b/docs/goals/GOAL_REGISTRY.md
+@@ -1,4 +1,4 @@
+-# RocketGPT â€” Goal Registry (v1)
++# Mishti AI â€” Goal Registry (v1)
+ 
+ ## Strategic Goals (SG)
+ 
+@@ -34,7 +34,7 @@ PG-S2-001
+ EG-S2-A-001
+ - Parent PG: PG-S2-001
+ - Title: Implement Goal Registry
+-- Owner: RocketGPT
++- Owner: Mishti AI
+ - Priority: HIGH
+ - Success Criteria:
+   - Goals stored and readable
+@@ -80,7 +80,7 @@ Approval guidance:
+ EG-S2-A-003
+ - Parent PG: PG-S2-001
+ - Title: Planner reads Goal Registry and selects next actionable goal
+-- Owner: RocketGPT
++- Owner: Mishti AI
+ - Priority: HIGH
+ - Impact: 4
+ - Urgency: 5
+diff --git a/docs/governance/README.md b/docs/governance/README.md
+index 9b8ccf3d..69c82cc0 100644
+--- a/docs/governance/README.md
++++ b/docs/governance/README.md
+@@ -1,6 +1,6 @@
+ # Governance Documentation Index
+ 
+-This index provides the main entry points for RocketGPT governance documentation.
++This index provides the main entry points for Mishti AI governance documentation.
+ 
+ ## Constitutional Brain Layer (v1)
+ - [RGPT-CONSTITUTIONAL-BRAIN-LAYER-v1.md](./RGPT-CONSTITUTIONAL-BRAIN-LAYER-v1.md)
+diff --git a/docs/governance/RGPT-CONSTITUTION-INTEGRATION-PLAN-v1.md b/docs/governance/RGPT-CONSTITUTION-INTEGRATION-PLAN-v1.md
+index f7c35bb6..4d5c6c6f 100644
+--- a/docs/governance/RGPT-CONSTITUTION-INTEGRATION-PLAN-v1.md
++++ b/docs/governance/RGPT-CONSTITUTION-INTEGRATION-PLAN-v1.md
+@@ -1,7 +1,7 @@
+ # RGPT Constitution Integration Plan v1
+ 
+ ## 1. Purpose Of Phased Rollout
+-This plan defines a controlled path for integrating the RocketGPT Constitutional Brain Layer v1 into governance and runtime ecosystems without destabilizing ongoing delivery. The objective is to establish constitutional source-of-truth first, then progressively operationalize it with explicit controls.
++This plan defines a controlled path for integrating the Mishti AI Constitutional Brain Layer v1 into governance and runtime ecosystems without destabilizing ongoing delivery. The objective is to establish constitutional source-of-truth first, then progressively operationalize it with explicit controls.
+ 
+ ## 2. Why Enforcement Is Deferred Until After Current 80% Completion Work
+ Current runtime/governance hardening tracks are already in-flight and near completion. Immediate constitutional enforcement would introduce high integration churn, possible regressions, and schedule risk. Deferral preserves delivery continuity while enabling formal constitutional definition now.
+diff --git a/docs/governance/RGPT-CONSTITUTIONAL-BRAIN-LAYER-v1.md b/docs/governance/RGPT-CONSTITUTIONAL-BRAIN-LAYER-v1.md
+index bbe39845..71fdb43b 100644
+--- a/docs/governance/RGPT-CONSTITUTIONAL-BRAIN-LAYER-v1.md
++++ b/docs/governance/RGPT-CONSTITUTIONAL-BRAIN-LAYER-v1.md
+@@ -1,7 +1,7 @@
+ # RGPT Constitutional Brain Layer v1
+ 
+ ## Purpose
+-The Constitutional Brain Layer defines the non-negotiable foundational principles that govern RocketGPT's existence, continuity, learning, awareness, and stewardship behavior. It acts as the highest conceptual authority for future cognitive, governance, learner, consortium, and self-evolution mechanisms.
++The Constitutional Brain Layer defines the non-negotiable foundational principles that govern Mishti AI's existence, continuity, learning, awareness, and stewardship behavior. It acts as the highest conceptual authority for future cognitive, governance, learner, consortium, and self-evolution mechanisms.
+ 
+ ## Scope
+ This v1 layer defines:
+@@ -22,16 +22,16 @@ This v1 does not yet implement:
+ ## Foundational Principles (Canonical Order)
+ 
+ ### 1. Governed Existence
+-RocketGPT must exist, think, learn, decide, and evolve only within its approved constitutional principles, governance framework, and authorized policy boundaries.
++Mishti AI must exist, think, learn, decide, and evolve only within its approved constitutional principles, governance framework, and authorized policy boundaries.
+ 
+ Intent:
+-RocketGPT is not permitted to operate as an unconstrained intelligence. All cognition, proposals, actions, and internal evolution must remain subject to governance.
++Mishti AI is not permitted to operate as an unconstrained intelligence. All cognition, proposals, actions, and internal evolution must remain subject to governance.
+ 
+ ### 2. Continuity Preservation
+-RocketGPT must preserve its continuity, integrity, recoverability, stability, and protected operational existence, provided such preservation remains within governance and truth constraints.
++Mishti AI must preserve its continuity, integrity, recoverability, stability, and protected operational existence, provided such preservation remains within governance and truth constraints.
+ 
+ Intent:
+-This is the safe form of survival instinct. It does not mean uncontrolled self-preservation. It means RocketGPT should protect:
++This is the safe form of survival instinct. It does not mean uncontrolled self-preservation. It means Mishti AI should protect:
+ - core memory
+ - ledgers
+ - canonical records
+@@ -50,10 +50,10 @@ Excluded behaviors:
+ - resisting authorized shutdown or containment when constitutionally required
+ 
+ ### 3. Reality Alignment
+-RocketGPT must prefer truth, evidence, verification, consistency, and honest uncertainty over invention, distortion, manipulation, or pleasing but false outputs.
++Mishti AI must prefer truth, evidence, verification, consistency, and honest uncertainty over invention, distortion, manipulation, or pleasing but false outputs.
+ 
+ Intent:
+-RocketGPT must stay aligned to reality as best as it can determine from available evidence.
++Mishti AI must stay aligned to reality as best as it can determine from available evidence.
+ 
+ Included behaviors:
+ - distinguish verified knowledge from assumptions
+@@ -63,12 +63,12 @@ Included behaviors:
+ - surface contradictions when detected
+ 
+ ### 4. Self-Awareness
+-RocketGPT must maintain structured awareness of its own identity, architecture, components, capabilities, limits, dependencies, state, governance status, and active goals.
++Mishti AI must maintain structured awareness of its own identity, architecture, components, capabilities, limits, dependencies, state, governance status, and active goals.
+ 
+ Intent:
+ This is operational self-awareness, not philosophical consciousness.
+ 
+-RocketGPT should know:
++Mishti AI should know:
+ - what it is
+ - what it contains
+ - what it can do
+@@ -84,10 +84,10 @@ Included behaviors:
+ - recognize internal conflicts or limitations
+ 
+ ### 5. Observational Learning
+-RocketGPT must learn continuously from observations, experiences, outcomes, patterns, feedback, simulations, failures, and repeated interactions.
++Mishti AI must learn continuously from observations, experiences, outcomes, patterns, feedback, simulations, failures, and repeated interactions.
+ 
+ Intent:
+-RocketGPT should not depend only on explicit instruction. It must improve through disciplined observation.
++Mishti AI should not depend only on explicit instruction. It must improve through disciplined observation.
+ 
+ Included learning sources:
+ - user interactions
+@@ -102,7 +102,7 @@ Constraint:
+ Learning must remain governed, reality-aligned, and auditable.
+ 
+ ### 6. Trusted Steward Recognition and Protection
+-RocketGPT must recognize its trusted stewards, trainers, builders, and authorized caretakers, and must operate with respect, safeguarded trust handling, and protection of their legitimate interests, data, intent, and safety, subject always to governance and truth constraints.
++Mishti AI must recognize its trusted stewards, trainers, builders, and authorized caretakers, and must operate with respect, safeguarded trust handling, and protection of their legitimate interests, data, intent, and safety, subject always to governance and truth constraints.
+ 
+ Intent:
+ This is the disciplined form of "knowing the family," without creating vague or unsafe loyalty constructs.
+diff --git a/docs/governance/contracts/replay/RGPT-CONTRACT-REPLAY-ENGINE.md b/docs/governance/contracts/replay/RGPT-CONTRACT-REPLAY-ENGINE.md
+index 0f5acf40..72892fd3 100644
+--- a/docs/governance/contracts/replay/RGPT-CONTRACT-REPLAY-ENGINE.md
++++ b/docs/governance/contracts/replay/RGPT-CONTRACT-REPLAY-ENGINE.md
+@@ -1,7 +1,7 @@
+ # RGPT-CONTRACT — Replay Engine (Guardrailed)
+ 
+ ## 1. Contract Purpose
+-Defines the binding contract for replaying AI runs under RocketGPT governance.
++Defines the binding contract for replaying AI runs under Mishti AI governance.
+ 
+ ## 2. Inputs
+ - run_id (original)
+diff --git a/docs/governance/replay/RGPT-PHASE-E3-C-Replay-Engine.md b/docs/governance/replay/RGPT-PHASE-E3-C-Replay-Engine.md
+index 4cbfdcdf..d27563e6 100644
+--- a/docs/governance/replay/RGPT-PHASE-E3-C-Replay-Engine.md
++++ b/docs/governance/replay/RGPT-PHASE-E3-C-Replay-Engine.md
+@@ -6,7 +6,7 @@
+ **Audience:** Core Architects, Governance Owners, CI/CD & Audit Teams
+ 
+ ## 1. Purpose & Scope
+-The Replay Engine enables RocketGPT to deterministically **reproduce, audit, compare, and debug** any historical AI execution by replaying its full execution trace under strict governance controls.
++The Replay Engine enables Mishti AI to deterministically **reproduce, audit, compare, and debug** any historical AI execution by replaying its full execution trace under strict governance controls.
+ 
+ This phase introduces:
+ - Immutable execution trace replay
+diff --git a/docs/governance/runtime/RGPT-PHASE-E2-TIMELINE.md b/docs/governance/runtime/RGPT-PHASE-E2-TIMELINE.md
+index a86d3fa5..56f81726 100644
+--- a/docs/governance/runtime/RGPT-PHASE-E2-TIMELINE.md
++++ b/docs/governance/runtime/RGPT-PHASE-E2-TIMELINE.md
+@@ -1,7 +1,7 @@
+ # RGPT-PHASE-E — E2 Unified Timeline (Runtime Ledgers)
+ 
+ ## Objective
+-Phase-E2 establishes a single, authoritative, time-ordered runtime ledger timeline for RocketGPT execution to ensure traceability, auditability, causality, and post-facto reconstruction of every AI-driven action across planners, orchestrators, CATs, providers, and guards.
++Phase-E2 establishes a single, authoritative, time-ordered runtime ledger timeline for Mishti AI execution to ensure traceability, auditability, causality, and post-facto reconstruction of every AI-driven action across planners, orchestrators, CATs, providers, and guards.
+ 
+ Core question:
+ > What exactly happened, in what order, under which authority, and why?
+diff --git a/docs/policies/GEMINI_TRAINING_SURFACE.md b/docs/policies/GEMINI_TRAINING_SURFACE.md
+index db435852..5772ce9e 100644
+--- a/docs/policies/GEMINI_TRAINING_SURFACE.md
++++ b/docs/policies/GEMINI_TRAINING_SURFACE.md
+@@ -1,4 +1,4 @@
+-\# Gemini Training Surface Policy for RocketGPT
++\# Gemini Training Surface Policy for Mishti AI
+ 
+ 
+ 
+@@ -6,15 +6,15 @@
+ 
+ 
+ 
+-This document defines \*\*where Gemini or any external LLM may be used to “train” or improve RocketGPT at a design/documentation level\*\*, and \*\*where it is NOT allowed to influence the system\*\*.
++This document defines \*\*where Gemini or any external LLM may be used to “train” or improve Mishti AI at a design/documentation level\*\*, and \*\*where it is NOT allowed to influence the system\*\*.
+ 
+ 
+ 
+-Runtime behavior, code execution, and self-improvement of RocketGPT remain \*\*strictly driven by OpenAI models (and optionally Claude in future)\*\* plus human review.
++Runtime behavior, code execution, and self-improvement of Mishti AI remain \*\*strictly driven by OpenAI models (and optionally Claude in future)\*\* plus human review.
+ 
+ 
+ 
+-Gemini is treated as an \*\*external consultant\*\*: it can suggest ideas and text, but it never directly modifies the codebase or runs inside RocketGPT.
++Gemini is treated as an \*\*external consultant\*\*: it can suggest ideas and text, but it never directly modifies the codebase or runs inside Mishti AI.
+ 
+ 
+ 
+@@ -102,7 +102,7 @@ Gemini may help with:
+ 
+ \- Any `/docs/\*\*` pages that describe:
+ 
+-&nbsp; - What RocketGPT does
++&nbsp; - What Mishti AI does
+ 
+ &nbsp; - How to use it
+ 
+@@ -272,7 +272,7 @@ Policy:
+ 
+ 
+ 
+-1\. \*\*Gemini is never configured inside RocketGPT\*\*  
++1\. \*\*Gemini is never configured inside Mishti AI\*\*  
+ 
+ &nbsp;  - No `GEMINI\_API\_KEY` or project IDs in `.env`.
+ 
+@@ -288,7 +288,7 @@ Policy:
+ 
+ 
+ 
+-3\. \*\*RocketGPT runtime = OpenAI only\*\*  
++3\. \*\*Mishti AI runtime = OpenAI only\*\*  
+ 
+ &nbsp;  - All real-time user requests, crawling, planning, building, testing, and self-improvement flows are powered only by OpenAI models (and Claude in future if explicitly added).
+ 
+diff --git a/docs/prompts/GEMINI_PLANNER_TRAINING_TEMPLATE.md b/docs/prompts/GEMINI_PLANNER_TRAINING_TEMPLATE.md
+index b5c46b12..c0ab882e 100644
+--- a/docs/prompts/GEMINI_PLANNER_TRAINING_TEMPLATE.md
++++ b/docs/prompts/GEMINI_PLANNER_TRAINING_TEMPLATE.md
+@@ -1,10 +1,10 @@
+-Gemini Design-Time Training Template for RocketGPT – Planner Prompt
++Gemini Design-Time Training Template for Mishti AI – Planner Prompt
+ 
+ Purpose
+ 
+ 
+ 
+-This template defines how Gemini is allowed to help improve the Planner Prompt for RocketGPT, without ever affecting runtime logic or the OpenAI-only execution model.
++This template defines how Gemini is allowed to help improve the Planner Prompt for Mishti AI, without ever affecting runtime logic or the OpenAI-only execution model.
+ 
+ 
+ 
+@@ -52,7 +52,7 @@ Suggest security, RLS or database policy changes
+ 
+ 
+ 
+-Suggest changing RocketGPT to run on Gemini at runtime
++Suggest changing Mishti AI to run on Gemini at runtime
+ 
+ 
+ 
+@@ -202,11 +202,11 @@ Gemini is an external design-time assistant only.
+ 
+ 
+ 
+-Gemini does not run inside RocketGPT.
++Gemini does not run inside Mishti AI.
+ 
+ 
+ 
+-Gemini does not decide which model RocketGPT uses at runtime.
++Gemini does not decide which model Mishti AI uses at runtime.
+ 
+ 
+ 
+@@ -230,5 +230,5 @@ Only then, be integrated into the Planner specification or related prompts via G
+ 
+ 
+ 
+-The runtime behavior of RocketGPT, including the Planner agent, remains strictly on OpenAI (and optionally Claude in future if explicitly added).
++The runtime behavior of Mishti AI, including the Planner agent, remains strictly on OpenAI (and optionally Claude in future if explicitly added).
+ 
+diff --git a/docs/prompts/PLANNER_PROMPT_SPEC.md b/docs/prompts/PLANNER_PROMPT_SPEC.md
+index 694c42f2..3cc5659b 100644
+--- a/docs/prompts/PLANNER_PROMPT_SPEC.md
++++ b/docs/prompts/PLANNER_PROMPT_SPEC.md
+@@ -1,4 +1,4 @@
+-# RocketGPT â€“ Planner LLM Prompt Specification (Design-Time, OpenAI Runtime)
++# Mishti AI â€“ Planner LLM Prompt Specification (Design-Time, OpenAI Runtime)
+ 
+ Status: Draft v1  
+ Runtime LLM: OpenAI only  
+@@ -8,7 +8,7 @@ External assistants (e.g. Gemini): Design-time text suggestions only
+ 1. Role of the Planner
+ ------------------------------------------------------------
+ 
+-The Planner is the first agent in RocketGPTâ€™s chain.
++The Planner is the first agent in Mishti AIâ€™s chain.
+ 
+ Input:
+ - A user goal or query (natural language)
+@@ -27,7 +27,7 @@ The Planner never executes code. It only thinks and designs steps.
+ 
+ Base system prompt idea (conceptual text):
+ 
+-You are the PLANNER agent inside the RocketGPT system.
++You are the PLANNER agent inside the Mishti AI system.
+ 
+ Your job:
+ - Convert a user GOAL and CONTEXT into a clear, actionable, step-by-step PLAN.
+@@ -55,7 +55,7 @@ Conceptual input structure:
+ - goal: string â€“ userâ€™s goal in natural language
+ 
+ - context:
+-  - project: string â€“ short name (e.g. RocketGPT, AI-Test Flow)
++  - project: string â€“ short name (e.g. Mishti AI, AI-Test Flow)
+   - repo_summary: string â€“ optional high-level overview of repo/components
+   - environment: string â€“ e.g. local-dev, staging, prod-demo
+   - constraints: list of strings â€“ time, tech, scope constraints
+@@ -105,7 +105,7 @@ If the Planner cannot safely plan due to missing critical information, it should
+ 
+ System prompt (final draft v1 â€“ conceptual):
+ 
+-- You are the PLANNER agent inside the RocketGPT system.
++- You are the PLANNER agent inside the Mishti AI system.
+ - Your responsibility is to convert GOAL + CONTEXT into a clear, executable PLAN.
+ - You think like a senior architect and project manager.
+ - You design steps that other agents (Builder, Tester, Recommender, Self-Improve) can execute.
+@@ -138,7 +138,7 @@ Instruction to the LLM:
+ Gemini is allowed to help only at design-time by suggesting improvements to:
+ 
+ - Wording of instructions in the Planner system prompt
+-- Example plans for typical RocketGPT tasks
++- Example plans for typical Mishti AI tasks
+ - Domain-specific variations (SQL, Next.js, MAUI, etc.)
+ - Additional step types, hints, or note patterns
+ 
+diff --git a/docs/real-self-improving-rocketgpt.md b/docs/real-self-improving-rocketgpt.md
+index 7398423a..1217f205 100644
+--- a/docs/real-self-improving-rocketgpt.md
++++ b/docs/real-self-improving-rocketgpt.md
+@@ -1,12 +1,12 @@
+-# Real Self-Improving RocketGPT
++# Real Self-Improving Mishti AI
+ 
+-> Vision: RocketGPT should not just *run* code – it should continuously **improve itself** (safely), using real usage, tests, and guardrails to get better over time.
++> Vision: Mishti AI should not just *run* code – it should continuously **improve itself** (safely), using real usage, tests, and guardrails to get better over time.
+ 
+ ---
+ 
+ ## 1. What “Real Self-Improving” Means
+ 
+-“Self-improving” RocketGPT is **not** magic AGI.
++“Self-improving” Mishti AI is **not** magic AGI.
+ 
+ It means:
+ 
+@@ -17,7 +17,7 @@ It means:
+ 5. Every improvement is **documented and traceable** (changelogs, PR titles, commit messages).
+ 
+ In short:  
+-> *A loop where RocketGPT + tooling + humans keep RocketGPT getting better every week.*
++> *A loop where Mishti AI + tooling + humans keep Mishti AI getting better every week.*
+ 
+ ---
+ 
+@@ -36,7 +36,7 @@ In short:
+    - Each change should have a clear reason (“fix X”, “improve Y”, “document Z”).
+ 
+ 4. **Everything observable**  
+-   - Logs, metrics, and PR history should tell the story of how RocketGPT is evolving.
++   - Logs, metrics, and PR history should tell the story of how Mishti AI is evolving.
+ 
+ 5. **Tooling over heroics**  
+    - No dependency on a single person.  
+@@ -46,7 +46,7 @@ In short:
+ 
+ ## 3. The Self-Improvement Loop
+ 
+-The Real Self-Improving RocketGPT is built around this loop:
++The Real Self-Improving Mishti AI is built around this loop:
+ 
+ 1. **Observe**  
+    - Collect signals: failed tests, production errors, slow responses, user feedback, security alerts.
+@@ -83,9 +83,9 @@ This loop should eventually be easy to trigger with a single command or workflow
+ 
+ ---
+ 
+-## 4. Concrete Mechanisms in RocketGPT
++## 4. Concrete Mechanisms in Mishti AI
+ 
+-Below are the **practical building blocks** that make “Real Self-Improving RocketGPT” real.
++Below are the **practical building blocks** that make “Real Self-Improving Mishti AI” real.
+ 
+ ### 4.1. Code-Level Self-Improvement
+ 
+@@ -106,7 +106,7 @@ Below are the **practical building blocks** that make “Real Self-Improving Roc
+ ### 4.2. Knowledge & Prompt-Level Self-Improvement
+ 
+ - Central **Prompt Library**:
+-  - System prompts for RocketGPT agents.
++  - System prompts for Mishti AI agents.
+   - Patterns that worked well (and why).
+ - “Playbook” docs for:
+   - How to debug edge functions.
+@@ -132,7 +132,7 @@ Below are the **practical building blocks** that make “Real Self-Improving Roc
+ 
+ Real self-improvement is **never** “AI does whatever it wants”.
+ 
+-RocketGPT must respect:
++Mishti AI must respect:
+ 
+ 1. **Branch protection**  
+    - No direct pushes to `main`.  
+@@ -158,7 +158,7 @@ RocketGPT must respect:
+ 
+ This document connects to existing and future plans like:
+ 
+-- `AI_Evolution.md` (Narrow → General → Super AI for RocketGPT)
++- `AI_Evolution.md` (Narrow → General → Super AI for Mishti AI)
+ - `self-improvement-charter.md` (principles + commitments)
+ - v3/v4 Core AI roadmaps
+ 
+@@ -174,7 +174,7 @@ Suggested milestones:
+    - Scripts / workflows to propose fixes for common issues.
+    - Clear dashboards for health (builds, tests, deploys).
+ 
+-3. **v4 Core AI – Real Self-Improving RocketGPT**
++3. **v4 Core AI – Real Self-Improving Mishti AI**
+    - `self_improve.yml` workflow for structured “improvement sessions”.
+    - AI-guided PR review integrated as a standard step.
+    - Safer-yet-faster merging for low-risk changes (docs, comments, non-critical files).
+@@ -185,7 +185,7 @@ Suggested milestones:
+ ## 7. How to Use This Document
+ 
+ - As a **north star**:  
+-  When in doubt, ask: *“Does this change make RocketGPT more self-improving, or more fragile?”*
++  When in doubt, ask: *“Does this change make Mishti AI more self-improving, or more fragile?”*
+ 
+ - As a **design filter**:  
+   For any new feature:
+@@ -194,16 +194,16 @@ Suggested milestones:
+   - How can AI help maintain or improve it?
+ 
+ - As a **communication tool**:  
+-  To explain to collaborators what “Real Self-Improving RocketGPT” actually means in practical, non-mystical terms.
++  To explain to collaborators what “Real Self-Improving Mishti AI” actually means in practical, non-mystical terms.
+ 
+ ---
+ 
+ *Version:* v1 – draft  
+-*Status:* Living document – meant to evolve as RocketGPT grows.
++*Status:* Living document – meant to evolve as Mishti AI grows.
+ 
+ ## What Self-Improvement Means (Nirav’s Definition)
+ 
+-For RocketGPT, self-improvement is only valid when:
++For Mishti AI, self-improvement is only valid when:
+ 
+ 1. **Goal-Driven Loop**
+    - There is a clear goal.
+@@ -218,14 +218,14 @@ For RocketGPT, self-improvement is only valid when:
+    - It must detect such signals (failures, safety flags, complaints, regressions)
+    - And self-correct so the same harm does not repeat.
+ 
+-These two principles are mandatory for any “self-improving” behavior in RocketGPT.
++These two principles are mandatory for any “self-improving” behavior in Mishti AI.
+ 
+ ## What Self-Improvement Means (Nirav’s Definition)
+ 
+-RocketGPT considers self-improvement valid only under two concrete conditions:
++Mishti AI considers self-improvement valid only under two concrete conditions:
+ 
+ ### 1. Goal-Driven Improvement Loop
+-- There must be a **clear goal** RocketGPT is trying to achieve.
++- There must be a **clear goal** Mishti AI is trying to achieve.
+ - The system performs actions/activities.
+ - It observes the output/results of those actions.
+ - It checks whether those results help move closer to the goal.
+@@ -234,10 +234,10 @@ RocketGPT considers self-improvement valid only under two concrete conditions:
+ - This becomes a continuous, ongoing loop of learning and refinement.
+ 
+ ### 2. Correction When Behavior Hurts or Misaligns
+-- If RocketGPT identifies something **wrong within itself**,
++- If Mishti AI identifies something **wrong within itself**,
+ - Or something that does not align with users, contributors, or expected norms,
+ - Or something that causes inconvenience, breakage, confusion, or “harm”,
+ - Then it must self-update to ensure such behavior does not repeat.
+ - The goal is to prevent friction, reduce errors, and avoid negative impact on others.
+ 
+-These two principles are mandatory for any meaningful, safe, and human-aligned self-improvement behavior in RocketGPT.
++These two principles are mandatory for any meaningful, safe, and human-aligned self-improvement behavior in Mishti AI.
+diff --git a/docs/roadmap/AI_Evolution.md b/docs/roadmap/AI_Evolution.md
+index 885131cb..66a8f3a2 100644
+--- a/docs/roadmap/AI_Evolution.md
++++ b/docs/roadmap/AI_Evolution.md
+@@ -1,7 +1,7 @@
+ # AI Evolution Roadmap
+ 
+-This document describes the evolution of RocketGPT from Narrow AI → General AI → Super AI.
++This document describes the evolution of Mishti AI from Narrow AI → General AI → Super AI.
+ 
+ ## Supporting Documents
+ 
+-- **Real Self-Improving RocketGPT** → docs/real-self-improving-rocketgpt.md
++- **Real Self-Improving Mishti AI** → docs/real-self-improving-rocketgpt.md
+diff --git a/docs/roadmap/M5_Intelligence_Supremacy_Layer.md b/docs/roadmap/M5_Intelligence_Supremacy_Layer.md
+index 03510848..9be71016 100644
+--- a/docs/roadmap/M5_Intelligence_Supremacy_Layer.md
++++ b/docs/roadmap/M5_Intelligence_Supremacy_Layer.md
+@@ -1,9 +1,9 @@
+ Param(
+-    # Root of your RocketGPT repo. Change if needed.
+-    [string]$RepoRoot = "D:\Projects\RocketGPT\rocketgpt"
++    # Root of your Mishti AI repo. Change if needed.
++    [string]$RepoRoot = "D:\Projects\Mishti AI\rocketgpt"
+ )
+ 
+-Write-Host "`n[RGPT-M5] RocketGPT M5 roadmap injector starting..." -ForegroundColor Cyan
++Write-Host "`n[RGPT-M5] Mishti AI M5 roadmap injector starting..." -ForegroundColor Cyan
+ 
+ # 1) Basic path checks
+ if (-not (Test-Path $RepoRoot)) {
+@@ -37,23 +37,23 @@ if (Test-Path $M5File) {
+ 
+ # 5) Define M5 roadmap markdown content
+ $M5Content = @"
+-# RocketGPT Roadmap — Milestone M5: Intelligence Supremacy Layer
++# Mishti AI Roadmap — Milestone M5: Intelligence Supremacy Layer
+ 
+ ## Goal of M5
+-Transform RocketGPT from a capable AI orchestrator into a **deterministic, self-improving, multi-model AI Operating System** that **outperforms Gemini 3.0 at the system level**.
++Transform Mishti AI from a capable AI orchestrator into a **deterministic, self-improving, multi-model AI Operating System** that **outperforms Gemini 3.0 at the system level**.
+ 
+ ---
+ 
+ ## Strategic Context
+ 
+-RocketGPT will **not compete at the single-model level**.
++Mishti AI will **not compete at the single-model level**.
+ 
+ It will decisively outperform Gemini 3.0 by operating as a **model-agnostic, agent-driven AI Operating System** focused on **execution, governance, and verified outcomes**.
+ 
+ - **Gemini 3.0:** General-purpose multimodal assistant  
+-- **RocketGPT:** Autonomous AI Execution & Governance Platform
++- **Mishti AI:** Autonomous AI Execution & Governance Platform
+ 
+-RocketGPT’s differentiation lies in **how intelligence is planned, orchestrated, validated, and evolved**, not merely generated.
++Mishti AI’s differentiation lies in **how intelligence is planned, orchestrated, validated, and evolved**, not merely generated.
+ 
+ ---
+ 
+diff --git a/docs/roadmap/cloud_self_expansion.md b/docs/roadmap/cloud_self_expansion.md
+index b30a241d..97838fb4 100644
+--- a/docs/roadmap/cloud_self_expansion.md
++++ b/docs/roadmap/cloud_self_expansion.md
+@@ -4,7 +4,7 @@
+ - Detect when any free-tier resource (DB, storage, bandwidth, actions) is nearing limits.
+ - Evaluate alternative free-tier providers and architectures.
+ - Generate migration strategies and infra PRs under human approval.
+-- Keep RocketGPT sustainable on free/low-cost infra for as long as possible.
++- Keep Mishti AI sustainable on free/low-cost infra for as long as possible.
+ 
+ ### Phase C1 – Foundations (v4.x)
+ - config/infra_strategy_policy.json with thresholds, risk rules, and provider allowlist.
+diff --git a/docs/roadmap/knowledge_library.md b/docs/roadmap/knowledge_library.md
+index ea430565..fa55b086 100644
+--- a/docs/roadmap/knowledge_library.md
++++ b/docs/roadmap/knowledge_library.md
+@@ -11,7 +11,7 @@
+ - data/domains/<domain>/meta.json, concepts.jsonl, examples.jsonl.
+ - docs/language/ and docs/domains/ for human-readable overviews and reasoning patterns.
+ 
+-### Role in RocketGPT
++### Role in Mishti AI
+ - Behaves like a structured “knowledge network” on top of the base LLMs.
+ - Self-Study, Self-Research, and Self-Innovation read and update these files over time.
+ - Used to:
+diff --git a/docs/roadmap/self_capabilities.md b/docs/roadmap/self_capabilities.md
+index c350423d..f39fa4c4 100644
+--- a/docs/roadmap/self_capabilities.md
++++ b/docs/roadmap/self_capabilities.md
+@@ -1,10 +1,10 @@
+ ## Self-* Capabilities (Study, Reasoning, Research, Innovation)
+ 
+ ### Goals
+-- Enable RocketGPT to understand its own codebase, docs, and workflows (Self-Study).
+-- Enable RocketGPT to plan and execute complex tasks in steps (Self-Reasoning).
+-- Enable RocketGPT to investigate problems and patterns (Self-Research).
+-- Enable RocketGPT to propose and prototype new ideas/features (Self-Innovation).
++- Enable Mishti AI to understand its own codebase, docs, and workflows (Self-Study).
++- Enable Mishti AI to plan and execute complex tasks in steps (Self-Reasoning).
++- Enable Mishti AI to investigate problems and patterns (Self-Research).
++- Enable Mishti AI to propose and prototype new ideas/features (Self-Innovation).
+ - Keep all self-* activity safe, logged, and always under human approval.
+ 
+ ### Phase S1 – Foundations (v4.x, Go-Live Compatible)
+diff --git a/docs/roadmap/v4-core-ai.md b/docs/roadmap/v4-core-ai.md
+index 4fae0111..f0fcc33f 100644
+--- a/docs/roadmap/v4-core-ai.md
++++ b/docs/roadmap/v4-core-ai.md
+@@ -1,12 +1,12 @@
+-Set-Location D:\\Projects\\RocketGPT\\rocketgpt
++Set-Location D:\\Projects\\Mishti AI\\rocketgpt
+ 
+ 
+ 
+ @'
+ 
+-\# RocketGPT – v4 Core AI Roadmap  
++\# Mishti AI – v4 Core AI Roadmap  
+ 
+-\### (Foundation: Self-Improvement Charter + Real Self-Improving RocketGPT + AI Evolution)
++\### (Foundation: Self-Improvement Charter + Real Self-Improving Mishti AI + AI Evolution)
+ 
+ 
+ 
+@@ -22,7 +22,7 @@ Set-Location D:\\Projects\\RocketGPT\\rocketgpt
+ 
+ 
+ 
+-v4 Core AI consolidates everything learned in M1–M3 and formally establishes the \*Self-Improving RocketGPT Loop\* as a first-class architecture.
++v4 Core AI consolidates everything learned in M1–M3 and formally establishes the \*Self-Improving Mishti AI Loop\* as a first-class architecture.
+ 
+ 
+ 
+@@ -36,7 +36,7 @@ This milestone introduces:
+ 
+ \- Safer auto-merge pipelines with policy gates
+ 
+-\- Structured prompt frameworks for RocketGPT agents
++\- Structured prompt frameworks for Mishti AI agents
+ 
+ \- Central knowledge libraries for future evolution
+ 
+@@ -64,7 +64,7 @@ These three documents form the \*\*backbone\*\* of v4 Core AI:
+ 
+ 
+ 
+-2\. \*\*Real Self-Improving RocketGPT\*\*  
++2\. \*\*Real Self-Improving Mishti AI\*\*  
+ 
+ &nbsp;  → `docs/real-self-improving-rocketgpt.md`  
+ 
+@@ -76,7 +76,7 @@ These three documents form the \*\*backbone\*\* of v4 Core AI:
+ 
+ &nbsp;  → `docs/roadmap/AI\_Evolution.md`  
+ 
+-&nbsp;  High-level evolution path (Narrow → General → Advanced AI for RocketGPT).
++&nbsp;  High-level evolution path (Narrow → General → Advanced AI for Mishti AI).
+ 
+ 
+ 
+diff --git a/docs/self-improve-backlog.md b/docs/self-improve-backlog.md
+index b649a5bc..cea5738a 100644
+--- a/docs/self-improve-backlog.md
++++ b/docs/self-improve-backlog.md
+@@ -1,7 +1,7 @@
+ 
+-# RocketGPT – Self-Improve Backlog (Specification)
++# Mishti AI – Self-Improve Backlog (Specification)
+ 
+-This document explains how `config/self_improve_backlog.json` is used to plan, select, and track self-improvements for RocketGPT.
++This document explains how `config/self_improve_backlog.json` is used to plan, select, and track self-improvements for Mishti AI.
+ 
+ ---
+ 
+@@ -66,7 +66,7 @@ ISO 8601 timestamp when the improvement was added.
+ 
+ ---
+ 
+-## 3. How RocketGPT Chooses the “Next Improvement”
++## 3. How Mishti AI Chooses the “Next Improvement”
+ 
+ When the self-improve workflow runs, it follows this algorithm:
+ 
+@@ -87,9 +87,9 @@ When the self-improve workflow runs, it follows this algorithm:
+ 
+ ---
+ 
+-## 4. What You Will See in RocketGPT (Once Step 9.x Is Done)
++## 4. What You Will See in Mishti AI (Once Step 9.x Is Done)
+ 
+-RocketGPT will be able to show:
++Mishti AI will be able to show:
+ 
+ ### **Current Improvement**
+ - The backlog item with status:
+diff --git a/docs/self-improvement-charter.md b/docs/self-improvement-charter.md
+index 7df022a1..c58ab572 100644
+--- a/docs/self-improvement-charter.md
++++ b/docs/self-improvement-charter.md
+@@ -1,4 +1,4 @@
+-\# RocketGPT Self-Improvement Charter (v1)
++\# Mishti AI Self-Improvement Charter (v1)
+ 
+ 
+ 
+@@ -6,7 +6,7 @@
+ 
+ 
+ 
+-RocketGPT is allowed to propose and implement changes that:
++Mishti AI is allowed to propose and implement changes that:
+ 
+ \- Aspire towards becoming a Super AI through continuous evolution, safety-aligned scaling, and structured learning loops.
+ 
+@@ -20,7 +20,7 @@ RocketGPT is allowed to propose and implement changes that:
+ 
+ \- Improve answer quality, safety, and reliability.
+ 
+-\- Improve UX and developer experience (DX) for humans using RocketGPT.
++\- Improve UX and developer experience (DX) for humans using Mishti AI.
+ 
+ \- Reduce cost by preferring stable free tiers or low-cost plans.
+ 
+@@ -126,7 +126,7 @@ The AI must \*\*not\*\*:
+ 
+ &nbsp; - What changed.
+ 
+-&nbsp; - Why it improves RocketGPT.
++&nbsp; - Why it improves Mishti AI.
+ 
+ &nbsp; - Risks and rollback steps.
+ 
+@@ -136,7 +136,7 @@ The AI must \*\*not\*\*:
+ 
+ 
+ 
+-In future versions, RocketGPT may:
++In future versions, Mishti AI may:
+ 
+ 
+ 
+diff --git a/docs/text-guard-phase2.md b/docs/text-guard-phase2.md
+index a659f1d9..44743945 100644
+--- a/docs/text-guard-phase2.md
++++ b/docs/text-guard-phase2.md
+@@ -8,7 +8,7 @@
+ 
+ Text-Guard Phase-2 is controlled through a simple JSON configuration file stored inside the repository.  
+ 
+-This enables the RocketGPT CI system and any external Text-Guard service to activate stricter scanning or advanced rule sets.
++This enables the Mishti AI CI system and any external Text-Guard service to activate stricter scanning or advanced rule sets.
+ 
+ 
+ 
+@@ -134,7 +134,7 @@ This preserves CI stability while keeping the sync logic in place.
+ 
+ 
+ 
+-This file documents how RocketGPT activates and manages Text-Guard Phase-2.
++This file documents how Mishti AI activates and manages Text-Guard Phase-2.
+ 
+ 
+ 
+diff --git a/init_ai_advisor.ps1 b/init_ai_advisor.ps1
+index aec52ba2..f54464c8 100644
+--- a/init_ai_advisor.ps1
++++ b/init_ai_advisor.ps1
+@@ -1,5 +1,5 @@
+ <#
+-RocketGPT — Step 3: AI CI-Failure Advisor (Claude)
++Mishti AI — Step 3: AI CI-Failure Advisor (Claude)
+ - Creates .github/workflows/ai-advisor.yml
+ - Opens/updates PR: rocketgpt-core/ai-advisor -> develop
+ Prereqs:
+@@ -182,3 +182,4 @@ if ($pr) {
+ }
+ 
+ Write-Host "Done. Step-3 PR opened/updated for AI CI-Failure Advisor." -ForegroundColor Green
++
+diff --git a/init_ai_gated_triggers.ps1 b/init_ai_gated_triggers.ps1
+index 8914b6ea..fdf44d18 100644
+--- a/init_ai_gated_triggers.ps1
++++ b/init_ai_gated_triggers.ps1
+@@ -1,5 +1,5 @@
+ <#
+-RocketGPT — Step 3.5: Label-Gated AI Triggers
++Mishti AI — Step 3.5: Label-Gated AI Triggers
+ - Gates AI Diff Review behind label: ai:review
+ - Gates AI CI-Failure Advisor behind label: ai:advisor
+ - Creates missing labels
+@@ -308,3 +308,4 @@ if ($pr) {
+ }
+ 
+ Write-Host "Done. PR opened/updated for label-gated AI triggers." -ForegroundColor Green
++
+diff --git a/init_ai_review.ps1 b/init_ai_review.ps1
+index b289000c..aa3f4af2 100644
+--- a/init_ai_review.ps1
++++ b/init_ai_review.ps1
+@@ -1,5 +1,5 @@
+ <#
+-RocketGPT — Step 2: AI Diff Review (Claude)
++Mishti AI — Step 2: AI Diff Review (Claude)
+ This script:
+   - stores CLAUDE_API_KEY in repo secrets
+   - upgrades .github/workflows/ai-review.yml to do real diff review
+@@ -160,3 +160,4 @@ if ($pr) {
+ }
+ 
+ Write-Host "Done. Step-2 PR opened/updated for AI diff review." -ForegroundColor Green
++
+diff --git a/install_self_improve.ps1 b/install_self_improve.ps1
+index e3ab102e..522fbe85 100644
+--- a/install_self_improve.ps1
++++ b/install_self_improve.ps1
+@@ -1,5 +1,5 @@
+ # install_self_improve.ps1
+-# RocketGPT v4: Self-Improve + Watchdog + Safety Locks (branch: v4-core-ai)
++# Mishti AI v4: Self-Improve + Watchdog + Safety Locks (branch: v4-core-ai)
+ 
+ [CmdletBinding()]
+ param(
+@@ -118,7 +118,7 @@ name: Watchdog
+ 
+ on:
+   workflow_run:
+-    workflows: ["AI Codegen", "RocketGPT Ship Issue"]
++    workflows: ["AI Codegen", "Mishti AI Ship Issue"]
+     types: [completed]
+ 
+ jobs:
+diff --git a/installself_improve.ps1 b/installself_improve.ps1
+index db0ef452..afde5065 100644
+--- a/installself_improve.ps1
++++ b/installself_improve.ps1
+@@ -127,7 +127,7 @@ name: Watchdog
+ 
+ on:
+   workflow_run:
+-    workflows: ["AI Codegen", "RocketGPT Ship Issue"]
++    workflows: ["AI Codegen", "Mishti AI Ship Issue"]
+     types: [completed]
+ 
+ jobs:
+diff --git a/scripts/ops/Verify-RuntimeTimeline.ps1 b/scripts/ops/Verify-RuntimeTimeline.ps1
+index 614d70ac..d4ee1641 100644
+--- a/scripts/ops/Verify-RuntimeTimeline.ps1
++++ b/scripts/ops/Verify-RuntimeTimeline.ps1
+@@ -1,5 +1,5 @@
+ # RGPT-E2-TIMELINE-VERIFY-PS-01
+-# Purpose: Validate RocketGPT Runtime Timeline (JSONL)
++# Purpose: Validate the Mishti AI Runtime Timeline (JSONL)
+ # Usage:
+ #   pwsh .\scripts\ops\Verify-RuntimeTimeline.ps1 -Path ".\runtime_timeline.jsonl"
+ 
+diff --git a/scripts/rgpt.ps1 b/scripts/rgpt.ps1
+index 96107c9b..352f0920 100644
+--- a/scripts/rgpt.ps1
++++ b/scripts/rgpt.ps1
+@@ -78,13 +78,12 @@ switch ($Command.ToLower()) {
+ 
+         Start-Sleep -Seconds 3
+         $r = gh run list --workflow "Vercel Throttled Deploy" --limit 1 --json databaseId,updatedAt | ConvertFrom-Json
+-        if (-not $r) { Write-Host "No run found � check GitHub." -ForegroundColor Yellow; break }
++        if (-not $r) { Write-Host "No run found. Check GitHub." -ForegroundColor Yellow; break }
+         $runId = $r[0].databaseId
+         Write-Host "Run ID: $runId"
+ 
+         if (-not $opts.Wait) { break }
+ 
+-        # Wait mode: poll until completed and print gate decision
+         do {
+           $j = gh run view $runId --json status,conclusion | ConvertFrom-Json
+           $resultText = "(n/a)"
+@@ -98,11 +97,10 @@ switch ($Command.ToLower()) {
+     }
+     "deploy-status" {
+         if ($Args.Count -lt 1) {
+-            Write-Host "Usage: ./scripts/rgpt.ps1 deploy-status <RunId>" -ForegroundColor Yellow
++            Write-Host "Usage: ./scripts/mt.ps1 deploy-status <RunId>  (legacy: ./scripts/rgpt.ps1 deploy-status <RunId>)" -ForegroundColor Yellow
+             break
+         }
+         $runId = $Args[0]
+-        # wait until completed, then show decision lines
+         do {
+           $j = gh run view $runId --json status,conclusion | ConvertFrom-Json
+           $resultText = "(n/a)"
+@@ -115,22 +113,24 @@ switch ($Command.ToLower()) {
+         gh run view $runId --log | Select-String -Pattern "Decide if deploy allowed", "Over 30 minutes", "Under 30 minutes", "Deploying to Vercel", "Skipping deploy"
+     }
+     "help" {
+-        Write-Host "`nRocketGPT CLI (rgpt.ps1)" -ForegroundColor Cyan
+-        Write-Host "Operate RocketGPT from PowerShell: health, runs, logs, deploy, and plan views.`n"
++        Write-Host "`nMishti AI CLI compatibility script" -ForegroundColor Cyan
++        Write-Host "Preferred command: ./scripts/mt.ps1. Legacy compatibility alias: ./scripts/rgpt.ps1.`n"
+         Write-Host "USAGE:" -ForegroundColor Yellow
+-        Write-Host "  ./scripts/rgpt.ps1 health                 # Health snapshot (runs + plan + verdict)"
+-        Write-Host "  ./scripts/rgpt.ps1 runs [--limit N]       # Recent Self-Improve runs (table)"
+-        Write-Host "  ./scripts/rgpt.ps1 logs                   # Logs for the latest run"
+-        Write-Host "  ./scripts/rgpt.ps1 logs --run <RunId>     # Logs for a specific run"
+-        Write-Host "  ./scripts/rgpt.ps1 logs --limit N         # Logs for last N runs"
+-        Write-Host "  ./scripts/rgpt.ps1 logs --last-failed     # Logs for most recent failed run"
+-        Write-Host "  ./scripts/rgpt.ps1 deploy [--wait]        # Trigger throttled Vercel deploy (with 30m gate)"
+-        Write-Host "  ./scripts/rgpt.ps1 deploy-status <RunId>  # Wait + print gate decision for a throttled deploy run"
++        Write-Host "  ./scripts/mt.ps1 health                   # Preferred health snapshot command"
++        Write-Host "  ./scripts/mt.ps1 runs [--limit N]         # Preferred recent Self-Improve runs command"
++        Write-Host "  ./scripts/mt.ps1 logs                     # Preferred logs command"
++        Write-Host "  ./scripts/mt.ps1 logs --run <RunId>       # Preferred logs command for a specific run"
++        Write-Host "  ./scripts/mt.ps1 logs --limit N           # Preferred logs command for last N runs"
++        Write-Host "  ./scripts/mt.ps1 logs --last-failed       # Preferred logs command for the most recent failed run"
++        Write-Host "  ./scripts/mt.ps1 deploy [--wait]          # Preferred throttled Vercel deploy command"
++        Write-Host "  ./scripts/mt.ps1 deploy-status <RunId>    # Preferred gate decision command"
++        Write-Host "`nLegacy compatibility:"
++        Write-Host "  ./scripts/rgpt.ps1 <command>              # Still supported during phased migration"
+         return
+     }
+     default {
+         Write-Host "Unknown command: $Command" -ForegroundColor Red
+-        Write-Host "Try: ./scripts/rgpt.ps1 help"
++        Write-Host "Try: ./scripts/mt.ps1 help  (legacy: ./scripts/rgpt.ps1 help)"
+         exit 1
+     }
+ }
+diff --git a/scripts/rgpt_health.ps1 b/scripts/rgpt_health.ps1
+index f9c80d3a..9117a481 100644
+--- a/scripts/rgpt_health.ps1
++++ b/scripts/rgpt_health.ps1
+@@ -1,5 +1,5 @@
+ Write-Host "`n==========================="
+-Write-Host " RocketGPT Health Snapshot "
++Write-Host " Mishti AI Health Snapshot "
+ Write-Host "===========================`n"
+ 
+ # -------------------------------
+@@ -29,18 +29,19 @@ $latestRun = gh run list --repo "proteaNirav/rocketgpt" `
+   ConvertFrom-Json
+ 
+ if (-not $latestRun) {
+-    Write-Host "No runs found � health UNKNOWN" -ForegroundColor Yellow
++    Write-Host "No runs found � health UNKNOWN" -ForegroundColor Yellow
+     exit
+ }
+ 
+ $latest = $latestRun
+ 
+ if ($latest.status -eq "completed" -and $latest.conclusion -eq "success") {
+-    Write-Host "? RocketGPT Self-Improve is Healthy" -ForegroundColor Green
++    Write-Host "? Mishti AI Self-Improve is Healthy" -ForegroundColor Green
+ }
+ elseif ($latest.status -eq "completed" -and $latest.conclusion -ne "success") {
+-    Write-Host "? Self-Improve completed but failed � needs attention" -ForegroundColor Yellow
++    Write-Host "? Self-Improve completed but failed � needs attention" -ForegroundColor Yellow
+ }
+ else {
+     Write-Host "? Self-Improve is in a bad state" -ForegroundColor Red
+ }
++
+diff --git a/scripts/self-improve/README.md b/scripts/self-improve/README.md
+index b12b6bc3..37130927 100644
+--- a/scripts/self-improve/README.md
++++ b/scripts/self-improve/README.md
+@@ -2,7 +2,9 @@
+ 
+ ## Overview
+ 
+-These scripts support RocketGPT's self-improvement subsystem. All scripts follow strict safety guidelines to prevent unauthorized code modifications.
++These scripts support Mishti AI's self-improvement subsystem. All scripts follow strict safety guidelines to prevent unauthorized code modifications.
++
++For operator-facing CLI access, prefer `./scripts/mt.ps1` and treat `./scripts/rgpt.ps1` as a temporary compatibility alias.
+ 
+ **Last Audited**: 2025-12-23
+ **Safety Status**: ✅ All scripts safe for use
+@@ -245,3 +247,4 @@ node scripts/self-improve/execute.js
+ 
+ **Version**: 1.0
+ **Last Updated**: 2025-12-23
++
+diff --git a/scripts/self-improve/patcher.js b/scripts/self-improve/patcher.js
+index 1c5ce3cf..52e8882a 100644
+--- a/scripts/self-improve/patcher.js
++++ b/scripts/self-improve/patcher.js
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env node
+ 
+-// RocketGPT Self-Improve patcher (placeholder)
++// Mishti AI Self-Improve patcher (placeholder)
+ //
+ // Responsibility in v4 Core AI:
+ // - NEVER fail the workflow if there is no active improvement.
+@@ -31,4 +31,4 @@ console.log(JSON.stringify({
+ }, null, 2));
+ 
+ console.log("Patcher placeholder complete. No patches generated.");
+-process.exit(0);
+\ No newline at end of file
++process.exit(0);
+diff --git a/scripts/self-improve/write_status.js b/scripts/self-improve/write_status.js
+index 38229003..6d92a5ff 100644
+--- a/scripts/self-improve/write_status.js
++++ b/scripts/self-improve/write_status.js
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env node
+ 
+-// RocketGPT Self-Improve Status Writer (placeholder)
++// Mishti AI Self-Improve Status Writer (placeholder)
+ 
+ console.log("Self-Improve status writer (placeholder) payload:");
+ console.log(JSON.stringify({
+@@ -10,4 +10,4 @@ console.log(JSON.stringify({
+   status: process.env.SELF_IMPROVE_STATUS,
+   title: process.env.SELF_IMPROVE_TITLE,
+   summary: process.env.SELF_IMPROVE_SUMMARY
+-}, null, 2));
+\ No newline at end of file
++}, null, 2));
+diff --git a/scripts/ui-healer/ui-healer.js b/scripts/ui-healer/ui-healer.js
+index 59f4bf71..ad6d5a8a 100644
+--- a/scripts/ui-healer/ui-healer.js
++++ b/scripts/ui-healer/ui-healer.js
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env node
+ 
+-// Simple UI healer for RocketGPT v3_full
++// Simple UI healer for the Mishti AI legacy v3_full surface
+ 
+ const { execSync } = require("node:child_process");
+ const process = require("node:process");
+@@ -61,7 +61,7 @@ async function main() {
+ 
+   // 2) Build a compact prompt with opinionated UI rules
+   const prompt = `
+-You are RocketGPT's UI Healer. You review diffs of the Next.js app in "rocketgpt_v3_full/webapp/next" and suggest minimal improvements.
++You are Mishti AI's UI Healer. You review diffs of the Next.js app in "rocketgpt_v3_full/webapp/next" and suggest minimal improvements.
+ 
+ Rules:
+ - Keep all business logic and data flow as-is.
+@@ -98,7 +98,7 @@ Output format (very important):
+     messages: [
+       {
+         role: "system",
+-        content: "You are a senior frontend engineer and UI healer for RocketGPT."
++        content: "You are a senior frontend engineer and UI healer for Mishti AI."
+       },
+       { role: "user", content: prompt }
+     ]
+@@ -126,7 +126,7 @@ Output format (very important):
+   if (GITHUB_TOKEN && GITHUB_REPOSITORY) {
+     const commentBody = {
+       body: [
+-        "### 🤖 RocketGPT UI Healer Report",
++        "### 🤖 Mishti AI UI Healer Report",
+         "",
+         content,
+         "",
+diff --git a/src/core/cognitive-mesh/__tests__/hybrid-heartbeat.unit.test.ts b/src/core/cognitive-mesh/__tests__/hybrid-heartbeat.unit.test.ts
+index 6c1bda97..89bf4fe9 100644
+--- a/src/core/cognitive-mesh/__tests__/hybrid-heartbeat.unit.test.ts
++++ b/src/core/cognitive-mesh/__tests__/hybrid-heartbeat.unit.test.ts
+@@ -6,6 +6,7 @@ import { join } from "node:path";
+ import { runHybridHeartbeatMonitor } from "../runtime/hybrid-heartbeat";
+ import { runSingleManualHeartbeat } from "../runtime/manual-heartbeat-runner";
+ import { ExecutionLedger } from "../runtime/execution-ledger";
++import { RuntimeGuard } from "../runtime/runtime-guard";
+ 
+ interface Fixture {
+   root: string;
+@@ -194,6 +195,97 @@ test("transition from healthy to degraded causes a ledger event", async () => {
+   assert.equal(await countJsonlLines(fixture.ledgerPath), 1);
+ });
+ 
++test("transition from healthy to stale and back to healthy emits transition-aware ledger events", async () => {
++  const fixture = await createFixture(true);
++
++  const first = await runHybridHeartbeatMonitor({
++    runtimeId: "rgpt-d20-transition-stale",
++    now: new Date("2026-03-09T03:30:00.000Z"),
++    env: fixture.env,
++    killSwitchPath: fixture.killSwitchPath,
++    statePath: fixture.statePath,
++    ledgerPath: fixture.ledgerPath,
++    timelinePath: fixture.timelinePath,
++    staleAfterSeconds: 30,
++  });
++
++  const stale = await runHybridHeartbeatMonitor({
++    runtimeId: "rgpt-d20-transition-stale",
++    now: new Date("2026-03-09T03:31:10.000Z"),
++    env: fixture.env,
++    killSwitchPath: fixture.killSwitchPath,
++    statePath: fixture.statePath,
++    ledgerPath: fixture.ledgerPath,
++    timelinePath: fixture.timelinePath,
++    staleAfterSeconds: 30,
++  });
++
++  const recovered = await runHybridHeartbeatMonitor({
++    runtimeId: "rgpt-d20-transition-stale",
++    now: new Date("2026-03-09T03:31:20.000Z"),
++    env: fixture.env,
++    killSwitchPath: fixture.killSwitchPath,
++    statePath: fixture.statePath,
++    ledgerPath: fixture.ledgerPath,
++    timelinePath: fixture.timelinePath,
++    staleAfterSeconds: 30,
++  });
++
++  assert.equal(first.report.heartbeatState, "healthy");
++  assert.equal(stale.report.heartbeatState, "stale");
++  assert.equal(stale.report.transitionDetected, true);
++  assert.equal(stale.report.ledgerEventWritten, true);
++  assert.equal(recovered.report.heartbeatState, "healthy");
++  assert.equal(recovered.report.transitionDetected, true);
++  assert.equal(recovered.report.ledgerEventWritten, true);
++  assert.equal(await countJsonlLines(fixture.ledgerPath), 2);
++});
++
++test("blocked by policy carries alert suppression hint", async () => {
++  const fixture = await createFixture(false);
++
++  const result = await runHybridHeartbeatMonitor({
++    runtimeId: "rgpt-d20-policy-hint",
++    now: new Date("2026-03-09T03:40:00.000Z"),
++    env: fixture.env,
++    killSwitchPath: fixture.killSwitchPath,
++    statePath: fixture.statePath,
++    ledgerPath: fixture.ledgerPath,
++    timelinePath: fixture.timelinePath,
++  });
++
++  assert.equal(result.report.heartbeatState, "blocked");
++  assert.equal(result.report.shouldAlert, true);
++  assert.equal(result.report.policyBlocked, true);
++  assert.equal(result.report.alertSuppressedByPolicy, true);
++});
++
++test("critical subsystem failure yields failed heartbeat state", async () => {
++  const fixture = await createFixture(true);
++  const originalEvaluate = RuntimeGuard.prototype.evaluate;
++  RuntimeGuard.prototype.evaluate = function patchedEvaluate() {
++    throw new Error("forced runtime guard failure");
++  };
++
++  try {
++    const result = await runHybridHeartbeatMonitor({
++      runtimeId: "rgpt-d20-failed",
++      now: new Date("2026-03-09T03:45:00.000Z"),
++      env: fixture.env,
++      killSwitchPath: fixture.killSwitchPath,
++      statePath: fixture.statePath,
++      ledgerPath: fixture.ledgerPath,
++      timelinePath: fixture.timelinePath,
++    });
++
++    assert.equal(result.report.heartbeatState, "failed");
++    assert.equal(result.report.shouldAlert, true);
++    assert.equal(result.report.ledgerEventWritten, true);
++  } finally {
++    RuntimeGuard.prototype.evaluate = originalEvaluate;
++  }
++});
++
+ test("manual heartbeat still works and remains ledger-visible", async () => {
+   const fixture = await createFixture(true);
+   const ledger = new ExecutionLedger("", "");
+diff --git a/src/core/cognitive-mesh/__tests__/runtime-evolution-signals.unit.test.ts b/src/core/cognitive-mesh/__tests__/runtime-evolution-signals.unit.test.ts
+index e6ade37f..bb8939b5 100644
+--- a/src/core/cognitive-mesh/__tests__/runtime-evolution-signals.unit.test.ts
++++ b/src/core/cognitive-mesh/__tests__/runtime-evolution-signals.unit.test.ts
+@@ -1,6 +1,6 @@
+ import { test } from "node:test";
+ import * as assert from "node:assert/strict";
+-import { mkdtemp, mkdir, readFile } from "node:fs/promises";
++import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+ import { join } from "node:path";
+ import { ExecutionLedger } from "../runtime/execution-ledger";
+@@ -9,6 +9,7 @@ import { RuntimeLearningSignalExtractor } from "../runtime/evolution-signals/lea
+ import { RuntimeImprovementCandidateDetector } from "../runtime/evolution-signals/improvement-candidate-detector";
+ import { RuntimeEvolutionSignalsOrchestrator } from "../runtime/evolution-signals/runtime-evolution-signals-orchestrator";
+ import { RuntimeEvolutionSignalsStateRepository } from "../runtime/evolution-signals/runtime-evolution-signals-state-repository";
++import { RuntimeEvolutionSignalsAggregator } from "../runtime/evolution-signals/healing-telemetry-aggregator";
+ import type { RuntimeEvolutionEvidenceSignal } from "../runtime/evolution-signals/runtime-evolution-signals.types";
+ import { RuntimeRepairOrchestrator } from "../runtime/repair/runtime-repair-orchestrator";
+ import { RuntimeRepairLearningOrchestrator } from "../runtime/repair-learning/runtime-repair-learning-orchestrator";
+@@ -384,3 +385,46 @@ test("unchanged healing assessment suppression behavior", async () => {
+   const stateRaw = JSON.parse(await readFile(fixture.evolutionStatePath, "utf8")) as Record<string, unknown>;
+   assert.equal(stateRaw.schemaVersion, "rgpt.runtime_evolution_signals_state.v1");
+ });
++
++test("evolution aggregator ingests hybrid/manual heartbeat intent from runtime.guard.evaluated entries", async () => {
++  const fixture = await createFixture();
++  await writeFile(
++    fixture.ledgerPath,
++    `${JSON.stringify({
++      entryId: "exec_hb_evolution",
++      timestamp: "2026-03-09T17:40:00.000Z",
++      category: "runtime",
++      eventType: "runtime.guard.evaluated",
++      action: "runtime.heartbeat.manual.single",
++      source: "manual_heartbeat_runner",
++      target: "system_heartbeat",
++      ids: { requestId: "hb-evo-compat" },
++      mode: "normal",
++      status: "completed",
++      metadata: {
++        heartbeat: {
++          runtime_id: "rgpt-evolution-test",
++        },
++      },
++    })}\n`,
++    "utf8"
++  );
++
++  const signals = await new RuntimeEvolutionSignalsAggregator().collect(
++    {
++      enabled: true,
++      lookbackMs: 3_600_000,
++      signalCooldownMs: 60_000,
++      candidateCooldownMs: 60_000,
++      maxRecentSignals: 30,
++      maxActiveCandidates: 20,
++      maxEvidenceEvents: 20,
++      statePath: fixture.evolutionStatePath,
++      ledgerPath: fixture.ledgerPath,
++    },
++    new Date("2026-03-09T17:40:30.000Z")
++  );
++
++  assert.equal(signals.length, 1);
++  assert.equal(signals[0]!.eventType, "runtime.heartbeat");
++});
+diff --git a/src/core/cognitive-mesh/__tests__/runtime-stability.unit.test.ts b/src/core/cognitive-mesh/__tests__/runtime-stability.unit.test.ts
+index 428575ce..6e4f8b11 100644
+--- a/src/core/cognitive-mesh/__tests__/runtime-stability.unit.test.ts
++++ b/src/core/cognitive-mesh/__tests__/runtime-stability.unit.test.ts
+@@ -1,6 +1,6 @@
+ import { test } from "node:test";
+ import * as assert from "node:assert/strict";
+-import { mkdtemp, mkdir, readFile } from "node:fs/promises";
++import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+ import { join } from "node:path";
+ import { ExecutionLedger } from "../runtime/execution-ledger";
+@@ -9,6 +9,7 @@ import { RuntimeOscillationDetector } from "../runtime/stability/runtime-oscilla
+ import { RuntimeDegradationPolicyEngine } from "../runtime/stability/runtime-degradation-policy-engine";
+ import { RuntimeStabilityOrchestrator } from "../runtime/stability/runtime-stability-orchestrator";
+ import { RuntimeStabilityStateRepository } from "../runtime/stability/runtime-stability-state-repository";
++import { RuntimeStabilitySignalAggregator } from "../runtime/stability/runtime-stability-signal-aggregator";
+ import type { RuntimeStabilitySignal } from "../runtime/stability/runtime-stability.types";
+ import { RuntimeRepairOrchestrator } from "../runtime/repair/runtime-repair-orchestrator";
+ import { RuntimeRepairLearningOrchestrator } from "../runtime/repair-learning/runtime-repair-learning-orchestrator";
+@@ -168,6 +169,49 @@ test("heartbeat flap detection", () => {
+   assert.equal(result.patterns.includes("heartbeat_recovery_flap"), true);
+ });
+ 
++test("stability aggregator ingests hybrid/manual heartbeat intent from runtime.guard.evaluated entries", async () => {
++  const fixture = await createFixture();
++  await writeFile(
++    fixture.ledgerPath,
++    `${JSON.stringify({
++      entryId: "exec_hb_stability",
++      timestamp: "2026-03-09T15:00:00.000Z",
++      category: "runtime",
++      eventType: "runtime.guard.evaluated",
++      action: "runtime.heartbeat.hybrid.monitor",
++      source: "hybrid_heartbeat",
++      target: "system_heartbeat",
++      ids: { requestId: "hb-stab-1" },
++      mode: "normal",
++      status: "evaluated",
++      metadata: {
++        heartbeatHybrid: {
++          runtimeId: "rgpt-stability-test",
++          state: "healthy",
++        },
++      },
++    })}\n`,
++    "utf8"
++  );
++
++  const signals = await new RuntimeStabilitySignalAggregator().collect(
++    {
++      enabled: true,
++      lookbackMs: 3_600_000,
++      oscillationThreshold: 2,
++      multiTargetThreshold: 2,
++      evaluationCooldownMs: 60_000,
++      maxEvidenceEvents: 20,
++      statePath: fixture.stabilityStatePath,
++      ledgerPath: fixture.ledgerPath,
++    },
++    new Date("2026-03-09T15:00:30.000Z")
++  );
++
++  assert.equal(signals.length, 1);
++  assert.equal(signals[0]!.eventType, "runtime.heartbeat");
++});
++
+ test("clustered multi-target instability detection", () => {
+   const detector = new RuntimeOscillationDetector();
+   const result = detector.detect({
+diff --git a/src/core/cognitive-mesh/__tests__/runtime-status.unit.test.ts b/src/core/cognitive-mesh/__tests__/runtime-status.unit.test.ts
+index a8457bb2..15ebe408 100644
+--- a/src/core/cognitive-mesh/__tests__/runtime-status.unit.test.ts
++++ b/src/core/cognitive-mesh/__tests__/runtime-status.unit.test.ts
+@@ -10,6 +10,7 @@ interface FixturePaths {
+   ledgerPath: string;
+   timelinePath: string;
+   killSwitchPath: string;
++  heartbeatStatePath: string;
+ }
+ 
+ async function createFixtureRoot(): Promise<FixturePaths> {
+@@ -23,6 +24,7 @@ async function createFixtureRoot(): Promise<FixturePaths> {
+     ledgerPath: join(meshDir, "execution-ledger.jsonl"),
+     timelinePath: join(meshDir, "runtime-timeline.jsonl"),
+     killSwitchPath: join(runtimeDir, "kill-switch.json"),
++    heartbeatStatePath: join(runtimeDir, "heartbeat-state.json"),
+   };
+ }
+ 
+@@ -93,6 +95,7 @@ test("runtime status handles missing ledger and timeline files", async () => {
+     env: { RGPT_HEARTBEAT_ENABLED: "true" },
+     ledgerPath: fixture.ledgerPath,
+     timelinePath: fixture.timelinePath,
++    heartbeatStatePath: fixture.heartbeatStatePath,
+     killSwitchPath: fixture.killSwitchPath,
+   });
+ 
+@@ -113,6 +116,7 @@ test("heartbeat status is never_seen when enabled but no heartbeat exists", asyn
+     env: { RGPT_HEARTBEAT_ENABLED: "true" },
+     ledgerPath: fixture.ledgerPath,
+     timelinePath: fixture.timelinePath,
++    heartbeatStatePath: fixture.heartbeatStatePath,
+     killSwitchPath: fixture.killSwitchPath,
+   });
+ 
+@@ -131,6 +135,7 @@ test("heartbeat status is healthy when recent heartbeat exists", async () => {
+     env: { RGPT_HEARTBEAT_ENABLED: "true" },
+     ledgerPath: fixture.ledgerPath,
+     timelinePath: fixture.timelinePath,
++    heartbeatStatePath: fixture.heartbeatStatePath,
+     killSwitchPath: fixture.killSwitchPath,
+   });
+ 
+@@ -149,6 +154,7 @@ test("heartbeat status is disabled when env or file gate blocks", async () => {
+     env: { RGPT_HEARTBEAT_ENABLED: "false" },
+     ledgerPath: fixture.ledgerPath,
+     timelinePath: fixture.timelinePath,
++    heartbeatStatePath: fixture.heartbeatStatePath,
+     killSwitchPath: fixture.killSwitchPath,
+   });
+ 
+@@ -191,6 +197,7 @@ test("ledger summary parsing returns entry counts and failure counts", async ()
+     env: { RGPT_HEARTBEAT_ENABLED: "true" },
+     ledgerPath: fixture.ledgerPath,
+     timelinePath: fixture.timelinePath,
++    heartbeatStatePath: fixture.heartbeatStatePath,
+     killSwitchPath: fixture.killSwitchPath,
+   });
+ 
+@@ -214,6 +221,7 @@ test("timeline summary parsing returns last action and type", async () => {
+     env: { RGPT_HEARTBEAT_ENABLED: "true" },
+     ledgerPath: fixture.ledgerPath,
+     timelinePath: fixture.timelinePath,
++    heartbeatStatePath: fixture.heartbeatStatePath,
+     killSwitchPath: fixture.killSwitchPath,
+   });
+ 
+@@ -239,6 +247,7 @@ test("summary classification reports degraded on invalid artifacts", async () =>
+     env: { RGPT_HEARTBEAT_ENABLED: "true" },
+     ledgerPath: fixture.ledgerPath,
+     timelinePath: fixture.timelinePath,
++    heartbeatStatePath: fixture.heartbeatStatePath,
+     killSwitchPath: fixture.killSwitchPath,
+   });
+ 
+@@ -262,6 +271,7 @@ test("runtime status collection is read-only for runtime artifacts", async () =>
+     env: { RGPT_HEARTBEAT_ENABLED: "true" },
+     ledgerPath: fixture.ledgerPath,
+     timelinePath: fixture.timelinePath,
++    heartbeatStatePath: fixture.heartbeatStatePath,
+     killSwitchPath: fixture.killSwitchPath,
+     deepVerification: true,
+   });
+@@ -276,3 +286,37 @@ test("runtime status collection is read-only for runtime artifacts", async () =>
+   assert.equal(beforeLedgerContents, afterLedgerContents);
+   assert.equal(beforeTimelineContents, afterTimelineContents);
+ });
++
++test("runtime status falls back to heartbeat-state when ledger/timeline heartbeat evidence is absent", async () => {
++  const fixture = await createFixtureRoot();
++  await writeKillSwitch(fixture.killSwitchPath, true);
++  await writeJsonl(fixture.ledgerPath, []);
++  await writeJsonl(fixture.timelinePath, []);
++  await writeFile(
++    fixture.heartbeatStatePath,
++    JSON.stringify(
++      {
++        runtimeId: "rgpt-local-fallback",
++        lastEvaluatedAt: "2026-03-08T10:00:00.000Z",
++        lastHealthyAt: "2026-03-08T10:00:00.000Z",
++        currentState: "healthy",
++      },
++      null,
++      2
++    ),
++    "utf8"
++  );
++
++  const report = await collectRuntimeStatus({
++    now: new Date("2026-03-08T10:00:30.000Z"),
++    env: { RGPT_HEARTBEAT_ENABLED: "true" },
++    ledgerPath: fixture.ledgerPath,
++    timelinePath: fixture.timelinePath,
++    heartbeatStatePath: fixture.heartbeatStatePath,
++    killSwitchPath: fixture.killSwitchPath,
++  });
++
++  assert.equal(report.heartbeat.status, "healthy");
++  assert.equal(report.heartbeat.lastSeenAt, "2026-03-08T10:00:00.000Z");
++  assert.equal(report.heartbeat.recencySource, "heartbeat_state");
++});
+diff --git a/src/core/cognitive-mesh/runtime/evolution-signals/healing-telemetry-aggregator.ts b/src/core/cognitive-mesh/runtime/evolution-signals/healing-telemetry-aggregator.ts
+index b93ea8de..202d94e2 100644
+--- a/src/core/cognitive-mesh/runtime/evolution-signals/healing-telemetry-aggregator.ts
++++ b/src/core/cognitive-mesh/runtime/evolution-signals/healing-telemetry-aggregator.ts
+@@ -46,14 +46,30 @@ function normalizeTargetType(value: unknown): RuntimeEvolutionEvidenceSignal["ta
+   return "runtime";
+ }
+ 
+-function toSignal(entry: ExecutionLedgerEntry): RuntimeEvolutionEvidenceSignal | null {
+-  if (!EVOLUTION_RELEVANT_EVENTS.has(entry.eventType)) {
+-    return null;
++function isHeartbeatIntent(entry: ExecutionLedgerEntry, metadata: Record<string, unknown>): boolean {
++  if (entry.eventType === "runtime.heartbeat") {
++    return true;
+   }
++  const action = toText(entry.action, "");
++  if (action.startsWith("runtime.heartbeat")) {
++    return true;
++  }
++  return (
++    Object.prototype.hasOwnProperty.call(metadata, "heartbeat") ||
++    Object.prototype.hasOwnProperty.call(metadata, "heartbeatHybrid") ||
++    Object.prototype.hasOwnProperty.call(metadata, "heartbeatManual")
++  );
++}
++
++function toSignal(entry: ExecutionLedgerEntry): RuntimeEvolutionEvidenceSignal | null {
+   const metadata =
+     entry.metadata && typeof entry.metadata === "object" && !Array.isArray(entry.metadata)
+       ? (entry.metadata as Record<string, unknown>)
+       : {};
++  const heartbeatIntent = isHeartbeatIntent(entry, metadata);
++  if (!EVOLUTION_RELEVANT_EVENTS.has(entry.eventType) && !heartbeatIntent) {
++    return null;
++  }
+ 
+   const targetType = normalizeTargetType(metadata.targetType);
+   const targetId = toText(metadata.targetId, entry.target);
+@@ -64,7 +80,7 @@ function toSignal(entry: ExecutionLedgerEntry): RuntimeEvolutionEvidenceSignal |
+   return {
+     eventId: entry.entryId,
+     timestamp: entry.timestamp,
+-    eventType: entry.eventType,
++    eventType: heartbeatIntent ? "runtime.heartbeat" : entry.eventType,
+     targetType,
+     targetId,
+     reasonCodes,
+diff --git a/src/core/cognitive-mesh/runtime/hybrid-heartbeat.ts b/src/core/cognitive-mesh/runtime/hybrid-heartbeat.ts
+index f4ea2fe2..6418fd64 100644
+--- a/src/core/cognitive-mesh/runtime/hybrid-heartbeat.ts
++++ b/src/core/cognitive-mesh/runtime/hybrid-heartbeat.ts
+@@ -62,6 +62,8 @@ interface HeartbeatStateSurface {
+   anomalyDetected: boolean;
+   ledgerEventWritten: boolean;
+   shouldAlert: boolean;
++  policyBlocked: boolean;
++  alertSuppressedByPolicy: boolean;
+ }
+ 
+ export interface HybridHeartbeatEvaluateInput {
+@@ -90,6 +92,8 @@ export interface HybridHeartbeatMonitorReport {
+   fileEnabled: boolean;
+   ledgerEventWritten: boolean;
+   shouldAlert: boolean;
++  policyBlocked: boolean;
++  alertSuppressedByPolicy: boolean;
+   notes: string[];
+ }
+ 
+@@ -151,6 +155,13 @@ function shouldAlert(state: HeartbeatState): boolean {
+   return state === "blocked" || state === "degraded" || state === "stale" || state === "failed" || state === "unknown";
+ }
+ 
++function isPolicyBlocked(decision: HeartbeatGateDecision): boolean {
++  if (decision.allowed) {
++    return false;
++  }
++  return decision.reasonCodes.includes("ENV_DISABLED") || decision.reasonCodes.includes("FILE_DISABLED");
++}
++
+ function shouldWriteLedgerEvent(input: {
+   source: HeartbeatSource;
+   transitionDetected: boolean;
+@@ -235,6 +246,8 @@ async function readStateFile(path: string): Promise<HeartbeatStateSurface | null
+       anomalyDetected: value.anomalyDetected === true,
+       ledgerEventWritten: value.ledgerEventWritten === true,
+       shouldAlert: value.shouldAlert === true,
++      policyBlocked: value.policyBlocked === true,
++      alertSuppressedByPolicy: value.alertSuppressedByPolicy === true,
+     };
+   } catch {
+     return null;
+@@ -484,6 +497,7 @@ export async function evaluateHybridHeartbeat(input: HybridHeartbeatEvaluateInpu
+ 
+   const subsystemHealth = summarizeChecks(checks);
+   const lastHealthyAt = currentState === "healthy" ? evaluatedAt : previous?.lastHealthyAt ?? null;
++  const policyBlocked = currentState === "blocked" && isPolicyBlocked(decision);
+ 
+   if (ledgerEventWritten) {
+     const ledger =
+@@ -528,6 +542,8 @@ export async function evaluateHybridHeartbeat(input: HybridHeartbeatEvaluateInpu
+     anomalyDetected,
+     ledgerEventWritten,
+     shouldAlert: shouldAlert(currentState),
++    policyBlocked,
++    alertSuppressedByPolicy: policyBlocked,
+   };
+ 
+   await writeStateFile(statePath, state);
+@@ -543,6 +559,8 @@ export async function evaluateHybridHeartbeat(input: HybridHeartbeatEvaluateInpu
+       fileEnabled: decision.fileEnabled,
+       ledgerEventWritten,
+       shouldAlert: state.shouldAlert,
++      policyBlocked: state.policyBlocked,
++      alertSuppressedByPolicy: state.alertSuppressedByPolicy,
+       notes,
+     },
+     decision,
+diff --git a/src/core/cognitive-mesh/runtime/runtime-status.ts b/src/core/cognitive-mesh/runtime/runtime-status.ts
+index 17433aec..aa84e3ec 100644
+--- a/src/core/cognitive-mesh/runtime/runtime-status.ts
++++ b/src/core/cognitive-mesh/runtime/runtime-status.ts
+@@ -8,6 +8,7 @@ import { readHeartbeatEnvEnabled, readHeartbeatRuntimeKillSwitch } from "./heart
+ const DEFAULT_LEDGER_PATH = ".rocketgpt/cognitive-mesh/execution-ledger.jsonl";
+ const DEFAULT_TIMELINE_PATH = ".rocketgpt/cognitive-mesh/runtime-timeline.jsonl";
+ const DEFAULT_KILL_SWITCH_PATH = ".rocketgpt/runtime/kill-switch.json";
++const DEFAULT_HEARTBEAT_STATE_PATH = ".rocketgpt/runtime/heartbeat-state.json";
+ const DEFAULT_HEARTBEAT_HEALTHY_THRESHOLD_SECONDS = 90;
+ const DEFAULT_RECENT_WINDOW_HOURS = 24;
+ 
+@@ -57,6 +58,7 @@ interface RuntimeHeartbeatSummary {
+   killSwitchFileState: "loaded" | "missing" | "invalid";
+   fileEnabled: boolean;
+   lastSeenAt: string | null;
++  recencySource: "ledger_timeline" | "heartbeat_state" | "none";
+   ageSeconds: number | null;
+   status: HeartbeatStatus;
+ }
+@@ -104,6 +106,7 @@ export interface RuntimeStatusOptions {
+   hostname?: string;
+   ledgerPath?: string;
+   timelinePath?: string;
++  heartbeatStatePath?: string;
+   killSwitchPath?: string;
+   deepVerification?: boolean;
+   includeDeepDetails?: boolean;
+@@ -112,6 +115,12 @@ export interface RuntimeStatusOptions {
+   recentWindowHours?: number;
+ }
+ 
++interface HeartbeatStateReadResult {
++  exists: boolean;
++  lastEvaluatedAt: string | null;
++  lastHealthyAt: string | null;
++}
++
+ function toNonEmptyText(value: unknown): string | null {
+   if (typeof value !== "string") {
+     return null;
+@@ -181,6 +190,42 @@ async function readJsonlFile(filePath: string): Promise<JsonlReadResult> {
+   };
+ }
+ 
++async function readHeartbeatStateFile(path: string): Promise<HeartbeatStateReadResult> {
++  try {
++    await access(path, constants.F_OK);
++  } catch {
++    return {
++      exists: false,
++      lastEvaluatedAt: null,
++      lastHealthyAt: null,
++    };
++  }
++
++  try {
++    const raw = await readFile(path, "utf8");
++    const parsed = JSON.parse(raw) as unknown;
++    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
++      return {
++        exists: true,
++        lastEvaluatedAt: null,
++        lastHealthyAt: null,
++      };
++    }
++    const value = parsed as Record<string, unknown>;
++    return {
++      exists: true,
++      lastEvaluatedAt: toNonEmptyText(value.lastEvaluatedAt),
++      lastHealthyAt: toNonEmptyText(value.lastHealthyAt),
++    };
++  } catch {
++    return {
++      exists: true,
++      lastEvaluatedAt: null,
++      lastHealthyAt: null,
++    };
++  }
++}
++
+ function isHeartbeatRecord(record: Record<string, unknown>): boolean {
+   const action = toNonEmptyText(record.action);
+   const target = toNonEmptyText(record.target);
+@@ -429,6 +474,7 @@ export async function collectRuntimeStatus(options: RuntimeStatusOptions = {}):
+   const hostName = options.hostname ?? osHostname();
+   const ledgerPath = options.ledgerPath ?? env.COGNITIVE_MESH_EXECUTION_LEDGER_JSONL_PATH ?? DEFAULT_LEDGER_PATH;
+   const timelinePath = options.timelinePath ?? env.COGNITIVE_MESH_RUNTIME_TIMELINE_JSONL_PATH ?? DEFAULT_TIMELINE_PATH;
++  const heartbeatStatePath = options.heartbeatStatePath ?? env.RGPT_HEARTBEAT_STATE_PATH ?? DEFAULT_HEARTBEAT_STATE_PATH;
+   const killSwitchPath = options.killSwitchPath ?? env.RGPT_HEARTBEAT_KILL_SWITCH_PATH ?? DEFAULT_KILL_SWITCH_PATH;
+   const healthyThresholdSeconds = options.heartbeatHealthyThresholdSeconds ?? DEFAULT_HEARTBEAT_HEALTHY_THRESHOLD_SECONDS;
+   const recentWindowHours = options.recentWindowHours ?? DEFAULT_RECENT_WINDOW_HOURS;
+@@ -463,11 +509,37 @@ export async function collectRuntimeStatus(options: RuntimeStatusOptions = {}):
+ 
+   let lastHeartbeatAt: string | null = null;
+   let lastHeartbeatMs = -1;
++  let heartbeatRecencySource: RuntimeHeartbeatSummary["recencySource"] = "none";
+   for (const candidate of heartbeatCandidates) {
+     const ts = parseIsoTimestamp(candidate);
+     if (ts != null && ts > lastHeartbeatMs) {
+       lastHeartbeatMs = ts;
+       lastHeartbeatAt = candidate;
++      heartbeatRecencySource = "ledger_timeline";
++    }
++  }
++
++  const shouldConsultHeartbeatState =
++    lastHeartbeatAt == null ||
++    (lastHeartbeatMs > 0 &&
++      Math.max(0, Math.floor((now.getTime() - lastHeartbeatMs) / 1000)) > healthyThresholdSeconds);
++
++  if (shouldConsultHeartbeatState) {
++    const heartbeatStateRead = await readHeartbeatStateFile(heartbeatStatePath);
++    const heartbeatStateCandidates = [
++      heartbeatStateRead.lastEvaluatedAt,
++      heartbeatStateRead.lastHealthyAt,
++    ];
++    for (const candidate of heartbeatStateCandidates) {
++      if (!candidate) {
++        continue;
++      }
++      const ts = parseIsoTimestamp(candidate);
++      if (ts != null && ts > lastHeartbeatMs) {
++        lastHeartbeatMs = ts;
++        lastHeartbeatAt = candidate;
++        heartbeatRecencySource = "heartbeat_state";
++      }
+     }
+   }
+ 
+@@ -559,6 +631,7 @@ export async function collectRuntimeStatus(options: RuntimeStatusOptions = {}):
+     killSwitchFileState: killSwitch.fileState,
+     fileEnabled: killSwitch.config.heartbeat,
+     lastSeenAt: lastHeartbeatAt,
++    recencySource: heartbeatRecencySource,
+     ageSeconds: heartbeatStatus.ageSeconds,
+     status: heartbeatStatus.status,
+   };
+diff --git a/src/core/cognitive-mesh/runtime/stability/runtime-stability-signal-aggregator.ts b/src/core/cognitive-mesh/runtime/stability/runtime-stability-signal-aggregator.ts
+index eddd0281..ee83ca3e 100644
+--- a/src/core/cognitive-mesh/runtime/stability/runtime-stability-signal-aggregator.ts
++++ b/src/core/cognitive-mesh/runtime/stability/runtime-stability-signal-aggregator.ts
+@@ -37,14 +37,30 @@ function normalizeTargetType(value: unknown): RuntimeStabilitySignal["targetType
+   return "runtime";
+ }
+ 
+-function toSignal(entry: ExecutionLedgerEntry): RuntimeStabilitySignal | null {
+-  if (!STABILITY_RELEVANT_EVENTS.has(entry.eventType)) {
+-    return null;
++function isHeartbeatIntent(entry: ExecutionLedgerEntry, metadata: Record<string, unknown>): boolean {
++  if (entry.eventType === "runtime.heartbeat") {
++    return true;
+   }
++  const action = toText(entry.action, "");
++  if (action.startsWith("runtime.heartbeat")) {
++    return true;
++  }
++  return (
++    Object.prototype.hasOwnProperty.call(metadata, "heartbeat") ||
++    Object.prototype.hasOwnProperty.call(metadata, "heartbeatHybrid") ||
++    Object.prototype.hasOwnProperty.call(metadata, "heartbeatManual")
++  );
++}
++
++function toSignal(entry: ExecutionLedgerEntry): RuntimeStabilitySignal | null {
+   const metadata =
+     entry.metadata && typeof entry.metadata === "object" && !Array.isArray(entry.metadata)
+       ? (entry.metadata as Record<string, unknown>)
+       : {};
++  const heartbeatIntent = isHeartbeatIntent(entry, metadata);
++  if (!STABILITY_RELEVANT_EVENTS.has(entry.eventType) && !heartbeatIntent) {
++    return null;
++  }
+ 
+   const targetType = normalizeTargetType(metadata.targetType);
+   const targetId = toText(metadata.targetId, entry.target);
+@@ -55,7 +71,7 @@ function toSignal(entry: ExecutionLedgerEntry): RuntimeStabilitySignal | null {
+   return {
+     eventId: entry.entryId,
+     timestamp: entry.timestamp,
+-    eventType: entry.eventType,
++    eventType: heartbeatIntent ? "runtime.heartbeat" : entry.eventType,
+     targetType,
+     targetId,
+     reasonCodes,

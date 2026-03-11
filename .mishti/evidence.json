@@ -1,0 +1,145 @@
+{
+  "entries": [
+    {
+      "evidenceId": "02fb48f3-5650-4dce-90bb-6528cc465531-evidence",
+      "taskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+      "builderId": "doc-builder",
+      "action": "generate-document",
+      "resultStatus": "completed",
+      "outputArtifactPath": "docs/generated/first-life.md",
+      "timestamp": "2026-03-11T12:35:36.373Z",
+      "lineage": {
+        "sourceTaskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+        "upstreamRef": "02fb48f3-5650-4dce-90bb-6528cc465531-doc-builder-assignment"
+      },
+      "governance": {
+        "decisionClass": "bounded_allow",
+        "policyRefs": [
+          "mishti.first-life.governance",
+          "mishti.runtime.sandbox.first-life"
+        ]
+      },
+      "runtime": {
+        "surface": "sandbox_runner",
+        "conditionedTrust": "guarded"
+      },
+      "attachment": {
+        "attachmentId": "02fb48f3-5650-4dce-90bb-6528cc465531-attachment",
+        "taskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+        "actorId": "doc-builder",
+        "resultSummary": "bounded document write completed at docs/generated/first-life.md",
+        "evidence": [
+          {
+            "eventType": "builder_result",
+            "evidenceRef": "docs/generated/first-life.md",
+            "payloadHash": "a211df167b2b68a6ef2d7241943d50c47f2c64fb1f0f80555e37134a42b11829"
+          }
+        ],
+        "lineage": {
+          "sourceTaskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+          "upstreamRef": "02fb48f3-5650-4dce-90bb-6528cc465531-doc-builder-assignment"
+        },
+        "validation": {
+          "validationState": "satisfied",
+          "validatorRefs": [
+            "mishti.first-life.local-verifier"
+          ]
+        }
+      }
+    },
+    {
+      "evidenceId": "02fb48f3-5650-4dce-90bb-6528cc465531-evidence",
+      "taskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+      "builderId": "doc-builder",
+      "action": "generate-document",
+      "resultStatus": "completed",
+      "outputArtifactPath": "docs/generated/first-life.md",
+      "timestamp": "2026-03-11T12:35:36.940Z",
+      "lineage": {
+        "sourceTaskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+        "upstreamRef": "02fb48f3-5650-4dce-90bb-6528cc465531-doc-builder-assignment"
+      },
+      "governance": {
+        "decisionClass": "bounded_allow",
+        "policyRefs": [
+          "mishti.first-life.governance",
+          "mishti.runtime.sandbox.first-life"
+        ]
+      },
+      "runtime": {
+        "surface": "sandbox_runner",
+        "conditionedTrust": "guarded"
+      },
+      "attachment": {
+        "attachmentId": "02fb48f3-5650-4dce-90bb-6528cc465531-attachment",
+        "taskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+        "actorId": "doc-builder",
+        "resultSummary": "bounded document write completed at docs/generated/first-life.md",
+        "evidence": [
+          {
+            "eventType": "builder_result",
+            "evidenceRef": "docs/generated/first-life.md",
+            "payloadHash": "a211df167b2b68a6ef2d7241943d50c47f2c64fb1f0f80555e37134a42b11829"
+          }
+        ],
+        "lineage": {
+          "sourceTaskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+          "upstreamRef": "02fb48f3-5650-4dce-90bb-6528cc465531-doc-builder-assignment"
+        },
+        "validation": {
+          "validationState": "satisfied",
+          "validatorRefs": [
+            "mishti.first-life.local-verifier"
+          ]
+        }
+      }
+    },
+    {
+      "evidenceId": "9bfa3614-8564-4152-ad34-504b6d22d085-evidence",
+      "taskId": "9bfa3614-8564-4152-ad34-504b6d22d085",
+      "builderId": "doc-builder",
+      "action": "generate-document",
+      "resultStatus": "completed",
+      "outputArtifactPath": "docs/generated/first-life.md",
+      "timestamp": "2026-03-11T12:38:21.473Z",
+      "lineage": {
+        "sourceTaskId": "9bfa3614-8564-4152-ad34-504b6d22d085",
+        "upstreamRef": "9bfa3614-8564-4152-ad34-504b6d22d085-doc-builder-assignment"
+      },
+      "governance": {
+        "decisionClass": "bounded_allow",
+        "policyRefs": [
+          "mishti.first-life.governance",
+          "mishti.runtime.sandbox.first-life"
+        ]
+      },
+      "runtime": {
+        "surface": "sandbox_runner",
+        "conditionedTrust": "guarded"
+      },
+      "attachment": {
+        "attachmentId": "9bfa3614-8564-4152-ad34-504b6d22d085-attachment",
+        "taskId": "9bfa3614-8564-4152-ad34-504b6d22d085",
+        "actorId": "doc-builder",
+        "resultSummary": "bounded document write completed at docs/generated/first-life.md",
+        "evidence": [
+          {
+            "eventType": "builder_result",
+            "evidenceRef": "docs/generated/first-life.md",
+            "payloadHash": "a211df167b2b68a6ef2d7241943d50c47f2c64fb1f0f80555e37134a42b11829"
+          }
+        ],
+        "lineage": {
+          "sourceTaskId": "9bfa3614-8564-4152-ad34-504b6d22d085",
+          "upstreamRef": "9bfa3614-8564-4152-ad34-504b6d22d085-doc-builder-assignment"
+        },
+        "validation": {
+          "validationState": "satisfied",
+          "validatorRefs": [
+            "mishti.first-life.local-verifier"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-\# Gemini Training Surface Policy for RocketGPT
+\# Gemini Training Surface Policy for Mishti AI
 
 
 
@@ -6,15 +6,15 @@
 
 
 
-This document defines \*\*where Gemini or any external LLM may be used to “train” or improve RocketGPT at a design/documentation level\*\*, and \*\*where it is NOT allowed to influence the system\*\*.
+This document defines \*\*where Gemini or any external LLM may be used to “train” or improve Mishti AI at a design/documentation level\*\*, and \*\*where it is NOT allowed to influence the system\*\*.
 
 
 
-Runtime behavior, code execution, and self-improvement of RocketGPT remain \*\*strictly driven by OpenAI models (and optionally Claude in future)\*\* plus human review.
+Runtime behavior, code execution, and self-improvement of Mishti AI remain \*\*strictly driven by OpenAI models (and optionally Claude in future)\*\* plus human review.
 
 
 
-Gemini is treated as an \*\*external consultant\*\*: it can suggest ideas and text, but it never directly modifies the codebase or runs inside RocketGPT.
+Gemini is treated as an \*\*external consultant\*\*: it can suggest ideas and text, but it never directly modifies the codebase or runs inside Mishti AI.
 
 
 
@@ -102,7 +102,7 @@ Gemini may help with:
 
 \- Any `/docs/\*\*` pages that describe:
 
-&nbsp; - What RocketGPT does
+&nbsp; - What Mishti AI does
 
 &nbsp; - How to use it
 
@@ -272,7 +272,7 @@ Policy:
 
 
 
-1\. \*\*Gemini is never configured inside RocketGPT\*\*  
+1\. \*\*Gemini is never configured inside Mishti AI\*\*  
 
 &nbsp;  - No `GEMINI\_API\_KEY` or project IDs in `.env`.
 
@@ -288,7 +288,7 @@ Policy:
 
 
 
-3\. \*\*RocketGPT runtime = OpenAI only\*\*  
+3\. \*\*Mishti AI runtime = OpenAI only\*\*  
 
 &nbsp;  - All real-time user requests, crawling, planning, building, testing, and self-improvement flows are powered only by OpenAI models (and Claude in future if explicitly added).
 

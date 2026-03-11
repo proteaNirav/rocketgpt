@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mishti/schemas/awareness.schema.json",
+  "title": "Mishti Awareness Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["actorId", "selfState", "familyState", "boundaryClassification", "painSeverity"],
+  "properties": {
+    "actorId": { "type": "string" },
+    "selfState": { "type": "string", "enum": ["stable", "constrained", "distressed"] },
+    "familyState": { "type": "string", "enum": ["cohesive", "strained", "fragmented"] },
+    "boundaryClassification": {
+      "type": "string",
+      "enum": ["self", "family", "trusted_external", "untrusted_external", "unknown"]
+    },
+    "painSeverity": { "type": "string", "enum": ["notice", "low", "moderate", "high", "critical", "survival"] },
+    "sisterPainActive": { "type": "boolean", "default": false }
+  }
+}

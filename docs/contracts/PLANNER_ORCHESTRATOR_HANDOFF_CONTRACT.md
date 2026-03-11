@@ -8,7 +8,7 @@
 ## 1. Purpose
 
 This document defines the **deterministic handoff contract** between the Planner
-and the Orchestrator in RocketGPT.
+and the Orchestrator in Mishti AI.
 
 The goal is to ensure:
 - zero execution without approval

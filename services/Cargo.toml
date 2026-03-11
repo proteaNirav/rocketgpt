@@ -1,0 +1,18 @@
+[workspace]
+members = [
+    "mak-authority",
+    "mak-governance",
+    "mak-awareness",
+    "mak-evidence",
+    "mak-survival",
+    "mak-task",
+    "mak-router",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "UNLICENSED"
+publish = false
+
+

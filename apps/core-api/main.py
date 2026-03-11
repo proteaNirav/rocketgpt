@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from api.cats_lifecycle_router import router as cats_lifecycle_router
 from api.cats_registry_router import router as cats_registry_router
 
-app = FastAPI(title="RocketGPT Core API (Demo)", version="0.1.0")
+app = FastAPI(title="Mishti AI Core API (Demo)", version="0.1.0")
 app.include_router(cats_registry_router)
 app.include_router(cats_lifecycle_router)
 

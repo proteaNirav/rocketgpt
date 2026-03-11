@@ -1,0 +1,23 @@
+import type { AwarenessState, BuildersState, EvidenceState, GovernanceState, RuntimeState, TasksState } from "./types.js";
+export declare function initializeState(): Promise<void>;
+export declare function loadTasksState(): Promise<TasksState>;
+export declare function saveTasksState(value: TasksState): Promise<void>;
+export declare function loadEvidenceState(): Promise<EvidenceState>;
+export declare function saveEvidenceState(value: EvidenceState): Promise<void>;
+export declare function loadBuildersState(): Promise<BuildersState>;
+export declare function saveBuildersState(value: BuildersState): Promise<void>;
+export declare function loadGovernanceState(): Promise<GovernanceState>;
+export declare function saveGovernanceState(value: GovernanceState): Promise<void>;
+export declare function loadAwarenessState(): Promise<AwarenessState>;
+export declare function saveAwarenessState(value: AwarenessState): Promise<void>;
+export declare function loadRuntimeState(): Promise<RuntimeState>;
+export declare function saveRuntimeState(value: RuntimeState): Promise<void>;
+export declare function getStateFilePaths(): {
+    readonly tasks: string;
+    readonly evidence: string;
+    readonly builders: string;
+    readonly governance: string;
+    readonly awareness: string;
+    readonly runtime: string;
+};
+export declare function getRepoRoot(): string;

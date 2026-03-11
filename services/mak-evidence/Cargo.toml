@@ -1,0 +1,13 @@
+[package]
+name = "mak-evidence"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "mak-evidence"
+path = "src/main.rs"
+

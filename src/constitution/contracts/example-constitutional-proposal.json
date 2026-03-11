@@ -1,0 +1,11 @@
+{
+  "proposalId": "const-proposal-001",
+  "title": "Require constitution binding lookup for builder wrappers",
+  "summary": "Scaffold proposal showing a governed legislative policy change.",
+  "status": "draft",
+  "targetLayer": "legislative_policy",
+  "proposedBy": "operator.example",
+  "evidenceRefs": [
+    "builder-report:wrapper-coverage-gap"
+  ]
+}

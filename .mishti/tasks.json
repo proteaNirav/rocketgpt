@@ -1,0 +1,274 @@
+{
+  "tasks": [
+    {
+      "id": "02fb48f3-5650-4dce-90bb-6528cc465531",
+      "type": "generate-document",
+      "title": "Mishti AI First Life",
+      "requestedCapability": "document_generation",
+      "lifecycle": "verified",
+      "payload": {
+        "content": "Mishti AI successfully executed its first governed task.\nThe first-life activation path remained bounded, governed, evidentiary, and survival-aware.",
+        "outputPath": "docs/generated/first-life.md"
+      },
+      "createdAt": "2026-03-11T12:32:42.068Z",
+      "updatedAt": "2026-03-11T12:35:37.014Z",
+      "governance": {
+        "decisionClass": "bounded_allow",
+        "eligibility": "eligible",
+        "reasonCode": "first_life_document_task_allowed",
+        "policyRefs": [
+          "mishti.first-life.governance",
+          "mishti.runtime.sandbox.first-life"
+        ]
+      },
+      "trustRisk": {
+        "posture": "guarded",
+        "level": "low",
+        "boundary": "self",
+        "constraintClasses": []
+      },
+      "assignment": {
+        "assignmentId": "02fb48f3-5650-4dce-90bb-6528cc465531-doc-builder-assignment",
+        "taskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+        "builderId": "doc-builder",
+        "requestedCapability": "document_generation",
+        "boundedScope": "docs/generated/first-life.md",
+        "trustPosture": "guarded",
+        "builderHealthState": "healthy",
+        "governanceHooks": [
+          {
+            "gateId": "02fb48f3-5650-4dce-90bb-6528cc465531-task-routing-gate",
+            "target": "task_routing",
+            "decision": {
+              "decisionClass": "bounded_allow",
+              "reasonCode": "first_life_document_task_allowed",
+              "policyRefs": [
+                "mishti.first-life.governance",
+                "mishti.runtime.sandbox.first-life"
+              ]
+            },
+            "eligibility": "eligible",
+            "requiresApproval": false
+          }
+        ],
+        "runtimeEligibilityHooks": [
+          {
+            "requestId": "02fb48f3-5650-4dce-90bb-6528cc465531-sandbox_runner",
+            "targetSurface": "sandbox_runner",
+            "decisionClass": "bounded_allow",
+            "eligibility": "eligible",
+            "policyRefs": [
+              "mishti.first-life.governance",
+              "mishti.runtime.sandbox.first-life"
+            ]
+          },
+          {
+            "requestId": "02fb48f3-5650-4dce-90bb-6528cc465531-cats_gateway",
+            "targetSurface": "cats_gateway",
+            "decisionClass": "bounded_allow",
+            "eligibility": "eligible",
+            "policyRefs": [
+              "mishti.first-life.governance",
+              "mishti.runtime.sandbox.first-life"
+            ]
+          },
+          {
+            "requestId": "02fb48f3-5650-4dce-90bb-6528cc465531-os_adapter",
+            "targetSurface": "os_adapter",
+            "decisionClass": "bounded_allow",
+            "eligibility": "eligible",
+            "policyRefs": [
+              "mishti.first-life.governance",
+              "mishti.runtime.sandbox.first-life"
+            ]
+          }
+        ]
+      },
+      "result": {
+        "taskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+        "builderId": "doc-builder",
+        "status": "completed",
+        "summary": "bounded document write completed at docs/generated/first-life.md",
+        "evidence": [
+          {
+            "taskId": "02fb48f3-5650-4dce-90bb-6528cc465531",
+            "eventType": "builder_result",
+            "payloadRef": "docs/generated/first-life.md",
+            "payloadHash": "a211df167b2b68a6ef2d7241943d50c47f2c64fb1f0f80555e37134a42b11829"
+          }
+        ],
+        "governanceHooks": [
+          {
+            "gateId": "02fb48f3-5650-4dce-90bb-6528cc465531-task-routing-gate",
+            "target": "task_routing",
+            "decision": {
+              "decisionClass": "bounded_allow",
+              "reasonCode": "first_life_document_task_allowed",
+              "policyRefs": [
+                "mishti.first-life.governance",
+                "mishti.runtime.sandbox.first-life"
+              ]
+            },
+            "eligibility": "eligible",
+            "requiresApproval": false
+          }
+        ]
+      },
+      "verification": {
+        "verified": true,
+        "verifiedAt": "2026-03-11T12:35:37.014Z",
+        "verifier": "mishti.first-life.local-verifier",
+        "note": "output exists, evidence attached, governance and survival checks satisfied"
+      }
+    },
+    {
+      "id": "9bfa3614-8564-4152-ad34-504b6d22d085",
+      "type": "generate-document",
+      "title": "Mishti AI First Life",
+      "requestedCapability": "document_generation",
+      "lifecycle": "verified",
+      "payload": {
+        "content": "Mishti AI successfully executed its first governed task.\nThe first-life activation path remained bounded, governed, evidentiary, and survival-aware.",
+        "outputPath": "docs/generated/first-life.md"
+      },
+      "createdAt": "2026-03-11T12:37:59.621Z",
+      "updatedAt": "2026-03-11T12:38:21.483Z",
+      "governance": {
+        "decisionClass": "bounded_allow",
+        "eligibility": "eligible",
+        "reasonCode": "first_life_document_task_allowed",
+        "policyRefs": [
+          "mishti.first-life.governance",
+          "mishti.runtime.sandbox.first-life"
+        ]
+      },
+      "trustRisk": {
+        "posture": "guarded",
+        "level": "low",
+        "boundary": "self",
+        "constraintClasses": []
+      },
+      "assignment": {
+        "assignmentId": "9bfa3614-8564-4152-ad34-504b6d22d085-doc-builder-assignment",
+        "taskId": "9bfa3614-8564-4152-ad34-504b6d22d085",
+        "builderId": "doc-builder",
+        "requestedCapability": "document_generation",
+        "boundedScope": "docs/generated/first-life.md",
+        "trustPosture": "guarded",
+        "builderHealthState": "healthy",
+        "governanceHooks": [
+          {
+            "gateId": "9bfa3614-8564-4152-ad34-504b6d22d085-task-routing-gate",
+            "target": "task_routing",
+            "decision": {
+              "decisionClass": "bounded_allow",
+              "reasonCode": "first_life_document_task_allowed",
+              "policyRefs": [
+                "mishti.first-life.governance",
+                "mishti.runtime.sandbox.first-life"
+              ]
+            },
+            "eligibility": "eligible",
+            "requiresApproval": false
+          }
+        ],
+        "runtimeEligibilityHooks": [
+          {
+            "requestId": "9bfa3614-8564-4152-ad34-504b6d22d085-sandbox_runner",
+            "targetSurface": "sandbox_runner",
+            "decisionClass": "bounded_allow",
+            "eligibility": "eligible",
+            "policyRefs": [
+              "mishti.first-life.governance",
+              "mishti.runtime.sandbox.first-life"
+            ]
+          },
+          {
+            "requestId": "9bfa3614-8564-4152-ad34-504b6d22d085-cats_gateway",
+            "targetSurface": "cats_gateway",
+            "decisionClass": "bounded_allow",
+            "eligibility": "eligible",
+            "policyRefs": [
+              "mishti.first-life.governance",
+              "mishti.runtime.sandbox.first-life"
+            ]
+          },
+          {
+            "requestId": "9bfa3614-8564-4152-ad34-504b6d22d085-os_adapter",
+            "targetSurface": "os_adapter",
+            "decisionClass": "bounded_allow",
+            "eligibility": "eligible",
+            "policyRefs": [
+              "mishti.first-life.governance",
+              "mishti.runtime.sandbox.first-life"
+            ]
+          }
+        ]
+      },
+      "result": {
+        "taskId": "9bfa3614-8564-4152-ad34-504b6d22d085",
+        "builderId": "doc-builder",
+        "status": "completed",
+        "summary": "bounded document write completed at docs/generated/first-life.md",
+        "evidence": [
+          {
+            "taskId": "9bfa3614-8564-4152-ad34-504b6d22d085",
+            "eventType": "builder_result",
+            "payloadRef": "docs/generated/first-life.md",
+            "payloadHash": "a211df167b2b68a6ef2d7241943d50c47f2c64fb1f0f80555e37134a42b11829"
+          }
+        ],
+        "governanceHooks": [
+          {
+            "gateId": "9bfa3614-8564-4152-ad34-504b6d22d085-task-routing-gate",
+            "target": "task_routing",
+            "decision": {
+              "decisionClass": "bounded_allow",
+              "reasonCode": "first_life_document_task_allowed",
+              "policyRefs": [
+                "mishti.first-life.governance",
+                "mishti.runtime.sandbox.first-life"
+              ]
+            },
+            "eligibility": "eligible",
+            "requiresApproval": false
+          }
+        ]
+      },
+      "verification": {
+        "verified": true,
+        "verifiedAt": "2026-03-11T12:38:21.483Z",
+        "verifier": "mishti.first-life.local-verifier",
+        "note": "output exists, evidence attached, governance and survival checks satisfied"
+      }
+    },
+    {
+      "id": "6dd7eed7-0626-4991-b177-1f1b1af97602",
+      "type": "generate-document",
+      "title": "Mishti AI First Life",
+      "requestedCapability": "document_generation",
+      "lifecycle": "queued",
+      "payload": {
+        "content": "Mishti AI successfully executed its first governed task.\nThe first-life activation path remained bounded, governed, evidentiary, and survival-aware.",
+        "outputPath": "docs/generated/first-life.md"
+      },
+      "createdAt": "2026-03-11T12:39:38.231Z",
+      "updatedAt": "2026-03-11T12:39:38.239Z",
+      "governance": {
+        "decisionClass": "approval_required",
+        "eligibility": "blocked",
+        "reasonCode": "runtime_safe_mode_active",
+        "policyRefs": [
+          "mishti.first-life.survival"
+        ]
+      },
+      "trustRisk": {
+        "posture": "guarded",
+        "level": "low",
+        "boundary": "self",
+        "constraintClasses": []
+      }
+    }
+  ],
+  "rejections": []
+}

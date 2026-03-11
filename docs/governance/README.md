@@ -1,6 +1,12 @@
 # Governance Documentation Index
 
-This index provides the main entry points for RocketGPT governance documentation.
+This index provides the main entry points for Mishti AI governance documentation.
+
+## Governance Engine
+- [MISHTI-GOVERNANCE-ENGINE-ARCHITECTURE.md](../governance-engine/MISHTI-GOVERNANCE-ENGINE-ARCHITECTURE.md)
+- [MISHTI-GOVERNANCE-ENGINE-DOMAIN-MODEL.md](../governance-engine/MISHTI-GOVERNANCE-ENGINE-DOMAIN-MODEL.md)
+- [MISHTI-GOVERNANCE-ENGINE-REPOSITORY-STRUCTURE.md](../governance-engine/MISHTI-GOVERNANCE-ENGINE-REPOSITORY-STRUCTURE.md)
+- [MISHTI-GOVERNANCE-ENGINE-DELIVERY-OPERATING-MODEL.md](../governance-engine/MISHTI-GOVERNANCE-ENGINE-DELIVERY-OPERATING-MODEL.md)
 
 ## Constitutional Brain Layer (v1)
 - [RGPT-CONSTITUTIONAL-BRAIN-LAYER-v1.md](./RGPT-CONSTITUTIONAL-BRAIN-LAYER-v1.md)
@@ -13,4 +19,11 @@ This index provides the main entry points for RocketGPT governance documentation
 ## Replay Governance
 - [RGPT-PHASE-E3-C-Replay-Engine.md](./replay/RGPT-PHASE-E3-C-Replay-Engine.md)
 - [RGPT-CONTRACT-REPLAY-ENGINE.md](./contracts/replay/RGPT-CONTRACT-REPLAY-ENGINE.md)
+
+
+
+
+
+
+
 

@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "../..",
+    "outDir": "dist",
+    "strict": true,
+    "declaration": true,
+    "noEmitOnError": true,
+    "types": ["node"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "../../shared/**/*.ts",
+    "../../builders/builder-sdk/src/**/*.ts",
+    "../../builders/doc-builder/src/**/*.ts",
+    "../../builders/code-builder/src/**/*.ts",
+    "../../builders/ops-builder/src/**/*.ts",
+    "../../builders/validation-builder/src/**/*.ts",
+    "../../runtime/sandbox-runner/src/**/*.ts"
+  ]
+}

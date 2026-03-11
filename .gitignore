@@ -70,9 +70,13 @@ RGPT-ENV-CHECK.ps1
 RGPT-GO-01.ps1
 
 # Draft docs (if not ready to commit)
-docs/architecture/
+docs/architecture/*
 docs/manifesto/
 docs/strategy/
+!docs/architecture/constitution/
+!docs/architecture/constitution/*.md
+!docs/architecture/operations/
+!docs/architecture/operations/*.md
 
 # Local drafts (do not commit)
 .rgpt_drafts/

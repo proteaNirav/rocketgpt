@@ -1,4 +1,4 @@
-# RocketGPT â€” Goal Registry (v1)
+# Mishti AI â€” Goal Registry (v1)
 
 ## Strategic Goals (SG)
 
@@ -34,7 +34,7 @@ PG-S2-001
 EG-S2-A-001
 - Parent PG: PG-S2-001
 - Title: Implement Goal Registry
-- Owner: RocketGPT
+- Owner: Mishti AI
 - Priority: HIGH
 - Success Criteria:
   - Goals stored and readable
@@ -80,7 +80,7 @@ Approval guidance:
 EG-S2-A-003
 - Parent PG: PG-S2-001
 - Title: Planner reads Goal Registry and selects next actionable goal
-- Owner: RocketGPT
+- Owner: Mishti AI
 - Priority: HIGH
 - Impact: 4
 - Urgency: 5

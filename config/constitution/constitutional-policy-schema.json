@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mishti-ai/constitution/constitutional-policy-schema.json",
+  "title": "Mishti AI Constitutional Policy Schema",
+  "type": "object",
+  "required": [
+    "version",
+    "constitution_id",
+    "status",
+    "core_principles",
+    "governed_policies",
+    "runtime_policy_bindings",
+    "os_policy_envelope"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "constitution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string"
+    },
+    "active_version": {
+      "type": "boolean"
+    },
+    "core_principles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "principle_id",
+          "title",
+          "lock_level",
+          "mutable",
+          "statement"
+        ],
+        "properties": {
+          "principle_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "lock_level": {
+            "type": "string"
+          },
+          "mutable": {
+            "type": "boolean"
+          },
+          "statement": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "governed_policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "policy_id",
+          "title",
+          "status",
+          "effect",
+          "scope",
+          "change_control"
+        ],
+        "properties": {
+          "policy_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "effect": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "change_control": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "runtime_policy_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "binding_id",
+          "source_policy_id",
+          "target_surface",
+          "mode"
+        ],
+        "properties": {
+          "binding_id": {
+            "type": "string"
+          },
+          "source_policy_id": {
+            "type": "string"
+          },
+          "target_surface": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "os_policy_envelope": {
+      "type": "object",
+      "required": [
+        "customization_enabled",
+        "forbids_core_principle_override",
+        "forbids_shared_policy_override"
+      ],
+      "properties": {
+        "customization_enabled": {
+          "type": "boolean"
+        },
+        "allows_local_safe_mode_preferences": {
+          "type": "boolean"
+        },
+        "allows_local_retention_preferences": {
+          "type": "boolean"
+        },
+        "forbids_core_principle_override": {
+          "type": "boolean"
+        },
+        "forbids_shared_policy_override": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

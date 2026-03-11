@@ -29,6 +29,10 @@ export type ExecutionLedgerCategory = "runtime" | "dispatch" | "execution" | "si
 export type ExecutionLedgerEventType =
   | "runtime.guard.evaluated"
   | "runtime.heartbeat"
+  | "constitutional.proposal.submitted"
+  | "constitutional.proposal.approved"
+  | "constitutional.activation.completed"
+  | "constitutional.snapshot.created"
   | "runtime_repair_diagnosed"
   | "runtime_repair_attempted"
   | "runtime_repair_succeeded"

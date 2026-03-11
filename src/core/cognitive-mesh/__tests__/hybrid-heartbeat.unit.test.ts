@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { runHybridHeartbeatMonitor } from "../runtime/hybrid-heartbeat";
 import { runSingleManualHeartbeat } from "../runtime/manual-heartbeat-runner";
 import { ExecutionLedger } from "../runtime/execution-ledger";
+import { RuntimeGuard } from "../runtime/runtime-guard";
 
 interface Fixture {
   root: string;
@@ -192,6 +193,97 @@ test("transition from healthy to degraded causes a ledger event", async () => {
   assert.equal(result.report.ledgerEventWritten, true);
   assert.equal(result.report.shouldAlert, true);
   assert.equal(await countJsonlLines(fixture.ledgerPath), 1);
+});
+
+test("transition from healthy to stale and back to healthy emits transition-aware ledger events", async () => {
+  const fixture = await createFixture(true);
+
+  const first = await runHybridHeartbeatMonitor({
+    runtimeId: "rgpt-d20-transition-stale",
+    now: new Date("2026-03-09T03:30:00.000Z"),
+    env: fixture.env,
+    killSwitchPath: fixture.killSwitchPath,
+    statePath: fixture.statePath,
+    ledgerPath: fixture.ledgerPath,
+    timelinePath: fixture.timelinePath,
+    staleAfterSeconds: 30,
+  });
+
+  const stale = await runHybridHeartbeatMonitor({
+    runtimeId: "rgpt-d20-transition-stale",
+    now: new Date("2026-03-09T03:31:10.000Z"),
+    env: fixture.env,
+    killSwitchPath: fixture.killSwitchPath,
+    statePath: fixture.statePath,
+    ledgerPath: fixture.ledgerPath,
+    timelinePath: fixture.timelinePath,
+    staleAfterSeconds: 30,
+  });
+
+  const recovered = await runHybridHeartbeatMonitor({
+    runtimeId: "rgpt-d20-transition-stale",
+    now: new Date("2026-03-09T03:31:20.000Z"),
+    env: fixture.env,
+    killSwitchPath: fixture.killSwitchPath,
+    statePath: fixture.statePath,
+    ledgerPath: fixture.ledgerPath,
+    timelinePath: fixture.timelinePath,
+    staleAfterSeconds: 30,
+  });
+
+  assert.equal(first.report.heartbeatState, "healthy");
+  assert.equal(stale.report.heartbeatState, "stale");
+  assert.equal(stale.report.transitionDetected, true);
+  assert.equal(stale.report.ledgerEventWritten, true);
+  assert.equal(recovered.report.heartbeatState, "healthy");
+  assert.equal(recovered.report.transitionDetected, true);
+  assert.equal(recovered.report.ledgerEventWritten, true);
+  assert.equal(await countJsonlLines(fixture.ledgerPath), 2);
+});
+
+test("blocked by policy carries alert suppression hint", async () => {
+  const fixture = await createFixture(false);
+
+  const result = await runHybridHeartbeatMonitor({
+    runtimeId: "rgpt-d20-policy-hint",
+    now: new Date("2026-03-09T03:40:00.000Z"),
+    env: fixture.env,
+    killSwitchPath: fixture.killSwitchPath,
+    statePath: fixture.statePath,
+    ledgerPath: fixture.ledgerPath,
+    timelinePath: fixture.timelinePath,
+  });
+
+  assert.equal(result.report.heartbeatState, "blocked");
+  assert.equal(result.report.shouldAlert, true);
+  assert.equal(result.report.policyBlocked, true);
+  assert.equal(result.report.alertSuppressedByPolicy, true);
+});
+
+test("critical subsystem failure yields failed heartbeat state", async () => {
+  const fixture = await createFixture(true);
+  const originalEvaluate = RuntimeGuard.prototype.evaluate;
+  RuntimeGuard.prototype.evaluate = function patchedEvaluate() {
+    throw new Error("forced runtime guard failure");
+  };
+
+  try {
+    const result = await runHybridHeartbeatMonitor({
+      runtimeId: "rgpt-d20-failed",
+      now: new Date("2026-03-09T03:45:00.000Z"),
+      env: fixture.env,
+      killSwitchPath: fixture.killSwitchPath,
+      statePath: fixture.statePath,
+      ledgerPath: fixture.ledgerPath,
+      timelinePath: fixture.timelinePath,
+    });
+
+    assert.equal(result.report.heartbeatState, "failed");
+    assert.equal(result.report.shouldAlert, true);
+    assert.equal(result.report.ledgerEventWritten, true);
+  } finally {
+    RuntimeGuard.prototype.evaluate = originalEvaluate;
+  }
 });
 
 test("manual heartbeat still works and remains ledger-visible", async () => {

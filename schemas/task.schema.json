@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mishti/schemas/task.schema.json",
+  "title": "Mishti Task Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["taskId", "title", "lifecycle", "assignedActorType"],
+  "properties": {
+    "taskId": { "type": "string" },
+    "title": { "type": "string" },
+    "traceId": { "type": "string" },
+    "contractId": { "type": "string" },
+    "assignedActorType": {
+      "type": "string",
+      "enum": ["brain", "builder", "librarian", "consortium", "pm", "learner", "runtime", "cats", "os"]
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": ["created", "queued", "assigned", "executing", "completed", "verified", "failed", "suspended", "archived"]
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "builders": [
+    {
+      "builderId": "doc-builder",
+      "builderKind": "doc_builder",
+      "capabilities": [
+        "document_generation",
+        "spec_refinement",
+        "architecture_drafting"
+      ],
+      "boundedScopes": [
+        "docs/**",
+        "specs/**"
+      ],
+      "trustPosture": "guarded",
+      "healthStatus": "healthy",
+      "runtimeEligibility": [
+        "sandbox_runner",
+        "cats_gateway",
+        "os_adapter"
+      ],
+      "updatedAt": "2026-03-11T12:37:36.165Z"
+    },
+    {
+      "builderId": "code-builder",
+      "builderKind": "code_builder",
+      "capabilities": [
+        "code_patch_generation",
+        "code_scaffold_generation",
+        "typed_refactor_stub"
+      ],
+      "boundedScopes": [
+        "src/**",
+        "apps/**",
+        "packages/**",
+        "services/**"
+      ],
+      "trustPosture": "guarded",
+      "healthStatus": "healthy",
+      "runtimeEligibility": [
+        "sandbox_runner",
+        "cats_gateway",
+        "os_adapter"
+      ],
+      "updatedAt": "2026-03-11T12:37:36.169Z"
+    },
+    {
+      "builderId": "ops-builder",
+      "builderKind": "ops_builder",
+      "capabilities": [
+        "ops_config_generation",
+        "infra_spec_generation",
+        "script_generation"
+      ],
+      "boundedScopes": [
+        "config/**",
+        "infra/**",
+        "scripts/**",
+        "ops/**"
+      ],
+      "trustPosture": "guarded",
+      "healthStatus": "constrained",
+      "runtimeEligibility": [
+        "sandbox_runner",
+        "cats_gateway",
+        "os_adapter"
+      ],
+      "updatedAt": "2026-03-11T12:37:36.169Z"
+    },
+    {
+      "builderId": "validation-builder",
+      "builderKind": "validation_builder",
+      "capabilities": [
+        "validation_execution",
+        "test_plan_generation",
+        "compliance_review"
+      ],
+      "boundedScopes": [
+        "tests/**",
+        "schemas/**",
+        "docs/**",
+        "shared/**"
+      ],
+      "trustPosture": "guarded",
+      "healthStatus": "healthy",
+      "runtimeEligibility": [
+        "sandbox_runner",
+        "cats_gateway",
+        "os_adapter"
+      ],
+      "updatedAt": "2026-03-11T12:37:36.170Z"
+    }
+  ]
+}

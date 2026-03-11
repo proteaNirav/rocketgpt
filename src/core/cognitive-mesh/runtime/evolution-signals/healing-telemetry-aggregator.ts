@@ -46,14 +46,30 @@ function normalizeTargetType(value: unknown): RuntimeEvolutionEvidenceSignal["ta
   return "runtime";
 }
 
-function toSignal(entry: ExecutionLedgerEntry): RuntimeEvolutionEvidenceSignal | null {
-  if (!EVOLUTION_RELEVANT_EVENTS.has(entry.eventType)) {
-    return null;
+function isHeartbeatIntent(entry: ExecutionLedgerEntry, metadata: Record<string, unknown>): boolean {
+  if (entry.eventType === "runtime.heartbeat") {
+    return true;
   }
+  const action = toText(entry.action, "");
+  if (action.startsWith("runtime.heartbeat")) {
+    return true;
+  }
+  return (
+    Object.prototype.hasOwnProperty.call(metadata, "heartbeat") ||
+    Object.prototype.hasOwnProperty.call(metadata, "heartbeatHybrid") ||
+    Object.prototype.hasOwnProperty.call(metadata, "heartbeatManual")
+  );
+}
+
+function toSignal(entry: ExecutionLedgerEntry): RuntimeEvolutionEvidenceSignal | null {
   const metadata =
     entry.metadata && typeof entry.metadata === "object" && !Array.isArray(entry.metadata)
       ? (entry.metadata as Record<string, unknown>)
       : {};
+  const heartbeatIntent = isHeartbeatIntent(entry, metadata);
+  if (!EVOLUTION_RELEVANT_EVENTS.has(entry.eventType) && !heartbeatIntent) {
+    return null;
+  }
 
   const targetType = normalizeTargetType(metadata.targetType);
   const targetId = toText(metadata.targetId, entry.target);
@@ -64,7 +80,7 @@ function toSignal(entry: ExecutionLedgerEntry): RuntimeEvolutionEvidenceSignal |
   return {
     eventId: entry.entryId,
     timestamp: entry.timestamp,
-    eventType: entry.eventType,
+    eventType: heartbeatIntent ? "runtime.heartbeat" : entry.eventType,
     targetType,
     targetId,
     reasonCodes,

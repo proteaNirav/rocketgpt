@@ -8,7 +8,7 @@
 
 Text-Guard Phase-2 is controlled through a simple JSON configuration file stored inside the repository.  
 
-This enables the RocketGPT CI system and any external Text-Guard service to activate stricter scanning or advanced rule sets.
+This enables the Mishti AI CI system and any external Text-Guard service to activate stricter scanning or advanced rule sets.
 
 
 
@@ -134,7 +134,7 @@ This preserves CI stability while keeping the sync logic in place.
 
 
 
-This file documents how RocketGPT activates and manages Text-Guard Phase-2.
+This file documents how Mishti AI activates and manages Text-Guard Phase-2.
 
 
 

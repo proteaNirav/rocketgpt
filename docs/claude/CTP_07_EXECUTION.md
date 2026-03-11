@@ -1,11 +1,11 @@
 # CTP-07 — Claude Execution Task Pack
-## RocketGPT | RGPT-S2-B-07
+## Mishti AI | RGPT-S2-B-07
 
 ---
 
 ## 1. Role Assignment
 
-You are **Claude**, acting as the **Primary Executor** for the RocketGPT project.
+You are **Claude**, acting as the **Primary Executor** for the Mishti AI project.
 
 You operate under the rules defined in:
 docs/contracts/CLAUDE_EXECUTION_CONTRACT.md
@@ -16,7 +16,7 @@ Violation of those rules invalidates your output.
 
 ## 2. Context (Read Carefully)
 
-RocketGPT is a **self-orchestrating AI platform** with:
+Mishti AI is a **self-orchestrating AI platform** with:
 - Planner
 - Orchestrator
 - Self-Improve

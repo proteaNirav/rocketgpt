@@ -4,7 +4,7 @@
 - Detect when any free-tier resource (DB, storage, bandwidth, actions) is nearing limits.
 - Evaluate alternative free-tier providers and architectures.
 - Generate migration strategies and infra PRs under human approval.
-- Keep RocketGPT sustainable on free/low-cost infra for as long as possible.
+- Keep Mishti AI sustainable on free/low-cost infra for as long as possible.
 
 ### Phase C1 – Foundations (v4.x)
 - config/infra_strategy_policy.json with thresholds, risk rules, and provider allowlist.

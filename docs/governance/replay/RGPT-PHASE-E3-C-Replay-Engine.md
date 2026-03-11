@@ -6,7 +6,7 @@
 **Audience:** Core Architects, Governance Owners, CI/CD & Audit Teams
 
 ## 1. Purpose & Scope
-The Replay Engine enables RocketGPT to deterministically **reproduce, audit, compare, and debug** any historical AI execution by replaying its full execution trace under strict governance controls.
+The Replay Engine enables Mishti AI to deterministically **reproduce, audit, compare, and debug** any historical AI execution by replaying its full execution trace under strict governance controls.
 
 This phase introduces:
 - Immutable execution trace replay

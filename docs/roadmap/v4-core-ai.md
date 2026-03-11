@@ -1,12 +1,12 @@
-Set-Location D:\\Projects\\RocketGPT\\rocketgpt
+Set-Location D:\\Projects\\Mishti AI\\rocketgpt
 
 
 
 @'
 
-\# RocketGPT – v4 Core AI Roadmap  
+\# Mishti AI – v4 Core AI Roadmap  
 
-\### (Foundation: Self-Improvement Charter + Real Self-Improving RocketGPT + AI Evolution)
+\### (Foundation: Self-Improvement Charter + Real Self-Improving Mishti AI + AI Evolution)
 
 
 
@@ -22,7 +22,7 @@ Set-Location D:\\Projects\\RocketGPT\\rocketgpt
 
 
 
-v4 Core AI consolidates everything learned in M1–M3 and formally establishes the \*Self-Improving RocketGPT Loop\* as a first-class architecture.
+v4 Core AI consolidates everything learned in M1–M3 and formally establishes the \*Self-Improving Mishti AI Loop\* as a first-class architecture.
 
 
 
@@ -36,7 +36,7 @@ This milestone introduces:
 
 \- Safer auto-merge pipelines with policy gates
 
-\- Structured prompt frameworks for RocketGPT agents
+\- Structured prompt frameworks for Mishti AI agents
 
 \- Central knowledge libraries for future evolution
 
@@ -64,7 +64,7 @@ These three documents form the \*\*backbone\*\* of v4 Core AI:
 
 
 
-2\. \*\*Real Self-Improving RocketGPT\*\*  
+2\. \*\*Real Self-Improving Mishti AI\*\*  
 
 &nbsp;  → `docs/real-self-improving-rocketgpt.md`  
 
@@ -76,7 +76,7 @@ These three documents form the \*\*backbone\*\* of v4 Core AI:
 
 &nbsp;  → `docs/roadmap/AI\_Evolution.md`  
 
-&nbsp;  High-level evolution path (Narrow → General → Advanced AI for RocketGPT).
+&nbsp;  High-level evolution path (Narrow → General → Advanced AI for Mishti AI).
 
 
 

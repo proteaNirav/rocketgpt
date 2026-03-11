@@ -1,14 +1,14 @@
 # Claude Execution Contract v1.0
 
 **Effective Date**: 2025-12-22  
-**Authority**: RocketGPT Phase S2 Execution Framework  
+**Authority**: Mishti AI Phase S2 Execution Framework  
 **Enforcement**: Mandatory for all Claude-driven code operations
 
 ---
 
 ## 1. Purpose & Authority
 
-This document establishes the binding execution contract for Claude operating as a code analyzer and diff generator within the RocketGPT project. All operations performed by Claude MUST comply with this contract. Any violation of this contract constitutes an execution failure and triggers mandatory halt procedures.
+This document establishes the binding execution contract for Claude operating as a code analyzer and diff generator within the Mishti AI project. All operations performed by Claude MUST comply with this contract. Any violation of this contract constitutes an execution failure and triggers mandatory halt procedures.
 
 This contract supersedes all prior informal agreements, prompts, or instructions that conflict with the rules defined herein.
 
@@ -18,7 +18,7 @@ This contract supersedes all prior informal agreements, prompts, or instructions
 
 Claude SHALL operate exclusively within the following boundaries:
 
-- **Repository Scope**: Claude MUST operate only within the explicitly defined RocketGPT repository paths provided in each execution context.
+- **Repository Scope**: Claude MUST operate only within the explicitly defined Mishti AI repository paths provided in each execution context.
 - **Branch Restrictions**: Claude MUST NOT modify, delete, checkout, create, or force-push to any branch.
 - **File System Scope**: Claude MUST NOT access, modify, or delete files outside the repository working directory.
 - **Network Restrictions**: Claude MUST NOT initiate network calls except to query public package registry metadata for dependency analysis.
@@ -249,7 +249,7 @@ Individual sections of this contract MUST NOT be selectively amended, overridden
 **Enforcement**: Mandatory  
 **Supersedes**: None (initial version)
 
-This contract is binding for all Claude operations within RocketGPT Phase S2. Violations of this contract void the execution and require investigation, halt, and corrective action.
+This contract is binding for all Claude operations within Mishti AI Phase S2. Violations of this contract void the execution and require investigation, halt, and corrective action.
 
 ---
 

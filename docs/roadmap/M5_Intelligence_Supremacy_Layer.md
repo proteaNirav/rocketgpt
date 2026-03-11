@@ -1,9 +1,9 @@
 Param(
-    # Root of your RocketGPT repo. Change if needed.
-    [string]$RepoRoot = "D:\Projects\RocketGPT\rocketgpt"
+    # Root of your Mishti AI repo. Change if needed.
+    [string]$RepoRoot = "D:\Projects\Mishti AI\rocketgpt"
 )
 
-Write-Host "`n[RGPT-M5] RocketGPT M5 roadmap injector starting..." -ForegroundColor Cyan
+Write-Host "`n[RGPT-M5] Mishti AI M5 roadmap injector starting..." -ForegroundColor Cyan
 
 # 1) Basic path checks
 if (-not (Test-Path $RepoRoot)) {
@@ -37,23 +37,23 @@ if (Test-Path $M5File) {
 
 # 5) Define M5 roadmap markdown content
 $M5Content = @"
-# RocketGPT Roadmap — Milestone M5: Intelligence Supremacy Layer
+# Mishti AI Roadmap — Milestone M5: Intelligence Supremacy Layer
 
 ## Goal of M5
-Transform RocketGPT from a capable AI orchestrator into a **deterministic, self-improving, multi-model AI Operating System** that **outperforms Gemini 3.0 at the system level**.
+Transform Mishti AI from a capable AI orchestrator into a **deterministic, self-improving, multi-model AI Operating System** that **outperforms Gemini 3.0 at the system level**.
 
 ---
 
 ## Strategic Context
 
-RocketGPT will **not compete at the single-model level**.
+Mishti AI will **not compete at the single-model level**.
 
 It will decisively outperform Gemini 3.0 by operating as a **model-agnostic, agent-driven AI Operating System** focused on **execution, governance, and verified outcomes**.
 
 - **Gemini 3.0:** General-purpose multimodal assistant  
-- **RocketGPT:** Autonomous AI Execution & Governance Platform
+- **Mishti AI:** Autonomous AI Execution & Governance Platform
 
-RocketGPT’s differentiation lies in **how intelligence is planned, orchestrated, validated, and evolved**, not merely generated.
+Mishti AI’s differentiation lies in **how intelligence is planned, orchestrated, validated, and evolved**, not merely generated.
 
 ---
 

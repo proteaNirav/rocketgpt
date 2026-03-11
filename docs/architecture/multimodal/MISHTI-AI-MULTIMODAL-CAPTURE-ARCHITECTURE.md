@@ -183,6 +183,32 @@ Every capture event should be subject to governance hooks for consent, policy cl
 ### Knowledge Indexing
 MCL should feed knowledge indexing through a controlled handoff. The capture layer performs ingestion and normalization; downstream intelligence layers determine semantic structure and memory routing.
 
+## Architectural Integration with the Universal Learner Pipeline
+The Multimodal Capture Layer is an upstream additive extension that plugs into the Mishti Universal Learner, Reflection, and Repair Architecture v1. It does not replace learner orchestration, governance, routing, or adaptive intelligence logic.
+
+Integration boundary:
+- MCL handles modality-aware capture, intake, and early processing concerns
+- the universal learner architecture handles governed normalization, enrichment, routing, reflection, repair, and adaptive governance concerns
+- there is no duplicate control plane, no second orchestration system, and no alternate governance path
+
+Practical integration path:
+```text
+Multimodal Capture Layer
+  -> source / interaction registration
+  -> acquisition / capture
+  -> normalized or normalization-ready artifacts
+  -> learner capabilities
+  -> knowledge / memory / benchmark / workflow routing
+```
+
+This relationship is complementary:
+- MCL is the upstream intake layer
+- the learner architecture is the governed downstream intelligence layer
+
+Related downstream architecture:
+- `docs/architecture/MISHTI_UNIVERSAL_LEARNER_PIPELINE_V1.md`
+- `docs/architecture/MISHTI_CANONICAL_ARTIFACT_SCHEMA_V1.md`
+
 ## Unified Capture Pipeline
 The standard pipeline should be modality-agnostic:
 

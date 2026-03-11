@@ -1,4 +1,4 @@
-# RocketGPT · Go-Live Stock-Take (Branch: go-live/rls-repair)
+# Mishti AI · Go-Live Stock-Take (Branch: go-live/rls-repair)
 
 **Date:** 2025-11-18 21:08:08
 **Environment:** Production (Vercel) – https://rocketgpt.vercel.app  
@@ -156,7 +156,7 @@ These sections are placeholders for the next steps in the stock-take:
   - Latency and perceived performance
 
 - [ ] **Docs & Operational Runbook**
-  - Quickstart for you (Nirav) to operate RocketGPT from PowerShell.
+  - Quickstart for you (Nirav) to operate Mishti AI from PowerShell.
   - Health/diagnostic commands (
 gpt-health, key probes).
   - Process for re-deploy, rollback, and RLS tweaks.

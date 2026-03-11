@@ -1,7 +1,7 @@
 # RGPT-CONTRACT — Replay Engine (Guardrailed)
 
 ## 1. Contract Purpose
-Defines the binding contract for replaying AI runs under RocketGPT governance.
+Defines the binding contract for replaying AI runs under Mishti AI governance.
 
 ## 2. Inputs
 - run_id (original)

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mishti/schemas/routing.schema.json",
+  "title": "Mishti Routing Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["routingId", "taskId", "targetActorId", "trustPosture", "constraintClass"],
+  "properties": {
+    "routingId": { "type": "string" },
+    "taskId": { "type": "string" },
+    "targetActorId": { "type": "string" },
+    "trustPosture": {
+      "type": "string",
+      "enum": ["zero_trust", "provisional", "bounded", "trusted", "quarantined", "revoked"]
+    },
+    "constraintClass": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["governance", "trust", "capacity", "evidence", "runtime", "survival"]
+      },
+      "minItems": 1
+    },
+    "decisionClass": {
+      "type": "string",
+      "enum": ["allow", "allow_limited", "deny", "defer", "freeze", "emergency_override"]
+    }
+  }
+}

@@ -8,6 +8,7 @@ import { readHeartbeatEnvEnabled, readHeartbeatRuntimeKillSwitch } from "./heart
 const DEFAULT_LEDGER_PATH = ".rocketgpt/cognitive-mesh/execution-ledger.jsonl";
 const DEFAULT_TIMELINE_PATH = ".rocketgpt/cognitive-mesh/runtime-timeline.jsonl";
 const DEFAULT_KILL_SWITCH_PATH = ".rocketgpt/runtime/kill-switch.json";
+const DEFAULT_HEARTBEAT_STATE_PATH = ".rocketgpt/runtime/heartbeat-state.json";
 const DEFAULT_HEARTBEAT_HEALTHY_THRESHOLD_SECONDS = 90;
 const DEFAULT_RECENT_WINDOW_HOURS = 24;
 
@@ -57,6 +58,7 @@ interface RuntimeHeartbeatSummary {
   killSwitchFileState: "loaded" | "missing" | "invalid";
   fileEnabled: boolean;
   lastSeenAt: string | null;
+  recencySource: "ledger_timeline" | "heartbeat_state" | "none";
   ageSeconds: number | null;
   status: HeartbeatStatus;
 }
@@ -104,12 +106,19 @@ export interface RuntimeStatusOptions {
   hostname?: string;
   ledgerPath?: string;
   timelinePath?: string;
+  heartbeatStatePath?: string;
   killSwitchPath?: string;
   deepVerification?: boolean;
   includeDeepDetails?: boolean;
   maxDetailFindings?: number;
   heartbeatHealthyThresholdSeconds?: number;
   recentWindowHours?: number;
+}
+
+interface HeartbeatStateReadResult {
+  exists: boolean;
+  lastEvaluatedAt: string | null;
+  lastHealthyAt: string | null;
 }
 
 function toNonEmptyText(value: unknown): string | null {
@@ -179,6 +188,42 @@ async function readJsonlFile(filePath: string): Promise<JsonlReadResult> {
     parseErrorCount: parseErrorLines.length,
     parseErrorLines,
   };
+}
+
+async function readHeartbeatStateFile(path: string): Promise<HeartbeatStateReadResult> {
+  try {
+    await access(path, constants.F_OK);
+  } catch {
+    return {
+      exists: false,
+      lastEvaluatedAt: null,
+      lastHealthyAt: null,
+    };
+  }
+
+  try {
+    const raw = await readFile(path, "utf8");
+    const parsed = JSON.parse(raw) as unknown;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return {
+        exists: true,
+        lastEvaluatedAt: null,
+        lastHealthyAt: null,
+      };
+    }
+    const value = parsed as Record<string, unknown>;
+    return {
+      exists: true,
+      lastEvaluatedAt: toNonEmptyText(value.lastEvaluatedAt),
+      lastHealthyAt: toNonEmptyText(value.lastHealthyAt),
+    };
+  } catch {
+    return {
+      exists: true,
+      lastEvaluatedAt: null,
+      lastHealthyAt: null,
+    };
+  }
 }
 
 function isHeartbeatRecord(record: Record<string, unknown>): boolean {
@@ -429,6 +474,7 @@ export async function collectRuntimeStatus(options: RuntimeStatusOptions = {}): 
   const hostName = options.hostname ?? osHostname();
   const ledgerPath = options.ledgerPath ?? env.COGNITIVE_MESH_EXECUTION_LEDGER_JSONL_PATH ?? DEFAULT_LEDGER_PATH;
   const timelinePath = options.timelinePath ?? env.COGNITIVE_MESH_RUNTIME_TIMELINE_JSONL_PATH ?? DEFAULT_TIMELINE_PATH;
+  const heartbeatStatePath = options.heartbeatStatePath ?? env.RGPT_HEARTBEAT_STATE_PATH ?? DEFAULT_HEARTBEAT_STATE_PATH;
   const killSwitchPath = options.killSwitchPath ?? env.RGPT_HEARTBEAT_KILL_SWITCH_PATH ?? DEFAULT_KILL_SWITCH_PATH;
   const healthyThresholdSeconds = options.heartbeatHealthyThresholdSeconds ?? DEFAULT_HEARTBEAT_HEALTHY_THRESHOLD_SECONDS;
   const recentWindowHours = options.recentWindowHours ?? DEFAULT_RECENT_WINDOW_HOURS;
@@ -463,11 +509,37 @@ export async function collectRuntimeStatus(options: RuntimeStatusOptions = {}): 
 
   let lastHeartbeatAt: string | null = null;
   let lastHeartbeatMs = -1;
+  let heartbeatRecencySource: RuntimeHeartbeatSummary["recencySource"] = "none";
   for (const candidate of heartbeatCandidates) {
     const ts = parseIsoTimestamp(candidate);
     if (ts != null && ts > lastHeartbeatMs) {
       lastHeartbeatMs = ts;
       lastHeartbeatAt = candidate;
+      heartbeatRecencySource = "ledger_timeline";
+    }
+  }
+
+  const shouldConsultHeartbeatState =
+    lastHeartbeatAt == null ||
+    (lastHeartbeatMs > 0 &&
+      Math.max(0, Math.floor((now.getTime() - lastHeartbeatMs) / 1000)) > healthyThresholdSeconds);
+
+  if (shouldConsultHeartbeatState) {
+    const heartbeatStateRead = await readHeartbeatStateFile(heartbeatStatePath);
+    const heartbeatStateCandidates = [
+      heartbeatStateRead.lastEvaluatedAt,
+      heartbeatStateRead.lastHealthyAt,
+    ];
+    for (const candidate of heartbeatStateCandidates) {
+      if (!candidate) {
+        continue;
+      }
+      const ts = parseIsoTimestamp(candidate);
+      if (ts != null && ts > lastHeartbeatMs) {
+        lastHeartbeatMs = ts;
+        lastHeartbeatAt = candidate;
+        heartbeatRecencySource = "heartbeat_state";
+      }
     }
   }
 
@@ -559,6 +631,7 @@ export async function collectRuntimeStatus(options: RuntimeStatusOptions = {}): 
     killSwitchFileState: killSwitch.fileState,
     fileEnabled: killSwitch.config.heartbeat,
     lastSeenAt: lastHeartbeatAt,
+    recencySource: heartbeatRecencySource,
     ageSeconds: heartbeatStatus.ageSeconds,
     status: heartbeatStatus.status,
   };

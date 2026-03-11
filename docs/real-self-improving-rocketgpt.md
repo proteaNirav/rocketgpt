@@ -1,12 +1,12 @@
-# Real Self-Improving RocketGPT
+# Real Self-Improving Mishti AI
 
-> Vision: RocketGPT should not just *run* code – it should continuously **improve itself** (safely), using real usage, tests, and guardrails to get better over time.
+> Vision: Mishti AI should not just *run* code – it should continuously **improve itself** (safely), using real usage, tests, and guardrails to get better over time.
 
 ---
 
 ## 1. What “Real Self-Improving” Means
 
-“Self-improving” RocketGPT is **not** magic AGI.
+“Self-improving” Mishti AI is **not** magic AGI.
 
 It means:
 
@@ -17,7 +17,7 @@ It means:
 5. Every improvement is **documented and traceable** (changelogs, PR titles, commit messages).
 
 In short:  
-> *A loop where RocketGPT + tooling + humans keep RocketGPT getting better every week.*
+> *A loop where Mishti AI + tooling + humans keep Mishti AI getting better every week.*
 
 ---
 
@@ -36,7 +36,7 @@ In short:
    - Each change should have a clear reason (“fix X”, “improve Y”, “document Z”).
 
 4. **Everything observable**  
-   - Logs, metrics, and PR history should tell the story of how RocketGPT is evolving.
+   - Logs, metrics, and PR history should tell the story of how Mishti AI is evolving.
 
 5. **Tooling over heroics**  
    - No dependency on a single person.  
@@ -46,7 +46,7 @@ In short:
 
 ## 3. The Self-Improvement Loop
 
-The Real Self-Improving RocketGPT is built around this loop:
+The Real Self-Improving Mishti AI is built around this loop:
 
 1. **Observe**  
    - Collect signals: failed tests, production errors, slow responses, user feedback, security alerts.
@@ -83,9 +83,9 @@ This loop should eventually be easy to trigger with a single command or workflow
 
 ---
 
-## 4. Concrete Mechanisms in RocketGPT
+## 4. Concrete Mechanisms in Mishti AI
 
-Below are the **practical building blocks** that make “Real Self-Improving RocketGPT” real.
+Below are the **practical building blocks** that make “Real Self-Improving Mishti AI” real.
 
 ### 4.1. Code-Level Self-Improvement
 
@@ -106,7 +106,7 @@ Below are the **practical building blocks** that make “Real Self-Improving Roc
 ### 4.2. Knowledge & Prompt-Level Self-Improvement
 
 - Central **Prompt Library**:
-  - System prompts for RocketGPT agents.
+  - System prompts for Mishti AI agents.
   - Patterns that worked well (and why).
 - “Playbook” docs for:
   - How to debug edge functions.
@@ -132,7 +132,7 @@ Below are the **practical building blocks** that make “Real Self-Improving Roc
 
 Real self-improvement is **never** “AI does whatever it wants”.
 
-RocketGPT must respect:
+Mishti AI must respect:
 
 1. **Branch protection**  
    - No direct pushes to `main`.  
@@ -158,7 +158,7 @@ RocketGPT must respect:
 
 This document connects to existing and future plans like:
 
-- `AI_Evolution.md` (Narrow → General → Super AI for RocketGPT)
+- `AI_Evolution.md` (Narrow → General → Super AI for Mishti AI)
 - `self-improvement-charter.md` (principles + commitments)
 - v3/v4 Core AI roadmaps
 
@@ -174,7 +174,7 @@ Suggested milestones:
    - Scripts / workflows to propose fixes for common issues.
    - Clear dashboards for health (builds, tests, deploys).
 
-3. **v4 Core AI – Real Self-Improving RocketGPT**
+3. **v4 Core AI – Real Self-Improving Mishti AI**
    - `self_improve.yml` workflow for structured “improvement sessions”.
    - AI-guided PR review integrated as a standard step.
    - Safer-yet-faster merging for low-risk changes (docs, comments, non-critical files).
@@ -185,7 +185,7 @@ Suggested milestones:
 ## 7. How to Use This Document
 
 - As a **north star**:  
-  When in doubt, ask: *“Does this change make RocketGPT more self-improving, or more fragile?”*
+  When in doubt, ask: *“Does this change make Mishti AI more self-improving, or more fragile?”*
 
 - As a **design filter**:  
   For any new feature:
@@ -194,16 +194,16 @@ Suggested milestones:
   - How can AI help maintain or improve it?
 
 - As a **communication tool**:  
-  To explain to collaborators what “Real Self-Improving RocketGPT” actually means in practical, non-mystical terms.
+  To explain to collaborators what “Real Self-Improving Mishti AI” actually means in practical, non-mystical terms.
 
 ---
 
 *Version:* v1 – draft  
-*Status:* Living document – meant to evolve as RocketGPT grows.
+*Status:* Living document – meant to evolve as Mishti AI grows.
 
 ## What Self-Improvement Means (Nirav’s Definition)
 
-For RocketGPT, self-improvement is only valid when:
+For Mishti AI, self-improvement is only valid when:
 
 1. **Goal-Driven Loop**
    - There is a clear goal.
@@ -218,14 +218,14 @@ For RocketGPT, self-improvement is only valid when:
    - It must detect such signals (failures, safety flags, complaints, regressions)
    - And self-correct so the same harm does not repeat.
 
-These two principles are mandatory for any “self-improving” behavior in RocketGPT.
+These two principles are mandatory for any “self-improving” behavior in Mishti AI.
 
 ## What Self-Improvement Means (Nirav’s Definition)
 
-RocketGPT considers self-improvement valid only under two concrete conditions:
+Mishti AI considers self-improvement valid only under two concrete conditions:
 
 ### 1. Goal-Driven Improvement Loop
-- There must be a **clear goal** RocketGPT is trying to achieve.
+- There must be a **clear goal** Mishti AI is trying to achieve.
 - The system performs actions/activities.
 - It observes the output/results of those actions.
 - It checks whether those results help move closer to the goal.
@@ -234,10 +234,10 @@ RocketGPT considers self-improvement valid only under two concrete conditions:
 - This becomes a continuous, ongoing loop of learning and refinement.
 
 ### 2. Correction When Behavior Hurts or Misaligns
-- If RocketGPT identifies something **wrong within itself**,
+- If Mishti AI identifies something **wrong within itself**,
 - Or something that does not align with users, contributors, or expected norms,
 - Or something that causes inconvenience, breakage, confusion, or “harm”,
 - Then it must self-update to ensure such behavior does not repeat.
 - The goal is to prevent friction, reduce errors, and avoid negative impact on others.
 
-These two principles are mandatory for any meaningful, safe, and human-aligned self-improvement behavior in RocketGPT.
+These two principles are mandatory for any meaningful, safe, and human-aligned self-improvement behavior in Mishti AI.

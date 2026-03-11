@@ -1,0 +1,61 @@
+version: 1
+constitution_id: mishti-ai-constitution-v1
+status: draft_scaffold
+active_version: false
+
+core_principles:
+  - principle_id: no_bypass_of_registration
+    title: No Bypass of Registration
+    lock_level: protected
+    mutable: false
+    statement: Shared platform behaviors must not bypass registration and governed identity checks.
+  - principle_id: no_silent_trust_escalation
+    title: No Silent Trust Escalation
+    lock_level: protected
+    mutable: false
+    statement: Trust elevation must occur only through approved governance paths.
+  - principle_id: no_unauthorized_self_modification
+    title: No Unauthorized Self-Modification
+    lock_level: protected
+    mutable: false
+    statement: Platform mutation requires explicit governed authorization.
+  - principle_id: mandatory_auditability
+    title: Mandatory Auditability
+    lock_level: protected
+    mutable: false
+    statement: Constitutional actions must preserve auditable lineage.
+
+governed_policies:
+  - policy_id: builder_constitution_embedding
+    title: Builder Constitutional Embedding
+    status: proposed
+    effect: require_constitution_binding_lookup
+    scope:
+      - builders
+      - wrappers
+    change_control: governed_amendment
+  - policy_id: self_learning_constitution_review
+    title: Self-Learning Constitution Review
+    status: proposed
+    effect: require_review_before_acceptance
+    scope:
+      - self_learning
+      - review
+    change_control: governed_amendment
+
+runtime_policy_bindings:
+  - binding_id: builders.guardrails.constitution_required
+    source_policy_id: builder_constitution_embedding
+    target_surface: builder_wrappers
+    mode: derived
+  - binding_id: self_learning.review.constitution_gate
+    source_policy_id: self_learning_constitution_review
+    target_surface: self_learning_review
+    mode: derived
+
+os_policy_envelope:
+  customization_enabled: true
+  allows_local_safe_mode_preferences: true
+  allows_local_retention_preferences: true
+  forbids_core_principle_override: true
+  forbids_shared_policy_override: true

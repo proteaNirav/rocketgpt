@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mishti/schemas/survival.schema.json",
+  "title": "Mishti Survival Schema",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/SurvivalStatus" },
+    { "$ref": "#/$defs/EmergencyCommand" }
+  ],
+  "$defs": {
+    "SurvivalState": {
+      "type": "string",
+      "enum": ["normal", "throttled", "degraded", "subsystem_paused", "node_isolated", "safe_mode", "emergency_stop"]
+    },
+    "SurvivalStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "killSwitchReachable"],
+      "properties": {
+        "state": { "$ref": "#/$defs/SurvivalState" },
+        "isolation": { "type": "string", "enum": ["connected", "isolated"] },
+        "killSwitchReachable": { "type": "boolean" }
+      }
+    },
+    "EmergencyCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commandId", "initiatedBy", "justification"],
+      "properties": {
+        "commandId": { "type": "string" },
+        "initiatedBy": { "type": "string" },
+        "justification": { "type": "string" }
+      }
+    }
+  }
+}

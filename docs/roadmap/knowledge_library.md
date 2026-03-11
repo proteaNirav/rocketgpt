@@ -11,7 +11,7 @@
 - data/domains/<domain>/meta.json, concepts.jsonl, examples.jsonl.
 - docs/language/ and docs/domains/ for human-readable overviews and reasoning patterns.
 
-### Role in RocketGPT
+### Role in Mishti AI
 - Behaves like a structured “knowledge network” on top of the base LLMs.
 - Self-Study, Self-Research, and Self-Innovation read and update these files over time.
 - Used to:

@@ -1,10 +1,10 @@
-Gemini Design-Time Training Template for RocketGPT – Planner Prompt
+Gemini Design-Time Training Template for Mishti AI – Planner Prompt
 
 Purpose
 
 
 
-This template defines how Gemini is allowed to help improve the Planner Prompt for RocketGPT, without ever affecting runtime logic or the OpenAI-only execution model.
+This template defines how Gemini is allowed to help improve the Planner Prompt for Mishti AI, without ever affecting runtime logic or the OpenAI-only execution model.
 
 
 
@@ -52,7 +52,7 @@ Suggest security, RLS or database policy changes
 
 
 
-Suggest changing RocketGPT to run on Gemini at runtime
+Suggest changing Mishti AI to run on Gemini at runtime
 
 
 
@@ -202,11 +202,11 @@ Gemini is an external design-time assistant only.
 
 
 
-Gemini does not run inside RocketGPT.
+Gemini does not run inside Mishti AI.
 
 
 
-Gemini does not decide which model RocketGPT uses at runtime.
+Gemini does not decide which model Mishti AI uses at runtime.
 
 
 
@@ -230,5 +230,5 @@ Only then, be integrated into the Planner specification or related prompts via G
 
 
 
-The runtime behavior of RocketGPT, including the Planner agent, remains strictly on OpenAI (and optionally Claude in future if explicitly added).
+The runtime behavior of Mishti AI, including the Planner agent, remains strictly on OpenAI (and optionally Claude in future if explicitly added).
 

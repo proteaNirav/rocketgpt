@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mishti/schemas/authority.schema.json",
+  "title": "Mishti Authority Schema",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/AuthorityGrant" },
+    { "$ref": "#/$defs/RevocationRecord" },
+    { "$ref": "#/$defs/EmergencyOverride" }
+  ],
+  "$defs": {
+    "TrustPosture": {
+      "type": "string",
+      "enum": ["zero_trust", "provisional", "bounded", "trusted", "quarantined", "revoked"]
+    },
+    "AuthorityGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grantId", "actorId", "actorType", "scope", "trustPosture", "state"],
+      "properties": {
+        "grantId": { "type": "string" },
+        "actorId": { "type": "string" },
+        "actorType": { "type": "string" },
+        "scope": { "type": "string" },
+        "trustPosture": { "$ref": "#/$defs/TrustPosture" },
+        "state": { "type": "string", "enum": ["pending", "active", "revoked", "expired"] }
+      }
+    },
+    "RevocationRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grantId", "actorId", "reason"],
+      "properties": {
+        "grantId": { "type": "string" },
+        "actorId": { "type": "string" },
+        "reason": {
+          "type": "string",
+          "enum": ["policy_violation", "expired_scope", "compromise_suspected", "owner_override"]
+        }
+      }
+    },
+    "EmergencyOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overrideId", "initiatedBy", "justification", "active"],
+      "properties": {
+        "overrideId": { "type": "string" },
+        "initiatedBy": { "type": "string" },
+        "justification": { "type": "string" },
+        "active": { "type": "boolean" }
+      }
+    }
+  }
+}

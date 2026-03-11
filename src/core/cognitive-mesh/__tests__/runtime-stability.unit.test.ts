@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import * as assert from "node:assert/strict";
-import { mkdtemp, mkdir, readFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ExecutionLedger } from "../runtime/execution-ledger";
@@ -9,6 +9,7 @@ import { RuntimeOscillationDetector } from "../runtime/stability/runtime-oscilla
 import { RuntimeDegradationPolicyEngine } from "../runtime/stability/runtime-degradation-policy-engine";
 import { RuntimeStabilityOrchestrator } from "../runtime/stability/runtime-stability-orchestrator";
 import { RuntimeStabilityStateRepository } from "../runtime/stability/runtime-stability-state-repository";
+import { RuntimeStabilitySignalAggregator } from "../runtime/stability/runtime-stability-signal-aggregator";
 import type { RuntimeStabilitySignal } from "../runtime/stability/runtime-stability.types";
 import { RuntimeRepairOrchestrator } from "../runtime/repair/runtime-repair-orchestrator";
 import { RuntimeRepairLearningOrchestrator } from "../runtime/repair-learning/runtime-repair-learning-orchestrator";
@@ -166,6 +167,49 @@ test("heartbeat flap detection", () => {
   });
 
   assert.equal(result.patterns.includes("heartbeat_recovery_flap"), true);
+});
+
+test("stability aggregator ingests hybrid/manual heartbeat intent from runtime.guard.evaluated entries", async () => {
+  const fixture = await createFixture();
+  await writeFile(
+    fixture.ledgerPath,
+    `${JSON.stringify({
+      entryId: "exec_hb_stability",
+      timestamp: "2026-03-09T15:00:00.000Z",
+      category: "runtime",
+      eventType: "runtime.guard.evaluated",
+      action: "runtime.heartbeat.hybrid.monitor",
+      source: "hybrid_heartbeat",
+      target: "system_heartbeat",
+      ids: { requestId: "hb-stab-1" },
+      mode: "normal",
+      status: "evaluated",
+      metadata: {
+        heartbeatHybrid: {
+          runtimeId: "rgpt-stability-test",
+          state: "healthy",
+        },
+      },
+    })}\n`,
+    "utf8"
+  );
+
+  const signals = await new RuntimeStabilitySignalAggregator().collect(
+    {
+      enabled: true,
+      lookbackMs: 3_600_000,
+      oscillationThreshold: 2,
+      multiTargetThreshold: 2,
+      evaluationCooldownMs: 60_000,
+      maxEvidenceEvents: 20,
+      statePath: fixture.stabilityStatePath,
+      ledgerPath: fixture.ledgerPath,
+    },
+    new Date("2026-03-09T15:00:30.000Z")
+  );
+
+  assert.equal(signals.length, 1);
+  assert.equal(signals[0]!.eventType, "runtime.heartbeat");
 });
 
 test("clustered multi-target instability detection", () => {

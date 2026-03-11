@@ -1,7 +1,7 @@
 # RGPT Constitution Integration Plan v1
 
 ## 1. Purpose Of Phased Rollout
-This plan defines a controlled path for integrating the RocketGPT Constitutional Brain Layer v1 into governance and runtime ecosystems without destabilizing ongoing delivery. The objective is to establish constitutional source-of-truth first, then progressively operationalize it with explicit controls.
+This plan defines a controlled path for integrating the Mishti AI Constitutional Brain Layer v1 into governance and runtime ecosystems without destabilizing ongoing delivery. The objective is to establish constitutional source-of-truth first, then progressively operationalize it with explicit controls.
 
 ## 2. Why Enforcement Is Deferred Until After Current 80% Completion Work
 Current runtime/governance hardening tracks are already in-flight and near completion. Immediate constitutional enforcement would introduce high integration churn, possible regressions, and schedule risk. Deferral preserves delivery continuity while enabling formal constitutional definition now.

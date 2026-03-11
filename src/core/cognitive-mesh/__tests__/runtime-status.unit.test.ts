@@ -10,6 +10,7 @@ interface FixturePaths {
   ledgerPath: string;
   timelinePath: string;
   killSwitchPath: string;
+  heartbeatStatePath: string;
 }
 
 async function createFixtureRoot(): Promise<FixturePaths> {
@@ -23,6 +24,7 @@ async function createFixtureRoot(): Promise<FixturePaths> {
     ledgerPath: join(meshDir, "execution-ledger.jsonl"),
     timelinePath: join(meshDir, "runtime-timeline.jsonl"),
     killSwitchPath: join(runtimeDir, "kill-switch.json"),
+    heartbeatStatePath: join(runtimeDir, "heartbeat-state.json"),
   };
 }
 
@@ -93,6 +95,7 @@ test("runtime status handles missing ledger and timeline files", async () => {
     env: { RGPT_HEARTBEAT_ENABLED: "true" },
     ledgerPath: fixture.ledgerPath,
     timelinePath: fixture.timelinePath,
+    heartbeatStatePath: fixture.heartbeatStatePath,
     killSwitchPath: fixture.killSwitchPath,
   });
 
@@ -113,6 +116,7 @@ test("heartbeat status is never_seen when enabled but no heartbeat exists", asyn
     env: { RGPT_HEARTBEAT_ENABLED: "true" },
     ledgerPath: fixture.ledgerPath,
     timelinePath: fixture.timelinePath,
+    heartbeatStatePath: fixture.heartbeatStatePath,
     killSwitchPath: fixture.killSwitchPath,
   });
 
@@ -131,6 +135,7 @@ test("heartbeat status is healthy when recent heartbeat exists", async () => {
     env: { RGPT_HEARTBEAT_ENABLED: "true" },
     ledgerPath: fixture.ledgerPath,
     timelinePath: fixture.timelinePath,
+    heartbeatStatePath: fixture.heartbeatStatePath,
     killSwitchPath: fixture.killSwitchPath,
   });
 
@@ -149,6 +154,7 @@ test("heartbeat status is disabled when env or file gate blocks", async () => {
     env: { RGPT_HEARTBEAT_ENABLED: "false" },
     ledgerPath: fixture.ledgerPath,
     timelinePath: fixture.timelinePath,
+    heartbeatStatePath: fixture.heartbeatStatePath,
     killSwitchPath: fixture.killSwitchPath,
   });
 
@@ -191,6 +197,7 @@ test("ledger summary parsing returns entry counts and failure counts", async () 
     env: { RGPT_HEARTBEAT_ENABLED: "true" },
     ledgerPath: fixture.ledgerPath,
     timelinePath: fixture.timelinePath,
+    heartbeatStatePath: fixture.heartbeatStatePath,
     killSwitchPath: fixture.killSwitchPath,
   });
 
@@ -214,6 +221,7 @@ test("timeline summary parsing returns last action and type", async () => {
     env: { RGPT_HEARTBEAT_ENABLED: "true" },
     ledgerPath: fixture.ledgerPath,
     timelinePath: fixture.timelinePath,
+    heartbeatStatePath: fixture.heartbeatStatePath,
     killSwitchPath: fixture.killSwitchPath,
   });
 
@@ -239,6 +247,7 @@ test("summary classification reports degraded on invalid artifacts", async () =>
     env: { RGPT_HEARTBEAT_ENABLED: "true" },
     ledgerPath: fixture.ledgerPath,
     timelinePath: fixture.timelinePath,
+    heartbeatStatePath: fixture.heartbeatStatePath,
     killSwitchPath: fixture.killSwitchPath,
   });
 
@@ -262,6 +271,7 @@ test("runtime status collection is read-only for runtime artifacts", async () =>
     env: { RGPT_HEARTBEAT_ENABLED: "true" },
     ledgerPath: fixture.ledgerPath,
     timelinePath: fixture.timelinePath,
+    heartbeatStatePath: fixture.heartbeatStatePath,
     killSwitchPath: fixture.killSwitchPath,
     deepVerification: true,
   });
@@ -275,4 +285,38 @@ test("runtime status collection is read-only for runtime artifacts", async () =>
   assert.equal(beforeTimelineStat.mtimeMs, afterTimelineStat.mtimeMs);
   assert.equal(beforeLedgerContents, afterLedgerContents);
   assert.equal(beforeTimelineContents, afterTimelineContents);
+});
+
+test("runtime status falls back to heartbeat-state when ledger/timeline heartbeat evidence is absent", async () => {
+  const fixture = await createFixtureRoot();
+  await writeKillSwitch(fixture.killSwitchPath, true);
+  await writeJsonl(fixture.ledgerPath, []);
+  await writeJsonl(fixture.timelinePath, []);
+  await writeFile(
+    fixture.heartbeatStatePath,
+    JSON.stringify(
+      {
+        runtimeId: "rgpt-local-fallback",
+        lastEvaluatedAt: "2026-03-08T10:00:00.000Z",
+        lastHealthyAt: "2026-03-08T10:00:00.000Z",
+        currentState: "healthy",
+      },
+      null,
+      2
+    ),
+    "utf8"
+  );
+
+  const report = await collectRuntimeStatus({
+    now: new Date("2026-03-08T10:00:30.000Z"),
+    env: { RGPT_HEARTBEAT_ENABLED: "true" },
+    ledgerPath: fixture.ledgerPath,
+    timelinePath: fixture.timelinePath,
+    heartbeatStatePath: fixture.heartbeatStatePath,
+    killSwitchPath: fixture.killSwitchPath,
+  });
+
+  assert.equal(report.heartbeat.status, "healthy");
+  assert.equal(report.heartbeat.lastSeenAt, "2026-03-08T10:00:00.000Z");
+  assert.equal(report.heartbeat.recencySource, "heartbeat_state");
 });

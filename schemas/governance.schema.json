@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mishti/schemas/governance.schema.json",
+  "title": "Mishti Governance Schema",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/ConstitutionRecord" },
+    { "$ref": "#/$defs/PolicyRecord" },
+    { "$ref": "#/$defs/ProposalRecord" },
+    { "$ref": "#/$defs/SnapshotRecord" }
+  ],
+  "$defs": {
+    "GovernanceDecisionClass": {
+      "type": "string",
+      "enum": ["allow", "allow_limited", "deny", "defer", "freeze", "emergency_override"]
+    },
+    "ConstitutionRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["constitutionId", "version", "state"],
+      "properties": {
+        "constitutionId": { "type": "string" },
+        "version": { "type": "string" },
+        "state": { "type": "string", "enum": ["draft", "approved", "active", "suspended"] }
+      }
+    },
+    "PolicyRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policyId", "name", "active"],
+      "properties": {
+        "policyId": { "type": "string" },
+        "name": { "type": "string" },
+        "active": { "type": "boolean" }
+      }
+    },
+    "ProposalRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposalId", "title", "state", "decisionClass"],
+      "properties": {
+        "proposalId": { "type": "string" },
+        "title": { "type": "string" },
+        "state": { "type": "string", "enum": ["draft", "submitted", "approved", "rejected", "activated"] },
+        "decisionClass": { "$ref": "#/$defs/GovernanceDecisionClass" }
+      }
+    },
+    "SnapshotRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshotId", "basisRef", "state"],
+      "properties": {
+        "snapshotId": { "type": "string" },
+        "basisRef": { "type": "string" },
+        "state": { "type": "string", "enum": ["captured", "verified", "restored"] }
+      }
+    }
+  }
+}

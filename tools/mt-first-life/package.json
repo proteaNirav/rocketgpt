@@ -1,0 +1,16 @@
+{
+  "name": "@mishti/mt-first-life",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/tools/mt-first-life/src/cli.js",
+  "types": "dist/tools/mt-first-life/src/cli.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "cli": "npm run build && node dist/tools/mt-first-life/src/cli.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mishti/schemas/evidence.schema.json",
+  "title": "Mishti Evidence Schema",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/AppendOnlyEvent" },
+    { "$ref": "#/$defs/EvidenceReceipt" },
+    { "$ref": "#/$defs/HashChainCheckpoint" }
+  ],
+  "$defs": {
+    "AppendOnlyEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventId", "actorId", "payloadHash", "eventHash"],
+      "properties": {
+        "eventId": { "type": "string" },
+        "actorId": { "type": "string" },
+        "traceId": { "type": "string" },
+        "taskId": { "type": "string" },
+        "payloadHash": { "type": "string" },
+        "previousHash": { "type": "string" },
+        "eventHash": { "type": "string" }
+      }
+    },
+    "EvidenceReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receiptId", "packetId", "state"],
+      "properties": {
+        "receiptId": { "type": "string" },
+        "packetId": { "type": "string" },
+        "state": { "type": "string", "enum": ["accepted", "rejected", "quarantined"] }
+      }
+    },
+    "HashChainCheckpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkpointId", "tipHash", "eventCount"],
+      "properties": {
+        "checkpointId": { "type": "string" },
+        "tipHash": { "type": "string" },
+        "eventCount": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
