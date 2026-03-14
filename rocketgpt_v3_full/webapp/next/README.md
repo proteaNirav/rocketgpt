@@ -1,7 +1,9 @@
 # RocketGPT UI "” Phase 2 (Sprint 1)
+
 Claude/Emergent-style chat shell wired to the live Core API.
 
 ## Quickstart
+
 ```bash
 # Node 18+ recommended
 npm i
@@ -12,7 +14,9 @@ npm run dev
 ```
 
 ## Local Admin UI (No Docker)
+
 Set these in `.env.local`:
+
 - `NEXT_PUBLIC_SUPABASE_URL=<your supabase url>`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY=<your supabase anon key>`
 - `SUPABASE_SERVICE_ROLE_KEY=<your service role key>`
@@ -21,23 +25,27 @@ Set these in `.env.local`:
 - `ALLOW_DEV_ADMIN_PROXY=true` (localhost only dev bypass when not signed in)
 
 Run:
+
 ```bash
 pnpm dev
 pnpm exec playwright test tests/ui/admin-learning.spec.ts tests/ui/admin-cats.spec.ts
 ```
 
 ## What"™s included
+
 - Next.js (app router) + Tailwind
 - PromptBar, DecisionBanner, Toolcard, EstimateBadge, PlanPanel
 - API client using `NEXT_PUBLIC_CORE_API_BASE`
 - Simple state via Zustand
 
 ## Wire to Production
+
 - Build: `npm run build`
 - Start: `npm start`
 - Deploy on Vercel/Render/Netlify (set env NEXT_PUBLIC_CORE_API_BASE)
 
 ## CATS Demo UI
+
 - Start core-api on `http://localhost:8080` and set `NEXT_PUBLIC_CORE_API_BASE=http://localhost:8080`.
 - Open `/cats/library` to load registry entries and inspect CAT definition/passport JSON.
 - Use the replay action buttons in the library page to copy exact `pwsh` commands for:

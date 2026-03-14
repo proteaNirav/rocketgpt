@@ -1,31 +1,31 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
 
 export interface OrchestratorRouteContext {
-  route: string;
-  runId?: string;
+  route: string
+  runId?: string
 }
 
 interface SafeModeErrorPayload {
-  success: boolean;
-  error_code: string;
-  message: string;
-  capability?: string;
-  safe_mode?: boolean;
-  timestamp?: string;
-  details?: any;
-  status?: number;
+  success: boolean
+  error_code: string
+  message: string
+  capability?: string
+  safe_mode?: boolean
+  timestamp?: string
+  details?: any
+  status?: number
 }
 
 /**
  * Type guard to detect Safe-Mode errors thrown by safeModeGuard().
  */
 function isSafeModeError(err: unknown): err is SafeModeErrorPayload {
-  if (!err || typeof err !== "object") return false;
-  const anyErr = err as any;
+  if (!err || typeof err !== 'object') return false
+  const anyErr = err as any
   return (
-    anyErr.error_code === "SAFE_MODE_ACTIVE" ||
-    (anyErr.safe_mode === true && typeof anyErr.message === "string")
-  );
+    anyErr.error_code === 'SAFE_MODE_ACTIVE' ||
+    (anyErr.safe_mode === true && typeof anyErr.message === 'string')
+  )
 }
 
 /**
@@ -34,26 +34,26 @@ function isSafeModeError(err: unknown): err is SafeModeErrorPayload {
 export function normalizeError(err: unknown): { message: string; name?: string } {
   if (err instanceof Error) {
     return {
-      message: err.message || "Unexpected error",
+      message: err.message || 'Unexpected error',
       name: err.name,
-    };
+    }
   }
 
-  if (typeof err === "string") {
+  if (typeof err === 'string') {
     return {
       message: err,
-    };
+    }
   }
 
   try {
-    const asJson = JSON.stringify(err);
+    const asJson = JSON.stringify(err)
     return {
       message: asJson,
-    };
+    }
   } catch {
     return {
-      message: "Unexpected error",
-    };
+      message: 'Unexpected error',
+    }
   }
 }
 
@@ -62,63 +62,58 @@ export function normalizeError(err: unknown): { message: string; name?: string }
  */
 export async function withOrchestratorHandler(
   ctx: OrchestratorRouteContext,
-  handler: () => Promise<NextResponse> | NextResponse
+  handler: () => Promise<NextResponse> | NextResponse,
 ): Promise<NextResponse> {
   try {
-    return await handler();
+    return await handler()
   } catch (err) {
     // 1) Safe-Mode specific handling – return the error object as-is
     if (isSafeModeError(err)) {
-      const safeErr = err as SafeModeErrorPayload;
+      const safeErr = err as SafeModeErrorPayload
 
       const statusCode =
-        typeof safeErr.status === "number" && safeErr.status >= 400
-          ? safeErr.status
-          : 503;
+        typeof safeErr.status === 'number' && safeErr.status >= 400 ? safeErr.status : 503
 
-      console.warn("[ORCH-ROUTE-SAFEMODE]", {
+      console.warn('[ORCH-ROUTE-SAFEMODE]', {
         route: ctx.route,
         runId: ctx.runId,
         error: safeErr,
-      });
+      })
 
-      return NextResponse.json(safeErr, { status: statusCode });
+      return NextResponse.json(safeErr, { status: statusCode })
     }
 
     // 2) Upstream fetch/network failures
-    const errorPayload = normalizeError(err);
-    if (
-      errorPayload.message.includes("fetch failed") ||
-      errorPayload.name === "TypeError"
-    ) {
+    const errorPayload = normalizeError(err)
+    if (errorPayload.message.includes('fetch failed') || errorPayload.name === 'TypeError') {
       return NextResponse.json(
         {
           success: false,
           route: ctx.route,
           runId: ctx.runId ?? null,
-          error_code: "UPSTREAM_FETCH_FAILED",
-          message: "Upstream fetch failed",
+          error_code: 'UPSTREAM_FETCH_FAILED',
+          message: 'Upstream fetch failed',
           details: {
             name: errorPayload.name,
             message: errorPayload.message,
           },
         },
-        { status: 502 }
-      );
+        { status: 502 },
+      )
     }
 
     // 3) Generic error handling (existing behaviour)
 
     // Server-side log for observability
     console.error(
-      "[ORCH-ROUTE-ERROR]",
+      '[ORCH-ROUTE-ERROR]',
       {
         route: ctx.route,
         runId: ctx.runId,
         error: errorPayload,
       },
-      err
-    );
+      err,
+    )
 
     return NextResponse.json(
       {
@@ -127,7 +122,7 @@ export async function withOrchestratorHandler(
         route: ctx.route,
         runId: ctx.runId ?? null,
       },
-      { status: 403 }
-    );
+      { status: 403 },
+    )
   }
 }

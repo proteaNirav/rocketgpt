@@ -1,42 +1,48 @@
-import { NextRequest, NextResponse } from "next/server";
-import { runtimeGuard } from "@/rgpt/runtime/runtime-guard";
-const ROUTE = "/api/orchestrator/builder/execute-all";
+import { NextRequest, NextResponse } from 'next/server'
+import { runtimeGuard } from '@/rgpt/runtime/runtime-guard'
+const ROUTE = '/api/orchestrator/builder/execute-all'
 
 // Safe-Mode detection (CI forces this ON; must short-circuit safely)
 function _isSafeMode(): boolean {
-  const v = (process.env.RGPT_SAFE_MODE ?? process.env.SAFE_MODE ?? process.env.RGPT_RUNTIME_MODE ?? "").toString().toLowerCase();
-  return v === "1" || v === "true" || v === "on" || v === "safe" || v === "safemode";
+  const v = (
+    process.env.RGPT_SAFE_MODE ??
+    process.env.SAFE_MODE ??
+    process.env.RGPT_RUNTIME_MODE ??
+    ''
+  )
+    .toString()
+    .toLowerCase()
+  return v === '1' || v === 'true' || v === 'on' || v === 'safe' || v === 'safemode'
 }
 
-export const runtime = "nodejs";
-
+export const runtime = 'nodejs'
 
 export interface OrchestratorRouteContext {
-  route: string;
-  runId?: string;
+  route: string
+  runId?: string
 }
 
 interface SafeModeErrorPayload {
-  success: boolean;
-  error_code: string;
-  message: string;
-  capability?: string;
-  safe_mode?: boolean;
-  timestamp?: string;
-  details?: any;
-  status?: number;
+  success: boolean
+  error_code: string
+  message: string
+  capability?: string
+  safe_mode?: boolean
+  timestamp?: string
+  details?: any
+  status?: number
 }
 
 /**
  * Type guard to detect Safe-Mode errors thrown by safeModeGuard().
  */
 function isSafeModeError(err: unknown): err is SafeModeErrorPayload {
-  if (!err || typeof err !== "object") return false;
-  const anyErr = err as any;
+  if (!err || typeof err !== 'object') return false
+  const anyErr = err as any
   return (
-    anyErr.error_code === "SAFE_MODE_ACTIVE" ||
-    (anyErr.safe_mode === true && typeof anyErr.message === "string")
-  );
+    anyErr.error_code === 'SAFE_MODE_ACTIVE' ||
+    (anyErr.safe_mode === true && typeof anyErr.message === 'string')
+  )
 }
 
 /**
@@ -45,75 +51,74 @@ function isSafeModeError(err: unknown): err is SafeModeErrorPayload {
 function normalizeError(err: unknown): { message: string; name?: string } {
   if (err instanceof Error) {
     return {
-      message: err.message || "Unexpected error",
+      message: err.message || 'Unexpected error',
       name: err.name,
-    };
+    }
   }
 
-  if (typeof err === "string") {
+  if (typeof err === 'string') {
     return {
       message: err,
-    };
+    }
   }
 
   try {
-    const asJson = JSON.stringify(err);
+    const asJson = JSON.stringify(err)
     return {
       message: asJson,
-    };
+    }
   } catch {
     return {
-      message: "Unexpected error",
-    };
+      message: 'Unexpected error',
+    }
   }
 }
 
 function summarizeBody(body: unknown): string {
   try {
-    const asString = typeof body === "string" ? body : JSON.stringify(body);
+    const asString = typeof body === 'string' ? body : JSON.stringify(body)
     if (asString.length > 5000) {
-      return asString.slice(0, 5000) + "...[truncated]";
+      return asString.slice(0, 5000) + '...[truncated]'
     }
-    return asString;
+    return asString
   } catch {
-    return "[unserializable body]";
+    return '[unserializable body]'
   }
 }
 
 function guardFailResponse(err: any, route: string, runId?: string): NextResponse {
-  const message = typeof err?.message === "string" ? err.message : "Runtime guard blocked request.";
-  const name = typeof err?.name === "string" ? err.name : undefined;
-  const isUpstreamFetchFailure =
-    message.includes("fetch failed") || name === "TypeError";
+  const message = typeof err?.message === 'string' ? err.message : 'Runtime guard blocked request.'
+  const name = typeof err?.name === 'string' ? err.name : undefined
+  const isUpstreamFetchFailure = message.includes('fetch failed') || name === 'TypeError'
   if (isUpstreamFetchFailure) {
     return NextResponse.json(
       {
         success: false,
         route,
         runId: runId ?? null,
-        error_code: "UPSTREAM_FETCH_FAILED",
-        message: "Upstream fetch failed",
+        error_code: 'UPSTREAM_FETCH_FAILED',
+        message: 'Upstream fetch failed',
         details: { name, message },
       },
-      { status: 502 }
-    );
+      { status: 502 },
+    )
   }
 
-  const statusFromError = typeof err?.status === "number" ? err.status : undefined;
+  const statusFromError = typeof err?.status === 'number' ? err.status : undefined
   const status =
     statusFromError === 400 || statusFromError === 401 || statusFromError === 403
       ? statusFromError
-      : message.startsWith("RGPT_GUARD_BLOCK:")
+      : message.startsWith('RGPT_GUARD_BLOCK:')
         ? 403
-        : message.includes("MISSING_DECISION_ID")
+        : message.includes('MISSING_DECISION_ID')
           ? 400
-          : 403;
+          : 403
 
-  const error_code = message.includes("MISSING_DECISION_ID")
-    ? "MISSING_DECISION_ID"
-    : message.startsWith("RGPT_GUARD_BLOCK:")
-      ? "RGPT_GUARD_BLOCK"
-      : "RUNTIME_GUARD_FAILED";
+  const error_code = message.includes('MISSING_DECISION_ID')
+    ? 'MISSING_DECISION_ID'
+    : message.startsWith('RGPT_GUARD_BLOCK:')
+      ? 'RGPT_GUARD_BLOCK'
+      : 'RUNTIME_GUARD_FAILED'
 
   return NextResponse.json(
     {
@@ -124,8 +129,8 @@ function guardFailResponse(err: any, route: string, runId?: string): NextRespons
       message,
       ...(err?.details !== undefined ? { details: err.details } : {}),
     },
-    { status }
-  );
+    { status },
+  )
 }
 
 /**
@@ -133,63 +138,58 @@ function guardFailResponse(err: any, route: string, runId?: string): NextRespons
  */
 async function withOrchestratorHandlerLocal(
   ctx: OrchestratorRouteContext,
-  handler: () => Promise<NextResponse>
+  handler: () => Promise<NextResponse>,
 ): Promise<NextResponse> {
   try {
-    return await handler();
+    return await handler()
   } catch (err) {
     // 1) Safe-Mode specific handling â€“ return the error object as-is
     if (isSafeModeError(err)) {
-      const safeErr = err as SafeModeErrorPayload;
+      const safeErr = err as SafeModeErrorPayload
 
       const statusCode =
-        typeof safeErr.status === "number" && safeErr.status >= 400
-          ? safeErr.status
-          : 403;
+        typeof safeErr.status === 'number' && safeErr.status >= 400 ? safeErr.status : 403
 
-      console.warn("[ORCH-ROUTE-SAFEMODE]", {
+      console.warn('[ORCH-ROUTE-SAFEMODE]', {
         route: ctx.route,
         runId: ctx.runId,
         error: safeErr,
-      });
+      })
 
-      return NextResponse.json(safeErr, { status: statusCode });
+      return NextResponse.json(safeErr, { status: statusCode })
     }
 
     // 2) Upstream fetch/network failures
-    const errorPayload = normalizeError(err);
-    if (
-      errorPayload.message.includes("fetch failed") ||
-      errorPayload.name === "TypeError"
-    ) {
+    const errorPayload = normalizeError(err)
+    if (errorPayload.message.includes('fetch failed') || errorPayload.name === 'TypeError') {
       return NextResponse.json(
         {
           success: false,
           route: ctx.route,
           runId: ctx.runId ?? null,
-          error_code: "UPSTREAM_FETCH_FAILED",
-          message: "Upstream fetch failed",
+          error_code: 'UPSTREAM_FETCH_FAILED',
+          message: 'Upstream fetch failed',
           details: {
             name: errorPayload.name,
             message: errorPayload.message,
           },
         },
-        { status: 502 }
-      );
+        { status: 502 },
+      )
     }
 
     // 3) Generic error handling (existing behaviour)
 
     // Server-side log for observability
     console.error(
-      "[ORCH-ROUTE-ERROR]",
+      '[ORCH-ROUTE-ERROR]',
       {
         route: ctx.route,
         runId: ctx.runId,
         error: errorPayload,
       },
-      err
-    );
+      err,
+    )
 
     return NextResponse.json(
       {
@@ -198,8 +198,8 @@ async function withOrchestratorHandlerLocal(
         route: ctx.route,
         runId: ctx.runId ?? null,
       },
-      { status: 403 }
-    );
+      { status: 403 },
+    )
   }
 }
 
@@ -210,8 +210,8 @@ async function withOrchestratorHandlerLocal(
  */
 export async function POST(req: NextRequest) {
   // CI forces Safe-Mode ON; must block with clean 4xx (no crashes)
-  if (typeof _isSafeMode === "function" && _isSafeMode()) {
-    return NextResponse.json({ ok: false, error: "SAFE_MODE_ACTIVE" }, { status: 403 });
+  if (typeof _isSafeMode === 'function' && _isSafeMode()) {
+    return NextResponse.json({ ok: false, error: 'SAFE_MODE_ACTIVE' }, { status: 403 })
   }
 
   /**
@@ -220,166 +220,159 @@ export async function POST(req: NextRequest) {
    */
   async function governancePreflightBestEffort(input: any): Promise<any | null> {
     try {
-      const mod: any = await import("@/lib/governance/governance-service");
-      const fn = mod?.governancePreflight ?? mod?.evaluateGovernancePreflight;
-      if (typeof fn !== "function") return null;
-      return await fn(input);
+      const mod: any = await import('@/lib/governance/governance-service')
+      const fn = mod?.governancePreflight ?? mod?.evaluateGovernancePreflight
+      if (typeof fn !== 'function') return null
+      return await fn(input)
     } catch {
-      return null;
+      return null
     }
   }
 
   async function governancePostRunBestEffort(input: any): Promise<void> {
     try {
-      const mod: any = await import("@/lib/governance/governance-service");
-      const fn = mod?.governancePostRun ?? mod?.postRun ?? mod?.evaluateGovernancePostRun;
-      if (typeof fn !== "function") return;
-      await fn(input);
+      const mod: any = await import('@/lib/governance/governance-service')
+      const fn = mod?.governancePostRun ?? mod?.postRun ?? mod?.evaluateGovernancePostRun
+      if (typeof fn !== 'function') return
+      await fn(input)
     } catch {
       // swallow
     }
   }
 
-  return withOrchestratorHandlerLocal(
-    { route: ROUTE },
-    async () => {
-      const route = ROUTE;
-      const runIdFromGuardContext =
-        req.headers.get("x-rgpt-run-id") ??
-        new URL(req.url).searchParams.get("run_id") ??
-        undefined;
-      try {
-        await runtimeGuard(req, { permission: "API_CALL" }); // TODO(S4): tighten permission per route
-      } catch (err: any) {
-        return guardFailResponse(err, route, runIdFromGuardContext ?? undefined);
-      }
-      // --- Internal auth ---
-      const expected = process.env.RGPT_INTERNAL_KEY || "";
-      const provided = req.headers.get("x-rgpt-internal") || "";
-
-      if (!expected || provided !== expected) {
-        return NextResponse.json(
-          {
-            success: false,
-            error_code: "INTERNAL_AUTH_REQUIRED",
-            message: "Missing or invalid internal auth header (x-rgpt-internal).",
-            status: 401,
-            timestamp: new Date().toISOString(),
-          },
-          { status: 401 }
-        );
-      }
-
-      // --- Safe-Mode gate ---
-      const safeModeEnabled =
-        (process.env.RGPT_SAFE_MODE_ENABLED || "").toLowerCase() === "true";
-
-      if (safeModeEnabled) {
-        return NextResponse.json(
-          {
-            success: false,
-            error_code: "SAFE_MODE_ACTIVE",
-            message: "Safe-Mode is enabled. This capability is blocked.",
-            capability: "builder.execute_all",
-            safe_mode: true,
-            status: 403,
-            timestamp: new Date().toISOString(),
-          },
-          { status: 403 }
-        );
-      }
-      // --- Input validation ---
-      let body: any;
-      try {
-        body = await req.json();
-      } catch (err) {
-        return NextResponse.json(
-          {
-            error: {
-              code: "INVALID_INPUT",
-              message: "Request body must be valid JSON.",
-            },
-          },
-          { status: 400 }
-        );
-      }
-
-      const runId =
-        typeof body?.runId === "string"
-          ? body.runId
-          : typeof body?.run_id === "string"
-            ? body.run_id
-            : undefined;
-
-      let preflight: any = null;
-      let outcome = "error";
-      let httpStatus = 500;
-      let responseSummary = "[not executed]";
-
-      try {
-        preflight = await governancePreflightBestEffort({
-          runId,
-          route,
-          capability: "builder.execute_all",
-          inputs_summary: "Orchestrator builder/execute-all invoked.",
-          body_summary: summarizeBody(body),
-        });
-
-        const rawAction =
-          preflight?.decision ??
-          preflight?.action ??
-          preflight?.result?.decision ??
-          preflight?.result?.action ??
-          preflight?.result ??
-          "allow";
-        const action = (typeof rawAction === "string" ? rawAction : "allow").toLowerCase();
-
-        if (["block", "deny", "contain"].includes(action)) {
-          outcome = "blocked";
-          httpStatus = 403;
-          responseSummary = "Blocked by Governance Preflight.";
-
-          return NextResponse.json(
-            {
-              success: false,
-              route,
-              runId,
-              error_code: "GOVERNANCE_BLOCKED",
-              message: "Blocked by Governance Preflight.",
-              action,
-              preflight,
-            },
-            { status: 403 }
-          );
-        }
-
-        // --- Normal execution path (stub) ---
-        const payload = {
-          success: true,
-          message: "execute-all allowed (safe-mode disabled).",
-        };
-        outcome = "success";
-        httpStatus = 200;
-        responseSummary = summarizeBody(payload);
-        return NextResponse.json(payload, { status: 200 });
-      } catch (err: any) {
-        outcome = "error";
-        httpStatus = 500;
-        responseSummary = summarizeBody(err?.message ?? err ?? "Unexpected error");
-        throw err;
-      } finally {
-        await governancePostRunBestEffort({
-          runId,
-          route,
-          capability: "builder.execute_all",
-          outcome,
-          http_status: httpStatus,
-          response_summary: responseSummary,
-          preflight,
-          when: new Date().toISOString(),
-        });
-      }
+  return withOrchestratorHandlerLocal({ route: ROUTE }, async () => {
+    const route = ROUTE
+    const runIdFromGuardContext =
+      req.headers.get('x-rgpt-run-id') ?? new URL(req.url).searchParams.get('run_id') ?? undefined
+    try {
+      await runtimeGuard(req, { permission: 'API_CALL' }) // TODO(S4): tighten permission per route
+    } catch (err: any) {
+      return guardFailResponse(err, route, runIdFromGuardContext ?? undefined)
     }
-  );
-}
+    // --- Internal auth ---
+    const expected = process.env.RGPT_INTERNAL_KEY || ''
+    const provided = req.headers.get('x-rgpt-internal') || ''
 
+    if (!expected || provided !== expected) {
+      return NextResponse.json(
+        {
+          success: false,
+          error_code: 'INTERNAL_AUTH_REQUIRED',
+          message: 'Missing or invalid internal auth header (x-rgpt-internal).',
+          status: 401,
+          timestamp: new Date().toISOString(),
+        },
+        { status: 401 },
+      )
+    }
+
+    // --- Safe-Mode gate ---
+    const safeModeEnabled = (process.env.RGPT_SAFE_MODE_ENABLED || '').toLowerCase() === 'true'
+
+    if (safeModeEnabled) {
+      return NextResponse.json(
+        {
+          success: false,
+          error_code: 'SAFE_MODE_ACTIVE',
+          message: 'Safe-Mode is enabled. This capability is blocked.',
+          capability: 'builder.execute_all',
+          safe_mode: true,
+          status: 403,
+          timestamp: new Date().toISOString(),
+        },
+        { status: 403 },
+      )
+    }
+    // --- Input validation ---
+    let body: any
+    try {
+      body = await req.json()
+    } catch (err) {
+      return NextResponse.json(
+        {
+          error: {
+            code: 'INVALID_INPUT',
+            message: 'Request body must be valid JSON.',
+          },
+        },
+        { status: 400 },
+      )
+    }
+
+    const runId =
+      typeof body?.runId === 'string'
+        ? body.runId
+        : typeof body?.run_id === 'string'
+          ? body.run_id
+          : undefined
+
+    let preflight: any = null
+    let outcome = 'error'
+    let httpStatus = 500
+    let responseSummary = '[not executed]'
+
+    try {
+      preflight = await governancePreflightBestEffort({
+        runId,
+        route,
+        capability: 'builder.execute_all',
+        inputs_summary: 'Orchestrator builder/execute-all invoked.',
+        body_summary: summarizeBody(body),
+      })
+
+      const rawAction =
+        preflight?.decision ??
+        preflight?.action ??
+        preflight?.result?.decision ??
+        preflight?.result?.action ??
+        preflight?.result ??
+        'allow'
+      const action = (typeof rawAction === 'string' ? rawAction : 'allow').toLowerCase()
+
+      if (['block', 'deny', 'contain'].includes(action)) {
+        outcome = 'blocked'
+        httpStatus = 403
+        responseSummary = 'Blocked by Governance Preflight.'
+
+        return NextResponse.json(
+          {
+            success: false,
+            route,
+            runId,
+            error_code: 'GOVERNANCE_BLOCKED',
+            message: 'Blocked by Governance Preflight.',
+            action,
+            preflight,
+          },
+          { status: 403 },
+        )
+      }
+
+      // --- Normal execution path (stub) ---
+      const payload = {
+        success: true,
+        message: 'execute-all allowed (safe-mode disabled).',
+      }
+      outcome = 'success'
+      httpStatus = 200
+      responseSummary = summarizeBody(payload)
+      return NextResponse.json(payload, { status: 200 })
+    } catch (err: any) {
+      outcome = 'error'
+      httpStatus = 500
+      responseSummary = summarizeBody(err?.message ?? err ?? 'Unexpected error')
+      throw err
+    } finally {
+      await governancePostRunBestEffort({
+        runId,
+        route,
+        capability: 'builder.execute_all',
+        outcome,
+        http_status: httpStatus,
+        response_summary: responseSummary,
+        preflight,
+        when: new Date().toISOString(),
+      })
+    }
+  })
+}
