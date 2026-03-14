@@ -1,30 +1,30 @@
-export type LibraryRiskLevel = "low" | "medium" | "high";
+export type LibraryRiskLevel = 'low' | 'medium' | 'high'
 
 export interface LibraryDefinition {
   /** Unique ID used internally for routing. */
-  id: string;
+  id: string
 
   /** Human-friendly name. */
-  name: string;
+  name: string
 
   /** Domain / problem space (e.g. "sql", "nextjs", "licensing"). */
-  domain: string;
+  domain: string
 
   /** Short description of what this library knows or can do. */
-  description: string;
+  description: string
 
   /** Tags used for matching with goals and agents. */
-  tags: string[];
+  tags: string[]
 
   /** Risk profile for approvals engine. */
-  riskLevel: LibraryRiskLevel;
+  riskLevel: LibraryRiskLevel
 
   /** Preferred agents that know how to use this library. */
-  preferredAgents: string[];
+  preferredAgents: string[]
 
   /** Semantic version of the library content / schema. */
-  version: string;
+  version: string
 
   /** Arbitrary metadata for future use. */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, any>
 }

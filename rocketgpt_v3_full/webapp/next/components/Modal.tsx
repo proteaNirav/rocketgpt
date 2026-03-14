@@ -18,12 +18,12 @@ export default function Modal({
       <div className="absolute inset-x-0 top-10 mx-auto w-[min(720px,92vw)] card p-4">
         <div className="flex items-center justify-between mb-2">
           <div className="font-semibold">{title}</div>
-          <button className="btn" onClick={onClose}>Close</button>
+          <button className="btn" onClick={onClose}>
+            Close
+          </button>
         </div>
         {children}
       </div>
     </div>
   )
 }
-
-

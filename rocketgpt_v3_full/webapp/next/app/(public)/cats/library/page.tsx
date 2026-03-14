@@ -1,4 +1,4 @@
-import CatsLibraryTable from "@/components/cats/CatsLibraryTable";
+import CatsLibraryTable from '@/components/cats/CatsLibraryTable'
 
 export default function CatsLibraryPage() {
   return (
@@ -9,5 +9,5 @@ export default function CatsLibraryPage() {
       </p>
       <CatsLibraryTable />
     </div>
-  );
+  )
 }

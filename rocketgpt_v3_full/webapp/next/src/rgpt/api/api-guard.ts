@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'
 
-type AnyHandler = (...args: any[]) => Promise<Response> | Response;
+type AnyHandler = (...args: any[]) => Promise<Response> | Response
 
 /**
  * withApiGuard()
@@ -12,10 +12,10 @@ type AnyHandler = (...args: any[]) => Promise<Response> | Response;
  */
 export function withApiGuard(handler: AnyHandler): AnyHandler {
   return async (...args: any[]) => {
-    const safe = (process.env.RGPT_SAFE_MODE || '').toLowerCase() === 'true';
+    const safe = (process.env.RGPT_SAFE_MODE || '').toLowerCase() === 'true'
     if (safe) {
-      return NextResponse.json({ ok: false, error: 'SAFE_MODE' }, { status: 403 });
+      return NextResponse.json({ ok: false, error: 'SAFE_MODE' }, { status: 403 })
     }
-    return handler(...args);
-  };
+    return handler(...args)
+  }
 }

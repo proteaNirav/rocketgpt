@@ -1,29 +1,37 @@
-"use client";
+'use client'
 
-import { useState, FormEvent } from "react";
-import { useHomeChat } from "./useHomeChat";
-import { isDemoMode } from "@/lib/demo-mode";
+import { useState, FormEvent } from 'react'
+import { useHomeChat } from './useHomeChat'
+import { isDemoMode } from '@/lib/demo-mode'
 
 export function CenterChatPane() {
-  const { messages, sending, error, sendMessage, resetKey, designModeEnabled, setDesignModeEnabled } =
-    useHomeChat();
-  const [input, setInput] = useState("");
-  const demoMode = isDemoMode();
+  const {
+    messages,
+    sending,
+    error,
+    sendMessage,
+    resetKey,
+    designModeEnabled,
+    setDesignModeEnabled,
+  } = useHomeChat()
+  const [input, setInput] = useState('')
+  const demoMode = isDemoMode()
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const text = input.trim();
-    if (!text || sending) return;
-    await sendMessage(text);
-    setInput("");
-  };
+    e.preventDefault()
+    const text = input.trim()
+    if (!text || sending) return
+    await sendMessage(text)
+    setInput('')
+  }
 
   return (
     <section className="flex h-full min-h-[420px] flex-col gap-4">
       {/* Demo mode banner */}
       {demoMode ? (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
-          Demo mode (Supabase not configured) — deterministic seed-catalog chat suggestions are enabled.
+          Demo mode (Supabase not configured) — deterministic seed-catalog chat suggestions are
+          enabled.
         </div>
       ) : null}
 
@@ -36,11 +44,11 @@ export function CenterChatPane() {
             onClick={() => setDesignModeEnabled(!designModeEnabled)}
             className={`rounded-full border px-3 py-1 text-xs font-semibold ${
               designModeEnabled
-                ? "border-emerald-400/70 bg-emerald-500/20 text-emerald-100"
-                : "border-slate-600 bg-slate-800/50 text-slate-200"
+                ? 'border-emerald-400/70 bg-emerald-500/20 text-emerald-100'
+                : 'border-slate-600 bg-slate-800/50 text-slate-200'
             }`}
           >
-            Design Mode: {designModeEnabled ? "On" : "Off"}
+            Design Mode: {designModeEnabled ? 'On' : 'Off'}
           </button>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
@@ -60,9 +68,7 @@ export function CenterChatPane() {
           {messages.length === 0 ? (
             <div className="flex h-full items-center justify-center">
               <div className="text-center">
-                <p className="text-sm text-muted-foreground">
-                  Start typing to chat with RocketGPT
-                </p>
+                <p className="text-sm text-muted-foreground">Start typing to chat with RocketGPT</p>
                 <p className="mt-1 text-xs text-muted-foreground/60">
                   Your conversation will appear here
                 </p>
@@ -72,22 +78,20 @@ export function CenterChatPane() {
             messages.map((m) => (
               <div
                 key={m.id}
-                className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
                   className={`max-w-[78%] rounded-2xl px-3 py-2 text-sm shadow-sm ${
-                    m.role === "user"
-                      ? "bg-emerald-600 text-emerald-50"
-                      : "bg-muted text-foreground"
+                    m.role === 'user'
+                      ? 'bg-emerald-600 text-emerald-50'
+                      : 'bg-muted text-foreground'
                   }`}
                 >
                   <div className="mb-1 text-[10px] font-medium opacity-70">
                     {m.name}
-                    {m.time ? " · " + m.time : ""}
+                    {m.time ? ' · ' + m.time : ''}
                   </div>
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                    {m.content}
-                  </p>
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed">{m.content}</p>
                 </div>
               </div>
             ))
@@ -110,18 +114,18 @@ export function CenterChatPane() {
                 disabled={sending || !input.trim()}
                 className="inline-flex h-[44px] items-center rounded-lg bg-emerald-600 px-4 text-sm font-medium text-emerald-50 shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {sending ? "Sending…" : "Send"}
+                {sending ? 'Sending…' : 'Send'}
               </button>
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Assistant replies include selected CATs, reasoning, governance summary, and workflow draft CTAs.
+              Assistant replies include selected CATs, reasoning, governance summary, and workflow
+              draft CTAs.
             </p>
           </form>
         </div>
       </div>
     </section>
-  );
+  )
 }
 
-
-export default CenterChatPane;
+export default CenterChatPane
